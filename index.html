@@ -1,0 +1,1718 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>50/30/20 Budget Tracker — Free Tool</title>
+<meta name="theme-color" content="#6C9A8B">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="BudgetTracker">
+<meta name="description" content="Free 50/30/20 budget tracker. Works offline. No sign-up. Your data stays on your device.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --pri:#6C9A8B;--pri-l:#E8F0ED;--pri-d:#4A7A6B;
+  --acc:#E8985E;--acc-l:#FDF0E6;
+  --suc:#5CB85C;--suc-l:#EAF7EA;
+  --dan:#D9534F;--dan-l:#FDEAEA;
+  --bg:#F0F4F3;--card:#fff;
+  --txt:#1A2421;--txt2:#5A6B66;--brd:#DFE6E9;
+  --rad:16px;--sh:0 4px 20px rgba(0,0,0,.06);--sh2:0 8px 32px rgba(0,0,0,.10);
+}
+
+body{
+  font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;
+  background:var(--bg);
+  color:var(--txt);
+  line-height:1.5;
+  min-height:100vh;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--brd);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:var(--txt2)}
+
+a{color:var(--pri);text-decoration:none}
+button{cursor:pointer;border:none;font-family:inherit}
+
+/* ─── Layout ─── */
+.wrap{max-width:1000px;margin:0 auto;padding:20px 16px 40px}
+
+/* ─── Header ─── */
+header{
+  position:relative;
+  text-align:center;
+  padding:40px 24px 36px;
+  background:linear-gradient(135deg,var(--pri-d) 0%,var(--pri) 50%,#8BB5A8 100%);
+  border-radius:24px;
+  color:#fff;
+  margin-bottom:24px;
+  overflow:hidden;
+  box-shadow:0 8px 32px rgba(74,122,107,.35);
+}
+header::before{
+  content:'';
+  position:absolute;inset:0;
+  background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Ccircle cx='30' cy='30' r='20'/%3E%3Ccircle cx='0' cy='0' r='20'/%3E%3Ccircle cx='60' cy='60' r='20'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  pointer-events:none;
+}
+header::after{
+  content:'';
+  position:absolute;top:-60px;right:-60px;
+  width:200px;height:200px;
+  background:rgba(255,255,255,.06);
+  border-radius:50%;
+  pointer-events:none;
+}
+.header-inner{position:relative;z-index:1}
+header .emoji-big{font-size:48px;line-height:1;margin-bottom:10px;display:block;filter:drop-shadow(0 4px 8px rgba(0,0,0,.2))}
+header h1{font-size:clamp(22px,4vw,32px);font-weight:900;margin-bottom:6px;letter-spacing:-0.5px;text-shadow:0 2px 8px rgba(0,0,0,.15)}
+header p{font-size:14px;opacity:.88;font-weight:400;max-width:420px;margin:0 auto}
+.badge-row{display:flex;gap:8px;justify-content:center;margin-top:14px;flex-wrap:wrap}
+.badge{
+  display:inline-flex;align-items:center;gap:5px;
+  background:rgba(255,255,255,.18);
+  backdrop-filter:blur(8px);
+  padding:5px 14px;border-radius:20px;font-size:11px;font-weight:600;
+  border:1px solid rgba(255,255,255,.25);
+  letter-spacing:.3px;
+}
+
+/* ─── Install Banner ─── */
+.install-banner{
+  background:linear-gradient(135deg,#1A2421,var(--pri-d));
+  border-radius:var(--rad);padding:16px 20px;color:#fff;
+  margin-bottom:20px;display:none;
+  align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;
+  box-shadow:var(--sh2);
+}
+.install-banner.show{display:flex}
+.install-banner .ib-text{font-size:13px}
+.install-banner .ib-text strong{font-size:15px;display:block;margin-bottom:2px}
+.install-banner .btn-install{background:#fff;color:var(--pri-d);padding:8px 20px;border-radius:20px;font-weight:700;font-size:13px;transition:.2s}
+.install-banner .btn-install:hover{transform:scale(1.04);box-shadow:0 4px 12px rgba(0,0,0,.2)}
+.install-banner .btn-dismiss{background:none;color:rgba(255,255,255,.55);font-size:11px;padding:4px 8px;transition:.2s}
+.install-banner .btn-dismiss:hover{color:#fff}
+
+/* ─── Tabs ─── */
+.tabs-wrapper{
+  background:var(--card);
+  border-radius:var(--rad);
+  padding:6px;
+  margin-bottom:20px;
+  box-shadow:var(--sh);
+  display:flex;gap:4px;overflow-x:auto;
+}
+.tab{
+  padding:10px 18px;border-radius:12px;
+  font-size:13px;font-weight:600;
+  color:var(--txt2);white-space:nowrap;
+  transition:all .2s cubic-bezier(.4,0,.2,1);
+  display:flex;align-items:center;gap:6px;
+  flex-shrink:0;
+}
+.tab .tab-icon{font-size:15px}
+.tab:hover{background:var(--pri-l);color:var(--pri-d)}
+.tab.active{
+  background:linear-gradient(135deg,var(--pri-d),var(--pri));
+  color:#fff;
+  box-shadow:0 4px 14px rgba(74,122,107,.35);
+}
+
+/* ─── Panels ─── */
+.panel{display:none;animation:fadeUp .3s ease}
+.panel.active{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+/* ─── Cards ─── */
+.card{
+  background:var(--card);
+  border-radius:var(--rad);
+  padding:22px;
+  box-shadow:var(--sh);
+  margin-bottom:18px;
+  border:1px solid rgba(0,0,0,.04);
+  transition:box-shadow .2s;
+}
+.card:hover{box-shadow:var(--sh2)}
+.card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:8px}
+.card h3{
+  font-size:14px;font-weight:700;
+  display:flex;align-items:center;gap:7px;
+  color:var(--txt);letter-spacing:-.2px;
+}
+.card h3 .icon-wrap{
+  width:30px;height:30px;border-radius:8px;
+  background:var(--pri-l);
+  display:flex;align-items:center;justify-content:center;
+  font-size:15px;
+}
+
+/* ─── Income Bar ─── */
+.income-bar{
+  background:linear-gradient(135deg,var(--pri-l),#fff);
+  border:1.5px solid var(--pri);
+  border-radius:var(--rad);
+  padding:20px 24px;
+  margin-bottom:18px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:16px;
+  box-shadow:var(--sh);
+}
+.income-bar .income-label label{
+  font-size:13px;font-weight:700;color:var(--pri-d);
+  display:flex;align-items:center;gap:6px;margin-bottom:3px;
+}
+.income-bar .income-label p{font-size:11px;color:var(--txt2)}
+.income-input-wrap{position:relative}
+.income-input-wrap .currency{
+  position:absolute;left:14px;top:50%;transform:translateY(-50%);
+  font-size:20px;font-weight:800;color:var(--pri);pointer-events:none;
+}
+.income-bar input{
+  font-size:22px;font-weight:800;color:var(--pri-d);
+  border:2px solid var(--pri);border-radius:12px;
+  padding:8px 16px 8px 36px;
+  width:200px;text-align:right;background:#fff;
+  outline:none;transition:.2s;
+}
+.income-bar input:focus{border-color:var(--pri-d);box-shadow:0 0 0 4px rgba(108,154,139,.18)}
+
+/* ─── Stats Grid ─── */
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:18px}
+.stat{
+  background:var(--card);border-radius:var(--rad);
+  padding:20px 18px;box-shadow:var(--sh);
+  position:relative;overflow:hidden;
+  border:1px solid rgba(0,0,0,.04);
+  transition:transform .2s,box-shadow .2s;
+}
+.stat:hover{transform:translateY(-2px);box-shadow:var(--sh2)}
+.stat::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:4px;border-radius:var(--rad) var(--rad) 0 0;
+}
+.stat.needs::before{background:linear-gradient(90deg,var(--pri-d),var(--pri))}
+.stat.wants::before{background:linear-gradient(90deg,#d4793e,var(--acc))}
+.stat.savings::before{background:linear-gradient(90deg,#3a9a3a,var(--suc))}
+.stat-icon{
+  width:40px;height:40px;border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:20px;margin-bottom:10px;
+}
+.stat.needs .stat-icon{background:var(--pri-l)}
+.stat.wants .stat-icon{background:var(--acc-l)}
+.stat.savings .stat-icon{background:var(--suc-l)}
+.stat .lbl{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--txt2);font-weight:700}
+.stat .amt{font-size:28px;font-weight:900;margin:6px 0 4px;letter-spacing:-1px}
+.stat.needs .amt{color:var(--pri-d)}
+.stat.wants .amt{color:var(--acc)}
+.stat.savings .amt{color:var(--suc)}
+.stat .sub{font-size:11px;color:var(--txt2);line-height:1.4}
+
+/* ─── Progress ─── */
+.prog{margin-bottom:16px}
+.prog:last-child{margin-bottom:0}
+.prog-head{display:flex;justify-content:space-between;font-size:12px;font-weight:600;margin-bottom:6px;color:var(--txt)}
+.prog-head .prog-label{display:flex;align-items:center;gap:5px}
+.prog-head .prog-vals{font-size:11px;color:var(--txt2);font-weight:500}
+.prog-bar{height:12px;background:rgba(0,0,0,.06);border-radius:6px;overflow:hidden}
+.prog-fill{
+  height:100%;border-radius:6px;
+  transition:width .6s cubic-bezier(.4,0,.2,1);
+  position:relative;
+}
+.fill-n{background:linear-gradient(90deg,var(--pri-d),var(--pri))}
+.fill-w{background:linear-gradient(90deg,#d4793e,var(--acc))}
+.fill-s{background:linear-gradient(90deg,#3a9a3a,var(--suc))}
+.fill-over{background:linear-gradient(90deg,#b02020,var(--dan))}
+.prog-pct{
+  position:absolute;right:6px;top:50%;transform:translateY(-50%);
+  font-size:9px;font-weight:700;color:#fff;white-space:nowrap;
+}
+
+/* ─── Summary Cards ─── */
+.summary-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:18px}
+.summary-card{
+  background:var(--card);border-radius:var(--rad);padding:20px;
+  box-shadow:var(--sh);text-align:center;
+  border:1px solid rgba(0,0,0,.04);
+  position:relative;overflow:hidden;
+}
+.summary-card::after{
+  content:'';position:absolute;bottom:-20px;right:-20px;
+  width:70px;height:70px;border-radius:50%;
+  opacity:.06;
+}
+.summary-card.spent::after{background:var(--pri)}
+.summary-card.remaining::after{background:var(--suc)}
+.summary-card .sc-label{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--txt2);font-weight:700;margin-bottom:6px}
+.summary-card .sc-val{font-size:26px;font-weight:900;letter-spacing:-1px}
+.summary-card.spent{border-top:4px solid var(--pri)}
+.summary-card.remaining{border-top:4px solid var(--suc)}
+
+/* ─── Table ─── */
+.table-wrap{overflow-x:auto;border-radius:12px;border:1px solid var(--brd)}
+table{width:100%;border-collapse:collapse;font-size:13px}
+thead{background:linear-gradient(135deg,var(--pri-d),var(--pri))}
+th{color:#fff;padding:11px 14px;text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:.8px;font-weight:700}
+td{padding:11px 14px;border-bottom:1px solid rgba(0,0,0,.04)}
+tbody tr:last-child td{border-bottom:none}
+tbody tr{transition:background .15s}
+tbody tr:hover td{background:var(--pri-l)}
+.mono{font-family:'SF Mono',Consolas,monospace;font-weight:700}
+.pos{color:var(--suc)}.neg{color:var(--dan)}
+.cat-pill{
+  display:inline-flex;align-items:center;gap:4px;
+  padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;
+}
+.cat-pill.needs{background:var(--pri-l);color:var(--pri-d)}
+.cat-pill.wants{background:var(--acc-l);color:#b5622a}
+.cat-pill.savings{background:var(--suc-l);color:#2d6e2d}
+
+/* ─── Form ─── */
+.add-form{display:grid;grid-template-columns:1fr 2fr 1fr 1fr 1fr auto;gap:10px;align-items:end;margin-bottom:0}
+.fg{display:flex;flex-direction:column;gap:4px}
+.fg label{font-size:10px;font-weight:700;color:var(--txt2);text-transform:uppercase;letter-spacing:.5px}
+.fg input,.fg select{
+  padding:10px 12px;
+  border:1.5px solid var(--brd);border-radius:10px;
+  font-size:13px;font-family:inherit;outline:none;
+  background:var(--bg);color:var(--txt);
+  transition:.2s;
+}
+.fg input:focus,.fg select:focus{
+  border-color:var(--pri);background:#fff;
+  box-shadow:0 0 0 3px rgba(108,154,139,.15);
+}
+
+/* ─── Buttons ─── */
+.btn{padding:10px 20px;border-radius:10px;font-weight:700;font-size:13px;transition:all .2s;display:inline-flex;align-items:center;gap:6px}
+.btn-pri{
+  background:linear-gradient(135deg,var(--pri-d),var(--pri));
+  color:#fff;box-shadow:0 4px 12px rgba(74,122,107,.3);
+}
+.btn-pri:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(74,122,107,.4)}
+.btn-pri:active{transform:translateY(0)}
+.btn-dan{
+  background:var(--dan-l);color:var(--dan);
+  padding:5px 10px;font-size:11px;border-radius:7px;font-weight:700;
+  border:1px solid rgba(217,83,79,.15);
+}
+.btn-dan:hover{background:var(--dan);color:#fff}
+.btn-sec{
+  background:var(--pri-l);color:var(--pri-d);
+  border:1.5px solid rgba(108,154,139,.3);
+}
+.btn-sec:hover{background:#d0e3db;border-color:var(--pri)}
+.btn-sm{padding:7px 14px;font-size:12px}
+
+/* ─── Quick Add Pills ─── */
+.quick-pill{
+  display:inline-flex;align-items:center;gap:5px;
+  padding:7px 14px;border-radius:20px;
+  font-size:12px;font-weight:600;
+  background:var(--bg);color:var(--txt);
+  border:1.5px solid var(--brd);
+  transition:all .2s;
+}
+.quick-pill:hover{
+  background:var(--pri-l);color:var(--pri-d);
+  border-color:var(--pri);transform:translateY(-1px);
+  box-shadow:0 4px 10px rgba(108,154,139,.2);
+}
+
+/* ─── CTA Banner ─── */
+.cta{
+  background:linear-gradient(135deg,var(--pri-d) 0%,var(--pri) 60%,var(--acc) 100%);
+  border-radius:var(--rad);padding:28px 24px;
+  text-align:center;color:#fff;margin:0 0 18px;
+  position:relative;overflow:hidden;
+  box-shadow:0 8px 24px rgba(74,122,107,.3);
+}
+.cta::before{
+  content:'💎';position:absolute;top:-10px;right:20px;
+  font-size:80px;opacity:.07;transform:rotate(-15deg);
+  pointer-events:none;
+}
+.cta h3{font-size:20px;margin-bottom:6px;font-weight:800}
+.cta p{font-size:13px;opacity:.9;margin-bottom:16px;max-width:460px;margin-left:auto;margin-right:auto;margin-bottom:16px}
+.cta .btn-cta{
+  background:#fff;color:var(--pri-d);
+  font-size:14px;font-weight:800;
+  padding:12px 32px;border-radius:25px;
+  display:inline-flex;align-items:center;gap:8px;
+  box-shadow:0 4px 16px rgba(0,0,0,.15);
+  transition:all .25s;
+}
+.cta .btn-cta:hover{transform:scale(1.04) translateY(-1px);box-shadow:0 8px 24px rgba(0,0,0,.2)}
+
+/* ─── Donut Chart ─── */
+.donut-wrap{display:flex;justify-content:center;align-items:center;gap:32px;flex-wrap:wrap}
+.donut-svg{width:180px;height:180px;filter:drop-shadow(0 4px 12px rgba(0,0,0,.1))}
+.donut-legend{display:flex;flex-direction:column;gap:12px}
+.leg-item{display:flex;align-items:center;gap:10px;font-size:13px}
+.leg-dot{width:10px;height:10px;border-radius:3px;flex-shrink:0}
+.leg-label strong{display:block;font-size:13px;font-weight:700;color:var(--txt)}
+.leg-label span{font-size:11px;color:var(--txt2)}
+
+/* ─── Export Buttons ─── */
+.export-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+.export-btn{
+  display:flex;align-items:center;gap:14px;
+  padding:16px 18px;border-radius:var(--rad);
+  border:1.5px solid var(--brd);background:var(--card);
+  cursor:pointer;transition:all .2s;
+  text-align:left;
+}
+.export-btn:hover{
+  border-color:var(--pri);background:var(--pri-l);
+  transform:translateY(-2px);box-shadow:var(--sh2);
+}
+.export-btn .eb-icon{
+  font-size:28px;width:46px;height:46px;
+  border-radius:12px;background:var(--bg);
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;
+}
+.export-btn .eb-text{font-size:13px;font-weight:700;color:var(--txt);margin-bottom:2px}
+.export-btn .eb-sub{font-size:11px;color:var(--txt2);font-weight:400}
+
+/* ─── Theme Dots ─── */
+.theme-swatch{
+  display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+}
+.theme-item{display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer}
+.theme-dot{
+  width:36px;height:36px;border-radius:50%;
+  cursor:pointer;border:3px solid transparent;
+  transition:all .2s;box-shadow:0 2px 8px rgba(0,0,0,.15);
+}
+.theme-dot:hover{transform:scale(1.15);box-shadow:0 4px 14px rgba(0,0,0,.2)}
+.theme-dot.active{border-color:var(--txt);transform:scale(1.15);box-shadow:0 4px 14px rgba(0,0,0,.25)}
+.theme-name{font-size:10px;font-weight:600;color:var(--txt2);letter-spacing:.3px}
+
+/* ─── Goals ─── */
+.goal-card{
+  border:1.5px solid var(--brd);border-radius:12px;
+  padding:16px;margin-bottom:12px;
+  background:linear-gradient(135deg,var(--card),var(--bg));
+  transition:all .2s;
+}
+.goal-card:hover{border-color:var(--pri);box-shadow:var(--sh)}
+.goal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.goal-name{font-weight:700;font-size:14px}
+.goal-status{font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px}
+.goal-status.complete{background:var(--suc-l);color:#2d6e2d}
+.goal-status.almost{background:var(--pri-l);color:var(--pri-d)}
+.goal-status.halfway{background:var(--acc-l);color:#b5622a}
+.goal-status.started{background:var(--bg);color:var(--txt2)}
+
+/* ─── Data Stats ─── */
+.data-stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px}
+.ds-item{
+  background:var(--bg);border-radius:12px;padding:14px;
+  border:1px solid var(--brd);text-align:center;
+}
+.ds-item .ds-val{font-size:20px;font-weight:800;color:var(--pri-d);margin-bottom:2px}
+.ds-item .ds-label{font-size:11px;color:var(--txt2);font-weight:600}
+
+/* ─── Toast ─── */
+.toast{
+  position:fixed;bottom:24px;right:24px;
+  background:var(--txt);color:#fff;
+  padding:13px 22px;border-radius:12px;
+  font-size:13px;font-weight:600;
+  transform:translateY(120px) scale(.9);opacity:0;
+  transition:all .3s cubic-bezier(.4,0,.2,1);
+  z-index:9999;
+  display:flex;align-items:center;gap:8px;
+  box-shadow:0 8px 24px rgba(0,0,0,.2);
+  max-width:320px;
+}
+.toast.show{transform:translateY(0) scale(1);opacity:1}
+
+/* ─── Modal ─── */
+.modal-overlay{
+  position:fixed;inset:0;
+  background:rgba(0,0,0,.55);backdrop-filter:blur(4px);
+  z-index:1000;display:none;
+  align-items:center;justify-content:center;padding:16px;
+}
+.modal-overlay.show{display:flex}
+.modal{
+  background:var(--card);border-radius:20px;
+  padding:28px;max-width:520px;width:100%;
+  max-height:85vh;overflow-y:auto;
+  box-shadow:0 20px 60px rgba(0,0,0,.25);
+  animation:modalIn .3s cubic-bezier(.4,0,.2,1);
+}
+@keyframes modalIn{from{opacity:0;transform:scale(.95) translateY(20px)}to{opacity:1;transform:scale(1) translateY(0)}}
+.modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.modal h3{font-size:18px;font-weight:800}
+.modal .close-modal{
+  background:var(--bg);color:var(--txt2);
+  width:32px;height:32px;border-radius:8px;
+  font-size:16px;display:flex;align-items:center;justify-content:center;
+  transition:.2s;flex-shrink:0;
+}
+.modal .close-modal:hover{background:var(--dan-l);color:var(--dan)}
+.modal p.modal-sub{font-size:13px;color:var(--txt2);margin-bottom:16px}
+.platform-tabs{display:flex;gap:6px;margin-bottom:16px}
+.platform-tab{
+  padding:8px 18px;border-radius:20px;font-size:12px;font-weight:700;
+  background:var(--bg);color:var(--txt2);cursor:pointer;transition:.2s;
+  border:1.5px solid var(--brd);
+}
+.platform-tab.active{background:var(--pri);color:#fff;border-color:var(--pri);box-shadow:0 3px 10px rgba(74,122,107,.3)}
+.modal .step{
+  display:flex;gap:12px;margin-bottom:10px;
+  padding:12px;background:var(--bg);border-radius:10px;
+  border:1px solid var(--brd);
+}
+.modal .step-num{
+  width:28px;height:28px;background:linear-gradient(135deg,var(--pri-d),var(--pri));
+  color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:12px;font-weight:800;flex-shrink:0;
+}
+.modal .step-text{font-size:13px;color:var(--txt);line-height:1.5}
+.modal .step-text strong{display:block;margin-bottom:2px;font-weight:700}
+.info-box{padding:12px;border-radius:10px;font-size:12px;margin-top:10px;border:1px solid transparent}
+.info-box.warn{background:var(--acc-l);color:#8a4a1a;border-color:rgba(232,152,94,.3)}
+.info-box.info{background:var(--pri-l);color:var(--pri-d);border-color:rgba(108,154,139,.3)}
+.modal-actions{margin-top:18px;display:flex;gap:8px;justify-content:center}
+
+/* ─── Section Divider ─── */
+.section-label{
+  font-size:10px;font-weight:700;text-transform:uppercase;
+  letter-spacing:1.5px;color:var(--txt2);
+  padding:0 4px;margin-bottom:12px;
+  display:flex;align-items:center;gap:8px;
+}
+.section-label::after{content:'';flex:1;height:1px;background:var(--brd)}
+
+/* ─── Empty State ─── */
+.empty-state{
+  text-align:center;padding:40px 20px;color:var(--txt2);
+}
+.empty-state .empty-icon{font-size:48px;margin-bottom:12px;opacity:.5}
+.empty-state p{font-size:14px;font-weight:500}
+.empty-state span{font-size:12px;display:block;margin-top:4px}
+
+/* ─── Recent List ─── */
+.recent-item{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:10px 0;border-bottom:1px solid rgba(0,0,0,.05);
+}
+.recent-item:last-child{border-bottom:none}
+.recent-left{display:flex;align-items:center;gap:10px}
+.recent-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.recent-info .ri-cat{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:1px}
+.recent-info .ri-desc{font-size:13px;color:var(--txt)}
+.recent-amt{font-family:'SF Mono',Consolas,monospace;font-weight:700;font-size:13px}
+
+/* ─── Footer ─── */
+footer{
+  text-align:center;padding:24px 16px;
+  font-size:12px;color:var(--txt2);margin-top:8px;
+}
+footer .brand{
+  font-weight:800;color:var(--pri-d);font-size:15px;
+  display:inline-flex;align-items:center;gap:6px;
+  margin-bottom:6px;
+}
+footer .footer-links{margin-top:8px;display:flex;justify-content:center;gap:16px;flex-wrap:wrap}
+footer .footer-links a{font-weight:600;font-size:12px;color:var(--txt2);transition:.2s}
+footer .footer-links a:hover{color:var(--pri-d)}
+
+/* ─── Transfer Guide Card ─── */
+.steps-list{padding:0;list-style:none;display:flex;flex-direction:column;gap:8px}
+.steps-list li{
+  display:flex;gap:10px;align-items:flex-start;
+  font-size:13px;color:var(--txt2);
+  padding:10px 12px;background:var(--bg);border-radius:10px;
+  border:1px solid var(--brd);
+}
+.steps-list .step-n{
+  width:22px;height:22px;flex-shrink:0;
+  background:var(--pri);color:#fff;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:800;margin-top:1px;
+}
+
+/* ─── Responsive ─── */
+@media(max-width:700px){
+  .stats{grid-template-columns:1fr}
+  .add-form{grid-template-columns:1fr 1fr}
+  .income-bar{flex-direction:column;text-align:center}
+  .income-bar input{width:100%}
+  .income-input-wrap{width:100%}
+  .income-input-wrap input{width:100%}
+  .summary-grid{grid-template-columns:1fr 1fr}
+  .export-grid{grid-template-columns:1fr}
+}
+@media(max-width:480px){
+  .summary-grid{grid-template-columns:1fr}
+  header{padding:28px 16px}
+  .badge-row{gap:5px}
+  .badge{font-size:10px;padding:4px 10px}
+}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <!-- ─── HEADER ─── -->
+  <header>
+    <div class="header-inner">
+      <span class="emoji-big">📊</span>
+      <h1>50/30/20 Budget Tracker</h1>
+      <p>The simplest way to manage your money using the proven 50/30/20 rule</p>
+      <div class="badge-row">
+        <span class="badge">✨ Free</span>
+        <span class="badge">🔒 No Sign-up</span>
+        <span class="badge">📱 Works Offline</span>
+        <span class="badge">🛡️ Data Stays on Device</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- ─── INSTALL BANNER ─── -->
+  <div class="install-banner" id="installBanner">
+    <div class="ib-text">
+      <strong>📲 Install this App!</strong>
+      Use it offline, right from your home screen — no app store needed.
+    </div>
+    <div style="display:flex;gap:8px;align-items:center">
+      <button class="btn-install" onclick="installPWA()">Install App</button>
+      <button class="btn-dismiss" onclick="dismissInstall()">Not now</button>
+    </div>
+  </div>
+
+  <!-- ─── TABS ─── -->
+  <div class="tabs-wrapper">
+    <div class="tab active" onclick="showTab('dashboard',this)">
+      <span class="tab-icon">📊</span> Dashboard
+    </div>
+    <div class="tab" onclick="showTab('expenses',this)">
+      <span class="tab-icon">📝</span> Add Expenses
+    </div>
+    <div class="tab" onclick="showTab('history',this)">
+      <span class="tab-icon">📋</span> History
+    </div>
+    <div class="tab" onclick="showTab('goals',this)">
+      <span class="tab-icon">🎯</span> Savings Goals
+    </div>
+    <div class="tab" onclick="showTab('data',this)">
+      <span class="tab-icon">⚙️</span> Settings
+    </div>
+  </div>
+
+  <!-- ─────────────────────────────────────── -->
+  <!-- DASHBOARD PANEL                         -->
+  <!-- ─────────────────────────────────────── -->
+  <div id="tab-dashboard" class="panel active">
+
+    <!-- Income -->
+    <div class="income-bar">
+      <div class="income-label">
+        <label>💰 Monthly Take-Home Income</label>
+        <p>Enter your income — everything calculates automatically</p>
+      </div>
+      <div class="income-input-wrap">
+        <span class="currency">$</span>
+        <input type="number" id="incomeInput" placeholder="5,000" step="100" oninput="updateDashboard()">
+      </div>
+    </div>
+
+    <!-- Stat Cards -->
+    <div class="stats">
+      <div class="stat needs">
+        <div class="stat-icon">🏠</div>
+        <div class="lbl">50% — Needs</div>
+        <div class="amt" id="needsAmt">$0</div>
+        <div class="sub" id="needsSub">Budget: $0</div>
+      </div>
+      <div class="stat wants">
+        <div class="stat-icon">🎮</div>
+        <div class="lbl">30% — Wants</div>
+        <div class="amt" id="wantsAmt">$0</div>
+        <div class="sub" id="wantsSub">Budget: $0</div>
+      </div>
+      <div class="stat savings">
+        <div class="stat-icon">💰</div>
+        <div class="lbl">20% — Savings</div>
+        <div class="amt" id="savingsAmt">$0</div>
+        <div class="sub" id="savingsSub">Budget: $0</div>
+      </div>
+    </div>
+
+    <!-- Progress Bars -->
+    <div class="card">
+      <h3><span class="icon-wrap">📊</span> Budget vs. Actual Spending</h3>
+      <div class="prog">
+        <div class="prog-head">
+          <span class="prog-label">🏠 Needs (50%)</span>
+          <span class="prog-vals" id="needsProg">$0 / $0</span>
+        </div>
+        <div class="prog-bar">
+          <div class="prog-fill fill-n" id="needsBar" style="width:0%">
+            <span class="prog-pct" id="needsPct"></span>
+          </div>
+        </div>
+      </div>
+      <div class="prog">
+        <div class="prog-head">
+          <span class="prog-label">🎮 Wants (30%)</span>
+          <span class="prog-vals" id="wantsProg">$0 / $0</span>
+        </div>
+        <div class="prog-bar">
+          <div class="prog-fill fill-w" id="wantsBar" style="width:0%">
+            <span class="prog-pct" id="wantsPct"></span>
+          </div>
+        </div>
+      </div>
+      <div class="prog">
+        <div class="prog-head">
+          <span class="prog-label">💰 Savings (20%)</span>
+          <span class="prog-vals" id="savingsProg">$0 / $0</span>
+        </div>
+        <div class="prog-bar">
+          <div class="prog-fill fill-s" id="savingsBar" style="width:0%">
+            <span class="prog-pct" id="savingsPct"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Donut Chart -->
+    <div class="card">
+      <h3><span class="icon-wrap">🍩</span> Spending Breakdown</h3>
+      <div class="donut-wrap">
+        <svg class="donut-svg" viewBox="0 0 42 42" id="donutChart">
+          <circle cx="21" cy="21" r="15.9" fill="none" stroke="var(--bg)" stroke-width="6"/>
+          <circle id="donutNeeds" cx="21" cy="21" r="15.9" fill="none" stroke="var(--pri)" stroke-width="5.5" stroke-dasharray="0 100" stroke-dashoffset="25" stroke-linecap="round"/>
+          <circle id="donutWants" cx="21" cy="21" r="15.9" fill="none" stroke="var(--acc)" stroke-width="5.5" stroke-dasharray="0 100" stroke-dashoffset="25" stroke-linecap="round"/>
+          <circle id="donutSavings" cx="21" cy="21" r="15.9" fill="none" stroke="var(--suc)" stroke-width="5.5" stroke-dasharray="0 100" stroke-dashoffset="25" stroke-linecap="round"/>
+          <text x="21" y="19.5" text-anchor="middle" font-size="4.2" font-weight="900" fill="var(--txt)" id="donutTotal">$0</text>
+          <text x="21" y="23.5" text-anchor="middle" font-size="2.5" fill="var(--txt2)">Total Spent</text>
+        </svg>
+        <div class="donut-legend">
+          <div class="leg-item">
+            <div class="leg-dot" style="background:var(--pri)"></div>
+            <div class="leg-label">
+              <strong>Needs</strong>
+              <span id="legNeeds">$0 (0%)</span>
+            </div>
+          </div>
+          <div class="leg-item">
+            <div class="leg-dot" style="background:var(--acc)"></div>
+            <div class="leg-label">
+              <strong>Wants</strong>
+              <span id="legWants">$0 (0%)</span>
+            </div>
+          </div>
+          <div class="leg-item">
+            <div class="leg-dot" style="background:var(--suc)"></div>
+            <div class="leg-label">
+              <strong>Savings</strong>
+              <span id="legSavings">$0 (0%)</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Summary -->
+    <div class="summary-grid">
+      <div class="summary-card spent">
+        <div class="sc-label">Total Spent</div>
+        <div class="sc-val" id="totalSpent">$0.00</div>
+      </div>
+      <div class="summary-card remaining">
+        <div class="sc-label">Remaining</div>
+        <div class="sc-val" style="color:var(--suc)" id="totalRemaining">$0.00</div>
+      </div>
+    </div>
+
+    <!-- CTA -->
+    <div class="cta">
+      <h3>📥 Want the Full Spreadsheet Version?</h3>
+      <p>Get the complete 50/30/20 Budget Tracker with 12-month tracking, annual overview, savings goals, and more!</p>
+      <a href="#" class="btn-cta" target="_blank">
+        <span>✨</span> Get the Full Template — $6.99
+      </a>
+    </div>
+
+  </div>
+
+  <!-- ─────────────────────────────────────── -->
+  <!-- ADD EXPENSES PANEL                      -->
+  <!-- ─────────────────────────────────────── -->
+  <div id="tab-expenses" class="panel">
+
+    <div class="card">
+      <h3><span class="icon-wrap">📝</span> Add New Expense</h3>
+      <div style="height:16px"></div>
+      <div class="add-form" id="expenseForm">
+        <div class="fg">
+          <label>Date</label>
+          <input type="date" id="expDate">
+        </div>
+        <div class="fg">
+          <label>Description</label>
+          <input type="text" id="expDesc" placeholder="e.g. Groceries at Costco">
+        </div>
+        <div class="fg">
+          <label>Category</label>
+          <select id="expCat" onchange="updateSubcategories()">
+            <option value="Needs">🏠 Needs</option>
+            <option value="Wants">🎮 Wants</option>
+            <option value="Savings">💰 Savings</option>
+          </select>
+        </div>
+        <div class="fg">
+          <label>Sub-Category</label>
+          <select id="expSub">
+            <optgroup label="Needs">
+              <option>Rent/Mortgage</option><option>Groceries</option>
+              <option>Utilities</option><option>Transportation</option>
+              <option>Insurance</option><option>Healthcare</option><option>Phone</option>
+            </optgroup>
+            <optgroup label="Wants">
+              <option>Dining Out</option><option>Entertainment</option>
+              <option>Shopping</option><option>Subscriptions</option>
+              <option>Hobbies</option><option>Travel</option><option>Gym</option>
+            </optgroup>
+            <optgroup label="Savings">
+              <option>Emergency Fund</option><option>Investments</option>
+              <option>Savings Goal</option><option>Debt Payment</option>
+            </optgroup>
+          </select>
+        </div>
+        <div class="fg">
+          <label>Amount ($)</label>
+          <input type="number" id="expAmt" placeholder="0.00" step="0.01" min="0">
+        </div>
+        <div class="fg">
+          <label>&nbsp;</label>
+          <button class="btn btn-pri" onclick="addExpense()">+ Add</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Add -->
+    <div class="card">
+      <h3><span class="icon-wrap">⚡</span> Quick Add</h3>
+      <div style="margin-bottom:10px">
+        <div class="section-label">Needs</div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px">
+          <button class="quick-pill" onclick="quickAdd('Rent/Mortgage','Needs')">🏠 Rent</button>
+          <button class="quick-pill" onclick="quickAdd('Groceries','Needs')">🛒 Groceries</button>
+          <button class="quick-pill" onclick="quickAdd('Transportation','Needs')">🚗 Gas/Transit</button>
+          <button class="quick-pill" onclick="quickAdd('Utilities','Needs')">⚡ Utilities</button>
+          <button class="quick-pill" onclick="quickAdd('Healthcare','Needs')">💊 Healthcare</button>
+        </div>
+      </div>
+      <div style="margin-bottom:10px">
+        <div class="section-label">Wants</div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px">
+          <button class="quick-pill" onclick="quickAdd('Dining Out','Wants')">🍕 Dining Out</button>
+          <button class="quick-pill" onclick="quickAdd('Entertainment','Wants')">🎬 Entertainment</button>
+          <button class="quick-pill" onclick="quickAdd('Shopping','Wants')">👗 Shopping</button>
+          <button class="quick-pill" onclick="quickAdd('Subscriptions','Wants')">🎧 Subscriptions</button>
+        </div>
+      </div>
+      <div>
+        <div class="section-label">Savings</div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px">
+          <button class="quick-pill" onclick="quickAdd('Emergency Fund','Savings')">🏦 Emergency Fund</button>
+          <button class="quick-pill" onclick="quickAdd('Investments','Savings')">📈 Investments</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent -->
+    <div class="card">
+      <h3><span class="icon-wrap">🕐</span> Recently Added</h3>
+      <div id="recentList">
+        <div class="empty-state">
+          <div class="empty-icon">📋</div>
+          <p>No expenses yet</p>
+          <span>Add your first one above!</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ─────────────────────────────────────── -->
+  <!-- HISTORY PANEL                           -->
+  <!-- ─────────────────────────────────────── -->
+  <div id="tab-history" class="panel">
+    <div class="card">
+      <div class="card-header">
+        <h3><span class="icon-wrap">📋</span> Expense History</h3>
+        <div style="display:flex;gap:8px;align-items:center">
+          <select id="filterCat" onchange="renderHistory()" style="padding:7px 12px;border:1.5px solid var(--brd);border-radius:8px;font-size:12px;font-weight:600;background:var(--bg);color:var(--txt);outline:none;cursor:pointer">
+            <option value="All">All Categories</option>
+            <option value="Needs">🏠 Needs</option>
+            <option value="Wants">🎮 Wants</option>
+            <option value="Savings">💰 Savings</option>
+          </select>
+          <button class="btn btn-dan btn-sm" onclick="clearAll()">🗑️ Clear All</button>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Description</th>
+              <th>Category</th>
+              <th>Sub-Category</th>
+              <th>Amount</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="historyBody">
+            <tr><td colspan="6" style="text-align:center;color:var(--txt2);padding:30px">
+              <div style="font-size:32px;margin-bottom:8px">📭</div>No expenses yet
+            </td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div style="text-align:right;margin-top:12px;font-size:14px;font-weight:800;color:var(--txt)" id="historyTotal"></div>
+    </div>
+  </div>
+
+  <!-- ─────────────────────────────────────── -->
+  <!-- SAVINGS GOALS PANEL                     -->
+  <!-- ─────────────────────────────────────── -->
+  <div id="tab-goals" class="panel">
+    <div class="card">
+      <h3><span class="icon-wrap">🎯</span> Savings Goals</h3>
+      <div style="height:14px"></div>
+      <div id="goalsList"></div>
+      <div class="section-label" style="margin-top:8px">Add New Goal</div>
+      <div style="display:grid;grid-template-columns:2fr 1fr 1fr auto;gap:10px;align-items:end">
+        <div class="fg">
+          <label>Goal Name</label>
+          <input type="text" id="goalName" placeholder="e.g. Vacation Fund">
+        </div>
+        <div class="fg">
+          <label>Target ($)</label>
+          <input type="number" id="goalTarget" placeholder="1000" step="100">
+        </div>
+        <div class="fg">
+          <label>Saved So Far ($)</label>
+          <input type="number" id="goalSaved" placeholder="0" step="50">
+        </div>
+        <div class="fg">
+          <label>&nbsp;</label>
+          <button class="btn btn-pri" onclick="addGoal()">+ Add Goal</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─────────────────────────────────────── -->
+  <!-- SETTINGS PANEL                          -->
+  <!-- ─────────────────────────────────────── -->
+  <div id="tab-data" class="panel">
+
+    <!-- Theme -->
+    <div class="card">
+      <h3><span class="icon-wrap">🎨</span> Color Theme</h3>
+      <p style="font-size:13px;color:var(--txt2);margin:10px 0 18px">Choose a theme that suits your style. Your preference is saved automatically.</p>
+      <div style="display:flex;gap:20px;flex-wrap:wrap">
+        <div class="theme-item">
+          <div class="theme-dot active" style="background:#6C9A8B" onclick="setTheme('sage',this)" title="Sage Green"></div>
+          <span class="theme-name">🌿 Sage</span>
+        </div>
+        <div class="theme-item">
+          <div class="theme-dot" style="background:#D4A0A0" onclick="setTheme('blush',this)" title="Blush Pink"></div>
+          <span class="theme-name">🌸 Blush</span>
+        </div>
+        <div class="theme-item">
+          <div class="theme-dot" style="background:#2D3436" onclick="setTheme('dark',this)" title="Dark Mode"></div>
+          <span class="theme-name">🌙 Dark</span>
+        </div>
+        <div class="theme-item">
+          <div class="theme-dot" style="background:#5B8FB9" onclick="setTheme('ocean',this)" title="Ocean Blue"></div>
+          <span class="theme-name">🌊 Ocean</span>
+        </div>
+        <div class="theme-item">
+          <div class="theme-dot" style="background:#9B89B3" onclick="setTheme('lavender',this)" title="Lavender"></div>
+          <span class="theme-name">💜 Lavender</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Install -->
+    <div class="card">
+      <h3><span class="icon-wrap">📲</span> Install App</h3>
+      <p style="font-size:13px;color:var(--txt2);margin:10px 0 14px">Install this app on your device for quick access — works offline, no app store needed.</p>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <button class="btn btn-pri" onclick="installPWA()">📲 Install Now</button>
+        <button class="btn btn-sec" onclick="showInstallGuide()">📖 Step-by-Step Guide</button>
+      </div>
+    </div>
+
+    <!-- Export -->
+    <div class="card">
+      <h3><span class="icon-wrap">📤</span> Export Your Data</h3>
+      <p style="font-size:13px;color:var(--txt2);margin:10px 0 16px">Download your budget data to open in Google Sheets, Excel, or as a backup file.</p>
+      <div class="export-grid">
+        <div class="export-btn" onclick="exportCSV()">
+          <div class="eb-icon">📊</div>
+          <div>
+            <div class="eb-text">Export as CSV</div>
+            <div class="eb-sub">Opens in Google Sheets, Excel, Numbers</div>
+          </div>
+        </div>
+        <div class="export-btn" onclick="exportExcel()">
+          <div class="eb-icon">📗</div>
+          <div>
+            <div class="eb-text">Export as Excel (.xls)</div>
+            <div class="eb-sub">Formatted spreadsheet with categories</div>
+          </div>
+        </div>
+        <div class="export-btn" onclick="exportJSON()">
+          <div class="eb-icon">💾</div>
+          <div>
+            <div class="eb-text">Full Backup (JSON)</div>
+            <div class="eb-sub">Expenses, goals, income, settings</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Import -->
+    <div class="card">
+      <h3><span class="icon-wrap">📥</span> Import Data</h3>
+      <p style="font-size:13px;color:var(--txt2);margin:10px 0 16px">Restore from a backup or import expenses from a CSV file.</p>
+      <div class="export-grid" style="margin-bottom:14px">
+        <div class="export-btn" onclick="document.getElementById('csvFileInput').click()">
+          <div class="eb-icon">📊</div>
+          <div>
+            <div class="eb-text">Import CSV</div>
+            <div class="eb-sub">Load expenses from a CSV file</div>
+          </div>
+        </div>
+        <div class="export-btn" onclick="document.getElementById('jsonFileInput').click()">
+          <div class="eb-icon">💾</div>
+          <div>
+            <div class="eb-text">Restore Backup (JSON)</div>
+            <div class="eb-sub">Restore all data from a backup file</div>
+          </div>
+        </div>
+      </div>
+      <input type="file" id="csvFileInput" accept=".csv" onchange="importCSV(event)" style="display:none">
+      <input type="file" id="jsonFileInput" accept=".json" onchange="importJSON(event)" style="display:none">
+    </div>
+
+    <!-- Transfer Guide -->
+    <div class="card" style="border-left:4px solid var(--pri)">
+      <h3><span class="icon-wrap">🔄</span> How to Transfer Between Devices</h3>
+      <div style="height:12px"></div>
+      <ol class="steps-list">
+        <li><span class="step-n">1</span><div><strong style="color:var(--txt)">On Device A:</strong> Click "Full Backup (JSON)" — this saves a file to your device</div></li>
+        <li><span class="step-n">2</span><div><strong style="color:var(--txt)">Transfer the file</strong> to Device B via email, cloud drive, or USB</div></li>
+        <li><span class="step-n">3</span><div><strong style="color:var(--txt)">On Device B:</strong> Click "Restore Backup (JSON)" and select the file</div></li>
+        <li><span class="step-n">✓</span><div style="color:var(--suc);font-weight:600">All your data — expenses, goals, income — is restored!</div></li>
+      </ol>
+    </div>
+
+    <!-- CTA -->
+    <div class="cta">
+      <h3>📊 Want Deeper Analysis?</h3>
+      <p>Export your data → Open in our premium Google Sheets template → Get 12-month tracking, charts, annual overview, and savings goals automatically!</p>
+      <a href="#" class="btn-cta" target="_blank">
+        <span>✨</span> Get the Full Spreadsheet Template — $6.99
+      </a>
+    </div>
+
+    <!-- Data Stats -->
+    <div class="card">
+      <h3><span class="icon-wrap">📈</span> Your Data Summary</h3>
+      <div style="height:14px"></div>
+      <div id="dataStats"></div>
+    </div>
+
+  </div>
+
+  <!-- ─── FOOTER ─── -->
+  <footer>
+    <div class="brand">📊 YOUR SHOP NAME</div>
+    <p>Free 50/30/20 Budget Tracker &nbsp;•&nbsp; Your data is stored locally in your browser &nbsp;•&nbsp; © 2026</p>
+    <div class="footer-links">
+      <a href="#" onclick="showInstallGuide();return false">📲 How to Install this App</a>
+      <a href="#">🛍️ Get the full spreadsheet version →</a>
+    </div>
+  </footer>
+
+</div><!-- /wrap -->
+
+<!-- ─── INSTALL GUIDE MODAL ─── -->
+<div class="modal-overlay" id="installModal">
+  <div class="modal">
+    <div class="modal-head">
+      <h3>📲 How to Install This App</h3>
+      <button class="close-modal" onclick="closeInstallGuide()">✕</button>
+    </div>
+    <p class="modal-sub">Install the Budget Tracker on your device — it works offline, just like a native app. No app store needed!</p>
+
+    <div class="platform-tabs">
+      <div class="platform-tab active" onclick="showPlatform('android',this)">📱 Android</div>
+      <div class="platform-tab" onclick="showPlatform('iphone',this)">🍎 iPhone/iPad</div>
+      <div class="platform-tab" onclick="showPlatform('desktop',this)">💻 Desktop</div>
+    </div>
+
+    <div id="guide-android" class="platform-guide">
+      <div class="step"><div class="step-num">1</div><div class="step-text"><strong>Open in Chrome</strong>Visit this page in Google Chrome browser</div></div>
+      <div class="step"><div class="step-num">2</div><div class="step-text"><strong>Tap the banner</strong>If you see "Add to Home Screen" or "Install App" at the bottom, tap it!</div></div>
+      <div class="step"><div class="step-num">3</div><div class="step-text"><strong>Or use the menu</strong>Tap the <strong>⋮ three dots</strong> (top right) → "Install app" or "Add to Home screen"</div></div>
+      <div class="step"><div class="step-num">4</div><div class="step-text"><strong>Tap "Install"</strong>The app icon appears on your home screen. Works offline! ✨</div></div>
+    </div>
+
+    <div id="guide-iphone" class="platform-guide" style="display:none">
+      <div class="step"><div class="step-num">1</div><div class="step-text"><strong>Open in Safari</strong>This MUST be Safari — other browsers on iPhone don't support installation</div></div>
+      <div class="step"><div class="step-num">2</div><div class="step-text"><strong>Tap the Share button</strong>Tap the <strong>⬆ share icon</strong> (square with arrow) at the bottom of Safari</div></div>
+      <div class="step"><div class="step-num">3</div><div class="step-text"><strong>Scroll down & tap "Add to Home Screen"</strong>You may need to scroll down in the share menu to find it</div></div>
+      <div class="step"><div class="step-num">4</div><div class="step-text"><strong>Tap "Add"</strong>The app icon appears on your home screen. Opens full screen! ✨</div></div>
+      <div class="info-box warn">⚠️ <strong>iPhone note:</strong> On iOS, data is stored per-browser. Use the <strong>Export/Backup</strong> feature regularly to keep your data safe!</div>
+    </div>
+
+    <div id="guide-desktop" class="platform-guide" style="display:none">
+      <div class="step"><div class="step-num">1</div><div class="step-text"><strong>Open in Chrome or Edge</strong>Visit this page in Google Chrome or Microsoft Edge</div></div>
+      <div class="step"><div class="step-num">2</div><div class="step-text"><strong>Look for the install icon</strong>In the address bar (right side), you'll see a <strong>⊕ install icon</strong></div></div>
+      <div class="step"><div class="step-num">3</div><div class="step-text"><strong>Click "Install"</strong>A prompt will appear — click "Install" to confirm</div></div>
+      <div class="step"><div class="step-num">4</div><div class="step-text"><strong>Done!</strong>The app opens in its own window. Find it in your Start Menu / Applications folder. ✨</div></div>
+      <div class="info-box info">💡 <strong>Tip:</strong> On Windows, right-click the title bar → "Pin to taskbar" for quick access!</div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn btn-pri" onclick="installPWA()">📲 Install Now</button>
+      <button class="btn btn-sec" onclick="closeInstallGuide()">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- ─── TOAST ─── -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ─── DATA STORE ────────────────────────────────────────────
+const STORAGE_KEY = "budget_tracker_503020";
+
+function getData() {
+  const d = localStorage.getItem(STORAGE_KEY);
+  return d ? JSON.parse(d) : { income: 0, expenses: [], goals: [] };
+}
+function saveData(data) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+}
+
+// ─── INIT ──────────────────────────────────────────────────
+document.addEventListener("DOMContentLoaded", () => {
+  loadTheme();
+  const data = getData();
+  document.getElementById("incomeInput").value = data.income || "";
+  document.getElementById("expDate").valueAsDate = new Date();
+  updateDashboard();
+  renderHistory();
+  renderGoals();
+  renderRecent();
+});
+
+// ─── TABS ──────────────────────────────────────────────────
+function showTab(id, el) {
+  document.querySelectorAll(".panel").forEach(p => p.classList.remove("active"));
+  document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+  document.getElementById("tab-" + id).classList.add("active");
+  el.classList.add("active");
+  if (id === "history") renderHistory();
+  if (id === "dashboard") updateDashboard();
+  if (id === "goals") renderGoals();
+  if (id === "data") renderDataStats();
+  if (id === "expenses") renderRecent();
+}
+
+// ─── TOAST ─────────────────────────────────────────────────
+function toast(msg) {
+  const t = document.getElementById("toast");
+  t.textContent = msg;
+  t.classList.add("show");
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => t.classList.remove("show"), 2800);
+}
+
+// ─── FORMAT ────────────────────────────────────────────────
+const fmt = n => "$" + Math.abs(n).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+const fmtShort = n => "$" + Math.abs(n).toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+
+// ─── ADD EXPENSE ───────────────────────────────────────────
+function addExpense() {
+  const date = document.getElementById("expDate").value;
+  const desc = document.getElementById("expDesc").value.trim();
+  const cat  = document.getElementById("expCat").value;
+  const sub  = document.getElementById("expSub").value;
+  const amt  = parseFloat(document.getElementById("expAmt").value);
+
+  if (!date || !desc || !amt || amt <= 0) {
+    toast("⚠️ Please fill in all fields");
+    return;
+  }
+
+  const data = getData();
+  data.expenses.push({ id: Date.now(), date, desc, cat, sub, amt });
+  saveData(data);
+
+  document.getElementById("expDesc").value = "";
+  document.getElementById("expAmt").value = "";
+
+  toast("✅ " + desc + " — " + fmt(amt) + " added!");
+  updateDashboard();
+  renderRecent();
+}
+
+function quickAdd(sub, cat) {
+  document.getElementById("expCat").value = cat;
+  updateSubcategories(sub);
+  document.getElementById("expDesc").value = sub;
+  document.getElementById("expAmt").focus();
+  toast("📝 Fill in the amount for " + sub);
+}
+
+function updateSubcategories(selectVal) {
+  // No dynamic change needed — the select already has all groups
+  // Just optionally pre-select the right sub if provided
+  if (selectVal) {
+    const sel = document.getElementById("expSub");
+    for (let o of sel.options) {
+      if (o.value === selectVal || o.text === selectVal) {
+        sel.value = o.value;
+        break;
+      }
+    }
+  }
+}
+
+// ─── DELETE ────────────────────────────────────────────────
+function deleteExpense(id) {
+  const data = getData();
+  data.expenses = data.expenses.filter(e => e.id !== id);
+  saveData(data);
+  toast("🗑️ Expense deleted");
+  updateDashboard();
+  renderHistory();
+  renderRecent();
+}
+
+function clearAll() {
+  if (!confirm("Are you sure you want to delete ALL expenses? This cannot be undone.")) return;
+  const data = getData();
+  data.expenses = [];
+  saveData(data);
+  toast("🗑️ All expenses cleared");
+  updateDashboard();
+  renderHistory();
+  renderRecent();
+}
+
+// ─── DASHBOARD ─────────────────────────────────────────────
+function updateDashboard() {
+  const data = getData();
+  const income = parseFloat(document.getElementById("incomeInput").value) || 0;
+  data.income = income;
+  saveData(data);
+
+  const needsBudget   = income * 0.5;
+  const wantsBudget   = income * 0.3;
+  const savingsBudget = income * 0.2;
+
+  const needsSpent   = data.expenses.filter(e => e.cat === "Needs").reduce((s,e) => s + e.amt, 0);
+  const wantsSpent   = data.expenses.filter(e => e.cat === "Wants").reduce((s,e) => s + e.amt, 0);
+  const savingsSpent = data.expenses.filter(e => e.cat === "Savings").reduce((s,e) => s + e.amt, 0);
+  const totalSpent   = needsSpent + wantsSpent + savingsSpent;
+
+  // Stat cards
+  document.getElementById("needsAmt").textContent = fmt(needsSpent);
+  document.getElementById("needsSub").innerHTML =
+    `Budget: ${fmtShort(needsBudget)} &nbsp;•&nbsp; <span style="color:${needsSpent <= needsBudget ? 'var(--suc)' : 'var(--dan)'}">${needsSpent <= needsBudget ? '✓ Under' : '⚠️ Over'} by ${fmtShort(Math.abs(needsBudget - needsSpent))}</span>`;
+
+  document.getElementById("wantsAmt").textContent = fmt(wantsSpent);
+  document.getElementById("wantsSub").innerHTML =
+    `Budget: ${fmtShort(wantsBudget)} &nbsp;•&nbsp; <span style="color:${wantsSpent <= wantsBudget ? 'var(--suc)' : 'var(--dan)'}">${wantsSpent <= wantsBudget ? '✓ Under' : '⚠️ Over'} by ${fmtShort(Math.abs(wantsBudget - wantsSpent))}</span>`;
+
+  document.getElementById("savingsAmt").textContent = fmt(savingsSpent);
+  document.getElementById("savingsSub").innerHTML =
+    `Budget: ${fmtShort(savingsBudget)} &nbsp;•&nbsp; <span style="color:${savingsSpent >= savingsBudget ? 'var(--suc)' : 'var(--acc)'}">${savingsSpent >= savingsBudget ? '✓ Goal met!' : '💪 ' + fmtShort(savingsBudget - savingsSpent) + ' to go'}</span>`;
+
+  // Progress bars
+  updateProgress("needs",   needsSpent,   needsBudget,   "n");
+  updateProgress("wants",   wantsSpent,   wantsBudget,   "w");
+  updateProgress("savings", savingsSpent, savingsBudget, "s");
+
+  // Totals
+  document.getElementById("totalSpent").textContent = fmt(totalSpent);
+  const remaining = income - totalSpent;
+  const remEl = document.getElementById("totalRemaining");
+  remEl.textContent = (remaining < 0 ? "-" : "") + fmt(remaining);
+  remEl.style.color = remaining >= 0 ? "var(--suc)" : "var(--dan)";
+
+  // Donut
+  updateDonut(needsSpent, wantsSpent, savingsSpent);
+}
+
+function updateProgress(name, spent, budget, cls) {
+  const pct = budget > 0 ? Math.min((spent / budget) * 100, 100) : 0;
+  const bar  = document.getElementById(name + "Bar");
+  const pctEl = document.getElementById(name + "Pct");
+
+  bar.style.width = pct + "%";
+  if (pctEl) pctEl.textContent = pct > 20 ? Math.round(pct) + "%" : "";
+  bar.className = "prog-fill " + (spent > budget ? "fill-over" : "fill-" + cls);
+  document.getElementById(name + "Prog").textContent = fmt(spent) + " / " + fmt(budget);
+}
+
+function updateDonut(n, w, s) {
+  const total = n + w + s || 1;
+  const nPct  = (n / total) * 100;
+  const wPct  = (w / total) * 100;
+  const sPct  = (s / total) * 100;
+
+  document.getElementById("donutNeeds").setAttribute("stroke-dasharray", nPct + " " + (100 - nPct));
+  document.getElementById("donutWants").setAttribute("stroke-dasharray", wPct + " " + (100 - wPct));
+  document.getElementById("donutWants").setAttribute("stroke-dashoffset", 25 - nPct);
+  document.getElementById("donutSavings").setAttribute("stroke-dasharray", sPct + " " + (100 - sPct));
+  document.getElementById("donutSavings").setAttribute("stroke-dashoffset", 25 - nPct - wPct);
+
+  document.getElementById("donutTotal").textContent = fmtShort(n + w + s);
+  document.getElementById("legNeeds").textContent   = fmt(n) + " (" + Math.round(nPct) + "%)";
+  document.getElementById("legWants").textContent   = fmt(w) + " (" + Math.round(wPct) + "%)";
+  document.getElementById("legSavings").textContent = fmt(s) + " (" + Math.round(sPct) + "%)";
+}
+
+// ─── RECENT LIST ───────────────────────────────────────────
+function renderRecent() {
+  const data = getData();
+  const recent = data.expenses.slice(-5).reverse();
+  const el = document.getElementById("recentList");
+  if (!el) return;
+  if (recent.length === 0) {
+    el.innerHTML = `<div class="empty-state"><div class="empty-icon">📋</div><p>No expenses yet</p><span>Add your first one above!</span></div>`;
+    return;
+  }
+  el.innerHTML = recent.map(e => {
+    const color = e.cat === "Needs" ? "var(--pri)" : e.cat === "Wants" ? "var(--acc)" : "var(--suc)";
+    const label = e.cat === "Needs" ? "pri" : e.cat === "Wants" ? "acc" : "suc";
+    return `<div class="recent-item">
+      <div class="recent-left">
+        <div class="recent-dot" style="background:${color}"></div>
+        <div class="recent-info">
+          <div class="ri-cat" style="color:${color}">${e.cat}</div>
+          <div class="ri-desc">${e.desc}</div>
+        </div>
+      </div>
+      <div class="recent-amt" style="color:${color}">${fmt(e.amt)}</div>
+    </div>`;
+  }).join("");
+}
+
+// ─── HISTORY ───────────────────────────────────────────────
+function renderHistory() {
+  const data = getData();
+  const filter = document.getElementById("filterCat").value;
+  let expenses = data.expenses;
+  if (filter !== "All") expenses = expenses.filter(e => e.cat === filter);
+  expenses = expenses.slice().reverse();
+
+  const tbody = document.getElementById("historyBody");
+  if (expenses.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:var(--txt2);padding:36px">
+      <div style="font-size:36px;margin-bottom:10px">📭</div>No expenses found</td></tr>`;
+    document.getElementById("historyTotal").textContent = "";
+    return;
+  }
+
+  tbody.innerHTML = expenses.map(e => {
+    const catClass = e.cat === "Needs" ? "needs" : e.cat === "Wants" ? "wants" : "savings";
+    return `<tr>
+      <td style="color:var(--txt2);font-size:12px">${new Date(e.date + "T00:00:00").toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}</td>
+      <td style="font-weight:500">${e.desc}</td>
+      <td><span class="cat-pill ${catClass}">${e.cat}</span></td>
+      <td style="color:var(--txt2);font-size:12px">${e.sub}</td>
+      <td class="mono">${fmt(e.amt)}</td>
+      <td><button class="btn-dan" onclick="deleteExpense(${e.id})">✕</button></td>
+    </tr>`;
+  }).join("");
+
+  const total = expenses.reduce((s, e) => s + e.amt, 0);
+  document.getElementById("historyTotal").innerHTML =
+    `<span style="color:var(--txt2);font-size:12px;font-weight:500">Total: </span> ${fmt(total)}`;
+}
+
+// ─── SAVINGS GOALS ─────────────────────────────────────────
+function addGoal() {
+  const name   = document.getElementById("goalName").value.trim();
+  const target = parseFloat(document.getElementById("goalTarget").value);
+  const saved  = parseFloat(document.getElementById("goalSaved").value) || 0;
+  if (!name || !target) { toast("⚠️ Enter goal name and target amount"); return; }
+
+  const data = getData();
+  data.goals.push({ id: Date.now(), name, target, saved });
+  saveData(data);
+  document.getElementById("goalName").value = "";
+  document.getElementById("goalTarget").value = "";
+  document.getElementById("goalSaved").value = "";
+  toast("🎯 Goal '" + name + "' added!");
+  renderGoals();
+}
+
+function updateGoalSaved(id, val) {
+  const data = getData();
+  const g = data.goals.find(g => g.id === id);
+  if (g) { g.saved = parseFloat(val) || 0; saveData(data); renderGoals(); }
+}
+
+function deleteGoal(id) {
+  const data = getData();
+  data.goals = data.goals.filter(g => g.id !== id);
+  saveData(data);
+  toast("🗑️ Goal deleted");
+  renderGoals();
+}
+
+function renderGoals() {
+  const data = getData();
+  const el = document.getElementById("goalsList");
+  if (!el) return;
+  if (data.goals.length === 0) {
+    el.innerHTML = `<div class="empty-state"><div class="empty-icon">🎯</div><p>No savings goals yet</p><span>Add one below to start tracking!</span></div>`;
+    return;
+  }
+  el.innerHTML = data.goals.map(g => {
+    const pct = g.target > 0 ? Math.min((g.saved / g.target) * 100, 100) : 0;
+    let statusClass, statusLabel;
+    if (pct >= 100)      { statusClass = "complete"; statusLabel = "🎉 Complete!"; }
+    else if (pct >= 75)  { statusClass = "almost";   statusLabel = "✅ Almost there!"; }
+    else if (pct >= 50)  { statusClass = "halfway";  statusLabel = "💪 Halfway!"; }
+    else if (pct >= 25)  { statusClass = "started";  statusLabel = "🚀 Good start!"; }
+    else                 { statusClass = "started";  statusLabel = "🌱 Starting!"; }
+
+    return `<div class="goal-card">
+      <div class="goal-header">
+        <div class="goal-name">${g.name}</div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span class="goal-status ${statusClass}">${statusLabel}</span>
+          <button class="btn-dan" onclick="deleteGoal(${g.id})">✕</button>
+        </div>
+      </div>
+      <div class="prog-bar" style="margin-bottom:10px">
+        <div class="prog-fill fill-s" style="width:${pct}%">
+          <span class="prog-pct">${pct > 20 ? Math.round(pct) + "%" : ""}</span>
+        </div>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;font-size:12px;flex-wrap:wrap;gap:8px">
+        <div style="display:flex;align-items:center;gap:6px;color:var(--txt2)">
+          Saved:
+          <input type="number" value="${g.saved}" onchange="updateGoalSaved(${g.id},this.value)"
+            style="width:80px;padding:5px 8px;border:1.5px solid var(--brd);border-radius:7px;font-weight:700;color:var(--suc);font-size:12px;outline:none">
+          / ${fmt(g.target)}
+        </div>
+        <div style="color:var(--txt2)">${fmtShort(Math.max(0, g.target - g.saved))} remaining</div>
+      </div>
+    </div>`;
+  }).join("");
+}
+
+// ─── EXPORT: CSV ───────────────────────────────────────────
+function exportCSV() {
+  const data = getData();
+  if (!data.expenses.length) { toast("⚠️ No expenses to export"); return; }
+  const headers = ["Date","Description","Category","Sub-Category","Amount"];
+  const rows = data.expenses.map(e => [e.date, '"'+e.desc.replace(/"/g,'""')+'"', e.cat, e.sub, e.amt.toFixed(2)]);
+  let csv = "Monthly Income," + (data.income||0) + "\n";
+  csv += "Needs Budget (50%)," + ((data.income||0)*0.5).toFixed(2) + "\n";
+  csv += "Wants Budget (30%)," + ((data.income||0)*0.3).toFixed(2) + "\n";
+  csv += "Savings Budget (20%)," + ((data.income||0)*0.2).toFixed(2) + "\n\n";
+  csv += headers.join(",") + "\n";
+  csv += rows.map(r => r.join(",")).join("\n");
+  csv += "\n\nTotal Expenses," + data.expenses.reduce((s,e)=>s+e.amt,0).toFixed(2) + "\n";
+  downloadFile(csv, "budget-tracker-" + dateStamp() + ".csv", "text/csv");
+  toast("📊 CSV exported successfully!");
+}
+
+// ─── EXPORT: EXCEL ─────────────────────────────────────────
+function exportExcel() {
+  const data = getData();
+  if (!data.expenses.length) { toast("⚠️ No expenses to export"); return; }
+
+  function cell(val, type, styleId) {
+    let s = styleId ? ' ss:StyleID="'+styleId+'"' : '';
+    return '<Cell'+s+'><Data ss:Type="'+type+'">'+val+'</Data></Cell>';
+  }
+  function row(cells, styleId) {
+    let s = styleId ? ' ss:StyleID="'+styleId+'"' : '';
+    return '<Row'+s+'>' + cells.join('') + '</Row>\n';
+  }
+
+  let xml = '<?xml version="1.0"?>\n<?mso-application progid="Excel.Sheet"?>\n';
+  xml += '<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet" xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet">\n';
+  xml += '<Styles>\n';
+  xml += '<Style ss:ID="header"><Font ss:Bold="1" ss:Color="#FFFFFF" ss:Size="11"/><Interior ss:Color="#6C9A8B" ss:Pattern="Solid"/></Style>\n';
+  xml += '<Style ss:ID="money"><NumberFormat ss:Format="$#,##0.00"/></Style>\n';
+  xml += '<Style ss:ID="needs"><Interior ss:Color="#E8F0ED" ss:Pattern="Solid"/></Style>\n';
+  xml += '<Style ss:ID="wants"><Interior ss:Color="#FDF0E6" ss:Pattern="Solid"/></Style>\n';
+  xml += '<Style ss:ID="savings"><Interior ss:Color="#EAF7EA" ss:Pattern="Solid"/></Style>\n';
+  xml += '<Style ss:ID="total"><Font ss:Bold="1"/><Interior ss:Color="#E8F0ED" ss:Pattern="Solid"/></Style>\n';
+  xml += '</Styles>\n';
+  xml += '<Worksheet ss:Name="Expenses">\n<Table>\n';
+  xml += '<Column ss:Width="100"/><Column ss:Width="200"/><Column ss:Width="80"/><Column ss:Width="120"/><Column ss:Width="100"/>\n';
+  xml += row([cell("Monthly Income","String"),cell(data.income||0,"Number","money")],"total");
+  xml += row([cell("Needs Budget (50%)","String"),cell(((data.income||0)*0.5),"Number","money")]);
+  xml += row([cell("Wants Budget (30%)","String"),cell(((data.income||0)*0.3),"Number","money")]);
+  xml += row([cell("Savings Budget (20%)","String"),cell(((data.income||0)*0.2),"Number","money")]);
+  xml += '<Row></Row>\n';
+  xml += row(["Date","Description","Category","Sub-Category","Amount"].map(h=>cell(h,"String")),"header");
+  data.expenses.forEach(e => {
+    const style = e.cat==="Needs"?"needs":e.cat==="Wants"?"wants":"savings";
+    xml += row([cell(e.date,"String"),cell(e.desc,"String"),cell(e.cat,"String"),cell(e.sub,"String"),cell(e.amt,"Number","money")],style);
+  });
+  const total = data.expenses.reduce((s,e)=>s+e.amt,0);
+  xml += '<Row></Row>\n';
+  xml += row([cell("TOTAL","String"),cell("","String"),cell("","String"),cell("","String"),cell(total,"Number","money")],"total");
+  xml += '</Table>\n</Worksheet>\n';
+  if (data.goals.length) {
+    xml += '<Worksheet ss:Name="Savings Goals">\n<Table>\n';
+    xml += '<Column ss:Width="150"/><Column ss:Width="100"/><Column ss:Width="100"/><Column ss:Width="100"/><Column ss:Width="80"/>\n';
+    xml += row(["Goal Name","Target","Saved","Remaining","% Complete"].map(h=>cell(h,"String")),"header");
+    data.goals.forEach(g => {
+      xml += row([cell(g.name,"String"),cell(g.target,"Number","money"),cell(g.saved,"Number","money"),cell(g.target-g.saved,"Number","money"),cell(g.target>0?Math.round((g.saved/g.target)*100)+"%":"0%","String")]);
+    });
+    xml += '</Table>\n</Worksheet>\n';
+  }
+  xml += '</Workbook>';
+  downloadFile(xml, "budget-tracker-" + dateStamp() + ".xls", "application/vnd.ms-excel");
+  toast("📗 Excel file exported!");
+}
+
+// ─── EXPORT: JSON ──────────────────────────────────────────
+function exportJSON() {
+  const data = getData();
+  const backup = { _app:"50/30/20 Budget Tracker", _version:"1.0", _exported:new Date().toISOString(), income:data.income, expenses:data.expenses, goals:data.goals };
+  downloadFile(JSON.stringify(backup, null, 2), "budget-backup-" + dateStamp() + ".json", "application/json");
+  toast("💾 Full backup saved!");
+}
+
+// ─── IMPORT: CSV ───────────────────────────────────────────
+function importCSV(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const lines = e.target.result.split("\n").map(l=>l.trim()).filter(l=>l);
+      const data = getData();
+      let imported = 0;
+      let headerIdx = -1;
+      for (let i=0; i<lines.length; i++) {
+        const lower = lines[i].toLowerCase();
+        if (lower.includes("date") && lower.includes("description") && lower.includes("amount")) { headerIdx=i; break; }
+      }
+      if (headerIdx === -1) { toast("⚠️ CSV format not recognized"); return; }
+      for (let i=headerIdx+1; i<lines.length; i++) {
+        const cols = parseCSVLine(lines[i]);
+        if (cols.length >= 5 && !isNaN(parseFloat(cols[4]))) {
+          const amt = parseFloat(cols[4]);
+          if (amt > 0) { data.expenses.push({id:Date.now()+i, date:cols[0]||new Date().toISOString().split("T")[0], desc:cols[1]||"Imported", cat:(cols[2]||"Needs").trim(), sub:(cols[3]||"Other").trim(), amt}); imported++; }
+        }
+      }
+      for (let i=0; i<Math.min(headerIdx,5); i++) {
+        if (lines[i].toLowerCase().includes("income")) {
+          const parts = lines[i].split(",");
+          const val = parseFloat(parts[parts.length-1]);
+          if (!isNaN(val) && val>0) { data.income=val; document.getElementById("incomeInput").value=val; }
+        }
+      }
+      saveData(data); updateDashboard(); renderHistory(); toast("✅ Imported " + imported + " expenses!");
+    } catch(err) { toast("❌ Error reading CSV: " + err.message); }
+  };
+  reader.readAsText(file);
+  event.target.value = "";
+}
+
+function parseCSVLine(line) {
+  const result=[]; let current=""; let inQuotes=false;
+  for (let i=0; i<line.length; i++) {
+    const ch=line[i];
+    if (ch==='"') inQuotes=!inQuotes;
+    else if (ch===',' && !inQuotes) { result.push(current.trim()); current=""; }
+    else current+=ch;
+  }
+  result.push(current.trim());
+  return result;
+}
+
+// ─── IMPORT: JSON ──────────────────────────────────────────
+function importJSON(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const backup = JSON.parse(e.target.result);
+      if (!backup.expenses || !Array.isArray(backup.expenses)) { toast("⚠️ Invalid backup file"); return; }
+      if (!confirm("Restore this backup?\n\n📊 " + backup.expenses.length + " expenses\n🎯 " + (backup.goals||[]).length + " goals\n💰 Income: $" + (backup.income||0) + "\n\n⚠️ This will REPLACE all current data.")) return;
+      const data = { income:backup.income||0, expenses:backup.expenses||[], goals:backup.goals||[] };
+      saveData(data);
+      document.getElementById("incomeInput").value = data.income||"";
+      updateDashboard(); renderHistory(); renderGoals();
+      toast("✅ Backup restored! " + data.expenses.length + " expenses loaded");
+    } catch(err) { toast("❌ Error reading backup: " + err.message); }
+  };
+  reader.readAsText(file);
+  event.target.value = "";
+}
+
+// ─── DATA STATS ────────────────────────────────────────────
+function renderDataStats() {
+  const data = getData();
+  const el = document.getElementById("dataStats");
+  if (!el) return;
+  const needs   = data.expenses.filter(e=>e.cat==="Needs").reduce((s,e)=>s+e.amt,0);
+  const wants   = data.expenses.filter(e=>e.cat==="Wants").reduce((s,e)=>s+e.amt,0);
+  const savings = data.expenses.filter(e=>e.cat==="Savings").reduce((s,e)=>s+e.amt,0);
+  const dates   = data.expenses.map(e=>e.date).sort();
+  el.innerHTML = `<div class="data-stat-grid">
+    <div class="ds-item"><div class="ds-val">${data.expenses.length}</div><div class="ds-label">📊 Total Expenses</div></div>
+    <div class="ds-item"><div class="ds-val">${data.goals.length}</div><div class="ds-label">🎯 Savings Goals</div></div>
+    <div class="ds-item"><div class="ds-val">${fmtShort(data.income||0)}</div><div class="ds-label">💰 Monthly Income</div></div>
+    <div class="ds-item"><div class="ds-val">${fmtShort(needs+wants+savings)}</div><div class="ds-label">💸 Total Spent</div></div>
+    <div class="ds-item" style="grid-column:span 2"><div class="ds-val" style="font-size:14px">${dates.length>0?dates[0]+" → "+dates[dates.length-1]:"No data"}</div><div class="ds-label">📅 Date Range</div></div>
+    <div class="ds-item"><div class="ds-val">${(new Blob([JSON.stringify(data)]).size/1024).toFixed(1)} KB</div><div class="ds-label">💾 Storage Used</div></div>
+  </div>`;
+}
+
+// ─── FILE DOWNLOAD ─────────────────────────────────────────
+function downloadFile(content, filename, mimeType) {
+  const blob = new Blob([content], { type: mimeType + ";charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click();
+  document.body.removeChild(a); URL.revokeObjectURL(url);
+}
+
+function dateStamp() {
+  const d = new Date();
+  return d.getFullYear() + "-" + String(d.getMonth()+1).padStart(2,"0") + "-" + String(d.getDate()).padStart(2,"0");
+}
+
+// ─── THEMES ────────────────────────────────────────────────
+const THEMES = {
+  sage:     { pri:"#6C9A8B", priL:"#E8F0ED", priD:"#4A7A6B", acc:"#E8985E", accL:"#FDF0E6", suc:"#5CB85C", sucL:"#EAF7EA", dan:"#D9534F", danL:"#FDEAEA", bg:"#F0F4F3", card:"#fff", txt:"#1A2421", txt2:"#5A6B66", brd:"#DFE6E9" },
+  blush:    { pri:"#D4A0A0", priL:"#F7EDED", priD:"#B07878", acc:"#C9956B", accL:"#FBF0E5", suc:"#7EC8A0", sucL:"#E5F5EC", dan:"#D9534F", danL:"#FDEAEA", bg:"#FDF6F6", card:"#fff", txt:"#2D3436", txt2:"#636E72", brd:"#F0DEDE" },
+  dark:     { pri:"#89B4FA", priL:"#1E293B", priD:"#74C7EC", acc:"#FAB387", accL:"#2D2D44", suc:"#A6E3A1", sucL:"#1A2E1A", dan:"#F38BA8", danL:"#3D1F28", bg:"#0F172A", card:"#1E293B", txt:"#E2E8F0", txt2:"#94A3B8", brd:"#334155" },
+  ocean:    { pri:"#5B8FB9", priL:"#E5EFF7", priD:"#3A6D94", acc:"#E8985E", accL:"#FDF0E6", suc:"#5CB85C", sucL:"#EAF7EA", dan:"#D9534F", danL:"#FDEAEA", bg:"#F0F5FA", card:"#fff", txt:"#2D3436", txt2:"#636E72", brd:"#D0DEE9" },
+  lavender: { pri:"#9B89B3", priL:"#F0ECF5", priD:"#7A6899", acc:"#D4956B", accL:"#FBF0E5", suc:"#7EC8A0", sucL:"#E5F5EC", dan:"#D9534F", danL:"#FDEAEA", bg:"#F7F5FA", card:"#fff", txt:"#2D3436", txt2:"#636E72", brd:"#E0D8EA" }
+};
+
+function applyTheme(t) {
+  const r = document.documentElement.style;
+  r.setProperty("--pri",   t.pri);   r.setProperty("--pri-l", t.priL); r.setProperty("--pri-d", t.priD);
+  r.setProperty("--acc",   t.acc);   r.setProperty("--acc-l", t.accL);
+  r.setProperty("--suc",   t.suc);   r.setProperty("--suc-l", t.sucL);
+  r.setProperty("--dan",   t.dan);   r.setProperty("--dan-l", t.danL);
+  r.setProperty("--bg",    t.bg);    r.setProperty("--card",  t.card);
+  r.setProperty("--txt",   t.txt);   r.setProperty("--txt2",  t.txt2);  r.setProperty("--brd", t.brd);
+}
+
+function setTheme(name, dotEl) {
+  const t = THEMES[name];
+  if (!t) return;
+  applyTheme(t);
+  document.querySelectorAll(".theme-dot").forEach(d => d.classList.remove("active"));
+  if (dotEl) dotEl.classList.add("active");
+  localStorage.setItem("budget_theme", name);
+  toast("🎨 Theme updated!");
+}
+
+function loadTheme() {
+  const saved = localStorage.getItem("budget_theme");
+  if (saved && THEMES[saved]) {
+    applyTheme(THEMES[saved]);
+    const names = ["sage","blush","dark","ocean","lavender"];
+    const idx = names.indexOf(saved);
+    if (idx >= 0) {
+      document.querySelectorAll(".theme-dot").forEach(d => d.classList.remove("active"));
+      const dots = document.querySelectorAll(".theme-dot");
+      if (dots[idx]) dots[idx].classList.add("active");
+    }
+  }
+}
+
+// ─── MODAL ─────────────────────────────────────────────────
+function showInstallGuide() {
+  document.getElementById("installModal").classList.add("show");
+  document.body.style.overflow = "hidden";
+}
+function closeInstallGuide() {
+  document.getElementById("installModal").classList.remove("show");
+  document.body.style.overflow = "";
+}
+function showPlatform(platform, tabEl) {
+  document.querySelectorAll(".platform-guide").forEach(g => g.style.display = "none");
+  document.querySelectorAll(".platform-tab").forEach(t => t.classList.remove("active"));
+  document.getElementById("guide-" + platform).style.display = "block";
+  if (tabEl) tabEl.classList.add("active");
+}
+document.addEventListener("click", e => {
+  if (e.target.classList.contains("modal-overlay")) closeInstallGuide();
+});
+
+// ─── PWA ───────────────────────────────────────────────────
+let deferredPrompt = null;
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  deferredPrompt = e;
+  const banner = document.getElementById('installBanner');
+  if (banner && !localStorage.getItem('pwa_dismissed')) banner.classList.add('show');
+});
+
+function installPWA() {
+  if (!deferredPrompt) {
+    toast("💡 Use your browser menu → 'Add to Home Screen' or 'Install App'");
+    return;
+  }
+  deferredPrompt.prompt();
+  deferredPrompt.userChoice.then(result => {
+    if (result.outcome === 'accepted') toast("✅ App installed! Find it on your home screen");
+    deferredPrompt = null;
+    document.getElementById('installBanner').classList.remove('show');
+  });
+}
+
+function dismissInstall() {
+  document.getElementById('installBanner').classList.remove('show');
+  localStorage.setItem('pwa_dismissed', '1');
+}
+
+window.addEventListener('appinstalled', () => {
+  document.getElementById('installBanner').classList.remove('show');
+  toast("🎉 App installed successfully!");
+});
+</script>
+</body>
+</html>
