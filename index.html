@@ -3440,10 +3440,10 @@ PERSONALITY: Friendly, concise, data-driven, encouraging. Like a smart friend wh
 
 // API endpoints for each provider
 const AI_ENDPOINTS = {
-  gemini: { url: "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent", type: "gemini" },
+  gemini: { url: "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent", type: "gemini" },
   groq: { url: "https://api.groq.com/openai/v1/chat/completions", type: "openai", model: "llama-3.3-70b-versatile" },
   openai: { url: "https://api.openai.com/v1/chat/completions", type: "openai", model: "gpt-4o-mini" },
-  openrouter: { url: "https://openrouter.ai/api/v1/chat/completions", type: "openai", model: "google/gemini-2.0-flash-exp:free" }
+  openrouter: { url: "https://openrouter.ai/api/v1/chat/completions", type: "openai", model: "google/gemini-2.5-flash" }
 };
 
 let chatHistory = [];
@@ -3490,35 +3490,61 @@ async function sendChat() {
   } catch(err) {
     removeTyping(typingId);
     let errMsg = "Sorry, something went wrong. ";
-    if (err.message.includes("401") || err.message.includes("403")) {
+    const em = err.message || "";
+    if (em.includes("401") || em.includes("403") || em.includes("API_KEY_INVALID") || em.includes("PERMISSION_DENIED")) {
       errMsg += "Your API key appears to be invalid or expired. Check it in Settings.";
-    } else if (err.message.includes("429")) {
-      errMsg += "Rate limit reached. Wait a moment and try again.";
-    } else if (err.message.includes("Failed to fetch")) {
+    } else if (em.includes("429") || em.includes("RESOURCE_EXHAUSTED") || em.includes("rate") || em.includes("quota")) {
+      errMsg += "Rate limit reached — the free tier allows about 10 requests/minute. Wait 60 seconds and try again.";
+    } else if (em.includes("404") || em.includes("not found") || em.includes("NOT_FOUND")) {
+      errMsg += "Model not found. The AI provider may have updated their models. Try a different provider in Settings.";
+    } else if (em.includes("Failed to fetch") || em.includes("NetworkError")) {
       errMsg += "Can't reach the AI service. Check your internet connection.";
     } else {
-      errMsg += err.message;
+      errMsg += em;
     }
-    addChatMessage("bot", "⚠️ " + errMsg);
+    addChatMessage("bot", errMsg);
   }
 }
 
 async function callGemini(key, url, context, history) {
+  // Build chat history for Gemini
   const contents = [];
-  // System instruction via first user/model pair
-  contents.push({ role: "user", parts: [{ text: SYSTEM_PROMPT + "\n\n" + context }] });
-  contents.push({ role: "model", parts: [{ text: "Understood! I'll analyze your budget data and provide helpful, specific advice. How can I help you today?" }] });
-  // Chat history
   history.forEach(h => {
     contents.push({ role: h.role === "user" ? "user" : "model", parts: [{ text: h.content }] });
   });
 
-  const res = await fetch(url + "?key=" + key, {
+  // Use systemInstruction field (proper Gemini API way)
+  const payload = {
+    contents,
+    systemInstruction: {
+      parts: [{ text: SYSTEM_PROMPT + "\n\n" + context }]
+    },
+    generationConfig: {
+      maxOutputTokens: 800,
+      temperature: 0.7
+    }
+  };
+
+  const res = await fetch(url, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ contents })
+    headers: {
+      "Content-Type": "application/json",
+      "x-goog-api-key": key
+    },
+    body: JSON.stringify(payload)
   });
-  if (!res.ok) throw new Error(res.status + " " + res.statusText);
+
+  if (!res.ok) {
+    const errBody = await res.text().catch(() => "");
+    // Extract useful error message from Gemini response
+    let detail = res.status + " " + res.statusText;
+    try {
+      const errJson = JSON.parse(errBody);
+      if (errJson.error?.message) detail = errJson.error.message;
+    } catch(e) {}
+    throw new Error(detail);
+  }
+
   const data = await res.json();
   return data.candidates?.[0]?.content?.parts?.[0]?.text || "I couldn't generate a response. Please try again.";
 }
@@ -3913,5 +3939,5 @@ window.addEventListener('appinstalled', () => {
   toast("🎉 App installed successfully!");
 });
 </script>
-</body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a0ec395f996186ad',t:'MTc4MTk3MzcxOA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
