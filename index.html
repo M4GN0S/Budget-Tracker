@@ -1533,8 +1533,114 @@ window.addEventListener("beforeunload", () => {
   } catch(e) {}
 });
 
+// ─── SMART BACKUP REMINDERS ────────────────────────────────
+// Subtle, non-annoying reminders at the RIGHT moments
+
+const REMINDER_KEY = "bt_reminder";
+
+function checkBackupReminder() {
+  const data = getData();
+  const state = JSON.parse(localStorage.getItem(REMINDER_KEY) || "{}");
+  const now = Date.now();
+  const oneDay = 86400000;
+  const oneWeek = oneDay * 7;
+
+  // Don't remind more than once per session
+  if (state.remindedThisSession) return;
+
+  // Milestone reminders: 10, 25, 50, 100 expenses
+  const milestones = [10, 25, 50, 100, 200, 500];
+  const count = data.expenses.length;
+  const lastMilestone = state.lastMilestone || 0;
+  const hitMilestone = milestones.find(m => count >= m && m > lastMilestone);
+
+  if (hitMilestone) {
+    setTimeout(() => {
+      showBackupReminder(
+        "🎉 " + count + " expenses tracked!",
+        "Great progress! Consider exporting a backup to keep your data safe."
+      );
+    }, 3000); // Delay so it doesn't compete with other toasts
+    state.lastMilestone = hitMilestone;
+    state.remindedThisSession = true;
+    localStorage.setItem(REMINDER_KEY, JSON.stringify(state));
+    return;
+  }
+
+  // Weekly reminder: if they haven't backed up in 7+ days and have data
+  const lastBackupExport = state.lastExport || 0;
+  if (count > 5 && (now - lastBackupExport) > oneWeek) {
+    setTimeout(() => {
+      showBackupReminder(
+        "📋 Weekly backup reminder",
+        "It's been a while since your last backup. One tap keeps your data safe!"
+      );
+    }, 5000);
+    state.remindedThisSession = true;
+    localStorage.setItem(REMINDER_KEY, JSON.stringify(state));
+    return;
+  }
+}
+
+function markBackupDone() {
+  const state = JSON.parse(localStorage.getItem(REMINDER_KEY) || "{}");
+  state.lastExport = Date.now();
+  localStorage.setItem(REMINDER_KEY, JSON.stringify(state));
+}
+
+// Backup reminder banner (appears at top of current tab, dismissible)
+function showBackupReminder(title, message) {
+  // Don't show if one is already visible
+  if (document.getElementById("backupReminder")) return;
+
+  const banner = document.createElement("div");
+  banner.id = "backupReminder";
+  banner.style.cssText = `
+    background:linear-gradient(135deg,var(--pri-d),var(--pri));
+    color:var(--on-pri);border-radius:var(--rad);padding:14px 18px;
+    margin-bottom:16px;display:flex;align-items:center;
+    justify-content:space-between;flex-wrap:wrap;gap:10px;
+    box-shadow:var(--sh2);animation:fadeUp .3s ease;
+  `;
+  banner.innerHTML = `
+    <div style="flex:1;min-width:200px">
+      <div style="font-weight:800;font-size:14px;margin-bottom:2px">${title}</div>
+      <div style="font-size:12px;opacity:.9">${message}</div>
+    </div>
+    <div style="display:flex;gap:6px;align-items:center">
+      <button onclick="quickBackup()" style="background:var(--card);color:var(--pri-d);padding:7px 16px;border-radius:8px;font-weight:700;font-size:12px;border:none;cursor:pointer">📋 Quick Backup</button>
+      <button onclick="this.parentElement.parentElement.remove()" style="background:none;border:none;color:var(--on-pri);opacity:.6;font-size:14px;cursor:pointer;padding:4px">✕</button>
+    </div>
+  `;
+
+  // Insert at top of active panel
+  const activePanel = document.querySelector(".panel.active");
+  if (activePanel) activePanel.insertBefore(banner, activePanel.firstChild);
+}
+
+function quickBackup() {
+  copyBackupToClipboard();
+  markBackupDone();
+  const banner = document.getElementById("backupReminder");
+  if (banner) {
+    banner.innerHTML = `
+      <div style="display:flex;align-items:center;gap:10px;width:100%;justify-content:center;padding:4px 0">
+        <span style="font-size:18px">✅</span>
+        <span style="font-weight:700;font-size:13px">Backup copied to clipboard! Paste it somewhere safe.</span>
+      </div>
+    `;
+    setTimeout(() => banner.remove(), 4000);
+  }
+}
+
 // ─── INIT ──────────────────────────────────────────────────
 document.addEventListener("DOMContentLoaded", () => {
+  // Reset session-only reminder flag on fresh page load
+  try {
+    const rs = JSON.parse(localStorage.getItem(REMINDER_KEY) || "{}");
+    delete rs.remindedThisSession;
+    localStorage.setItem(REMINDER_KEY, JSON.stringify(rs));
+  } catch(e) {}
   loadTheme();
   const data = getData();
   document.getElementById("incomeInput").value = data.income || "";
@@ -1551,6 +1657,8 @@ document.addEventListener("DOMContentLoaded", () => {
   });
   showDashNewsletter();
   maybeShowNlPopup();
+  // Check backup reminder after everything loads
+  setTimeout(checkBackupReminder, 8000);
   // If already subscribed, update Settings form state
   if (localStorage.getItem("bt_nl_subscribed")) {
     const nlf = document.getElementById("newsletterForm");
@@ -1946,6 +2054,7 @@ function exportCSV() {
   csv += rows.map(r => r.join(",")).join("\n");
   csv += "\n\nTotal Expenses," + data.expenses.reduce((s,e)=>s+e.amt,0).toFixed(2) + "\n";
   downloadFile(csv, "budget-tracker-" + dateStamp() + ".csv", "text/csv");
+  markBackupDone();
   toast("📊 CSV exported successfully!");
 }
 
@@ -2000,6 +2109,7 @@ function exportExcel() {
   }
   xml += '</Workbook>';
   downloadFile(xml, "budget-tracker-" + dateStamp() + ".xls", "application/vnd.ms-excel");
+  markBackupDone();
   toast("📗 Excel file exported!");
 }
 
@@ -2008,6 +2118,7 @@ function exportJSON() {
   const data = getData();
   const backup = { _app:"50/30/20 Budget Tracker", _version:"1.0", _exported:new Date().toISOString(), income:data.income, expenses:data.expenses, goals:data.goals };
   downloadFile(JSON.stringify(backup, null, 2), "budget-backup-" + dateStamp() + ".json", "application/json");
+  markBackupDone();
   toast("💾 Full backup saved!");
 }
 
@@ -2428,5 +2539,5 @@ window.addEventListener('appinstalled', () => {
   toast("🎉 App installed successfully!");
 });
 </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a0e8eb74afda715b',t:'MTc4MTkzOTA3MA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a0e906c87f5cc849',t:'MTc4MTk0MDE4OQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
