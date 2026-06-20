@@ -2026,38 +2026,69 @@ function checkForUpdates() {
   statusEl.textContent = "🔄 Checking...";
   statusEl.style.color = "var(--acc)";
 
-  if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
-    navigator.serviceWorker.getRegistration().then(reg => {
-      if (reg) {
-        reg.update().then(() => {
-          setTimeout(() => {
-            if (reg.waiting) {
-              statusEl.textContent = "🆕 Update available!";
-              statusEl.style.color = "var(--acc)";
-              if (confirm("A new version is available! Reload to update?")) {
-                reg.waiting.postMessage({ type: "SKIP_WAITING" });
-                window.location.reload();
-              }
-            } else {
-              statusEl.textContent = "✅ Up to date";
-              statusEl.style.color = "var(--suc)";
-              toast("✅ You're on the latest version!");
-            }
-          }, 1500);
-        });
-      }
-    }).catch(() => {
-      statusEl.textContent = "✅ Up to date";
-      statusEl.style.color = "var(--suc)";
-      toast("✅ You're on the latest version!");
-    });
-  } else {
+  if (!('serviceWorker' in navigator)) {
     setTimeout(() => {
       statusEl.textContent = "✅ Up to date";
       statusEl.style.color = "var(--suc)";
-      toast("✅ App is current! (v1.0.0)");
+      toast("ℹ️ Service Worker not available — app runs from network");
     }, 1000);
+    return;
   }
+
+  navigator.serviceWorker.getRegistration().then(reg => {
+    if (!reg) {
+      statusEl.textContent = "⚠️ Not installed";
+      statusEl.style.color = "var(--acc)";
+      toast("ℹ️ App is not installed as PWA yet");
+      return;
+    }
+
+    // Step 1: Force the SW to check the server for a new version
+    reg.update().then(() => {
+      // Step 2: If there's a waiting worker, a new version was found
+      setTimeout(() => {
+        if (reg.waiting) {
+          statusEl.textContent = "🆕 Update found!";
+          statusEl.style.color = "var(--acc)";
+          if (confirm("A new version is available! Reload to update?")) {
+            reg.waiting.postMessage({ type: "SKIP_WAITING" });
+            window.location.reload();
+          }
+        } else if (reg.active) {
+          // Step 3: No new SW, but force-refresh all cached assets
+          reg.active.postMessage({ type: "FORCE_UPDATE" });
+          statusEl.textContent = "🔄 Refreshing cache...";
+
+          // Listen for completion
+          const onMessage = (event) => {
+            if (event.data && event.data.type === "UPDATED") {
+              navigator.serviceWorker.removeEventListener("message", onMessage);
+              statusEl.textContent = "✅ Updated!";
+              statusEl.style.color = "var(--suc)";
+              toast("✅ Cache refreshed! Reloading...");
+              setTimeout(() => window.location.reload(), 1000);
+            }
+          };
+          navigator.serviceWorker.addEventListener("message", onMessage);
+
+          // Timeout fallback — if message doesn't come in 5s, reload anyway
+          setTimeout(() => {
+            navigator.serviceWorker.removeEventListener("message", onMessage);
+            if (statusEl.textContent === "🔄 Refreshing cache...") {
+              statusEl.textContent = "✅ Up to date";
+              statusEl.style.color = "var(--suc)";
+              toast("✅ App is up to date!");
+            }
+          }, 5000);
+        }
+      }, 2000);
+    }).catch(err => {
+      console.error("Update check failed:", err);
+      statusEl.textContent = "⚠️ Check failed";
+      statusEl.style.color = "var(--dan)";
+      toast("⚠️ Couldn't check for updates — are you online?");
+    });
+  });
 }
 
 // ─── FILE DOWNLOAD ─────────────────────────────────────────
@@ -2178,5 +2209,5 @@ window.addEventListener('appinstalled', () => {
   toast("🎉 App installed successfully!");
 });
 </script>
-</body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a0e8ccec9d57e2fa',t:'MTc4MTkzNzgxOQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
