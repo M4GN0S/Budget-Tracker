@@ -942,14 +942,14 @@ footer .footer-links a:hover{color:var(--pri-d)}
         </div>
       </div>
       <!-- Custom Quick Add -->
-      <div style="margin-top:14px;border-top:1px solid var(--brd);padding-top:14px">
+      <div style="margin-top:14px;border-top:1px solid var(--brd);padding-top:14px;overflow:hidden">
         <div class="section-label">Add Your Own</div>
-        <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:end">
-          <div class="fg" style="flex:2;min-width:120px">
+        <div class="add-form" style="grid-template-columns:2fr 1fr auto">
+          <div class="fg">
             <label>Name</label>
             <input type="text" id="customQaName" placeholder="e.g. Coffee ☕">
           </div>
-          <div class="fg" style="flex:1;min-width:100px">
+          <div class="fg">
             <label>Category</label>
             <select id="customQaCat">
               <option value="Needs">🏠 Needs</option>
@@ -957,7 +957,7 @@ footer .footer-links a:hover{color:var(--pri-d)}
               <option value="Savings">💰 Savings</option>
             </select>
           </div>
-          <div class="fg" style="flex:0">
+          <div class="fg">
             <label>&nbsp;</label>
             <button class="btn btn-pri btn-sm" onclick="addCustomQuickAdd()">+ Add</button>
           </div>
@@ -1062,23 +1062,23 @@ footer .footer-links a:hover{color:var(--pri-d)}
       <div style="display:flex;gap:20px;flex-wrap:wrap">
         <div class="theme-item">
           <div class="theme-dot active" style="background:#6C9A8B" onclick="setTheme('sage',this)" title="Sage Green"></div>
-          <span class="theme-name">🌿 Sage</span>
+          <span class="theme-name">Sage</span>
         </div>
         <div class="theme-item">
           <div class="theme-dot" style="background:#D4A0A0" onclick="setTheme('blush',this)" title="Blush Pink"></div>
-          <span class="theme-name">🌸 Blush</span>
+          <span class="theme-name">Blush</span>
         </div>
         <div class="theme-item">
           <div class="theme-dot" style="background:#2D3436" onclick="setTheme('dark',this)" title="Dark Mode"></div>
-          <span class="theme-name">🌙 Dark</span>
+          <span class="theme-name">Dark</span>
         </div>
         <div class="theme-item">
           <div class="theme-dot" style="background:#5B8FB9" onclick="setTheme('ocean',this)" title="Ocean Blue"></div>
-          <span class="theme-name">🌊 Ocean</span>
+          <span class="theme-name">Ocean</span>
         </div>
         <div class="theme-item">
           <div class="theme-dot" style="background:#9B89B3" onclick="setTheme('lavender',this)" title="Lavender"></div>
-          <span class="theme-name">💜 Lavender</span>
+          <span class="theme-name">Lavender</span>
         </div>
       </div>
     </div>
@@ -2178,5 +2178,5 @@ window.addEventListener('appinstalled', () => {
   toast("🎉 App installed successfully!");
 });
 </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a0e876f8591406b9',t:'MTc4MTkzNDI5OA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</body>
 </html>
