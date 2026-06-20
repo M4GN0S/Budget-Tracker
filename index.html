@@ -711,6 +711,15 @@ tbody tr:hover td{background:var(--pri-l)}
 .tag-filter:hover,.tag-filter.active{background:var(--pri-l);color:var(--pri-d);border-color:var(--pri)}
 .note-count{font-size:11px;color:var(--txt2);font-weight:500}
 
+/* ─── AI Model Selector ─── */
+.model-bar{display:flex;align-items:center;gap:8px;margin-bottom:12px;padding:8px 12px;background:var(--bg);border-radius:10px;border:1px solid var(--brd)}
+.model-bar label{font-size:11px;font-weight:700;color:var(--txt2);white-space:nowrap;display:flex;align-items:center;gap:4px}
+.model-bar select{flex:1;padding:5px 8px;border:1px solid var(--brd);border-radius:8px;font-size:11px;font-family:inherit;background:var(--input-bg);color:var(--txt);outline:none;cursor:pointer;min-width:0}
+.model-bar select:focus{border-color:var(--pri)}
+.model-bar .model-badge{font-size:9px;padding:2px 6px;border-radius:6px;font-weight:700;white-space:nowrap;flex-shrink:0}
+.model-bar .model-badge.free{background:var(--suc-l);color:var(--suc)}
+.model-bar .model-badge.paid{background:var(--acc-l);color:var(--acc)}
+
 /* ─── AI Chat ─── */
 .chat-messages{max-height:400px;overflow-y:auto;display:flex;flex-direction:column;gap:10px;padding:4px 0}
 .chat-msg{display:flex;gap:10px;animation:fadeUp .3s ease}
@@ -1409,6 +1418,11 @@ footer .footer-links a:hover{color:var(--pri-d)}
               <option value="custom">Custom Provider (any OpenAI-compatible API)</option>
             </select>
           </div>
+          <div class="fg" id="modelSelectGroup">
+            <label>Model</label>
+            <select id="aiModel"></select>
+            <div id="modelInfo" style="font-size:10px;color:var(--txt2);margin-top:3px"></div>
+          </div>
           <div id="customProviderFields" style="display:none">
             <div class="fg" style="margin-bottom:8px">
               <label>Custom API URL</label>
@@ -1457,6 +1471,15 @@ footer .footer-links a:hover{color:var(--pri-d)}
             <span style="font-size:11px;color:var(--suc);font-weight:600" id="aiStatus">● Connected</span>
             <button class="btn btn-sec btn-sm" onclick="clearChat()">Clear Chat</button>
           </div>
+        </div>
+        <!-- Model Selector Bar (in chat) -->
+        <div class="model-bar" id="chatModelBar">
+          <label>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a4 4 0 014 4v1h2a2 2 0 012 2v10a2 2 0 01-2 2H6a2 2 0 01-2-2V9a2 2 0 012-2h2V6a4 4 0 014-4z"/><circle cx="9" cy="14" r="1.5"/><circle cx="15" cy="14" r="1.5"/></svg>
+            Model
+          </label>
+          <select id="chatModelSelect" onchange="switchModelFromChat()"></select>
+          <span class="model-badge free" id="chatModelBadge">Free</span>
         </div>
         <!-- Quick Actions -->
         <div class="quick-actions">
@@ -3280,7 +3303,8 @@ function saveAiKey() {
   if (!key) { toast("⚠️ Please enter an API key"); return; }
   if (key.length < 10) { toast("⚠️ That doesn't look like a valid API key"); return; }
 
-  const config = { provider, key: obfuscate(key), ts: Date.now() };
+  const selectedModel = document.getElementById("aiModel")?.value || "";
+  const config = { provider, key: obfuscate(key), model: selectedModel, ts: Date.now() };
 
   // Save custom provider settings
   if (provider === "custom") {
@@ -3311,6 +3335,73 @@ function saveAiKey() {
 function toggleCustomProvider() {
   const sel = document.getElementById("aiProvider").value;
   document.getElementById("customProviderFields").style.display = sel === "custom" ? "block" : "none";
+  document.getElementById("modelSelectGroup").style.display = sel === "custom" ? "none" : "block";
+  populateModelDropdown("aiModel", sel);
+}
+
+function populateModelDropdown(selectId, provider, selectedModel) {
+  const select = document.getElementById(selectId);
+  if (!select) return;
+  const catalog = AI_MODELS[provider];
+  if (!catalog) { select.innerHTML = ""; return; }
+
+  select.innerHTML = "";
+  catalog.models.forEach(m => {
+    const opt = document.createElement("option");
+    opt.value = m.id;
+    opt.textContent = m.name + (m.free ? " (free)" : " (paid)") + " — " + m.desc;
+    select.appendChild(opt);
+  });
+
+  if (selectedModel) select.value = selectedModel;
+
+  // Update info text
+  updateModelInfo(selectId, provider);
+  select.onchange = () => updateModelInfo(selectId, provider);
+}
+
+function updateModelInfo(selectId, provider) {
+  const select = document.getElementById(selectId);
+  if (!select) return;
+  const catalog = AI_MODELS[provider];
+  if (!catalog) return;
+  const model = catalog.models.find(m => m.id === select.value);
+  const infoEl = document.getElementById(selectId === "aiModel" ? "modelInfo" : null);
+  if (infoEl && model) {
+    let info = model.desc;
+    if (model.rpm) info += " · " + model.rpm + " req/min";
+    if (model.rpd) info += ", " + model.rpd + "/day";
+    infoEl.textContent = info;
+  }
+  // Update badge in chat bar
+  if (selectId === "chatModelSelect") {
+    const badge = document.getElementById("chatModelBadge");
+    if (badge && model) {
+      badge.textContent = model.free ? "Free" : "Paid";
+      badge.className = "model-badge " + (model.free ? "free" : "paid");
+    }
+  }
+}
+
+function switchModelFromChat() {
+  const select = document.getElementById("chatModelSelect");
+  if (!select) return;
+  const config = getAiConfig();
+  if (!config) return;
+
+  // Save the new model selection
+  const raw = JSON.parse(localStorage.getItem(AI_KEY_STORAGE) || "{}");
+  raw.model = select.value;
+  localStorage.setItem(AI_KEY_STORAGE, JSON.stringify(raw));
+
+  // Sync the setup dropdown
+  const setupSelect = document.getElementById("aiModel");
+  if (setupSelect) setupSelect.value = select.value;
+
+  // Update badge
+  updateModelInfo("chatModelSelect", config.provider);
+
+  toast("Switched to " + (select.options[select.selectedIndex]?.text?.split(" —")[0] || select.value));
 }
 
 function removeAiKey() {
@@ -3328,6 +3419,7 @@ function getAiConfig() {
     return {
       provider: config.provider,
       key: deobfuscate(config.key),
+      model: config.model || "",
       customUrl: config.customUrl || "",
       customModel: config.customModel || ""
     };
@@ -3348,6 +3440,14 @@ function initAiChat() {
     const providerNames = { gemini:"Google Gemini", groq:"Groq", openai:"OpenAI", openrouter:"OpenRouter", custom:"Custom" };
     const providerLabel = config.provider === "custom" ? "Custom (" + (config.customUrl || "").replace(/https?:\/\//, "").split("/")[0] + ")" : providerNames[config.provider];
     if (settingsProvider) settingsProvider.textContent = providerLabel;
+
+    // Populate the model dropdown in chat bar
+    if (config.provider !== "custom") {
+      populateModelDropdown("chatModelSelect", config.provider, config.model || AI_MODELS[config.provider]?.models[0]?.id);
+      document.getElementById("chatModelBar").style.display = "flex";
+    } else {
+      document.getElementById("chatModelBar").style.display = "none";
+    }
 
     // Update chat header with bot name
     const botName = localStorage.getItem("bt_bot_name") || "AI Budget Advisor";
@@ -3377,6 +3477,20 @@ function initAiChat() {
   const promptInput = document.getElementById("customPromptInput");
   const savedPrompt = localStorage.getItem("bt_custom_prompt");
   if (promptInput && savedPrompt) promptInput.value = savedPrompt;
+
+  // Populate the setup model dropdown
+  const providerSel = document.getElementById("aiProvider");
+  if (providerSel) {
+    const p = config ? config.provider : providerSel.value;
+    if (p && p !== "custom") {
+      populateModelDropdown("aiModel", p, config?.model || "");
+      document.getElementById("modelSelectGroup").style.display = "block";
+    } else if (p === "custom") {
+      document.getElementById("modelSelectGroup").style.display = "none";
+    }
+    if (config) providerSel.value = config.provider;
+    toggleCustomProvider();
+  }
 }
 
 // Build context from user's budget data
@@ -3438,13 +3552,70 @@ RULES:
 
 PERSONALITY: Friendly, concise, data-driven, encouraging. Like a smart friend who's good with money.`;
 
-// API endpoints for each provider
-const AI_ENDPOINTS = {
-  gemini: { url: "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent", type: "gemini" },
-  groq: { url: "https://api.groq.com/openai/v1/chat/completions", type: "openai", model: "llama-3.3-70b-versatile" },
-  openai: { url: "https://api.openai.com/v1/chat/completions", type: "openai", model: "gpt-4o-mini" },
-  openrouter: { url: "https://openrouter.ai/api/v1/chat/completions", type: "openai", model: "google/gemini-2.5-flash" }
+// ─── AI Model Catalog ───
+const AI_MODELS = {
+  gemini: {
+    baseUrl: "https://generativelanguage.googleapis.com/v1beta/models/",
+    type: "gemini",
+    models: [
+      { id: "gemini-2.5-flash",      name: "Gemini 2.5 Flash",      desc: "Fast & free — best default", free: true, rpm: 15, rpd: 1500 },
+      { id: "gemini-2.5-flash-lite", name: "Gemini 2.5 Flash-Lite", desc: "Ultra-cheap, highest free limits", free: true, rpm: 30, rpd: 1500 },
+      { id: "gemini-2.5-pro",        name: "Gemini 2.5 Pro",        desc: "Smarter reasoning, lower limits", free: true, rpm: 5, rpd: 50 },
+      { id: "gemini-3-flash",        name: "Gemini 3 Flash",        desc: "Next-gen fast model (preview)", free: true, rpm: 15, rpd: 1500 },
+      { id: "gemini-2.0-flash",      name: "Gemini 2.0 Flash",      desc: "Legacy — reliable & fast", free: true, rpm: 15, rpd: 1500 },
+    ]
+  },
+  groq: {
+    baseUrl: "https://api.groq.com/openai/v1/chat/completions",
+    type: "openai",
+    models: [
+      { id: "llama-3.3-70b-versatile",                   name: "Llama 3.3 70B",       desc: "Best quality on Groq", free: true, rpm: 30 },
+      { id: "meta-llama/llama-4-scout-17b-16e-instruct", name: "Llama 4 Scout",       desc: "MoE — great efficiency", free: true, rpm: 30 },
+      { id: "llama-3.1-8b-instant",                      name: "Llama 3.1 8B",        desc: "Fastest responses", free: true, rpm: 30 },
+      { id: "qwen/qwen3-32b",                            name: "Qwen3 32B",           desc: "Multilingual & reasoning", free: true, rpm: 60 },
+      { id: "moonshotai/kimi-k2-instruct",               name: "Kimi K2",             desc: "Deep thinking model", free: true, rpm: 60 },
+      { id: "openai/gpt-oss-120b",                       name: "GPT-OSS 120B",        desc: "Strong open-source flagship", free: true, rpm: 30 },
+      { id: "mixtral-8x7b-32768",                        name: "Mixtral 8x7B",        desc: "Multilingual & reasoning", free: true, rpm: 30 },
+      { id: "gemma2-9b-it",                              name: "Gemma2 9B",           desc: "Lightweight & efficient", free: true, rpm: 30 },
+    ]
+  },
+  openai: {
+    baseUrl: "https://api.openai.com/v1/chat/completions",
+    type: "openai",
+    models: [
+      { id: "gpt-4o-mini",   name: "GPT-4o Mini",   desc: "Budget-friendly multimodal", free: false },
+      { id: "gpt-4o",        name: "GPT-4o",        desc: "Full multimodal model", free: false },
+      { id: "gpt-4.1-nano",  name: "GPT-4.1 Nano",  desc: "Fast & cheapest", free: false },
+      { id: "gpt-4.1-mini",  name: "GPT-4.1 Mini",  desc: "Balanced cost & quality", free: false },
+      { id: "gpt-4.1",       name: "GPT-4.1",       desc: "High-quality reasoning", free: false },
+      { id: "gpt-5-mini",    name: "GPT-5 Mini",    desc: "Affordable next-gen", free: false },
+      { id: "gpt-5",         name: "GPT-5",         desc: "Advanced reasoning", free: false },
+    ]
+  },
+  openrouter: {
+    baseUrl: "https://openrouter.ai/api/v1/chat/completions",
+    type: "openai",
+    models: [
+      { id: "deepseek/deepseek-r1:free",                       name: "DeepSeek R1",         desc: "Reasoning & math (free)", free: true },
+      { id: "deepseek/deepseek-chat-v3-0324:free",             name: "DeepSeek Chat V3",    desc: "Natural conversation (free)", free: true },
+      { id: "meta-llama/llama-4-maverick:free",                name: "Llama 4 Maverick",    desc: "1M context (free)", free: true },
+      { id: "qwen/qwen3-235b-a22b:free",                      name: "Qwen3 235B",          desc: "Strong coding (free)", free: true },
+      { id: "x-ai/grok-3-mini-beta:free",                     name: "Grok 3 Mini",         desc: "Fast reasoning (free)", free: true },
+      { id: "mistralai/mistral-small-3.1-24b-instruct:free",  name: "Mistral Small 3.1",   desc: "Balanced assistant (free)", free: true },
+      { id: "google/gemma-3-27b-it:free",                     name: "Gemma 3 27B",         desc: "Lightweight chat (free)", free: true },
+      { id: "google/gemini-2.5-flash",                         name: "Gemini 2.5 Flash",    desc: "Via OpenRouter (paid)", free: false },
+    ]
+  }
 };
+
+function getModelEndpoint(provider, modelId) {
+  const catalog = AI_MODELS[provider];
+  if (!catalog) return null;
+  if (catalog.type === "gemini") {
+    return { url: catalog.baseUrl + modelId + ":generateContent", type: "gemini", model: modelId };
+  }
+  return { url: catalog.baseUrl, type: "openai", model: modelId };
+}
 
 let chatHistory = [];
 
@@ -3466,12 +3637,19 @@ async function sendChat() {
 
   try {
     const context = buildAiContext();
-    let endpoint = AI_ENDPOINTS[config.provider];
 
-    // Handle custom provider
+    // Resolve the model — prefer chat dropdown, fall back to config, then catalog default
+    const chatSelect = document.getElementById("chatModelSelect");
+    const activeModel = chatSelect?.value || config.model || AI_MODELS[config.provider]?.models[0]?.id || "";
+    let endpoint;
+
     if (config.provider === "custom") {
       endpoint = { url: config.customUrl, type: "openai", model: config.customModel || "default" };
+    } else {
+      endpoint = getModelEndpoint(config.provider, activeModel);
     }
+
+    if (!endpoint) { throw new Error("Could not resolve AI endpoint. Check your provider settings."); }
 
     let response;
     if (endpoint.type === "gemini") {
@@ -3939,5 +4117,5 @@ window.addEventListener('appinstalled', () => {
   toast("🎉 App installed successfully!");
 });
 </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a0ec395f996186ad',t:'MTc4MTk3MzcxOA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</body>
 </html>
