@@ -3,80 +3,96 @@
     "id": 1,
     "type": "announcement",
     "title": "Welcome to The Budget Brief",
-    "body": "This is your personal finance feed — tips, challenges, and product updates delivered right inside your budget tracker. New posts appear automatically. No email needed.",
+    "body": "This is your personal finance feed — tips, challenges, and updates delivered right inside your budget tracker.",
+    "content": "Welcome to <strong>The Budget Brief</strong> — your personal finance newsletter built right into your budget tracker.\n\nEvery week, we publish actionable money tips, savings challenges, and product updates directly in this feed. No email required. No sign-up needed. Just open your app and check what's new.\n\n<strong>What you'll find here:</strong>\n\n• <strong>Money Tips</strong> — Practical strategies to save more and spend smarter\n• <strong>Challenges</strong> — Fun weekly/monthly savings challenges to keep you motivated\n• <strong>Product Updates</strong> — New tools and templates to level up your finances\n• <strong>Seasonal Reminders</strong> — Tax prep, holiday budgeting, year-end reviews\n\n<strong>How it works:</strong>\n\nNew posts appear automatically when you open the app. Unread posts have a green dot — click to read. That's it.\n\nWelcome aboard. Let's make your money work harder. 💪",
     "date": "2026-06-20",
     "link": null,
     "linkText": null,
-    "pinned": true
+    "pinned": true,
+    "readTime": "1 min"
   },
   {
     "id": 2,
     "type": "tip",
     "title": "The 24-Hour Rule for Impulse Purchases",
-    "body": "Before buying anything over $25 in your 'Wants' category, wait 24 hours. Studies show 70% of impulse purchases are regretted within a week. This single habit can save you $200-400/month. Try it this weekend — you might surprise yourself.",
+    "body": "Before buying anything over $25 in your 'Wants' category, wait 24 hours. This single habit can save you $200-400/month.",
+    "content": "<strong>The 24-Hour Rule</strong> is the simplest money-saving habit you can build.\n\nHere's how it works: Before buying anything over $25 that falls into your <strong>'Wants'</strong> category, wait 24 hours. That's it. Don't say no — just say \"not yet.\"\n\n<strong>Why it works:</strong>\n\n• 70% of impulse purchases are regretted within a week (Journal of Consumer Research)\n• The dopamine hit of \"I want this\" fades within hours\n• After 24 hours, you evaluate with logic instead of emotion\n• Most of the time, you'll realize you don't actually need it\n\n<strong>How to implement it:</strong>\n\n1. See something you want to buy (over $25)\n2. Add it to your phone's notes app instead of your cart\n3. Set a reminder for 24 hours later\n4. If you still want it tomorrow — buy it guilt-free\n5. If you forgot about it — you just saved money\n\n<strong>Real numbers:</strong>\n\nIf you make 3 impulse purchases per week averaging $40 each, and the 24-hour rule stops just half of them:\n\n• Weekly savings: $60\n• Monthly savings: $240\n• Annual savings: <strong>$2,880</strong>\n\nThat's a vacation funded by simply waiting one day.\n\n<strong>Pro tip:</strong> Log the items you DIDN'T buy in your Financial Journal (Journal tab). At the end of the month, add up what you saved. The number will motivate you to keep going.\n\nTry it this week. Start with just one purchase. 🎯",
     "date": "2026-06-18",
     "link": null,
     "linkText": null,
-    "pinned": false
+    "pinned": false,
+    "readTime": "3 min"
   },
   {
     "id": 3,
     "type": "product",
     "title": "New: Annual Analysis Spreadsheet",
-    "body": "See your full-year spending trends, tax-ready reports, net worth tracking, and month-over-month comparisons. Import your app data with one click — your daily tracking feeds directly into the annual view.",
+    "body": "See your full-year spending trends, tax-ready reports, and net worth tracking. Import your app data with one click.",
+    "content": "Introducing the <strong>Annual Analysis Spreadsheet</strong> — the perfect companion to your Budget Tracker app.\n\n<strong>The problem:</strong> Your app is great for daily tracking. But when you want to see the big picture — 12-month trends, year-over-year comparisons, tax preparation — you need something more powerful.\n\n<strong>What's included:</strong>\n\n• <strong>12-Month Dashboard</strong> — See all your spending at a glance with auto-updating charts\n• <strong>Category Trends</strong> — Watch how your Needs/Wants/Savings ratios change over time\n• <strong>Tax-Ready Reports</strong> — Categorized expense summaries ready for tax season\n• <strong>Net Worth Tracker</strong> — Track assets, liabilities, and growth over time\n• <strong>Year-over-Year Comparison</strong> — Compare 2026 vs 2025 spending patterns\n• <strong>Custom Budget Ratios</strong> — Not limited to 50/30/20 — set your own percentages\n• <strong>Printable Monthly Reports</strong> — Share with your partner or accountant\n\n<strong>How it connects to your app:</strong>\n\n1. Export your data from the app (Settings → Export CSV)\n2. Open the spreadsheet in Google Sheets or Excel\n3. Paste your data in the Import tab\n4. Everything auto-populates — charts, summaries, trends\n\nAvailable for Google Sheets and Microsoft Excel.",
     "date": "2026-06-15",
     "link": "#",
     "linkText": "Get it — $9.99",
-    "pinned": false
+    "pinned": false,
+    "readTime": "2 min"
   },
   {
     "id": 4,
     "type": "challenge",
     "title": "7-Day No-Dining-Out Challenge",
-    "body": "The average person spends $300+/month eating out. Challenge yourself: cook every meal for 7 days. Track your grocery spending in the app and compare it to last month's dining category. Most people save $80-120 in just one week.",
+    "body": "The average person spends $300+/month eating out. Challenge yourself: cook every meal for 7 days and track how much you save.",
+    "content": "<strong>The 7-Day No-Dining-Out Challenge</strong>\n\nThe average American spends $314/month on food outside the home (Bureau of Labor Statistics, 2025). That's $3,768/year — enough for a nice vacation.\n\n<strong>The challenge:</strong> Cook every meal for 7 consecutive days. No restaurants, no takeout, no delivery apps.\n\n<strong>Rules:</strong>\n\n1. All meals cooked at home for 7 days\n2. Track your grocery spending in the app under \"Needs → Groceries\"\n3. DON'T track any dining expenses (because there shouldn't be any!)\n4. At the end of 7 days, compare your food spending to last week\n\n<strong>Tips to make it easier:</strong>\n\n• <strong>Meal prep on Sunday</strong> — cook 3-4 meals in bulk\n• <strong>Keep it simple</strong> — you don't need gourmet recipes\n• <strong>Stock up on staples</strong> — rice, pasta, eggs, frozen veggies\n• <strong>Make coffee at home</strong> — that $5 latte counts as dining out!\n\n<strong>Expected savings:</strong>\n\n• Average dining-out spending per week: ~$78\n• Average home-cooking cost for same meals: ~$35\n• <strong>You save: ~$43 in just one week</strong>\n\n<strong>Bonus:</strong> If you complete the challenge, log it in your Financial Journal with the tag \"Challenge\" — track your streak!\n\nWho's in? Start this Monday. 🍳",
     "date": "2026-06-13",
     "link": null,
     "linkText": null,
-    "pinned": false
+    "pinned": false,
+    "readTime": "3 min"
   },
   {
     "id": 5,
     "type": "tip",
-    "title": "The 50/30/20 Rule — Your First Month",
-    "body": "Don't stress about hitting exactly 50/30/20 in your first month. The real power is in AWARENESS — just seeing where your money goes changes your behavior. Most users naturally improve their ratios by month 2 without even trying.",
+    "title": "Your First Month: Don't Aim for Perfect",
+    "body": "Don't stress about hitting exactly 50/30/20. The real power is in awareness — just seeing where your money goes changes everything.",
+    "content": "<strong>Your first month with the 50/30/20 rule doesn't need to be perfect.</strong>\n\nIf you're new to budgeting, here's the truth nobody tells you: your first month will probably look nothing like 50/30/20. And that's completely fine.\n\n<strong>Month 1 is about AWARENESS, not perfection.</strong>\n\nMost people have no idea where their money goes. The simple act of logging expenses changes your behavior without you even trying. Studies show that people who track spending reduce unnecessary purchases by 15-20% in the first month — without setting any budget targets.\n\n<strong>What to expect:</strong>\n\n• <strong>Week 1:</strong> \"I had no idea I spent that much on coffee\"\n• <strong>Week 2:</strong> You start naturally thinking before buying\n• <strong>Week 3:</strong> You notice patterns (weekend spending spikes, etc.)\n• <strong>Week 4:</strong> Your ratios are already closer to 50/30/20 than when you started\n\n<strong>Common first-month ratios:</strong>\n\n• Needs: 55-65% (that's normal — rent is expensive)\n• Wants: 25-40% (dining and subscriptions add up)\n• Savings: 5-15% (any savings is better than none)\n\n<strong>What to do:</strong>\n\n1. Just log everything. Don't judge yourself.\n2. At the end of month 1, look at your dashboard\n3. Pick ONE category to improve by 5% next month\n4. Repeat\n\nBy month 3, most people are within 5% of their target ratios. The system works — you just have to give it time.\n\nYou're already ahead of 80% of people just by tracking. Keep going. 📊",
     "date": "2026-06-10",
     "link": null,
     "linkText": null,
-    "pinned": false
+    "pinned": false,
+    "readTime": "3 min"
   },
   {
     "id": 6,
     "type": "product",
     "title": "Coming Soon: Debt Payoff Calculator",
-    "body": "Snowball or avalanche? Our new calculator will show you exactly when you'll be debt-free and how much interest you'll save with each method. Sign up for our newsletter to be first to know when it launches.",
+    "body": "Snowball or avalanche? Our new calculator will show you exactly when you'll be debt-free and how much interest you'll save.",
+    "content": "<strong>The Debt Payoff Calculator is coming soon.</strong>\n\nIf you're carrying debt — credit cards, student loans, car payments — this tool will show you the fastest path to freedom.\n\n<strong>What it'll do:</strong>\n\n• Enter all your debts (balance, interest rate, minimum payment)\n• Compare <strong>Snowball method</strong> (smallest balance first) vs <strong>Avalanche method</strong> (highest interest first)\n• See your exact payoff date for each method\n• Calculate how much interest you'll save\n• Generate a month-by-month payment schedule\n• Track your progress with visual charts\n\n<strong>Snowball vs Avalanche — quick explainer:</strong>\n\n<strong>Snowball:</strong> Pay off smallest debt first. Gives quick wins and psychological momentum. Best if you need motivation.\n\n<strong>Avalanche:</strong> Pay off highest interest rate first. Saves the most money mathematically. Best if you're disciplined.\n\n<strong>Spoiler:</strong> The avalanche method saves more money, but the snowball method has a higher completion rate. The best method is the one you'll stick with.\n\nSign up for our newsletter (in Settings) to be notified when it launches.",
     "date": "2026-06-08",
     "link": null,
     "linkText": null,
-    "pinned": false
+    "pinned": false,
+    "readTime": "2 min"
   },
   {
     "id": 7,
     "type": "tip",
-    "title": "Subscription Audit: Save $50+/Month",
-    "body": "Go to your 'Subscriptions' sub-category right now. List every subscription you pay for. Cancel anything you haven't used in 30 days. The average person finds 2-3 forgotten subscriptions worth $30-80/month.",
+    "title": "The Subscription Audit: Find Hidden Money",
+    "body": "The average person has 12 active subscriptions. Cancel what you don't use and save $50-80/month instantly.",
+    "content": "<strong>Do a subscription audit right now. It takes 10 minutes and saves $50-80/month.</strong>\n\nThe average person has 12 paid subscriptions and underestimates their total cost by 2.5x (C+R Research, 2025). That means you're probably spending $200-300/month on subscriptions and think it's only $100.\n\n<strong>The 10-minute audit:</strong>\n\n1. Open the app → go to Activity tab\n2. Filter by \"Wants\" category\n3. Look for anything labeled \"Subscriptions\"\n4. Write down every recurring charge\n5. For each one, ask: \"Did I use this in the last 30 days?\"\n6. If no → cancel it\n\n<strong>The usual suspects:</strong>\n\n• Streaming services you rarely watch ($10-15 each)\n• Gym membership you haven't used in months ($30-50)\n• Apps with premium tiers you forgot about ($5-15)\n• Free trials that converted to paid ($10-20)\n• Old software subscriptions ($10-30)\n\n<strong>Pro strategy: The rotation method</strong>\n\nInstead of paying for 4 streaming services simultaneously ($60/month), subscribe to one at a time. Watch everything you want for a month, cancel, switch to the next. You go from $60/month to $15/month — same content, 75% savings.\n\n<strong>Action:</strong> Open your bank statement right now. Search for recurring charges. Cancel at least one thing today.\n\nLog your savings in the Financial Journal. Future you will thank present you. 💰",
     "date": "2026-06-05",
     "link": null,
     "linkText": null,
-    "pinned": false
+    "pinned": false,
+    "readTime": "3 min"
   },
   {
     "id": 8,
     "type": "seasonal",
     "title": "Mid-Year Financial Check-In",
-    "body": "We're halfway through 2026. Export your data (Settings → Export) and look at your 6-month totals. How do your actual ratios compare to 50/30/20? What's your biggest spending category? Use this data to set goals for the second half of the year.",
+    "body": "We're halfway through 2026. Time to review your spending patterns and adjust your goals for the second half.",
+    "content": "<strong>It's June — the perfect time for a mid-year financial review.</strong>\n\nHalf the year is done. Whether you've been tracking for 6 months or 6 days, this check-in helps you finish the year strong.\n\n<strong>The 15-minute mid-year review:</strong>\n\n<strong>Step 1: Export your data (2 min)</strong>\nGo to Settings → Export CSV. Open it in Google Sheets or Excel.\n\n<strong>Step 2: Check your ratios (3 min)</strong>\nLook at your overall Needs/Wants/Savings split. How close are you to 50/30/20?\n• Under 50% Needs? Great — your essentials are efficient\n• Over 35% Wants? Look for patterns to cut\n• Under 15% Savings? This is your #1 priority for the second half\n\n<strong>Step 3: Review your goals (3 min)</strong>\nGo to the Goals tab. For each goal:\n• On track? Keep going\n• Behind? Adjust the target date or increase monthly contributions\n• Complete? Set a new one!\n\n<strong>Step 4: Identify your biggest win (2 min)</strong>\nWhat's the smartest financial decision you made this year so far? Write it in your Journal.\n\n<strong>Step 5: Set ONE focus for the next 6 months (5 min)</strong>\nDon't try to change everything. Pick one thing:\n• \"Reduce dining out by 20%\"\n• \"Save $500/month instead of $400\"\n• \"Pay off my credit card by December\"\n\nWrite it down. Review it monthly.\n\nYou've got 6 months left to make 2026 your best financial year yet. Let's go. 🚀",
     "date": "2026-06-01",
     "link": null,
     "linkText": null,
-    "pinned": false
+    "pinned": false,
+    "readTime": "4 min"
   }
 ]
