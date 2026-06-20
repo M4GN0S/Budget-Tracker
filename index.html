@@ -786,6 +786,28 @@ tbody tr:hover td{background:var(--pri-l)}
 .feed-header-bar h3{margin:0}
 .feed-unread-badge{font-size:10px;font-weight:700;background:var(--pri);color:var(--on-pri);padding:2px 8px;border-radius:10px}
 .feed-empty{text-align:center;padding:24px 16px;color:var(--txt2);font-size:13px}
+.feed-item{cursor:pointer}
+
+/* ─── Article Modal ─── */
+.article-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);backdrop-filter:blur(4px);z-index:1000;display:none;align-items:flex-start;justify-content:center;padding:24px 16px;overflow-y:auto}
+.article-overlay.show{display:flex}
+.article{background:var(--card);border-radius:20px;max-width:600px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.25);animation:modalIn .3s cubic-bezier(.4,0,.2,1);margin:auto}
+.article-head{padding:24px 24px 0;display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.article-head .close-modal{flex-shrink:0}
+.article-meta{display:flex;align-items:center;gap:8px;padding:8px 24px;flex-wrap:wrap}
+.article-meta .feed-tag{font-size:10px}
+.article-read-time{font-size:11px;color:var(--txt2);font-weight:500}
+.article-title{font-size:22px;font-weight:900;line-height:1.3;padding:4px 24px 12px;color:var(--txt);letter-spacing:-.3px}
+.article-body{padding:0 24px 24px;font-size:14px;color:var(--txt);line-height:1.8}
+.article-body strong{font-weight:700;color:var(--txt)}
+.article-footer{padding:16px 24px;border-top:1px solid var(--brd);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
+@media(max-width:600px){
+  .article-title{font-size:18px;padding:4px 18px 10px}
+  .article-head{padding:18px 18px 0}
+  .article-meta{padding:8px 18px}
+  .article-body{padding:0 18px 18px;font-size:13px}
+  .article-footer{padding:14px 18px}
+}
 
 /* ─── Section Divider ─── */
 .section-label{
@@ -1791,6 +1813,20 @@ footer .footer-links a:hover{color:var(--pri-d)}
     <div class="modal-actions">
       <button class="btn btn-pri" onclick="closeInstallGuide()">Got it</button>
     </div>
+  </div>
+</div>
+
+<!-- ─── ARTICLE MODAL ─── -->
+<div class="article-overlay" id="articleOverlay" onclick="if(event.target===this)closeArticle()">
+  <div class="article">
+    <div class="article-head">
+      <div></div>
+      <button class="close-modal" onclick="closeArticle()">✕</button>
+    </div>
+    <div class="article-meta" id="articleMeta"></div>
+    <div class="article-title" id="articleTitle"></div>
+    <div class="article-body" id="articleBody"></div>
+    <div class="article-footer" id="articleFooter"></div>
   </div>
 </div>
 
@@ -3007,6 +3043,8 @@ function markPostRead(id) {
   }
 }
 
+let feedPostsCache = [];
+
 function renderFeed(posts) {
   const card = document.getElementById("feedCard");
   const list = document.getElementById("feedList");
@@ -3014,9 +3052,9 @@ function renderFeed(posts) {
   const markBtn = document.getElementById("feedMarkRead");
   if (!card || !list || !posts || posts.length === 0) return;
 
+  feedPostsCache = posts;
   const readIds = getReadPosts();
 
-  // Sort: pinned first, then newest
   posts.sort((a, b) => {
     if (a.pinned && !b.pinned) return -1;
     if (!a.pinned && b.pinned) return 1;
@@ -3026,14 +3064,9 @@ function renderFeed(posts) {
   const show = posts.slice(0, 8);
   const unreadCount = show.filter(p => !readIds.includes(p.id)).length;
 
-  // Show/hide unread badge
   if (badge) {
-    if (unreadCount > 0) {
-      badge.textContent = unreadCount + " new";
-      badge.style.display = "inline-block";
-    } else {
-      badge.style.display = "none";
-    }
+    if (unreadCount > 0) { badge.textContent = unreadCount + " new"; badge.style.display = "inline-block"; }
+    else { badge.style.display = "none"; }
   }
   if (markBtn) markBtn.style.display = unreadCount > 0 ? "inline-flex" : "none";
 
@@ -3042,20 +3075,62 @@ function renderFeed(posts) {
     const d = new Date(p.date + "T00:00:00");
     const dateStr = d.toLocaleDateString("en-US", { month:"short", day:"numeric" });
     const isUnread = !readIds.includes(p.id);
-    const linkHtml = p.link ? `<a href="${p.link}" class="feed-link" target="_blank" onclick="markPostRead(${p.id})">${p.linkText || "Learn more →"}</a>` : "";
+    const readTime = p.readTime ? ' · ' + p.readTime + ' read' : '';
 
-    return `<div class="feed-item ${p.type}${p.pinned ? " pinned" : ""}${isUnread ? " unread" : ""}" onclick="markPostRead(${p.id});this.classList.remove('unread');var dot=this.querySelector('.feed-new-dot');if(dot)dot.remove()">
+    return `<div class="feed-item ${p.type}${p.pinned ? " pinned" : ""}${isUnread ? " unread" : ""}" onclick="openArticle(${p.id})">
       <div class="feed-meta">
         ${isUnread ? '<span class="feed-new-dot"></span>' : ""}
         <span class="feed-tag ${p.type}">${p.type}</span>
-        <span class="feed-date">${dateStr}</span>
+        <span class="feed-date">${dateStr}${readTime}</span>
         ${p.pinned ? '<span style="font-size:10px;color:var(--pri-d);font-weight:600">Pinned</span>' : ""}
       </div>
       <div class="feed-title">${p.title}</div>
       <div class="feed-body">${p.body}</div>
-      ${linkHtml}
     </div>`;
   }).join("");
+}
+
+function openArticle(id) {
+  const post = feedPostsCache.find(p => p.id === id);
+  if (!post) return;
+
+  markPostRead(id);
+  // Update the feed card to remove unread dot
+  const cached = localStorage.getItem("bt_feed_cache");
+  if (cached) renderFeed(JSON.parse(cached));
+
+  const d = new Date(post.date + "T00:00:00");
+  const dateStr = d.toLocaleDateString("en-US", { month:"long", day:"numeric", year:"numeric" });
+
+  document.getElementById("articleMeta").innerHTML = `
+    <span class="feed-tag ${post.type}">${post.type}</span>
+    <span class="article-read-time">${dateStr}${post.readTime ? " · " + post.readTime + " read" : ""}</span>
+  `;
+  document.getElementById("articleTitle").textContent = post.title;
+
+  // Render content with line breaks as HTML
+  const content = post.content || post.body;
+  document.getElementById("articleBody").innerHTML = content.replace(/\n\n/g, '</p><p style="margin-top:14px">').replace(/\n/g, '<br>');
+
+  // Footer with link if available
+  const footer = document.getElementById("articleFooter");
+  if (post.link) {
+    footer.innerHTML = `
+      <span style="font-size:12px;color:var(--txt2)">Interested?</span>
+      <a href="${post.link}" class="feed-link" target="_blank">${post.linkText || "Learn more →"}</a>
+    `;
+    footer.style.display = "flex";
+  } else {
+    footer.style.display = "none";
+  }
+
+  document.getElementById("articleOverlay").classList.add("show");
+  document.body.style.overflow = "hidden";
+}
+
+function closeArticle() {
+  document.getElementById("articleOverlay").classList.remove("show");
+  document.body.style.overflow = "";
 }
 
 // ─── FINANCIAL JOURNAL ─────────────────────────────────────
