@@ -111,17 +111,19 @@ header p{font-size:14px;opacity:.88;font-weight:400;max-width:420px;margin:0 aut
   padding:6px;
   margin-bottom:20px;
   box-shadow:var(--sh);
-  display:flex;gap:4px;overflow-x:auto;
+  display:flex;align-items:center;gap:4px;
+  position:relative;
 }
+.tabs-main{display:flex;gap:4px;flex:1;overflow:hidden}
 .tab{
   padding:10px 18px;border-radius:12px;
   font-size:13px;font-weight:600;
   color:var(--txt2);white-space:nowrap;
   transition:all .2s cubic-bezier(.4,0,.2,1);
-  display:flex;align-items:center;gap:6px;
+  display:flex;align-items:center;gap:8px;
   flex-shrink:0;
 }
-.tab .tab-icon{font-size:15px}
+.tab .tab-icon{display:flex;align-items:center}
 .tab .tab-label{}
 .tab:hover{background:var(--pri-l);color:var(--pri-d)}
 .tab.active{
@@ -129,6 +131,37 @@ header p{font-size:14px;opacity:.88;font-weight:400;max-width:420px;margin:0 aut
   color:var(--on-pri);
   box-shadow:0 4px 14px rgba(74,122,107,.35);
 }
+/* More button */
+.more-trigger{
+  padding:10px 14px;border-radius:12px;
+  font-size:13px;font-weight:600;
+  color:var(--txt2);white-space:nowrap;
+  display:none;align-items:center;gap:6px;
+  cursor:pointer;transition:.2s;flex-shrink:0;
+  position:relative;
+}
+.more-trigger:hover{background:var(--pri-l);color:var(--pri-d)}
+.more-trigger.has-active{color:var(--pri-d);font-weight:700}
+.more-trigger .more-dot{width:6px;height:6px;border-radius:50%;background:var(--pri);display:none}
+.more-trigger.has-active .more-dot{display:block}
+/* Dropdown */
+.more-dropdown{
+  display:none;position:absolute;top:100%;right:0;margin-top:6px;
+  background:var(--card);border-radius:12px;
+  box-shadow:0 12px 40px rgba(0,0,0,.15);
+  border:1px solid var(--brd);
+  min-width:220px;z-index:800;
+  padding:6px;
+  animation:fadeUp .2s ease;
+}
+.more-dropdown.show{display:block}
+.more-dropdown .tab{
+  width:100%;justify-content:flex-start;
+  padding:10px 14px;border-radius:10px;
+  flex:unset;
+}
+/* Hidden tabs (moved into More) */
+.tab.overflow-hidden{display:none !important}
 
 /* ─── Mobile Bottom Nav ─── */
 @media(max-width:700px){
@@ -140,32 +173,77 @@ header p{font-size:14px;opacity:.88;font-weight:400;max-width:420px;margin:0 aut
     padding:6px 4px calc(6px + env(safe-area-inset-bottom, 0px));
     margin:0;
     box-shadow:0 -4px 20px rgba(0,0,0,.1);
-    justify-content:space-around;
     gap:0;
-    overflow-x:visible;
   }
+  .tabs-main{
+    flex:1;
+    display:flex;
+    justify-content:space-around;
+    overflow:visible;
+    gap:0;
+  }
+  /* All tabs in bottom nav */
   .tab{
     flex-direction:column;
     gap:2px;
-    padding:6px 4px;
+    padding:6px 2px;
     font-size:10px;
     border-radius:10px;
-    flex:1;
+    flex:1 1 0;
     justify-content:center;
+    align-items:center;
     min-width:0;
+    max-width:25%;
   }
-  .tab .tab-icon{font-size:18px}
+  .tab .tab-icon svg{width:20px;height:20px}
   .tab .tab-label{
     overflow:hidden;
     text-overflow:ellipsis;
     max-width:100%;
+    text-align:center;
   }
   .tab.active{
     box-shadow:none;
     background:var(--pri-l);
     color:var(--pri-d);
   }
-  /* Add bottom padding to wrap so content doesn't hide behind nav */
+  /* Hide secondary tabs on mobile — they go into More dropdown */
+  .tab[data-priority="secondary"]{display:none !important}
+  /* More trigger on mobile — same size as other tabs */
+  .more-trigger{
+    flex-direction:column;
+    gap:2px;
+    padding:6px 2px;
+    font-size:10px;
+    flex:1 1 0;
+    justify-content:center;
+    align-items:center;
+    border-radius:10px;
+    min-width:0;
+    max-width:25%;
+    display:flex;
+  }
+  .more-trigger .tab-icon svg{width:20px;height:20px}
+  .more-trigger .tab-label{
+    overflow:hidden;text-overflow:ellipsis;
+    max-width:100%;text-align:center;
+  }
+  .more-trigger .more-dot{position:absolute;top:4px;right:calc(50% - 14px)}
+  .more-trigger.has-active{background:var(--pri-l);color:var(--pri-d)}
+  /* Dropdown appears above bottom nav */
+  .more-dropdown{
+    bottom:100%;top:auto;
+    margin-top:0;margin-bottom:6px;
+    right:4px;left:4px;
+    min-width:unset;
+  }
+  .more-dropdown .tab{
+    flex-direction:row;
+    font-size:13px;
+    padding:12px 14px;
+    flex:unset;
+    max-width:unset;
+  }
   .wrap{padding-bottom:90px}
 }
 
@@ -194,9 +272,8 @@ header p{font-size:14px;opacity:.88;font-weight:400;max-width:420px;margin:0 aut
 }
 .card h3 .icon-wrap{
   width:30px;height:30px;border-radius:8px;
-  background:var(--pri-l);
+  background:var(--pri-l);color:var(--pri-d);
   display:flex;align-items:center;justify-content:center;
-  font-size:15px;
 }
 
 /* ─── Income Bar ─── */
@@ -251,11 +328,11 @@ header p{font-size:14px;opacity:.88;font-weight:400;max-width:420px;margin:0 aut
 .stat-icon{
   width:40px;height:40px;border-radius:10px;
   display:flex;align-items:center;justify-content:center;
-  font-size:20px;margin-bottom:10px;
+  margin-bottom:10px;color:var(--txt2);
 }
-.stat.needs .stat-icon{background:var(--pri-l)}
-.stat.wants .stat-icon{background:var(--acc-l)}
-.stat.savings .stat-icon{background:var(--suc-l)}
+.stat.needs .stat-icon{background:var(--pri-l);color:var(--pri-d)}
+.stat.wants .stat-icon{background:var(--acc-l);color:var(--acc)}
+.stat.savings .stat-icon{background:var(--suc-l);color:var(--suc)}
 .stat .lbl{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--txt2);font-weight:700}
 .stat .amt{font-size:28px;font-weight:900;margin:6px 0 4px;letter-spacing:-1px}
 .stat.needs .amt{color:var(--pri-d)}
@@ -429,8 +506,8 @@ tbody tr:hover td{background:var(--pri-l)}
   box-shadow:0 8px 24px rgba(74,122,107,.3);
 }
 .cta::before{
-  content:'💎';position:absolute;top:-10px;right:20px;
-  font-size:80px;opacity:.07;transform:rotate(-15deg);
+  content:'';position:absolute;top:-30px;right:-30px;
+  width:120px;height:120px;border-radius:50%;background:rgba(255,255,255,.08);
   pointer-events:none;
 }
 .cta h3{font-size:20px;margin-bottom:6px;font-weight:800}
@@ -580,6 +657,35 @@ tbody tr:hover td{background:var(--pri-l)}
 .info-box.info{background:var(--pri-l);color:var(--pri-d);border-color:rgba(108,154,139,.3)}
 .modal-actions{margin-top:18px;display:flex;gap:8px;justify-content:center}
 
+/* ─── Content Width Constraint ─── */
+/* Panels with long-form content shouldn't stretch full width on large screens */
+#tab-goals .card,
+#tab-notes .card,
+#tab-ai > *,
+#tab-data .card,
+#tab-data .cta{max-width:720px;margin-left:auto;margin-right:auto}
+/* AI chat needs slightly different handling */
+#tab-ai #aiSetup .card,
+#tab-ai #aiChat .card{max-width:720px;margin-left:auto;margin-right:auto}
+#tab-ai > div[style*="font-size:11px"]{max-width:720px;margin-left:auto;margin-right:auto}
+
+/* ─── Accordion ─── */
+.accordion{border:1px solid var(--brd);border-radius:var(--rad);margin-bottom:12px;overflow:hidden;background:var(--card)}
+.accordion-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 18px;cursor:pointer;transition:.15s;gap:10px;
+  font-size:14px;font-weight:700;color:var(--txt);
+}
+.accordion-header:hover{background:var(--bg)}
+.accordion-header .acc-left{display:flex;align-items:center;gap:10px}
+.accordion-header .acc-icon{width:32px;height:32px;border-radius:8px;background:var(--pri-l);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--pri-d)}
+.accordion-header .acc-badge{font-size:10px;font-weight:600;padding:2px 8px;border-radius:10px;background:var(--bg);color:var(--txt2)}
+.accordion-chevron{transition:transform .25s;color:var(--txt2);flex-shrink:0}
+.accordion.open .accordion-chevron{transform:rotate(180deg)}
+.accordion-body{max-height:0;overflow:hidden;transition:max-height .3s ease}
+.accordion.open .accordion-body{max-height:5000px}
+.accordion-content{padding:0 18px 18px}
+
 /* ─── Financial Journal ─── */
 .note-card{background:var(--card);border:1px solid var(--brd);border-radius:12px;padding:14px;margin-bottom:10px;transition:.2s;position:relative}
 .note-card:hover{box-shadow:var(--sh)}
@@ -632,8 +738,17 @@ tbody tr:hover td{background:var(--pri-l)}
 .typing-dots span:nth-child(2){animation-delay:.2s}
 .typing-dots span:nth-child(3){animation-delay:.4s}
 @keyframes dotBounce{0%,80%,100%{transform:translateY(0)}40%{transform:translateY(-6px)}}
-.ai-setup-needed{text-align:center;padding:30px 16px}
-.ai-premium-banner{background:linear-gradient(135deg,var(--pri-d),var(--acc));border-radius:12px;padding:18px;color:var(--on-pri);text-align:center;margin-top:14px}
+.ai-setup-needed{text-align:center;padding:32px 20px}
+.ai-premium-banner{background:linear-gradient(135deg,var(--pri-d),var(--acc));border-radius:12px;padding:20px;color:var(--on-pri);text-align:center;margin-top:14px}
+.ai-premium-banner .btn-cta{
+  background:var(--card);color:var(--pri-d);
+  font-size:13px;font-weight:800;
+  padding:10px 28px;border-radius:25px;
+  display:inline-flex;align-items:center;gap:6px;
+  box-shadow:0 4px 16px rgba(0,0,0,.15);
+  transition:all .25s;text-decoration:none;
+}
+.ai-premium-banner .btn-cta:hover{transform:scale(1.04);box-shadow:0 8px 24px rgba(0,0,0,.2)}
 .api-key-input{font-family:'SF Mono',Consolas,monospace;font-size:12px;letter-spacing:.5px}
 
 /* ─── Section Divider ─── */
@@ -730,14 +845,14 @@ footer .footer-links a:hover{color:var(--pri-d)}
   <!-- ─── HEADER ─── -->
   <header>
     <div class="header-inner">
-      <span class="emoji-big">📊</span>
+      <span class="emoji-big"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21.21 15.89A10 10 0 118 2.83"/><path d="M22 12A10 10 0 0012 2v10z"/></svg></span>
       <h1>50/30/20 Budget Tracker</h1>
       <p>The simplest way to manage your money using the proven 50/30/20 rule</p>
       <div class="badge-row">
-        <span class="badge">✨ Free</span>
-        <span class="badge">🔒 No Sign-up</span>
-        <span class="badge">📱 Works Offline</span>
-        <span class="badge">🛡️ Data Stays on Device</span>
+        <span class="badge">Free</span>
+        <span class="badge">No Sign-up</span>
+        <span class="badge">Works Offline</span>
+        <span class="badge">Private by Design</span>
       </div>
     </div>
   </header>
@@ -745,7 +860,7 @@ footer .footer-links a:hover{color:var(--pri-d)}
   <!-- ─── INSTALL BANNER ─── -->
   <div class="install-banner" id="installBanner">
     <div class="ib-text">
-      <strong>📲 Install this App!</strong>
+      <strong>Install this App</strong>
       Use it offline, right from your home screen — no app store needed.
     </div>
     <div style="display:flex;gap:8px;align-items:center">
@@ -755,28 +870,36 @@ footer .footer-links a:hover{color:var(--pri-d)}
   </div>
 
   <!-- ─── TABS ─── -->
-  <div class="tabs-wrapper">
-    <div class="tab active" onclick="showTab('dashboard',this)">
-      <span class="tab-icon">📊</span><span class="tab-label">Dashboard</span>
+  <div class="tabs-wrapper" id="tabsWrapper">
+    <div class="tabs-main" id="tabsMain">
+      <div class="tab active" data-tab="dashboard" data-priority="core" onclick="showTab('dashboard',this)">
+        <span class="tab-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></span><span class="tab-label">Home</span>
+      </div>
+      <div class="tab" data-tab="expenses" data-priority="core" onclick="showTab('expenses',this)">
+        <span class="tab-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg></span><span class="tab-label">Add</span>
+      </div>
+      <div class="tab" data-tab="history" data-priority="core" onclick="showTab('history',this)">
+        <span class="tab-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></span><span class="tab-label">Activity</span>
+      </div>
+      <div class="tab" data-tab="goals" data-priority="secondary" onclick="showTab('goals',this)">
+        <span class="tab-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></span><span class="tab-label">Goals</span>
+      </div>
+      <div class="tab" data-tab="notes" data-priority="secondary" onclick="showTab('notes',this)">
+        <span class="tab-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg></span><span class="tab-label">Journal</span>
+      </div>
+      <div class="tab" data-tab="ai" data-priority="secondary" onclick="showTab('ai',this)">
+        <span class="tab-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/><path d="M14 8l-1 3h2l-1 3"/><circle cx="9" cy="10" r="0.5" fill="currentColor"/></svg></span><span class="tab-label">AI</span>
+      </div>
+      <div class="tab" data-tab="data" data-priority="secondary" onclick="showTab('data',this)">
+        <span class="tab-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06A1.65 1.65 0 009 4.6a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg></span><span class="tab-label">Settings</span>
+      </div>
     </div>
-    <div class="tab" onclick="showTab('expenses',this)">
-      <span class="tab-icon">📝</span><span class="tab-label">Add</span>
+    <!-- More button + dropdown (appears when tabs overflow) -->
+    <div class="more-trigger" id="moreTrigger" onclick="toggleMoreMenu()" style="display:none">
+      <span class="tab-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg></span><span class="tab-label">More</span>
+      <span class="more-dot"></span>
     </div>
-    <div class="tab" onclick="showTab('history',this)">
-      <span class="tab-icon">📋</span><span class="tab-label">History</span>
-    </div>
-    <div class="tab" onclick="showTab('goals',this)">
-      <span class="tab-icon">🎯</span><span class="tab-label">Goals</span>
-    </div>
-    <div class="tab" onclick="showTab('notes',this)">
-      <span class="tab-icon">📓</span><span class="tab-label">Journal</span>
-    </div>
-    <div class="tab" onclick="showTab('ai',this)">
-      <span class="tab-icon">🤖</span><span class="tab-label">AI</span>
-    </div>
-    <div class="tab" onclick="showTab('data',this)">
-      <span class="tab-icon">⚙️</span><span class="tab-label">Settings</span>
-    </div>
+    <div class="more-dropdown" id="moreDropdown"></div>
   </div>
 
   <!-- ─────────────────────────────────────── -->
@@ -787,7 +910,7 @@ footer .footer-links a:hover{color:var(--pri-d)}
     <!-- Income -->
     <div class="income-bar">
       <div class="income-label">
-        <label>💰 Monthly Take-Home Income</label>
+        <label>Monthly Take-Home Income</label>
         <p>Enter your income — everything calculates automatically</p>
       </div>
       <div class="income-input-wrap">
@@ -799,19 +922,19 @@ footer .footer-links a:hover{color:var(--pri-d)}
     <!-- Stat Cards -->
     <div class="stats">
       <div class="stat needs">
-        <div class="stat-icon">🏠</div>
+        <div class="stat-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
         <div class="lbl">50% — Needs</div>
         <div class="amt" id="needsAmt">$0</div>
         <div class="sub" id="needsSub">Budget: $0</div>
       </div>
       <div class="stat wants">
-        <div class="stat-icon">🎮</div>
+        <div class="stat-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg></div>
         <div class="lbl">30% — Wants</div>
         <div class="amt" id="wantsAmt">$0</div>
         <div class="sub" id="wantsSub">Budget: $0</div>
       </div>
       <div class="stat savings">
-        <div class="stat-icon">💰</div>
+        <div class="stat-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></div>
         <div class="lbl">20% — Savings</div>
         <div class="amt" id="savingsAmt">$0</div>
         <div class="sub" id="savingsSub">Budget: $0</div>
@@ -820,10 +943,10 @@ footer .footer-links a:hover{color:var(--pri-d)}
 
     <!-- Progress Bars -->
     <div class="card">
-      <h3><span class="icon-wrap">📊</span> Budget vs. Actual Spending</h3>
+      <h3><span class="icon-wrap"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg></span> Budget vs. Actual Spending</h3>
       <div class="prog">
         <div class="prog-head">
-          <span class="prog-label">🏠 Needs (50%)</span>
+          <span class="prog-label">Needs (50%)</span>
           <span class="prog-vals" id="needsProg">$0 / $0</span>
         </div>
         <div class="prog-bar">
@@ -834,7 +957,7 @@ footer .footer-links a:hover{color:var(--pri-d)}
       </div>
       <div class="prog">
         <div class="prog-head">
-          <span class="prog-label">🎮 Wants (30%)</span>
+          <span class="prog-label">Wants (30%)</span>
           <span class="prog-vals" id="wantsProg">$0 / $0</span>
         </div>
         <div class="prog-bar">
@@ -845,7 +968,7 @@ footer .footer-links a:hover{color:var(--pri-d)}
       </div>
       <div class="prog">
         <div class="prog-head">
-          <span class="prog-label">💰 Savings (20%)</span>
+          <span class="prog-label">Savings (20%)</span>
           <span class="prog-vals" id="savingsProg">$0 / $0</span>
         </div>
         <div class="prog-bar">
@@ -858,7 +981,7 @@ footer .footer-links a:hover{color:var(--pri-d)}
 
     <!-- Donut Chart -->
     <div class="card">
-      <h3><span class="icon-wrap">🍩</span> Spending Breakdown</h3>
+      <h3><span class="icon-wrap"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.21 15.89A10 10 0 118 2.83"/><path d="M22 12A10 10 0 0012 2v10z"/></svg></span> Spending Breakdown</h3>
       <div class="donut-wrap">
         <svg class="donut-svg" viewBox="0 0 42 42" id="donutChart">
           <circle cx="21" cy="21" r="15.9" fill="none" stroke="var(--bg)" stroke-width="6"/>
@@ -898,14 +1021,14 @@ footer .footer-links a:hover{color:var(--pri-d)}
     <div class="card" id="dashNewsletter" style="border-left:4px solid var(--acc);display:none">
       <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
         <div style="flex:1;min-width:200px">
-          <div style="font-size:14px;font-weight:800;color:var(--txt);margin-bottom:4px">📬 Get Free Budget Tips & Templates</div>
+          <div style="font-size:14px;font-weight:800;color:var(--txt);margin-bottom:4px">Get Free Budget Tips & Templates</div>
           <div style="font-size:12px;color:var(--txt2)">Join our newsletter — money tips, new tools, and exclusive templates. No spam ever.</div>
         </div>
         <div style="display:flex;gap:8px;flex-wrap:wrap;flex:1;min-width:200px" id="dashNlForm">
           <input type="email" id="dashNlEmail" placeholder="your@email.com" style="flex:1;min-width:140px;padding:9px 14px;border:1.5px solid var(--brd);border-radius:10px;font-size:13px;font-family:inherit;outline:none;background:var(--bg);color:var(--txt);box-sizing:border-box">
           <button class="btn btn-pri btn-sm" onclick="submitDashNewsletter()">Subscribe</button>
         </div>
-        <div id="dashNlDone" style="display:none;font-size:13px;font-weight:700;color:var(--suc)">✅ You're subscribed!</div>
+        <div id="dashNlDone" style="display:none;font-size:13px;font-weight:700;color:var(--suc)">You're subscribed!</div>
         <button onclick="dismissDashNl()" style="background:none;color:var(--txt2);font-size:16px;padding:4px;line-height:1;flex-shrink:0" title="Dismiss">✕</button>
       </div>
     </div>
@@ -924,10 +1047,10 @@ footer .footer-links a:hover{color:var(--pri-d)}
 
     <!-- CTA -->
     <div class="cta">
-      <h3>📥 Want the Full Spreadsheet Version?</h3>
+      <h3>Want the Full Spreadsheet Version?</h3>
       <p>Get the complete 50/30/20 Budget Tracker with 12-month tracking, annual overview, savings goals, and more!</p>
       <a href="#" class="btn-cta" target="_blank">
-        <span>✨</span> Get the Full Template — $6.99
+        Get the Full Template — $6.99
       </a>
     </div>
 
@@ -939,7 +1062,7 @@ footer .footer-links a:hover{color:var(--pri-d)}
   <div id="tab-expenses" class="panel">
 
     <div class="card">
-      <h3><span class="icon-wrap">📝</span> Add New Expense</h3>
+      <h3><span class="icon-wrap"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></span> Add New Expense</h3>
       <div style="height:16px"></div>
       <div class="add-form" id="expenseForm">
         <div class="fg">
@@ -953,9 +1076,9 @@ footer .footer-links a:hover{color:var(--pri-d)}
         <div class="fg">
           <label>Category</label>
           <select id="expCat" onchange="updateSubcategories()">
-            <option value="Needs">🏠 Needs</option>
-            <option value="Wants">🎮 Wants</option>
-            <option value="Savings">💰 Savings</option>
+            <option value="Needs">Needs</option>
+            <option value="Wants">Wants</option>
+            <option value="Savings">Savings</option>
           </select>
         </div>
         <div class="fg">
@@ -990,34 +1113,34 @@ footer .footer-links a:hover{color:var(--pri-d)}
 
     <!-- Quick Add -->
     <div class="card">
-      <h3><span class="icon-wrap">⚡</span> Quick Add</h3>
+      <h3><span class="icon-wrap"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></span> Quick Add</h3>
       <div id="quickAddList">
         <div style="margin-bottom:10px">
           <div class="section-label">Needs</div>
           <div style="display:flex;flex-wrap:wrap;gap:6px" id="quickNeeds">
-            <button class="quick-pill" onclick="quickAdd('Rent/Mortgage','Needs')">🏠 Rent</button>
-            <button class="quick-pill" onclick="quickAdd('Groceries','Needs')">🛒 Groceries</button>
-            <button class="quick-pill" onclick="quickAdd('Transportation','Needs')">🚗 Gas/Transit</button>
-            <button class="quick-pill" onclick="quickAdd('Utilities','Needs')">⚡ Utilities</button>
-            <button class="quick-pill" onclick="quickAdd('Healthcare','Needs')">💊 Healthcare</button>
+            <button class="quick-pill" onclick="quickAdd('Rent/Mortgage','Needs')">Rent</button>
+            <button class="quick-pill" onclick="quickAdd('Groceries','Needs')">Groceries</button>
+            <button class="quick-pill" onclick="quickAdd('Transportation','Needs')">Gas/Transit</button>
+            <button class="quick-pill" onclick="quickAdd('Utilities','Needs')">Utilities</button>
+            <button class="quick-pill" onclick="quickAdd('Healthcare','Needs')">Healthcare</button>
             <button class="quick-pill qa-add-btn" onclick="showInlineAdd('Needs')" title="Add custom">＋</button>
           </div>
         </div>
         <div style="margin-bottom:10px">
           <div class="section-label">Wants</div>
           <div style="display:flex;flex-wrap:wrap;gap:6px" id="quickWants">
-            <button class="quick-pill" onclick="quickAdd('Dining Out','Wants')">🍕 Dining Out</button>
-            <button class="quick-pill" onclick="quickAdd('Entertainment','Wants')">🎬 Entertainment</button>
-            <button class="quick-pill" onclick="quickAdd('Shopping','Wants')">👗 Shopping</button>
-            <button class="quick-pill" onclick="quickAdd('Subscriptions','Wants')">🎧 Subscriptions</button>
+            <button class="quick-pill" onclick="quickAdd('Dining Out','Wants')">Dining Out</button>
+            <button class="quick-pill" onclick="quickAdd('Entertainment','Wants')">Entertainment</button>
+            <button class="quick-pill" onclick="quickAdd('Shopping','Wants')">Shopping</button>
+            <button class="quick-pill" onclick="quickAdd('Subscriptions','Wants')">Subscriptions</button>
             <button class="quick-pill qa-add-btn" onclick="showInlineAdd('Wants')" title="Add custom">＋</button>
           </div>
         </div>
         <div style="margin-bottom:0">
           <div class="section-label">Savings</div>
           <div style="display:flex;flex-wrap:wrap;gap:6px" id="quickSavings">
-            <button class="quick-pill" onclick="quickAdd('Emergency Fund','Savings')">🏦 Emergency Fund</button>
-            <button class="quick-pill" onclick="quickAdd('Investments','Savings')">📈 Investments</button>
+            <button class="quick-pill" onclick="quickAdd('Emergency Fund','Savings')">Emergency Fund</button>
+            <button class="quick-pill" onclick="quickAdd('Investments','Savings')">Investments</button>
             <button class="quick-pill qa-add-btn" onclick="showInlineAdd('Savings')" title="Add custom">＋</button>
           </div>
         </div>
@@ -1035,10 +1158,10 @@ footer .footer-links a:hover{color:var(--pri-d)}
 
     <!-- Recent -->
     <div class="card">
-      <h3><span class="icon-wrap">🕐</span> Recently Added</h3>
+      <h3><span class="icon-wrap"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></span> Recently Added</h3>
       <div id="recentList">
         <div class="empty-state">
-          <div class="empty-icon">📋</div>
+          <div class="empty-icon"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
           <p>No expenses yet</p>
           <span>Add your first one above!</span>
         </div>
@@ -1053,15 +1176,15 @@ footer .footer-links a:hover{color:var(--pri-d)}
   <div id="tab-history" class="panel">
     <div class="card">
       <div class="card-header">
-        <h3><span class="icon-wrap">📋</span> Expense History</h3>
+        <h3><span class="icon-wrap"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></span> Expense History</h3>
         <div style="display:flex;gap:8px;align-items:center">
           <select id="filterCat" onchange="renderHistory()" style="padding:7px 12px;border:1.5px solid var(--brd);border-radius:8px;font-size:12px;font-weight:600;background:var(--bg);color:var(--txt);outline:none;cursor:pointer">
             <option value="All">All Categories</option>
-            <option value="Needs">🏠 Needs</option>
-            <option value="Wants">🎮 Wants</option>
-            <option value="Savings">💰 Savings</option>
+            <option value="Needs">Needs</option>
+            <option value="Wants">Wants</option>
+            <option value="Savings">Savings</option>
           </select>
-          <button class="btn btn-dan btn-sm" onclick="clearAll()">🗑️ Clear All</button>
+          <button class="btn btn-dan btn-sm" onclick="clearAll()">Clear All</button>
         </div>
       </div>
       <div class="table-wrap">
@@ -1078,7 +1201,7 @@ footer .footer-links a:hover{color:var(--pri-d)}
           </thead>
           <tbody id="historyBody">
             <tr><td colspan="6" style="text-align:center;color:var(--txt2);padding:30px">
-              <div style="font-size:32px;margin-bottom:8px">📭</div>No expenses yet
+              <div style="margin-bottom:8px"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="opacity:.4"><rect x="2" y="3" width="20" height="18" rx="2"/><line x1="8" y1="9" x2="16" y2="9"/><line x1="8" y1="13" x2="12" y2="13"/></svg></div>No expenses yet
             </td></tr>
           </tbody>
         </table>
@@ -1092,7 +1215,7 @@ footer .footer-links a:hover{color:var(--pri-d)}
   <!-- ─────────────────────────────────────── -->
   <div id="tab-goals" class="panel">
     <div class="card">
-      <h3><span class="icon-wrap">🎯</span> Savings Goals</h3>
+      <h3><span class="icon-wrap"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></span> Savings Goals</h3>
       <div style="height:14px"></div>
       <div id="goalsList"></div>
       <div class="section-label" style="margin-top:8px">Add New Goal</div>
@@ -1117,27 +1240,28 @@ footer .footer-links a:hover{color:var(--pri-d)}
     </div>
   </div>
 
+  </div>
   <!-- ─────────────────────────────────────── -->
   <!-- FINANCIAL JOURNAL PANEL                 -->
   <!-- ─────────────────────────────────────── -->
   <div id="tab-notes" class="panel">
     <!-- Add Note -->
     <div class="card">
-      <h3><span class="icon-wrap">📓</span> Financial Journal</h3>
+      <h3><span class="icon-wrap"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg></span> Financial Journal</h3>
       <p style="font-size:12px;color:var(--txt2);margin-bottom:14px">Jot down financial thoughts, reminders, and plans. Your AI advisor can reference these notes too.</p>
       <div style="display:flex;flex-direction:column;gap:10px">
         <textarea id="noteInput" rows="3" placeholder="e.g. Cancel Netflix — haven't watched in 2 months. Saves $15.99/month..." style="padding:10px 14px;border:1.5px solid var(--brd);border-radius:10px;font-size:13px;font-family:inherit;outline:none;background:var(--bg);color:var(--txt);resize:vertical;min-height:70px;width:100%;box-sizing:border-box"></textarea>
         <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
           <select id="noteTag" style="padding:8px 12px;border:1.5px solid var(--brd);border-radius:10px;font-size:12px;font-family:inherit;background:var(--bg);color:var(--txt);outline:none">
-            <option value="note">📝 Note</option>
-            <option value="goal">🎯 Goal</option>
-            <option value="reminder">⏰ Reminder</option>
-            <option value="reflection">💭 Reflection</option>
-            <option value="idea">💡 Idea</option>
-            <option value="receipt">🧾 Receipt</option>
+            <option value="note">Note</option>
+            <option value="goal">Goal</option>
+            <option value="reminder">Reminder</option>
+            <option value="reflection">Reflection</option>
+            <option value="idea">Idea</option>
+            <option value="receipt">Receipt</option>
           </select>
           <label style="display:flex;align-items:center;gap:4px;font-size:12px;color:var(--txt2);cursor:pointer">
-            <input type="checkbox" id="notePin"> 📌 Pin to top
+            <input type="checkbox" id="notePin"> Pin to top
           </label>
           <div style="flex:1"></div>
           <button class="btn btn-pri btn-sm" onclick="addNote()">+ Add Note</button>
@@ -1152,29 +1276,30 @@ footer .footer-links a:hover{color:var(--pri-d)}
       </div>
       <div class="tag-filters">
         <button class="tag-filter active" onclick="filterNotes('all',this)">All</button>
-        <button class="tag-filter" onclick="filterNotes('note',this)">📝 Notes</button>
-        <button class="tag-filter" onclick="filterNotes('goal',this)">🎯 Goals</button>
-        <button class="tag-filter" onclick="filterNotes('reminder',this)">⏰ Reminders</button>
-        <button class="tag-filter" onclick="filterNotes('reflection',this)">💭 Reflections</button>
-        <button class="tag-filter" onclick="filterNotes('idea',this)">💡 Ideas</button>
-        <button class="tag-filter" onclick="filterNotes('receipt',this)">🧾 Receipts</button>
+        <button class="tag-filter" onclick="filterNotes('note',this)">Notes</button>
+        <button class="tag-filter" onclick="filterNotes('goal',this)">Goals</button>
+        <button class="tag-filter" onclick="filterNotes('reminder',this)">Reminders</button>
+        <button class="tag-filter" onclick="filterNotes('reflection',this)">Reflections</button>
+        <button class="tag-filter" onclick="filterNotes('idea',this)">Ideas</button>
+        <button class="tag-filter" onclick="filterNotes('receipt',this)">Receipts</button>
       </div>
       <div style="display:flex;justify-content:space-between;align-items:center">
         <span class="note-count" id="noteCount">0 notes</span>
-        <button class="btn btn-dan btn-sm" onclick="clearAllNotes()" style="font-size:10px">🗑️ Clear All</button>
+        <button class="btn btn-dan btn-sm" onclick="clearAllNotes()" style="font-size:10px">Clear All</button>
       </div>
     </div>
 
     <!-- Notes List -->
     <div id="notesList">
       <div class="empty-state">
-        <div class="empty-icon">📓</div>
+        <div class="empty-icon"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg></div>
         <p>No notes yet</p>
         <span>Start journaling your financial thoughts above!</span>
       </div>
     </div>
   </div>
 
+  </div>
   <!-- ─────────────────────────────────────── -->
   <!-- AI ADVISOR PANEL                        -->
   <!-- ─────────────────────────────────────── -->
@@ -1183,9 +1308,11 @@ footer .footer-links a:hover{color:var(--pri-d)}
     <!-- No API Key State -->
     <div id="aiSetup" class="card">
       <div class="ai-setup-needed">
-        <div style="font-size:48px;margin-bottom:12px">🤖</div>
-        <h3 style="font-size:18px;margin-bottom:6px">AI Budget Advisor</h3>
-        <p style="font-size:13px;color:var(--txt2);margin-bottom:18px;max-width:400px;margin-left:auto;margin-right:auto">
+        <div style="width:64px;height:64px;border-radius:16px;background:var(--pri-l);display:flex;align-items:center;justify-content:center;margin:0 auto 16px">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--pri-d)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/><path d="M14 8l-1 3h2l-1 3"/><circle cx="9" cy="10" r="0.5" fill="currentColor"/></svg>
+        </div>
+        <h3 style="font-size:20px;margin-bottom:8px;justify-content:center">AI Budget Advisor</h3>
+        <p style="font-size:13px;color:var(--txt2);margin-bottom:24px;max-width:420px;margin-left:auto;margin-right:auto;text-align:center;line-height:1.6">
           Get personalized financial advice powered by AI. It analyzes your actual spending data to give you specific, actionable tips.
         </p>
         <div style="display:flex;flex-direction:column;gap:10px;max-width:400px;margin:0 auto;text-align:left">
@@ -1224,15 +1351,15 @@ footer .footer-links a:hover{color:var(--pri-d)}
             <input type="password" id="aiKeyInput" class="api-key-input" placeholder="Paste your API key here...">
           </div>
           <div style="display:flex;gap:8px">
-            <button class="btn btn-pri" onclick="saveAiKey()">💾 Save & Start</button>
-            <button class="btn btn-sec" onclick="showApiGuide()">📖 How to Get a Free Key</button>
+            <button class="btn btn-pri" onclick="saveAiKey()">Save & Start</button>
+            <button class="btn btn-sec" onclick="showApiGuide()">How to Get a Free Key</button>
           </div>
           <div style="font-size:11px;color:var(--txt2);margin-top:4px;padding:8px;background:var(--bg);border-radius:8px;border:1px solid var(--brd)">
-            🔒 <strong>Your key stays on YOUR device only.</strong> It is obfuscated in storage and never sent to us. We cannot see your key, your data, or your conversations.
+            <strong>Your key stays on YOUR device only.</strong> It is obfuscated in storage and never sent to us. We cannot see your key, your data, or your conversations.
           </div>
         </div>
         <div class="ai-premium-banner">
-          <div style="font-size:13px;font-weight:800;margin-bottom:4px">✨ Option 2: We Do It For You — $2.99/month</div>
+          <div style="font-size:13px;font-weight:800;margin-bottom:4px">Option 2: We Do It For You — $2.99/month</div>
           <div style="font-size:12px;opacity:.9;margin-bottom:10px">No setup needed. AI works instantly. Unlimited messages. Cancel anytime.</div>
           <a href="#" class="btn-cta" style="font-size:12px;padding:8px 24px;border-radius:20px;display:inline-block">Get Premium AI →</a>
         </div>
@@ -1243,7 +1370,7 @@ footer .footer-links a:hover{color:var(--pri-d)}
     <div id="aiChat" style="display:none">
       <div class="card">
         <div class="card-header">
-          <h3><span class="icon-wrap">🤖</span> AI Budget Advisor</h3>
+          <h3><span class="icon-wrap"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/><path d="M14 8l-1 3h2l-1 3"/><circle cx="9" cy="10" r="0.5" fill="currentColor"/></svg></span> AI Budget Advisor</h3>
           <div style="display:flex;gap:6px;align-items:center">
             <span style="font-size:11px;color:var(--suc);font-weight:600" id="aiStatus">● Connected</span>
             <button class="btn btn-sec btn-sm" onclick="clearChat()">Clear Chat</button>
@@ -1251,11 +1378,11 @@ footer .footer-links a:hover{color:var(--pri-d)}
         </div>
         <!-- Quick Actions -->
         <div class="quick-actions">
-          <button class="qa-chip" onclick="aiQuickAction('analyze')">📊 Analyze my spending</button>
-          <button class="qa-chip" onclick="aiQuickAction('tips')">💡 Tips to save more</button>
-          <button class="qa-chip" onclick="aiQuickAction('afford')">🛒 Can I afford...?</button>
-          <button class="qa-chip" onclick="aiQuickAction('goals')">🎯 Check my goals</button>
-          <button class="qa-chip" onclick="aiQuickAction('compare')">📈 This month vs budget</button>
+          <button class="qa-chip" onclick="aiQuickAction('analyze')">Analyze my spending</button>
+          <button class="qa-chip" onclick="aiQuickAction('tips')">Tips to save more</button>
+          <button class="qa-chip" onclick="aiQuickAction('afford')">Can I afford...?</button>
+          <button class="qa-chip" onclick="aiQuickAction('goals')">Check my goals</button>
+          <button class="qa-chip" onclick="aiQuickAction('compare')">This month vs budget</button>
         </div>
         <!-- Messages -->
         <div class="chat-messages" id="chatMessages"></div>
@@ -1268,11 +1395,12 @@ footer .footer-links a:hover{color:var(--pri-d)}
 
       <!-- Disclaimer -->
       <div style="font-size:11px;color:var(--txt2);text-align:center;padding:8px 16px;line-height:1.5">
-        ⚠️ AI provides general guidance on budgeting, saving, taxes, and investing. For major financial decisions, consult a qualified professional. Your data is sent directly to your chosen AI provider — we never see it.
+        AI provides general guidance on budgeting, saving, taxes, and investing. For major financial decisions, consult a qualified professional. Your data is sent directly to your chosen AI provider — we never see it.
       </div>
     </div>
   </div>
 
+  </div>
   <!-- ─────────────────────────────────────── -->
   <!-- SETTINGS PANEL                          -->
   <!-- ─────────────────────────────────────── -->
@@ -1280,7 +1408,7 @@ footer .footer-links a:hover{color:var(--pri-d)}
 
     <!-- Theme -->
     <div class="card">
-      <h3><span class="icon-wrap">🎨</span> Color Theme</h3>
+      <h3><span class="icon-wrap"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="6.5" r="2.5"/><circle cx="17.5" cy="10.5" r="2.5"/><circle cx="8.5" cy="7.5" r="2.5"/><circle cx="6.5" cy="12.5" r="2.5"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.9 0 1.5-.7 1.5-1.5 0-.4-.1-.7-.4-1-.3-.3-.4-.7-.4-1 0-.8.7-1.5 1.5-1.5H16c3.3 0 6-2.7 6-6 0-5.5-4.5-9-10-9z"/></svg></span> Color Theme</h3>
       <p style="font-size:13px;color:var(--txt2);margin:10px 0 18px">Choose a theme that suits your style. Your preference is saved automatically.</p>
       <div style="display:flex;gap:20px;flex-wrap:wrap">
         <div class="theme-item">
@@ -1308,17 +1436,41 @@ footer .footer-links a:hover{color:var(--pri-d)}
 
     <!-- Install -->
     <div class="card">
-      <h3><span class="icon-wrap">📲</span> Install App</h3>
-      <p style="font-size:13px;color:var(--txt2);margin:10px 0 14px">Install this app on your device for quick access — works offline, no app store needed.</p>
-      <div style="display:flex;gap:10px;flex-wrap:wrap">
-        <button class="btn btn-pri" onclick="installPWA()">📲 Install Now</button>
-        <button class="btn btn-sec" onclick="showInstallGuide()">📖 Step-by-Step Guide</button>
+      <h3><span class="icon-wrap"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></span> Install App</h3>
+      <p style="font-size:13px;color:var(--txt2);margin:10px 0 16px">Install this app on your device for quick access. It works offline after the first visit — no app store needed.</p>
+      
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <!-- Android -->
+        <div style="padding:12px;background:var(--bg);border-radius:10px;border:1px solid var(--brd)">
+          <div style="font-size:12px;font-weight:700;color:var(--txt);margin-bottom:4px">Android (Chrome)</div>
+          <div style="font-size:12px;color:var(--txt2);line-height:1.6">
+            Tap the <strong>three dots menu</strong> (top right) → <strong>"Install app"</strong> or <strong>"Add to Home screen"</strong>
+          </div>
+        </div>
+        <!-- iPhone -->
+        <div style="padding:12px;background:var(--bg);border-radius:10px;border:1px solid var(--brd)">
+          <div style="font-size:12px;font-weight:700;color:var(--txt);margin-bottom:4px">iPhone / iPad (Safari only)</div>
+          <div style="font-size:12px;color:var(--txt2);line-height:1.6">
+            Tap the <strong>Share button</strong> (square with arrow) → scroll down → <strong>"Add to Home Screen"</strong>
+          </div>
+        </div>
+        <!-- Desktop -->
+        <div style="padding:12px;background:var(--bg);border-radius:10px;border:1px solid var(--brd)">
+          <div style="font-size:12px;font-weight:700;color:var(--txt);margin-bottom:4px">Desktop (Chrome / Edge)</div>
+          <div style="font-size:12px;color:var(--txt2);line-height:1.6">
+            Look for the <strong>install icon</strong> in the address bar (right side) → click <strong>"Install"</strong>
+          </div>
+        </div>
+      </div>
+
+      <div style="font-size:11px;color:var(--txt2);margin-top:12px;padding:10px;background:var(--pri-l);border-radius:8px;line-height:1.5">
+        Once installed, the app opens in its own window without a browser bar and works completely offline. Your data stays on your device.
       </div>
     </div>
 
     <!-- AI Settings -->
     <div class="card">
-      <h3><span class="icon-wrap">🤖</span> AI Advisor Settings</h3>
+      <h3><span class="icon-wrap"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/><path d="M14 8l-1 3h2l-1 3"/><circle cx="9" cy="10" r="0.5" fill="currentColor"/></svg></span> AI Advisor Settings</h3>
       <div style="height:10px"></div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:12px;margin-bottom:12px">
         <div style="padding:10px;background:var(--bg);border-radius:8px;border:1px solid var(--brd)">
@@ -1327,30 +1479,30 @@ footer .footer-links a:hover{color:var(--pri-d)}
         </div>
         <div style="padding:10px;background:var(--bg);border-radius:8px;border:1px solid var(--brd)">
           <div style="color:var(--txt2);font-weight:600">API Key</div>
-          <div style="font-weight:800;margin-top:2px" id="settingsAiKeyStatus">❌ Not configured</div>
+          <div style="font-weight:800;margin-top:2px" id="settingsAiKeyStatus">Not configured</div>
         </div>
       </div>
       <div style="display:flex;gap:8px;flex-wrap:wrap">
-        <button class="btn btn-sec btn-sm" onclick="showTab('ai',document.querySelectorAll('.tab')[6])">Configure AI →</button>
-        <button class="btn btn-dan btn-sm" onclick="removeAiKey()" id="removeKeyBtn" style="display:none">🗑️ Remove Key</button>
+        <button class="btn btn-sec btn-sm" onclick="showTab('ai',document.querySelector('[data-tab=ai]'))">Configure AI →</button>
+        <button class="btn btn-dan btn-sm" onclick="removeAiKey()" id="removeKeyBtn" style="display:none">Remove Key</button>
       </div>
       <div style="font-size:11px;color:var(--txt2);margin-top:8px;padding:8px;background:var(--bg);border-radius:8px;border:1px solid var(--brd)">
-        ⚠️ <strong>Security:</strong> Your API key is obfuscated in browser storage. It is never sent to us — only to your chosen AI provider when you chat. Anyone with physical access to your device could potentially extract it. Treat it like a password.
+        • <strong>Security:</strong> Your API key is obfuscated in browser storage. It is never sent to us — only to your chosen AI provider when you chat. Anyone with physical access to your device could potentially extract it. Treat it like a password.
       </div>
     </div>
 
     <!-- Newsletter / Stay Updated -->
     <div class="card" style="border-left:4px solid var(--acc)">
-      <h3><span class="icon-wrap" style="background:var(--acc-l)">📬</span> Stay Updated</h3>
+      <h3><span class="icon-wrap" style="background:var(--acc-l)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22 6 12 13 2 6"/></svg></span> Stay Updated</h3>
       <p style="font-size:13px;color:var(--txt2);margin:10px 0 14px">Get free budget tips, new templates, and product updates. No spam — unsubscribe anytime.</p>
       <div id="newsletterForm">
         <div style="display:flex;gap:8px;flex-wrap:wrap">
           <input type="email" id="nlEmail" placeholder="your@email.com" style="flex:1;min-width:200px;padding:10px 14px;border:1.5px solid var(--brd);border-radius:10px;font-size:13px;font-family:inherit;outline:none;background:var(--bg);color:var(--txt);box-sizing:border-box">
-          <button class="btn btn-pri" onclick="submitNewsletter()">Subscribe ✉️</button>
+          <button class="btn btn-pri" onclick="submitNewsletter()">Subscribe</button>
         </div>
       </div>
       <div id="newsletterSuccess" style="display:none;padding:14px;background:var(--suc-l);border-radius:10px;text-align:center">
-        <div style="font-size:24px;margin-bottom:6px">🎉</div>
+        <div style="margin-bottom:6px"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--suc)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
         <div style="font-size:14px;font-weight:700;color:var(--suc)">You're subscribed!</div>
         <div style="font-size:12px;color:var(--txt2);margin-top:4px">Check your inbox for a welcome email.</div>
       </div>
@@ -1358,7 +1510,7 @@ footer .footer-links a:hover{color:var(--pri-d)}
 
     <!-- Contact / Feedback -->
     <div class="card">
-      <h3><span class="icon-wrap">💬</span> Contact & Feedback</h3>
+      <h3><span class="icon-wrap"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></span> Contact & Feedback</h3>
       <p style="font-size:13px;color:var(--txt2);margin:10px 0 14px">Found a bug? Have a feature idea? We'd love to hear from you!</p>
       <div id="contactForm">
         <div style="display:flex;flex-direction:column;gap:10px">
@@ -1367,18 +1519,18 @@ footer .footer-links a:hover{color:var(--pri-d)}
             <input type="email" id="cfEmail" placeholder="Your email (optional)" style="padding:10px 14px;border:1.5px solid var(--brd);border-radius:10px;font-size:13px;font-family:inherit;outline:none;background:var(--bg);color:var(--txt);box-sizing:border-box;min-width:0">
           </div>
           <select id="cfType" style="padding:10px 14px;border:1.5px solid var(--brd);border-radius:10px;font-size:13px;font-family:inherit;outline:none;background:var(--bg);color:var(--txt)">
-            <option value="feedback">💡 Feature Request / Idea</option>
-            <option value="bug">🐛 Bug Report</option>
-            <option value="question">❓ Question</option>
-            <option value="testimonial">⭐ Testimonial / Review</option>
-            <option value="other">💬 Other</option>
+            <option value="feedback">Feature Request / Idea</option>
+            <option value="bug">Bug Report</option>
+            <option value="question">Question</option>
+            <option value="testimonial">Testimonial / Review</option>
+            <option value="other">Other</option>
           </select>
           <textarea id="cfMessage" rows="4" placeholder="Tell us what's on your mind..." style="padding:10px 14px;border:1.5px solid var(--brd);border-radius:10px;font-size:13px;font-family:inherit;outline:none;background:var(--bg);color:var(--txt);resize:vertical;min-height:80px;box-sizing:border-box"></textarea>
           <button class="btn btn-pri" onclick="submitContact()" style="align-self:flex-start">Send Message 📩</button>
         </div>
       </div>
       <div id="contactSuccess" style="display:none;padding:14px;background:var(--suc-l);border-radius:10px;text-align:center">
-        <div style="font-size:24px;margin-bottom:6px">✅</div>
+        <div style="margin-bottom:6px"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--suc)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
         <div style="font-size:14px;font-weight:700;color:var(--suc)">Message sent!</div>
         <div style="font-size:12px;color:var(--txt2);margin-top:4px">Thanks for your feedback. We'll get back to you if needed.</div>
         <button class="btn btn-sec btn-sm" onclick="resetContact()" style="margin-top:10px">Send Another</button>
@@ -1387,7 +1539,7 @@ footer .footer-links a:hover{color:var(--pri-d)}
 
     <!-- App Info / Version -->
     <div class="card">
-      <h3><span class="icon-wrap">ℹ️</span> About This App</h3>
+      <h3><span class="icon-wrap"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg></span> About This App</h3>
       <div style="height:10px"></div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:12px">
         <div style="padding:10px;background:var(--bg);border-radius:8px;border:1px solid var(--brd)">
@@ -1400,42 +1552,42 @@ footer .footer-links a:hover{color:var(--pri-d)}
         </div>
         <div style="padding:10px;background:var(--bg);border-radius:8px;border:1px solid var(--brd)">
           <div style="color:var(--txt2);font-weight:600">Status</div>
-          <div style="font-weight:800;color:var(--suc);margin-top:2px" id="appStatus">✅ Up to date</div>
+          <div style="font-weight:800;color:var(--suc);margin-top:2px" id="appStatus">Up to date</div>
         </div>
         <div style="padding:10px;background:var(--bg);border-radius:8px;border:1px solid var(--brd)">
           <div style="color:var(--txt2);font-weight:600">Data Storage</div>
-          <div style="font-weight:800;color:var(--txt);margin-top:2px">🔒 Local + Backup</div>
+          <div style="font-weight:800;color:var(--txt);margin-top:2px">Local + Backup</div>
         </div>
       </div>
-      <button class="btn btn-sec btn-sm" onclick="checkForUpdates()" style="margin-top:12px;width:100%;justify-content:center">🔄 Check for Updates</button>
+      <button class="btn btn-sec btn-sm" onclick="checkForUpdates()" style="margin-top:12px;width:100%;justify-content:center">Check for Updates</button>
     </div>
 
     <!-- Export -->
     <div class="card">
-      <h3><span class="icon-wrap">📤</span> Export Your Data</h3>
+      <h3><span class="icon-wrap"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></span> Export Your Data</h3>
       <p style="font-size:13px;color:var(--txt2);margin:10px 0 16px">Download your budget data to open in Google Sheets, Excel, or as a backup file.</p>
       <!-- Quick clipboard backup -->
       <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap">
-        <button class="btn btn-sec btn-sm" onclick="copyBackupToClipboard()">📋 Copy Backup to Clipboard</button>
-        <button class="btn btn-sec btn-sm" onclick="restoreFromClipboard()">📥 Restore from Clipboard</button>
+        <button class="btn btn-sec btn-sm" onclick="copyBackupToClipboard()">Copy Backup to Clipboard</button>
+        <button class="btn btn-sec btn-sm" onclick="restoreFromClipboard()">Restore from Clipboard</button>
       </div>
       <div class="export-grid">
         <div class="export-btn" onclick="exportCSV()">
-          <div class="eb-icon">📊</div>
+          <div class="eb-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg></div>
           <div>
             <div class="eb-text">Export as CSV</div>
             <div class="eb-sub">Opens in Google Sheets, Excel, Numbers</div>
           </div>
         </div>
         <div class="export-btn" onclick="exportExcel()">
-          <div class="eb-icon">📗</div>
+          <div class="eb-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></div>
           <div>
             <div class="eb-text">Export as Excel (.xls)</div>
             <div class="eb-sub">Formatted spreadsheet with categories</div>
           </div>
         </div>
         <div class="export-btn" onclick="exportJSON()">
-          <div class="eb-icon">💾</div>
+          <div class="eb-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg></div>
           <div>
             <div class="eb-text">Full Backup (JSON)</div>
             <div class="eb-sub">Expenses, goals, income, settings</div>
@@ -1446,18 +1598,18 @@ footer .footer-links a:hover{color:var(--pri-d)}
 
     <!-- Import -->
     <div class="card">
-      <h3><span class="icon-wrap">📥</span> Import Data</h3>
+      <h3><span class="icon-wrap"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></span> Import Data</h3>
       <p style="font-size:13px;color:var(--txt2);margin:10px 0 16px">Restore from a backup or import expenses from a CSV file.</p>
       <div class="export-grid" style="margin-bottom:14px">
         <div class="export-btn" onclick="document.getElementById('csvFileInput').click()">
-          <div class="eb-icon">📊</div>
+          <div class="eb-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg></div>
           <div>
             <div class="eb-text">Import CSV</div>
             <div class="eb-sub">Load expenses from a CSV file</div>
           </div>
         </div>
         <div class="export-btn" onclick="document.getElementById('jsonFileInput').click()">
-          <div class="eb-icon">💾</div>
+          <div class="eb-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg></div>
           <div>
             <div class="eb-text">Restore Backup (JSON)</div>
             <div class="eb-sub">Restore all data from a backup file</div>
@@ -1470,7 +1622,7 @@ footer .footer-links a:hover{color:var(--pri-d)}
 
     <!-- Transfer Guide -->
     <div class="card" style="border-left:4px solid var(--pri)">
-      <h3><span class="icon-wrap">🔄</span> How to Transfer Between Devices</h3>
+      <h3><span class="icon-wrap"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 014-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 01-4 4H3"/></svg></span> How to Transfer Between Devices</h3>
       <div style="height:12px"></div>
       <ol class="steps-list">
         <li><span class="step-n">1</span><div><strong style="color:var(--txt)">On Device A:</strong> Click "Full Backup (JSON)" — this saves a file to your device</div></li>
@@ -1482,29 +1634,31 @@ footer .footer-links a:hover{color:var(--pri-d)}
 
     <!-- CTA -->
     <div class="cta">
-      <h3>📊 Want Deeper Analysis?</h3>
+      <h3>Want Deeper Analysis?</h3>
       <p>Export your data → Open in our premium Google Sheets template → Get 12-month tracking, charts, annual overview, and savings goals automatically!</p>
       <a href="#" class="btn-cta" target="_blank">
-        <span>✨</span> Get the Full Spreadsheet Template — $6.99
+        Get the Full Spreadsheet Template — $6.99
       </a>
     </div>
 
     <!-- Data Stats -->
     <div class="card">
-      <h3><span class="icon-wrap">📈</span> Your Data Summary</h3>
+      <h3><span class="icon-wrap"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span> Your Data Summary</h3>
       <div style="height:14px"></div>
       <div id="dataStats"></div>
     </div>
 
   </div>
 
+  </div>
+
   <!-- ─── FOOTER ─── -->
   <footer>
-    <div class="brand">📊 YOUR SHOP NAME</div>
+    <div class="brand">YOUR SHOP NAME</div>
     <p>Free 50/30/20 Budget Tracker &nbsp;•&nbsp; Your data is stored locally in your browser &nbsp;•&nbsp; © 2026</p>
     <div class="footer-links">
-      <a href="#" onclick="showInstallGuide();return false">📲 How to Install this App</a>
-      <a href="#">🛍️ Get the full spreadsheet version →</a>
+      <a href="#" onclick="showTab('data',document.querySelector('[data-tab=data]'));return false">How to Install this App</a>
+      <a href="#">Get the full spreadsheet version →</a>
     </div>
   </footer>
 
@@ -1514,7 +1668,7 @@ footer .footer-links a:hover{color:var(--pri-d)}
 <div class="modal-overlay" id="nlPopup">
   <div class="modal" style="max-width:420px;text-align:center">
     <button class="close-modal" onclick="closeNlPopup()" style="position:absolute;right:16px;top:16px">✕</button>
-    <div style="font-size:48px;margin-bottom:12px">💰</div>
+    <div style="margin-bottom:12px"><svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="var(--pri)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></div>
     <h3 style="font-size:20px;margin-bottom:8px">Want to Save More Money?</h3>
     <p style="font-size:13px;color:var(--txt2);margin-bottom:18px">Get free budget tips, savings strategies, and exclusive templates delivered to your inbox. No spam — ever.</p>
     <div id="popupNlForm">
@@ -1522,10 +1676,10 @@ footer .footer-links a:hover{color:var(--pri-d)}
         <input type="email" id="popupNlEmail" placeholder="your@email.com" style="flex:1;padding:10px 14px;border:1.5px solid var(--brd);border-radius:10px;font-size:13px;font-family:inherit;outline:none;background:var(--bg);color:var(--txt);box-sizing:border-box;min-width:0">
         <button class="btn btn-pri" onclick="submitPopupNl()">Join Free</button>
       </div>
-      <div style="font-size:11px;color:var(--txt2);margin-top:10px">🔒 We respect your privacy. Unsubscribe anytime.</div>
+      <div style="font-size:11px;color:var(--txt2);margin-top:10px">We respect your privacy. Unsubscribe anytime.</div>
     </div>
     <div id="popupNlDone" style="display:none">
-      <div style="font-size:36px;margin-bottom:8px">🎉</div>
+      <div style="margin-bottom:8px"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--suc)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
       <div style="font-size:16px;font-weight:800;color:var(--suc)">You're in!</div>
       <div style="font-size:13px;color:var(--txt2);margin-top:4px">Welcome to the community.</div>
       <button class="btn btn-sec btn-sm" onclick="closeNlPopup()" style="margin-top:14px">Start Budgeting →</button>
@@ -1540,43 +1694,42 @@ footer .footer-links a:hover{color:var(--pri-d)}
 <div class="modal-overlay" id="installModal">
   <div class="modal">
     <div class="modal-head">
-      <h3>📲 How to Install This App</h3>
+      <h3>How to Install This App</h3>
       <button class="close-modal" onclick="closeInstallGuide()">✕</button>
     </div>
     <p class="modal-sub">Install the Budget Tracker on your device — it works offline, just like a native app. No app store needed!</p>
 
     <div class="platform-tabs">
-      <div class="platform-tab active" onclick="showPlatform('android',this)">📱 Android</div>
-      <div class="platform-tab" onclick="showPlatform('iphone',this)">🍎 iPhone/iPad</div>
-      <div class="platform-tab" onclick="showPlatform('desktop',this)">💻 Desktop</div>
+      <div class="platform-tab active" onclick="showPlatform('android',this)">Android</div>
+      <div class="platform-tab" onclick="showPlatform('iphone',this)">iPhone/iPad</div>
+      <div class="platform-tab" onclick="showPlatform('desktop',this)">Desktop</div>
     </div>
 
     <div id="guide-android" class="platform-guide">
       <div class="step"><div class="step-num">1</div><div class="step-text"><strong>Open in Chrome</strong>Visit this page in Google Chrome browser</div></div>
       <div class="step"><div class="step-num">2</div><div class="step-text"><strong>Tap the banner</strong>If you see "Add to Home Screen" or "Install App" at the bottom, tap it!</div></div>
       <div class="step"><div class="step-num">3</div><div class="step-text"><strong>Or use the menu</strong>Tap the <strong>⋮ three dots</strong> (top right) → "Install app" or "Add to Home screen"</div></div>
-      <div class="step"><div class="step-num">4</div><div class="step-text"><strong>Tap "Install"</strong>The app icon appears on your home screen. Works offline! ✨</div></div>
+      <div class="step"><div class="step-num">4</div><div class="step-text"><strong>Tap "Install"</strong>The app icon appears on your home screen. Works offline!</div></div>
     </div>
 
     <div id="guide-iphone" class="platform-guide" style="display:none">
       <div class="step"><div class="step-num">1</div><div class="step-text"><strong>Open in Safari</strong>This MUST be Safari — other browsers on iPhone don't support installation</div></div>
       <div class="step"><div class="step-num">2</div><div class="step-text"><strong>Tap the Share button</strong>Tap the <strong>⬆ share icon</strong> (square with arrow) at the bottom of Safari</div></div>
       <div class="step"><div class="step-num">3</div><div class="step-text"><strong>Scroll down & tap "Add to Home Screen"</strong>You may need to scroll down in the share menu to find it</div></div>
-      <div class="step"><div class="step-num">4</div><div class="step-text"><strong>Tap "Add"</strong>The app icon appears on your home screen. Opens full screen! ✨</div></div>
-      <div class="info-box warn">⚠️ <strong>iPhone note:</strong> On iOS, data is stored per-browser. Use the <strong>Export/Backup</strong> feature regularly to keep your data safe!</div>
+      <div class="step"><div class="step-num">4</div><div class="step-text"><strong>Tap "Add"</strong>The app icon appears on your home screen. Opens full screen!</div></div>
+      <div class="info-box warn">• <strong>iPhone note:</strong> On iOS, data is stored per-browser. Use the <strong>Export/Backup</strong> feature regularly to keep your data safe!</div>
     </div>
 
     <div id="guide-desktop" class="platform-guide" style="display:none">
       <div class="step"><div class="step-num">1</div><div class="step-text"><strong>Open in Chrome or Edge</strong>Visit this page in Google Chrome or Microsoft Edge</div></div>
       <div class="step"><div class="step-num">2</div><div class="step-text"><strong>Look for the install icon</strong>In the address bar (right side), you'll see a <strong>⊕ install icon</strong></div></div>
       <div class="step"><div class="step-num">3</div><div class="step-text"><strong>Click "Install"</strong>A prompt will appear — click "Install" to confirm</div></div>
-      <div class="step"><div class="step-num">4</div><div class="step-text"><strong>Done!</strong>The app opens in its own window. Find it in your Start Menu / Applications folder. ✨</div></div>
-      <div class="info-box info">💡 <strong>Tip:</strong> On Windows, right-click the title bar → "Pin to taskbar" for quick access!</div>
+      <div class="step"><div class="step-num">4</div><div class="step-text"><strong>Done!</strong>The app opens in its own window. Find it in your Start Menu / Applications folder.</div></div>
+      <div class="info-box info"><strong>Tip:/strong> On Windows, right-click the title bar → "Pin to taskbar" for quick access!</div>
     </div>
 
     <div class="modal-actions">
-      <button class="btn btn-pri" onclick="installPWA()">📲 Install Now</button>
-      <button class="btn btn-sec" onclick="closeInstallGuide()">Close</button>
+      <button class="btn btn-pri" onclick="closeInstallGuide()">Got it</button>
     </div>
   </div>
 </div>
@@ -1849,7 +2002,7 @@ function showBackupReminder(title, message) {
       <div style="font-size:12px;opacity:.9">${message}</div>
     </div>
     <div style="display:flex;gap:6px;align-items:center">
-      <button onclick="quickBackup()" style="background:var(--card);color:var(--pri-d);padding:7px 16px;border-radius:8px;font-weight:700;font-size:12px;border:none;cursor:pointer">📋 Quick Backup</button>
+      <button onclick="quickBackup()" style="background:var(--card);color:var(--pri-d);padding:7px 16px;border-radius:8px;font-weight:700;font-size:12px;border:none;cursor:pointer">Quick Backup</button>
       <button onclick="this.parentElement.parentElement.remove()" style="background:none;border:none;color:var(--on-pri);opacity:.6;font-size:14px;cursor:pointer;padding:4px">✕</button>
     </div>
   `;
@@ -1919,11 +2072,16 @@ function showTab(id, el) {
   el.classList.add("active");
   if (id === "history") renderHistory();
   if (id === "dashboard") updateDashboard();
-  if (id === "goals") renderGoals();
-  if (id === "data") renderDataStats();
   if (id === "expenses") renderRecent();
+  if (id === "goals") renderGoals();
   if (id === "notes") renderNotes();
   if (id === "ai") initAiChat();
+  if (id === "data") renderDataStats();
+  // Close More dropdown if open
+  const dd = document.getElementById("moreDropdown");
+  if (dd) dd.classList.remove("show");
+  // Recalculate overflow (active state may have changed)
+  setTimeout(handleTabOverflow, 50);
 }
 
 // ─── TOAST ─────────────────────────────────────────────────
@@ -2159,7 +2317,7 @@ function renderRecent() {
   const el = document.getElementById("recentList");
   if (!el) return;
   if (recent.length === 0) {
-    el.innerHTML = `<div class="empty-state"><div class="empty-icon">📋</div><p>No expenses yet</p><span>Add your first one above!</span></div>`;
+    el.innerHTML = `<div class="empty-state"><div class="empty-icon"><svg width='40' height='40' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.5'><path d='M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z'/><polyline points='14 2 14 8 20 8'/></svg></div><p>No expenses yet</p><span>Add your first one above!</span></div>`;
     return;
   }
   el.innerHTML = recent.map(e => {
@@ -2189,7 +2347,7 @@ function renderHistory() {
   const tbody = document.getElementById("historyBody");
   if (expenses.length === 0) {
     tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:var(--txt2);padding:36px">
-      <div style="font-size:36px;margin-bottom:10px">📭</div>No expenses found</td></tr>`;
+      <div style="margin-bottom:10px;opacity:.4"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="20" height="18" rx="2"/><line x1="8" y1="9" x2="16" y2="9"/><line x1="8" y1="13" x2="12" y2="13"/></svg></div>No expenses found</td></tr>`;
     document.getElementById("historyTotal").textContent = "";
     return;
   }
@@ -2247,7 +2405,7 @@ function renderGoals() {
   const el = document.getElementById("goalsList");
   if (!el) return;
   if (data.goals.length === 0) {
-    el.innerHTML = `<div class="empty-state"><div class="empty-icon">🎯</div><p>No savings goals yet</p><span>Add one below to start tracking!</span></div>`;
+    el.innerHTML = `<div class="empty-state"><div class="empty-icon"><svg width='40' height='40' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.5'><circle cx='12' cy='12' r='10'/><circle cx='12' cy='12' r='6'/><circle cx='12' cy='12' r='2'/></svg></div><p>No savings goals yet</p><span>Add one below to start tracking!</span></div>`;
     return;
   }
   el.innerHTML = data.goals.map(g => {
@@ -2447,12 +2605,12 @@ function renderDataStats() {
   const savings = data.expenses.filter(e=>e.cat==="Savings").reduce((s,e)=>s+e.amt,0);
   const dates   = data.expenses.map(e=>e.date).sort();
   el.innerHTML = `<div class="data-stat-grid">
-    <div class="ds-item"><div class="ds-val">${data.expenses.length}</div><div class="ds-label">📊 Total Expenses</div></div>
-    <div class="ds-item"><div class="ds-val">${data.goals.length}</div><div class="ds-label">🎯 Savings Goals</div></div>
-    <div class="ds-item"><div class="ds-val">${fmtShort(data.income||0)}</div><div class="ds-label">💰 Monthly Income</div></div>
-    <div class="ds-item"><div class="ds-val">${fmtShort(needs+wants+savings)}</div><div class="ds-label">💸 Total Spent</div></div>
-    <div class="ds-item" style="grid-column:span 2"><div class="ds-val" style="font-size:14px">${dates.length>0?dates[0]+" → "+dates[dates.length-1]:"No data"}</div><div class="ds-label">📅 Date Range</div></div>
-    <div class="ds-item"><div class="ds-val">${(new Blob([JSON.stringify(data)]).size/1024).toFixed(1)} KB</div><div class="ds-label">💾 Storage Used</div></div>
+    <div class="ds-item"><div class="ds-val">${data.expenses.length}</div><div class="ds-label">Total Expenses</div></div>
+    <div class="ds-item"><div class="ds-val">${data.goals.length}</div><div class="ds-label">Savings Goals</div></div>
+    <div class="ds-item"><div class="ds-val">${fmtShort(data.income||0)}</div><div class="ds-label">Monthly Income</div></div>
+    <div class="ds-item"><div class="ds-val">${fmtShort(needs+wants+savings)}</div><div class="ds-label">Total Spent</div></div>
+    <div class="ds-item" style="grid-column:span 2"><div class="ds-val" style="font-size:14px">${dates.length>0?dates[0]+" → "+dates[dates.length-1]:"No data"}</div><div class="ds-label">Date Range</div></div>
+    <div class="ds-item"><div class="ds-val">${(new Blob([JSON.stringify(data)]).size/1024).toFixed(1)} KB</div><div class="ds-label">Storage Used</div></div>
   </div>`;
 }
 
@@ -2603,7 +2761,7 @@ function checkForUpdates() {
 
   if (!('serviceWorker' in navigator)) {
     setTimeout(() => {
-      statusEl.textContent = "✅ Up to date";
+      statusEl.textContent = "Up to date";
       statusEl.style.color = "var(--suc)";
       toast("ℹ️ Service Worker not available — app runs from network");
     }, 1000);
@@ -2650,7 +2808,7 @@ function checkForUpdates() {
           setTimeout(() => {
             navigator.serviceWorker.removeEventListener("message", onMessage);
             if (statusEl.textContent === "🔄 Refreshing cache...") {
-              statusEl.textContent = "✅ Up to date";
+              statusEl.textContent = "Up to date";
               statusEl.style.color = "var(--suc)";
               toast("✅ App is up to date!");
             }
@@ -2885,7 +3043,7 @@ function initAiChat() {
     // Update chat header with bot name
     const botName = localStorage.getItem("bt_bot_name") || "AI Budget Advisor";
     const chatTitle = chat.querySelector("h3");
-    if (chatTitle) chatTitle.innerHTML = '<span class="icon-wrap">🤖</span> ' + botName;
+    if (chatTitle) chatTitle.innerHTML = '<span class="icon-wrap"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/><path d="M14 8l-1 3h2l-1 3"/><circle cx="9" cy="10" r="0.5" fill="currentColor"/></svg></span> ' + botName;
 
     // Show welcome message if chat is empty
     const msgContainer = document.getElementById("chatMessages");
@@ -3088,7 +3246,9 @@ function addChatMessage(type, text) {
   const container = document.getElementById("chatMessages");
   const div = document.createElement("div");
   div.className = "chat-msg " + type;
-  const avatar = type === "bot" ? "🤖" : "👤";
+  const botSvg = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/><path d="M14 8l-1 3h2l-1 3"/><circle cx="9" cy="10" r="0.5" fill="currentColor"/></svg>';
+  const userSvg = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>';
+  const avatar = type === "bot" ? botSvg : userSvg;
 
   // Simple markdown-like formatting
   let formatted = text
@@ -3267,6 +3427,120 @@ function loadTheme() {
   }
 }
 
+// ─── DYNAMIC TAB OVERFLOW (responsive More menu) ───────────
+function handleTabOverflow() {
+  const wrapper = document.getElementById("tabsWrapper");
+  const main = document.getElementById("tabsMain");
+  const moreTrigger = document.getElementById("moreTrigger");
+  const dropdown = document.getElementById("moreDropdown");
+  if (!wrapper || !main || !moreTrigger || !dropdown) return;
+
+  const isMobile = window.innerWidth <= 700;
+  const allTabs = main.querySelectorAll(".tab");
+
+  // Reset
+  allTabs.forEach(t => t.classList.remove("overflow-hidden"));
+  dropdown.innerHTML = "";
+
+  if (isMobile) {
+    // Mobile: core tabs visible in bar, secondary in More dropdown
+    moreTrigger.style.display = "flex";
+
+    allTabs.forEach(t => {
+      if (t.dataset.priority === "secondary") {
+        // Build dropdown item
+        const item = document.createElement("div");
+        item.className = "tab" + (t.classList.contains("active") ? " active" : "");
+        item.setAttribute("data-tab", t.dataset.tab);
+        item.innerHTML = t.innerHTML;
+        item.onclick = function() {
+          showTab(t.dataset.tab, t);
+          dropdown.classList.remove("show");
+        };
+        dropdown.appendChild(item);
+      }
+    });
+
+    // Active indicator on More button
+    const hasSecondaryActive = Array.from(allTabs).some(t => t.dataset.priority === "secondary" && t.classList.contains("active"));
+    moreTrigger.classList.toggle("has-active", hasSecondaryActive);
+    return;
+  }
+
+  // Desktop: measure what fits
+  // Temporarily show all tabs to measure
+  allTabs.forEach(t => {
+    t.style.position = "absolute";
+    t.style.visibility = "hidden";
+    t.classList.remove("overflow-hidden");
+  });
+
+  const tabWidths = [];
+  allTabs.forEach(t => {
+    t.style.position = "";
+    t.style.visibility = "";
+    tabWidths.push(t.offsetWidth + 4);
+  });
+
+  const wrapperWidth = wrapper.clientWidth - 16;
+  const moreWidth = 90;
+  let totalWidth = tabWidths.reduce((s, w) => s + w, 0);
+
+  if (totalWidth <= wrapperWidth) {
+    // Everything fits
+    moreTrigger.style.display = "none";
+    return;
+  }
+
+  // Find cutoff point
+  moreTrigger.style.display = "flex";
+  let used = 0;
+  let cutoff = allTabs.length;
+
+  for (let i = 0; i < tabWidths.length; i++) {
+    if (used + tabWidths[i] + moreWidth > wrapperWidth) {
+      cutoff = i;
+      break;
+    }
+    used += tabWidths[i];
+  }
+
+  // Hide overflowing tabs and clone into dropdown
+  allTabs.forEach((t, i) => {
+    if (i >= cutoff) {
+      t.classList.add("overflow-hidden");
+      const item = document.createElement("div");
+      item.className = "tab" + (t.classList.contains("active") ? " active" : "");
+      item.setAttribute("data-tab", t.dataset.tab);
+      item.innerHTML = t.innerHTML;
+      item.onclick = function() {
+        showTab(t.dataset.tab, t);
+        dropdown.classList.remove("show");
+      };
+      dropdown.appendChild(item);
+    }
+  });
+
+  const hasOverflowActive = dropdown.querySelector(".tab.active");
+  moreTrigger.classList.toggle("has-active", !!hasOverflowActive);
+}
+
+function toggleMoreMenu() {
+  const dd = document.getElementById("moreDropdown");
+  dd.classList.toggle("show");
+}
+
+// Close More dropdown when clicking outside
+document.addEventListener("click", e => {
+  const wrapper = document.getElementById("tabsWrapper");
+  const dd = document.getElementById("moreDropdown");
+  if (dd && !wrapper.contains(e.target)) dd.classList.remove("show");
+});
+
+// Run on load and resize
+window.addEventListener("resize", handleTabOverflow);
+window.addEventListener("DOMContentLoaded", () => setTimeout(handleTabOverflow, 100));
+
 // ─── MODAL ─────────────────────────────────────────────────
 function showInstallGuide() {
   document.getElementById("installModal").classList.add("show");
@@ -3303,16 +3577,21 @@ window.addEventListener('beforeinstallprompt', e => {
 });
 
 function installPWA() {
-  if (!deferredPrompt) {
-    toast("💡 Use your browser menu → 'Add to Home Screen' or 'Install App'");
-    return;
+  if (deferredPrompt) {
+    // Browser supports auto-install — use it
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then(result => {
+      if (result.outcome === 'accepted') toast("App installed! Find it on your home screen.");
+      deferredPrompt = null;
+      document.getElementById('installBanner').classList.remove('show');
+    });
+  } else if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone) {
+    // Already installed as PWA
+    toast("This app is already installed!");
+  } else {
+    // No auto-install available — show the step-by-step guide
+    showInstallGuide();
   }
-  deferredPrompt.prompt();
-  deferredPrompt.userChoice.then(result => {
-    if (result.outcome === 'accepted') toast("✅ App installed! Find it on your home screen");
-    deferredPrompt = null;
-    document.getElementById('installBanner').classList.remove('show');
-  });
 }
 
 function dismissInstall() {
@@ -3325,5 +3604,5 @@ window.addEventListener('appinstalled', () => {
   toast("🎉 App installed successfully!");
 });
 </script>
-</body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a0eb0327e8fe1fb0',t:'MTc4MTk2MTAxMg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
