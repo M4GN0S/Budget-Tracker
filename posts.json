@@ -1,0 +1,82 @@
+[
+  {
+    "id": 1,
+    "type": "announcement",
+    "title": "Welcome to Budget Tracker!",
+    "body": "Thank you for using our free 50/30/20 Budget Tracker. Track your spending, set savings goals, and take control of your finances — all from your browser.",
+    "date": "2026-06-20",
+    "link": null,
+    "linkText": null,
+    "pinned": true
+  },
+  {
+    "id": 2,
+    "type": "tip",
+    "title": "The 24-Hour Rule",
+    "body": "Before buying anything over $25 in your 'Wants' category, wait 24 hours. Studies show 70% of impulse purchases are regretted within a week. This single habit can save you $200-400/month.",
+    "date": "2026-06-18",
+    "link": null,
+    "linkText": null,
+    "pinned": false
+  },
+  {
+    "id": 3,
+    "type": "product",
+    "title": "New: Annual Analysis Spreadsheet",
+    "body": "See your full-year spending trends, tax-ready reports, and net worth tracking. Import your app data with one click.",
+    "date": "2026-06-15",
+    "link": "#",
+    "linkText": "Get it — $9.99",
+    "pinned": false
+  },
+  {
+    "id": 4,
+    "type": "challenge",
+    "title": "No-Spend Weekend Challenge",
+    "body": "Can you go the entire weekend without spending on 'Wants'? Cook at home, enjoy free activities, and see how much you save. Track it in the app and share your results!",
+    "date": "2026-06-13",
+    "link": null,
+    "linkText": null,
+    "pinned": false
+  },
+  {
+    "id": 5,
+    "type": "tip",
+    "title": "Automate Your Savings",
+    "body": "Set up an automatic transfer on payday — even $50/month adds up to $600/year. The best savings plan is one you don't have to think about.",
+    "date": "2026-06-10",
+    "link": null,
+    "linkText": null,
+    "pinned": false
+  },
+  {
+    "id": 6,
+    "type": "product",
+    "title": "Debt Payoff Calculator",
+    "body": "Snowball or avalanche method? Our new calculator shows you exactly when you'll be debt-free and how much interest you'll save.",
+    "date": "2026-06-08",
+    "link": "#",
+    "linkText": "Get it — $7.99",
+    "pinned": false
+  },
+  {
+    "id": 7,
+    "type": "tip",
+    "title": "Track Subscriptions Monthly",
+    "body": "The average person spends $219/month on subscriptions — and forgets about half of them. Review your 'Subscriptions' category monthly and cancel what you don't use.",
+    "date": "2026-06-05",
+    "link": null,
+    "linkText": null,
+    "pinned": false
+  },
+  {
+    "id": 8,
+    "type": "seasonal",
+    "title": "Mid-Year Financial Check-In",
+    "body": "We're halfway through the year! Export your data and review your spending trends. Are you on track with your savings goals? Now's the time to adjust.",
+    "date": "2026-06-01",
+    "link": null,
+    "linkText": null,
+    "pinned": false
+  }
+]
