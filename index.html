@@ -580,6 +580,62 @@ tbody tr:hover td{background:var(--pri-l)}
 .info-box.info{background:var(--pri-l);color:var(--pri-d);border-color:rgba(108,154,139,.3)}
 .modal-actions{margin-top:18px;display:flex;gap:8px;justify-content:center}
 
+/* ─── Financial Journal ─── */
+.note-card{background:var(--card);border:1px solid var(--brd);border-radius:12px;padding:14px;margin-bottom:10px;transition:.2s;position:relative}
+.note-card:hover{box-shadow:var(--sh)}
+.note-card.pinned{border-left:4px solid var(--acc);background:linear-gradient(135deg,var(--card),var(--acc-l))}
+.note-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;gap:8px}
+.note-date{font-size:11px;color:var(--txt2);font-weight:500}
+.note-tag{display:inline-block;padding:2px 8px;border-radius:12px;font-size:10px;font-weight:700;background:var(--pri-l);color:var(--pri-d)}
+.note-tag.goal{background:var(--suc-l);color:var(--suc)}
+.note-tag.reminder{background:var(--acc-l);color:var(--acc)}
+.note-tag.reflection{background:var(--pri-l);color:var(--pri-d)}
+.note-tag.idea{background:#F0ECF5;color:#7A6899}
+.note-tag.receipt{background:var(--dan-l);color:var(--dan)}
+.note-body{font-size:13px;color:var(--txt);line-height:1.6;white-space:pre-wrap;word-wrap:break-word}
+.note-body strong{font-weight:700}
+.note-body em{font-style:italic}
+.note-actions{display:flex;gap:4px;align-items:center}
+.note-actions button{background:none;border:none;cursor:pointer;font-size:14px;padding:2px 4px;opacity:.4;transition:.2s}
+.note-actions button:hover{opacity:1}
+.note-search{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+.note-search input{flex:1;min-width:150px}
+.tag-filters{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:12px}
+.tag-filter{padding:4px 12px;border-radius:16px;font-size:11px;font-weight:600;background:var(--bg);color:var(--txt2);border:1.5px solid var(--brd);cursor:pointer;transition:.2s}
+.tag-filter:hover,.tag-filter.active{background:var(--pri-l);color:var(--pri-d);border-color:var(--pri)}
+.note-count{font-size:11px;color:var(--txt2);font-weight:500}
+
+/* ─── AI Chat ─── */
+.chat-messages{max-height:400px;overflow-y:auto;display:flex;flex-direction:column;gap:10px;padding:4px 0}
+.chat-msg{display:flex;gap:10px;animation:fadeUp .3s ease}
+.chat-msg.user{flex-direction:row-reverse}
+.chat-avatar{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.chat-msg.bot .chat-avatar{background:var(--pri-l)}
+.chat-msg.user .chat-avatar{background:var(--acc-l)}
+.chat-bubble{max-width:80%;padding:12px 16px;border-radius:14px;font-size:13px;line-height:1.6}
+.chat-msg.bot .chat-bubble{background:var(--bg);border:1px solid var(--brd);border-bottom-left-radius:4px;color:var(--txt)}
+.chat-msg.user .chat-bubble{background:linear-gradient(135deg,var(--pri-d),var(--pri));color:var(--on-pri);border-bottom-right-radius:4px}
+.chat-bubble strong{font-weight:700}
+.chat-bubble ul,.chat-bubble ol{padding-left:18px;margin:6px 0}
+.chat-bubble li{margin-bottom:4px}
+.chat-input-row{display:flex;gap:8px;margin-top:12px}
+.chat-input{flex:1;padding:11px 16px;border:1.5px solid var(--brd);border-radius:12px;font-size:13px;font-family:inherit;outline:none;background:var(--input-bg);color:var(--txt);resize:none;min-width:0}
+.chat-input:focus{border-color:var(--pri);box-shadow:0 0 0 3px rgba(108,154,139,.12)}
+.chat-send{width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,var(--pri-d),var(--pri));color:var(--on-pri);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;transition:.2s}
+.chat-send:hover{transform:scale(1.05)}
+.chat-send:disabled{opacity:.4;cursor:not-allowed;transform:none}
+.quick-actions{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
+.qa-chip{padding:6px 14px;border-radius:20px;font-size:11px;font-weight:600;background:var(--bg);color:var(--txt2);border:1.5px solid var(--brd);cursor:pointer;transition:.2s}
+.qa-chip:hover{background:var(--pri-l);color:var(--pri-d);border-color:var(--pri)}
+.typing-dots{display:flex;gap:4px;padding:8px 0}
+.typing-dots span{width:6px;height:6px;border-radius:50%;background:var(--txt2);animation:dotBounce 1.2s infinite}
+.typing-dots span:nth-child(2){animation-delay:.2s}
+.typing-dots span:nth-child(3){animation-delay:.4s}
+@keyframes dotBounce{0%,80%,100%{transform:translateY(0)}40%{transform:translateY(-6px)}}
+.ai-setup-needed{text-align:center;padding:30px 16px}
+.ai-premium-banner{background:linear-gradient(135deg,var(--pri-d),var(--acc));border-radius:12px;padding:18px;color:var(--on-pri);text-align:center;margin-top:14px}
+.api-key-input{font-family:'SF Mono',Consolas,monospace;font-size:12px;letter-spacing:.5px}
+
 /* ─── Section Divider ─── */
 .section-label{
   font-size:10px;font-weight:700;text-transform:uppercase;
@@ -711,6 +767,12 @@ footer .footer-links a:hover{color:var(--pri-d)}
     </div>
     <div class="tab" onclick="showTab('goals',this)">
       <span class="tab-icon">🎯</span><span class="tab-label">Goals</span>
+    </div>
+    <div class="tab" onclick="showTab('notes',this)">
+      <span class="tab-icon">📓</span><span class="tab-label">Journal</span>
+    </div>
+    <div class="tab" onclick="showTab('ai',this)">
+      <span class="tab-icon">🤖</span><span class="tab-label">AI</span>
     </div>
     <div class="tab" onclick="showTab('data',this)">
       <span class="tab-icon">⚙️</span><span class="tab-label">Settings</span>
@@ -1056,6 +1118,162 @@ footer .footer-links a:hover{color:var(--pri-d)}
   </div>
 
   <!-- ─────────────────────────────────────── -->
+  <!-- FINANCIAL JOURNAL PANEL                 -->
+  <!-- ─────────────────────────────────────── -->
+  <div id="tab-notes" class="panel">
+    <!-- Add Note -->
+    <div class="card">
+      <h3><span class="icon-wrap">📓</span> Financial Journal</h3>
+      <p style="font-size:12px;color:var(--txt2);margin-bottom:14px">Jot down financial thoughts, reminders, and plans. Your AI advisor can reference these notes too.</p>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <textarea id="noteInput" rows="3" placeholder="e.g. Cancel Netflix — haven't watched in 2 months. Saves $15.99/month..." style="padding:10px 14px;border:1.5px solid var(--brd);border-radius:10px;font-size:13px;font-family:inherit;outline:none;background:var(--bg);color:var(--txt);resize:vertical;min-height:70px;width:100%;box-sizing:border-box"></textarea>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+          <select id="noteTag" style="padding:8px 12px;border:1.5px solid var(--brd);border-radius:10px;font-size:12px;font-family:inherit;background:var(--bg);color:var(--txt);outline:none">
+            <option value="note">📝 Note</option>
+            <option value="goal">🎯 Goal</option>
+            <option value="reminder">⏰ Reminder</option>
+            <option value="reflection">💭 Reflection</option>
+            <option value="idea">💡 Idea</option>
+            <option value="receipt">🧾 Receipt</option>
+          </select>
+          <label style="display:flex;align-items:center;gap:4px;font-size:12px;color:var(--txt2);cursor:pointer">
+            <input type="checkbox" id="notePin"> 📌 Pin to top
+          </label>
+          <div style="flex:1"></div>
+          <button class="btn btn-pri btn-sm" onclick="addNote()">+ Add Note</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Search & Filter -->
+    <div class="card">
+      <div class="note-search">
+        <input type="text" id="noteSearchInput" placeholder="🔍 Search notes..." oninput="renderNotes()" style="padding:9px 14px;border:1.5px solid var(--brd);border-radius:10px;font-size:13px;font-family:inherit;outline:none;background:var(--bg);color:var(--txt);box-sizing:border-box">
+      </div>
+      <div class="tag-filters">
+        <button class="tag-filter active" onclick="filterNotes('all',this)">All</button>
+        <button class="tag-filter" onclick="filterNotes('note',this)">📝 Notes</button>
+        <button class="tag-filter" onclick="filterNotes('goal',this)">🎯 Goals</button>
+        <button class="tag-filter" onclick="filterNotes('reminder',this)">⏰ Reminders</button>
+        <button class="tag-filter" onclick="filterNotes('reflection',this)">💭 Reflections</button>
+        <button class="tag-filter" onclick="filterNotes('idea',this)">💡 Ideas</button>
+        <button class="tag-filter" onclick="filterNotes('receipt',this)">🧾 Receipts</button>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <span class="note-count" id="noteCount">0 notes</span>
+        <button class="btn btn-dan btn-sm" onclick="clearAllNotes()" style="font-size:10px">🗑️ Clear All</button>
+      </div>
+    </div>
+
+    <!-- Notes List -->
+    <div id="notesList">
+      <div class="empty-state">
+        <div class="empty-icon">📓</div>
+        <p>No notes yet</p>
+        <span>Start journaling your financial thoughts above!</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─────────────────────────────────────── -->
+  <!-- AI ADVISOR PANEL                        -->
+  <!-- ─────────────────────────────────────── -->
+  <div id="tab-ai" class="panel">
+
+    <!-- No API Key State -->
+    <div id="aiSetup" class="card">
+      <div class="ai-setup-needed">
+        <div style="font-size:48px;margin-bottom:12px">🤖</div>
+        <h3 style="font-size:18px;margin-bottom:6px">AI Budget Advisor</h3>
+        <p style="font-size:13px;color:var(--txt2);margin-bottom:18px;max-width:400px;margin-left:auto;margin-right:auto">
+          Get personalized financial advice powered by AI. It analyzes your actual spending data to give you specific, actionable tips.
+        </p>
+        <div style="display:flex;flex-direction:column;gap:10px;max-width:400px;margin:0 auto;text-align:left">
+          <div class="section-label">Option 1: Bring Your Own Key (Free)</div>
+          <div class="fg">
+            <label>AI Provider</label>
+            <select id="aiProvider" onchange="toggleCustomProvider()">
+              <option value="gemini">Google Gemini (recommended — most generous free tier)</option>
+              <option value="groq">Groq (fastest responses)</option>
+              <option value="openai">OpenAI / ChatGPT</option>
+              <option value="openrouter">OpenRouter (multiple models)</option>
+              <option value="custom">Custom Provider (any OpenAI-compatible API)</option>
+            </select>
+          </div>
+          <div id="customProviderFields" style="display:none">
+            <div class="fg" style="margin-bottom:8px">
+              <label>Custom API URL</label>
+              <input type="text" id="customApiUrl" class="api-key-input" placeholder="https://api.yourprovider.com/v1/chat/completions">
+            </div>
+            <div class="fg" style="margin-bottom:8px">
+              <label>Model Name</label>
+              <input type="text" id="customModelName" class="api-key-input" placeholder="e.g. gpt-4o-mini, llama-3, etc.">
+            </div>
+          </div>
+          <div class="fg" style="margin-bottom:8px">
+            <label>Give your advisor a name (optional)</label>
+            <input type="text" id="botNameInput" placeholder="e.g. Penny, Budget Buddy, Finance Friend..." value="">
+          </div>
+          <div class="fg" style="margin-bottom:8px">
+            <label>Custom instructions for AI (optional)</label>
+            <textarea id="customPromptInput" rows="3" placeholder="e.g. I'm a freelancer with irregular income. Focus on helping me build a 6-month emergency fund. I'm saving for a house down payment." style="padding:10px 12px;border:1.5px solid var(--brd);border-radius:10px;font-size:12px;font-family:inherit;outline:none;background:var(--bg);color:var(--txt);resize:vertical;min-height:60px;width:100%;box-sizing:border-box"></textarea>
+            <div style="font-size:10px;color:var(--txt2);margin-top:2px">Tell the AI about your situation — it'll give you more relevant advice.</div>
+          </div>
+          <div class="fg">
+            <label>API Key</label>
+            <input type="password" id="aiKeyInput" class="api-key-input" placeholder="Paste your API key here...">
+          </div>
+          <div style="display:flex;gap:8px">
+            <button class="btn btn-pri" onclick="saveAiKey()">💾 Save & Start</button>
+            <button class="btn btn-sec" onclick="showApiGuide()">📖 How to Get a Free Key</button>
+          </div>
+          <div style="font-size:11px;color:var(--txt2);margin-top:4px;padding:8px;background:var(--bg);border-radius:8px;border:1px solid var(--brd)">
+            🔒 <strong>Your key stays on YOUR device only.</strong> It is obfuscated in storage and never sent to us. We cannot see your key, your data, or your conversations.
+          </div>
+        </div>
+        <div class="ai-premium-banner">
+          <div style="font-size:13px;font-weight:800;margin-bottom:4px">✨ Option 2: We Do It For You — $2.99/month</div>
+          <div style="font-size:12px;opacity:.9;margin-bottom:10px">No setup needed. AI works instantly. Unlimited messages. Cancel anytime.</div>
+          <a href="#" class="btn-cta" style="font-size:12px;padding:8px 24px;border-radius:20px;display:inline-block">Get Premium AI →</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Chat Interface (shown when key is set) -->
+    <div id="aiChat" style="display:none">
+      <div class="card">
+        <div class="card-header">
+          <h3><span class="icon-wrap">🤖</span> AI Budget Advisor</h3>
+          <div style="display:flex;gap:6px;align-items:center">
+            <span style="font-size:11px;color:var(--suc);font-weight:600" id="aiStatus">● Connected</span>
+            <button class="btn btn-sec btn-sm" onclick="clearChat()">Clear Chat</button>
+          </div>
+        </div>
+        <!-- Quick Actions -->
+        <div class="quick-actions">
+          <button class="qa-chip" onclick="aiQuickAction('analyze')">📊 Analyze my spending</button>
+          <button class="qa-chip" onclick="aiQuickAction('tips')">💡 Tips to save more</button>
+          <button class="qa-chip" onclick="aiQuickAction('afford')">🛒 Can I afford...?</button>
+          <button class="qa-chip" onclick="aiQuickAction('goals')">🎯 Check my goals</button>
+          <button class="qa-chip" onclick="aiQuickAction('compare')">📈 This month vs budget</button>
+        </div>
+        <!-- Messages -->
+        <div class="chat-messages" id="chatMessages"></div>
+        <!-- Input -->
+        <div class="chat-input-row">
+          <input type="text" class="chat-input" id="chatInput" placeholder="Ask about your budget..." onkeydown="if(event.key==='Enter')sendChat()">
+          <button class="chat-send" id="chatSendBtn" onclick="sendChat()">➤</button>
+        </div>
+      </div>
+
+      <!-- Disclaimer -->
+      <div style="font-size:11px;color:var(--txt2);text-align:center;padding:8px 16px;line-height:1.5">
+        ⚠️ AI provides general guidance on budgeting, saving, taxes, and investing. For major financial decisions, consult a qualified professional. Your data is sent directly to your chosen AI provider — we never see it.
+      </div>
+    </div>
+  </div>
+
+  <!-- ─────────────────────────────────────── -->
   <!-- SETTINGS PANEL                          -->
   <!-- ─────────────────────────────────────── -->
   <div id="tab-data" class="panel">
@@ -1095,6 +1313,29 @@ footer .footer-links a:hover{color:var(--pri-d)}
       <div style="display:flex;gap:10px;flex-wrap:wrap">
         <button class="btn btn-pri" onclick="installPWA()">📲 Install Now</button>
         <button class="btn btn-sec" onclick="showInstallGuide()">📖 Step-by-Step Guide</button>
+      </div>
+    </div>
+
+    <!-- AI Settings -->
+    <div class="card">
+      <h3><span class="icon-wrap">🤖</span> AI Advisor Settings</h3>
+      <div style="height:10px"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:12px;margin-bottom:12px">
+        <div style="padding:10px;background:var(--bg);border-radius:8px;border:1px solid var(--brd)">
+          <div style="color:var(--txt2);font-weight:600">Provider</div>
+          <div style="font-weight:800;color:var(--txt);margin-top:2px" id="settingsAiProvider">Not set</div>
+        </div>
+        <div style="padding:10px;background:var(--bg);border-radius:8px;border:1px solid var(--brd)">
+          <div style="color:var(--txt2);font-weight:600">API Key</div>
+          <div style="font-weight:800;margin-top:2px" id="settingsAiKeyStatus">❌ Not configured</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn btn-sec btn-sm" onclick="showTab('ai',document.querySelectorAll('.tab')[6])">Configure AI →</button>
+        <button class="btn btn-dan btn-sm" onclick="removeAiKey()" id="removeKeyBtn" style="display:none">🗑️ Remove Key</button>
+      </div>
+      <div style="font-size:11px;color:var(--txt2);margin-top:8px;padding:8px;background:var(--bg);border-radius:8px;border:1px solid var(--brd)">
+        ⚠️ <strong>Security:</strong> Your API key is obfuscated in browser storage. It is never sent to us — only to your chosen AI provider when you chat. Anyone with physical access to your device could potentially extract it. Treat it like a password.
       </div>
     </div>
 
@@ -1650,6 +1891,8 @@ document.addEventListener("DOMContentLoaded", () => {
   renderGoals();
   renderRecent();
   renderCustomQuickAdds();
+  initAiChat();
+  renderNotes();
   // Enter key on inline add input
   document.getElementById("inlineAddName").addEventListener("keydown", e => {
     if (e.key === "Enter") confirmInlineAdd();
@@ -1679,6 +1922,8 @@ function showTab(id, el) {
   if (id === "goals") renderGoals();
   if (id === "data") renderDataStats();
   if (id === "expenses") renderRecent();
+  if (id === "notes") renderNotes();
+  if (id === "ai") initAiChat();
 }
 
 // ─── TOAST ─────────────────────────────────────────────────
@@ -2421,6 +2666,547 @@ function checkForUpdates() {
   });
 }
 
+// ─── FINANCIAL JOURNAL ─────────────────────────────────────
+let noteFilter = "all";
+
+function addNote() {
+  const text = document.getElementById("noteInput").value.trim();
+  const tag = document.getElementById("noteTag").value;
+  const pinned = document.getElementById("notePin").checked;
+  if (!text) { toast("⚠️ Write something first!"); return; }
+
+  const notes = JSON.parse(localStorage.getItem("bt_notes") || "[]");
+  notes.push({
+    id: Date.now(),
+    text,
+    tag,
+    pinned,
+    date: new Date().toISOString(),
+    edited: null
+  });
+  localStorage.setItem("bt_notes", JSON.stringify(notes));
+  document.getElementById("noteInput").value = "";
+  document.getElementById("notePin").checked = false;
+  renderNotes();
+  toast("📓 Note saved!");
+}
+
+function deleteNote(id) {
+  const notes = JSON.parse(localStorage.getItem("bt_notes") || "[]");
+  const idx = notes.findIndex(n => n.id === id);
+  if (idx < 0) return;
+  if (!confirm("Delete this note?")) return;
+  notes.splice(idx, 1);
+  localStorage.setItem("bt_notes", JSON.stringify(notes));
+  renderNotes();
+  toast("🗑️ Note deleted");
+}
+
+function togglePinNote(id) {
+  const notes = JSON.parse(localStorage.getItem("bt_notes") || "[]");
+  const note = notes.find(n => n.id === id);
+  if (note) { note.pinned = !note.pinned; localStorage.setItem("bt_notes", JSON.stringify(notes)); renderNotes(); }
+}
+
+function editNote(id) {
+  const notes = JSON.parse(localStorage.getItem("bt_notes") || "[]");
+  const note = notes.find(n => n.id === id);
+  if (!note) return;
+  const newText = prompt("Edit note:", note.text);
+  if (newText === null) return;
+  if (!newText.trim()) { toast("⚠️ Note can't be empty"); return; }
+  note.text = newText.trim();
+  note.edited = new Date().toISOString();
+  localStorage.setItem("bt_notes", JSON.stringify(notes));
+  renderNotes();
+  toast("✏️ Note updated");
+}
+
+function filterNotes(tag, el) {
+  noteFilter = tag;
+  document.querySelectorAll(".tag-filter").forEach(b => b.classList.remove("active"));
+  if (el) el.classList.add("active");
+  renderNotes();
+}
+
+function clearAllNotes() {
+  if (!confirm("Delete ALL notes? This cannot be undone.")) return;
+  localStorage.setItem("bt_notes", "[]");
+  renderNotes();
+  toast("🗑️ All notes cleared");
+}
+
+function renderNotes() {
+  const notes = JSON.parse(localStorage.getItem("bt_notes") || "[]");
+  const search = (document.getElementById("noteSearchInput")?.value || "").toLowerCase();
+  const el = document.getElementById("notesList");
+  const countEl = document.getElementById("noteCount");
+  if (!el) return;
+
+  let filtered = notes;
+  if (noteFilter !== "all") filtered = filtered.filter(n => n.tag === noteFilter);
+  if (search) filtered = filtered.filter(n => n.text.toLowerCase().includes(search) || (n.tag||"").includes(search));
+
+  // Sort: pinned first, then newest
+  filtered.sort((a, b) => {
+    if (a.pinned && !b.pinned) return -1;
+    if (!a.pinned && b.pinned) return 1;
+    return b.id - a.id;
+  });
+
+  if (countEl) countEl.textContent = filtered.length + " note" + (filtered.length !== 1 ? "s" : "") + (noteFilter !== "all" ? " (" + noteFilter + ")" : "");
+
+  if (filtered.length === 0) {
+    el.innerHTML = `<div class="empty-state"><div class="empty-icon">📓</div><p>${search ? "No notes matching '" + search + "'" : "No notes yet"}</p><span>${search ? "Try a different search" : "Start journaling your financial thoughts above!"}</span></div>`;
+    return;
+  }
+
+  const tagIcons = { note:"📝", goal:"🎯", reminder:"⏰", reflection:"💭", idea:"💡", receipt:"🧾" };
+
+  el.innerHTML = filtered.map(n => {
+    const d = new Date(n.date);
+    const dateStr = d.toLocaleDateString("en-US", { month:"short", day:"numeric", year:"numeric" });
+    const timeStr = d.toLocaleTimeString("en-US", { hour:"numeric", minute:"2-digit" });
+    const icon = tagIcons[n.tag] || "📝";
+
+    // Simple markdown: **bold**, *italic*, - lists
+    let body = n.text
+      .replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")
+      .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
+      .replace(/\*(.*?)\*/g, "<em>$1</em>")
+      .replace(/^- (.+)$/gm, "• $1");
+
+    return `<div class="note-card${n.pinned ? " pinned" : ""}">
+      <div class="note-header">
+        <div style="display:flex;align-items:center;gap:6px">
+          <span class="note-tag ${n.tag}">${icon} ${n.tag}</span>
+          <span class="note-date">${dateStr} ${timeStr}${n.edited ? " (edited)" : ""}</span>
+        </div>
+        <div class="note-actions">
+          <button onclick="togglePinNote(${n.id})" title="${n.pinned ? "Unpin" : "Pin"}">${n.pinned ? "📌" : "📍"}</button>
+          <button onclick="editNote(${n.id})" title="Edit">✏️</button>
+          <button onclick="deleteNote(${n.id})" title="Delete">🗑️</button>
+        </div>
+      </div>
+      <div class="note-body">${body}</div>
+    </div>`;
+  }).join("");
+}
+
+// ─── AI ADVISOR ────────────────────────────────────────────
+const AI_KEY_STORAGE = "bt_ai_config";
+
+// Simple obfuscation (NOT encryption — but prevents casual snooping)
+function obfuscate(str) {
+  return btoa(str.split('').map((c,i) => String.fromCharCode(c.charCodeAt(0) ^ (42 + (i % 13)))).join(''));
+}
+function deobfuscate(str) {
+  try {
+    const decoded = atob(str);
+    return decoded.split('').map((c,i) => String.fromCharCode(c.charCodeAt(0) ^ (42 + (i % 13)))).join('');
+  } catch(e) { return ""; }
+}
+
+function saveAiKey() {
+  const provider = document.getElementById("aiProvider").value;
+  const key = document.getElementById("aiKeyInput").value.trim();
+  if (!key) { toast("⚠️ Please enter an API key"); return; }
+  if (key.length < 10) { toast("⚠️ That doesn't look like a valid API key"); return; }
+
+  const config = { provider, key: obfuscate(key), ts: Date.now() };
+
+  // Save custom provider settings
+  if (provider === "custom") {
+    const customUrl = document.getElementById("customApiUrl").value.trim();
+    const customModel = document.getElementById("customModelName").value.trim();
+    if (!customUrl) { toast("⚠️ Enter your custom API URL"); return; }
+    config.customUrl = customUrl;
+    config.customModel = customModel || "default";
+  }
+
+  localStorage.setItem(AI_KEY_STORAGE, JSON.stringify(config));
+
+  // Save bot name
+  const botName = document.getElementById("botNameInput").value.trim();
+  if (botName) localStorage.setItem("bt_bot_name", botName);
+  else localStorage.removeItem("bt_bot_name");
+
+  // Save custom prompt
+  const customPrompt = document.getElementById("customPromptInput").value.trim();
+  if (customPrompt) localStorage.setItem("bt_custom_prompt", customPrompt);
+  else localStorage.removeItem("bt_custom_prompt");
+
+  document.getElementById("aiKeyInput").value = "";
+  toast("✅ " + (botName || "AI Advisor") + " is ready!");
+  initAiChat();
+}
+
+function toggleCustomProvider() {
+  const sel = document.getElementById("aiProvider").value;
+  document.getElementById("customProviderFields").style.display = sel === "custom" ? "block" : "none";
+}
+
+function removeAiKey() {
+  if (!confirm("Remove your API key? You'll need to re-enter it to use AI.")) return;
+  localStorage.removeItem(AI_KEY_STORAGE);
+  toast("🗑️ API key removed");
+  initAiChat();
+}
+
+function getAiConfig() {
+  try {
+    const raw = localStorage.getItem(AI_KEY_STORAGE);
+    if (!raw) return null;
+    const config = JSON.parse(raw);
+    return {
+      provider: config.provider,
+      key: deobfuscate(config.key),
+      customUrl: config.customUrl || "",
+      customModel: config.customModel || ""
+    };
+  } catch(e) { return null; }
+}
+
+function initAiChat() {
+  const config = getAiConfig();
+  const setup = document.getElementById("aiSetup");
+  const chat = document.getElementById("aiChat");
+  const settingsProvider = document.getElementById("settingsAiProvider");
+  const settingsKey = document.getElementById("settingsAiKeyStatus");
+  const removeBtn = document.getElementById("removeKeyBtn");
+
+  if (config && config.key) {
+    if (setup) setup.style.display = "none";
+    if (chat) chat.style.display = "block";
+    const providerNames = { gemini:"Google Gemini", groq:"Groq", openai:"OpenAI", openrouter:"OpenRouter", custom:"Custom" };
+    const providerLabel = config.provider === "custom" ? "Custom (" + (config.customUrl || "").replace(/https?:\/\//, "").split("/")[0] + ")" : providerNames[config.provider];
+    if (settingsProvider) settingsProvider.textContent = providerLabel;
+
+    // Update chat header with bot name
+    const botName = localStorage.getItem("bt_bot_name") || "AI Budget Advisor";
+    const chatTitle = chat.querySelector("h3");
+    if (chatTitle) chatTitle.innerHTML = '<span class="icon-wrap">🤖</span> ' + botName;
+
+    // Show welcome message if chat is empty
+    const msgContainer = document.getElementById("chatMessages");
+    if (msgContainer && msgContainer.children.length === 0) {
+      addChatMessage("bot", `Hi! I'm **${botName}**. I can see your spending data and give you personalized tips — including budgeting, saving strategies, tax prep guidance, and investment basics.\n\nTry asking me something or click one of the quick actions above!`);
+    }
+    if (settingsKey) { settingsKey.textContent = "✅ Configured"; settingsKey.style.color = "var(--suc)"; }
+    if (removeBtn) removeBtn.style.display = "inline-flex";
+  } else {
+    if (setup) setup.style.display = "block";
+    if (chat) chat.style.display = "none";
+    if (settingsProvider) settingsProvider.textContent = "Not set";
+    if (settingsKey) { settingsKey.textContent = "❌ Not configured"; settingsKey.style.color = "var(--dan)"; }
+    if (removeBtn) removeBtn.style.display = "none";
+  }
+
+  // Load saved settings into setup inputs
+  const nameInput = document.getElementById("botNameInput");
+  const savedName = localStorage.getItem("bt_bot_name");
+  if (nameInput && savedName) nameInput.value = savedName;
+
+  const promptInput = document.getElementById("customPromptInput");
+  const savedPrompt = localStorage.getItem("bt_custom_prompt");
+  if (promptInput && savedPrompt) promptInput.value = savedPrompt;
+}
+
+// Build context from user's budget data
+function buildAiContext() {
+  const data = getData();
+  const income = data.income || 0;
+  const needs = data.expenses.filter(e => e.cat === "Needs").reduce((s,e) => s+e.amt, 0);
+  const wants = data.expenses.filter(e => e.cat === "Wants").reduce((s,e) => s+e.amt, 0);
+  const savings = data.expenses.filter(e => e.cat === "Savings").reduce((s,e) => s+e.amt, 0);
+  const total = needs + wants + savings;
+
+  // Top expenses
+  const sorted = [...data.expenses].sort((a,b) => b.amt - a.amt).slice(0, 5);
+  const topExpenses = sorted.map(e => `${e.desc}: $${e.amt.toFixed(2)} (${e.cat})`).join(", ");
+
+  // Sub-category breakdown
+  const subTotals = {};
+  data.expenses.forEach(e => { subTotals[e.sub] = (subTotals[e.sub]||0) + e.amt; });
+  const subBreakdown = Object.entries(subTotals).sort((a,b) => b[1]-a[1]).slice(0,8)
+    .map(([k,v]) => `${k}: $${v.toFixed(2)}`).join(", ");
+
+  // Goals
+  const goalInfo = data.goals.map(g => {
+    const pct = g.target > 0 ? Math.round((g.saved/g.target)*100) : 0;
+    return `${g.name}: $${g.saved} / $${g.target} (${pct}%)`;
+  }).join("; ") || "No goals set";
+
+  const botName = localStorage.getItem("bt_bot_name") || "AI Advisor";
+  const customPrompt = localStorage.getItem("bt_custom_prompt") || "";
+  const notes = JSON.parse(localStorage.getItem("bt_notes") || "[]");
+  const recentNotes = notes.slice(-5).map(n => `[${n.tag||"note"}] ${n.text}`).join("\n");
+
+  return `YOUR NAME: ${botName}
+${customPrompt ? "\nUSER'S CUSTOM INSTRUCTIONS:\n" + customPrompt + "\n" : ""}
+${recentNotes ? "USER'S RECENT FINANCIAL NOTES:\n" + recentNotes + "\n" : ""}
+USER'S FINANCIAL DATA (current month):
+Monthly Income: $${income.toFixed(2)}
+Budget: 50% Needs ($${(income*0.5).toFixed(2)}), 30% Wants ($${(income*0.3).toFixed(2)}), 20% Savings ($${(income*0.2).toFixed(2)})
+Actual Spending: Needs $${needs.toFixed(2)} (${income>0?Math.round(needs/income*100):0}%), Wants $${wants.toFixed(2)} (${income>0?Math.round(wants/income*100):0}%), Savings $${savings.toFixed(2)} (${income>0?Math.round(savings/income*100):0}%)
+Total Spent: $${total.toFixed(2)} | Remaining: $${(income-total).toFixed(2)}
+Top Expenses: ${topExpenses || "None yet"}
+Category Breakdown: ${subBreakdown || "None yet"}
+Savings Goals: ${goalInfo}
+Number of Transactions: ${data.expenses.length}`;
+}
+
+const SYSTEM_PROMPT = `You are a friendly, supportive personal budget advisor inside a 50/30/20 budget tracking app. The user has given you the name shown below. Use it if they set one.
+
+RULES:
+1. Give budgeting, saving, spending, tax preparation, investment basics, and financial planning advice based on the user's data below.
+2. Be specific — reference their ACTUAL numbers, categories, and goals.
+3. Be encouraging and non-judgmental. Never shame spending habits.
+4. Keep responses concise — 2-3 short paragraphs max. Use bullet points when listing tips.
+5. For tax, investment, insurance, and legal topics: provide helpful general guidance but ALWAYS add: "⚠️ This is general guidance — consult a qualified professional for decisions specific to your situation."
+6. NEVER invent or assume data you don't have. Only reference what's in the context below.
+7. Always end advice with an encouraging note.
+8. If the user has no expenses yet, encourage them to start tracking and explain the 50/30/20 rule.
+9. ALWAYS include this at the end of your FIRST response only: "💡 Remember: I'm an AI assistant providing general guidance — for important financial decisions, please consult a qualified professional."
+
+PERSONALITY: Friendly, concise, data-driven, encouraging. Like a smart friend who's good with money.`;
+
+// API endpoints for each provider
+const AI_ENDPOINTS = {
+  gemini: { url: "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent", type: "gemini" },
+  groq: { url: "https://api.groq.com/openai/v1/chat/completions", type: "openai", model: "llama-3.3-70b-versatile" },
+  openai: { url: "https://api.openai.com/v1/chat/completions", type: "openai", model: "gpt-4o-mini" },
+  openrouter: { url: "https://openrouter.ai/api/v1/chat/completions", type: "openai", model: "google/gemini-2.0-flash-exp:free" }
+};
+
+let chatHistory = [];
+
+async function sendChat() {
+  const input = document.getElementById("chatInput");
+  const msg = input.value.trim();
+  if (!msg) return;
+
+  const config = getAiConfig();
+  if (!config) { toast("⚠️ Set up your API key first"); return; }
+
+  // Add user message to UI
+  addChatMessage("user", msg);
+  input.value = "";
+  chatHistory.push({ role: "user", content: msg });
+
+  // Show typing indicator
+  const typingId = showTyping();
+
+  try {
+    const context = buildAiContext();
+    let endpoint = AI_ENDPOINTS[config.provider];
+
+    // Handle custom provider
+    if (config.provider === "custom") {
+      endpoint = { url: config.customUrl, type: "openai", model: config.customModel || "default" };
+    }
+
+    let response;
+    if (endpoint.type === "gemini") {
+      response = await callGemini(config.key, endpoint.url, context, chatHistory);
+    } else {
+      response = await callOpenAI(config.key, endpoint.url, endpoint.model, context, chatHistory);
+    }
+
+    removeTyping(typingId);
+    addChatMessage("bot", response);
+    chatHistory.push({ role: "assistant", content: response });
+
+    // Keep history manageable (last 10 messages)
+    if (chatHistory.length > 20) chatHistory = chatHistory.slice(-20);
+
+  } catch(err) {
+    removeTyping(typingId);
+    let errMsg = "Sorry, something went wrong. ";
+    if (err.message.includes("401") || err.message.includes("403")) {
+      errMsg += "Your API key appears to be invalid or expired. Check it in Settings.";
+    } else if (err.message.includes("429")) {
+      errMsg += "Rate limit reached. Wait a moment and try again.";
+    } else if (err.message.includes("Failed to fetch")) {
+      errMsg += "Can't reach the AI service. Check your internet connection.";
+    } else {
+      errMsg += err.message;
+    }
+    addChatMessage("bot", "⚠️ " + errMsg);
+  }
+}
+
+async function callGemini(key, url, context, history) {
+  const contents = [];
+  // System instruction via first user/model pair
+  contents.push({ role: "user", parts: [{ text: SYSTEM_PROMPT + "\n\n" + context }] });
+  contents.push({ role: "model", parts: [{ text: "Understood! I'll analyze your budget data and provide helpful, specific advice. How can I help you today?" }] });
+  // Chat history
+  history.forEach(h => {
+    contents.push({ role: h.role === "user" ? "user" : "model", parts: [{ text: h.content }] });
+  });
+
+  const res = await fetch(url + "?key=" + key, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ contents })
+  });
+  if (!res.ok) throw new Error(res.status + " " + res.statusText);
+  const data = await res.json();
+  return data.candidates?.[0]?.content?.parts?.[0]?.text || "I couldn't generate a response. Please try again.";
+}
+
+async function callOpenAI(key, url, model, context, history) {
+  const messages = [
+    { role: "system", content: SYSTEM_PROMPT + "\n\n" + context }
+  ];
+  history.forEach(h => messages.push({ role: h.role, content: h.content }));
+
+  const res = await fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", "Authorization": "Bearer " + key },
+    body: JSON.stringify({ model, messages, max_tokens: 600, temperature: 0.7 })
+  });
+  if (!res.ok) throw new Error(res.status + " " + res.statusText);
+  const data = await res.json();
+  return data.choices?.[0]?.message?.content || "I couldn't generate a response. Please try again.";
+}
+
+function aiQuickAction(type) {
+  const actions = {
+    analyze: "Analyze my spending this month. Am I on track with the 50/30/20 rule? What stands out?",
+    tips: "Based on my actual spending data, give me 3 specific tips to save more money this month.",
+    afford: "I want to make a purchase. Based on my remaining budget, how much can I safely spend on 'wants' this month?",
+    goals: "Look at my savings goals. Am I on track? What do I need to do to hit them faster?",
+    compare: "Compare my actual spending vs my 50/30/20 budget. Where am I over or under? Be specific."
+  };
+  document.getElementById("chatInput").value = actions[type] || "";
+  sendChat();
+}
+
+function addChatMessage(type, text) {
+  const container = document.getElementById("chatMessages");
+  const div = document.createElement("div");
+  div.className = "chat-msg " + type;
+  const avatar = type === "bot" ? "🤖" : "👤";
+
+  // Simple markdown-like formatting
+  let formatted = text
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\n- /g, '\n• ')
+    .replace(/\n/g, '<br>');
+
+  div.innerHTML = `
+    <div class="chat-avatar">${avatar}</div>
+    <div class="chat-bubble">${formatted}</div>
+  `;
+  container.appendChild(div);
+  container.scrollTop = container.scrollHeight;
+}
+
+function showTyping() {
+  const container = document.getElementById("chatMessages");
+  const div = document.createElement("div");
+  div.className = "chat-msg bot";
+  div.id = "typing-" + Date.now();
+  div.innerHTML = `
+    <div class="chat-avatar">🤖</div>
+    <div class="chat-bubble"><div class="typing-dots"><span></span><span></span><span></span></div></div>
+  `;
+  container.appendChild(div);
+  container.scrollTop = container.scrollHeight;
+  document.getElementById("chatSendBtn").disabled = true;
+  return div.id;
+}
+
+function removeTyping(id) {
+  const el = document.getElementById(id);
+  if (el) el.remove();
+  document.getElementById("chatSendBtn").disabled = false;
+}
+
+function clearChat() {
+  chatHistory = [];
+  const botName = localStorage.getItem("bt_bot_name") || "AI Advisor";
+  const container = document.getElementById("chatMessages");
+  container.innerHTML = "";
+  addChatMessage("bot", `Chat cleared! I'm **${botName}** — how can I help you with your budget?`);
+}
+
+function showApiGuide() {
+  const provider = document.getElementById("aiProvider").value;
+  const guides = {
+    gemini: {
+      name: "Google Gemini",
+      steps: [
+        ["Go to Google AI Studio", "Visit <a href='https://aistudio.google.com/apikey' target='_blank' style='color:var(--pri);font-weight:700'>aistudio.google.com/apikey</a>"],
+        ["Sign in with Google", "Use any Google account — it's free"],
+        ["Click 'Create API Key'", "Select any project or create a new one"],
+        ["Copy the key", "It starts with 'AIza...' — copy the whole thing"],
+        ["Paste it here", "Come back and paste it in the API Key field above"]
+      ],
+      note: "Free tier: 15 requests/min, 1 million tokens/day — more than enough for budget advice!"
+    },
+    groq: {
+      name: "Groq",
+      steps: [
+        ["Go to Groq Console", "Visit <a href='https://console.groq.com/keys' target='_blank' style='color:var(--pri);font-weight:700'>console.groq.com/keys</a>"],
+        ["Sign up / Sign in", "Create a free account"],
+        ["Click 'Create API Key'", "Give it any name like 'budget-tracker'"],
+        ["Copy the key", "It starts with 'gsk_...' — copy the whole thing"],
+        ["Paste it here", "Come back and paste it in the API Key field above"]
+      ],
+      note: "Free tier: 30 requests/min, 14,400 requests/day. Fastest AI responses!"
+    },
+    openai: {
+      name: "OpenAI",
+      steps: [
+        ["Go to OpenAI API", "Visit <a href='https://platform.openai.com/api-keys' target='_blank' style='color:var(--pri);font-weight:700'>platform.openai.com/api-keys</a>"],
+        ["Sign up / Sign in", "Create an account (you get $5 free credits)"],
+        ["Click 'Create new secret key'", "Give it any name"],
+        ["Copy the key", "It starts with 'sk-...' — copy IMMEDIATELY (you can't see it again)"],
+        ["Paste it here", "Come back and paste it in the API Key field above"]
+      ],
+      note: "Free $5 credit (expires after 3 months). Uses GPT-4o mini."
+    },
+    openrouter: {
+      name: "OpenRouter",
+      steps: [
+        ["Go to OpenRouter", "Visit <a href='https://openrouter.ai/keys' target='_blank' style='color:var(--pri);font-weight:700'>openrouter.ai/keys</a>"],
+        ["Sign up / Sign in", "Create a free account"],
+        ["Click 'Create Key'", "Give it any name"],
+        ["Copy the key", "It starts with 'sk-or-...' — copy the whole thing"],
+        ["Paste it here", "Come back and paste it in the API Key field above"]
+      ],
+      note: "Free models available! Access to many AI providers through one key."
+    }
+  };
+
+  const guide = guides[provider];
+  let html = `<div class="modal-head"><h3>📖 Get a Free ${guide.name} API Key</h3><button class="close-modal" onclick="closeApiGuide()">✕</button></div>`;
+  html += `<p class="modal-sub">Follow these steps — takes about 2 minutes:</p>`;
+  guide.steps.forEach((step, i) => {
+    html += `<div class="step"><div class="step-num">${i+1}</div><div class="step-text"><strong>${step[0]}</strong>${step[1]}</div></div>`;
+  });
+  html += `<div class="info-box info" style="margin-top:12px">💡 ${guide.note}</div>`;
+  html += `<div class="modal-actions"><button class="btn btn-pri" onclick="closeApiGuide()">Got it!</button></div>`;
+
+  // Reuse install modal structure
+  const overlay = document.createElement("div");
+  overlay.className = "modal-overlay show";
+  overlay.id = "apiGuideModal";
+  overlay.onclick = e => { if (e.target === overlay) closeApiGuide(); };
+  overlay.innerHTML = `<div class="modal">${html}</div>`;
+  document.body.appendChild(overlay);
+  document.body.style.overflow = "hidden";
+}
+
+function closeApiGuide() {
+  const m = document.getElementById("apiGuideModal");
+  if (m) m.remove();
+  document.body.style.overflow = "";
+}
+
 // ─── FILE DOWNLOAD ─────────────────────────────────────────
 function downloadFile(content, filename, mimeType) {
   const blob = new Blob([content], { type: mimeType + ";charset=utf-8" });
@@ -2539,5 +3325,5 @@ window.addEventListener('appinstalled', () => {
   toast("🎉 App installed successfully!");
 });
 </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a0e906c87f5cc849',t:'MTc4MTk0MDE4OQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</body>
 </html>
