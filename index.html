@@ -751,6 +751,39 @@ tbody tr:hover td{background:var(--pri-l)}
 .ai-premium-banner .btn-cta:hover{transform:scale(1.04);box-shadow:0 8px 24px rgba(0,0,0,.2)}
 .api-key-input{font-family:'SF Mono',Consolas,monospace;font-size:12px;letter-spacing:.5px}
 
+/* ─── Smart Insights ─── */
+.insight{display:flex;gap:12px;align-items:flex-start;padding:12px;background:var(--bg);border-radius:10px;border:1px solid var(--brd);margin-bottom:8px}
+.insight:last-child{margin-bottom:0}
+.insight-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.insight-icon.up{background:var(--suc-l);color:var(--suc)}
+.insight-icon.down{background:var(--dan-l);color:var(--dan)}
+.insight-icon.goal{background:var(--pri-l);color:var(--pri-d)}
+.insight-icon.info{background:var(--acc-l);color:var(--acc)}
+.insight-icon.streak{background:var(--pri-l);color:var(--pri-d);font-weight:800;font-size:16px}
+.insight-title{font-size:13px;font-weight:700;color:var(--txt);margin-bottom:2px}
+.insight-body{font-size:12px;color:var(--txt2);line-height:1.5}
+
+/* ─── Content Feed ─── */
+.feed-item{border-left:3px solid var(--brd);padding:12px 14px;margin-bottom:8px;border-radius:0 10px 10px 0;background:var(--bg)}
+.feed-item:last-child{margin-bottom:0}
+.feed-item.tip{border-left-color:var(--pri)}
+.feed-item.product{border-left-color:var(--acc)}
+.feed-item.challenge{border-left-color:#7A6899}
+.feed-item.announcement{border-left-color:var(--suc)}
+.feed-item.seasonal{border-left-color:var(--acc)}
+.feed-item.pinned{background:var(--pri-l)}
+.feed-meta{display:flex;align-items:center;gap:6px;margin-bottom:4px}
+.feed-tag{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;padding:2px 6px;border-radius:8px}
+.feed-tag.tip{background:var(--pri-l);color:var(--pri-d)}
+.feed-tag.product{background:var(--acc-l);color:var(--acc)}
+.feed-tag.challenge{background:#F0ECF5;color:#7A6899}
+.feed-tag.announcement{background:var(--suc-l);color:var(--suc)}
+.feed-tag.seasonal{background:var(--acc-l);color:var(--acc)}
+.feed-date{font-size:10px;color:var(--txt2)}
+.feed-title{font-size:13px;font-weight:700;margin-bottom:4px}
+.feed-body{font-size:12px;color:var(--txt2);line-height:1.5}
+.feed-link{display:inline-block;margin-top:8px;padding:5px 14px;border-radius:8px;font-size:11px;font-weight:700;background:var(--pri);color:var(--on-pri);text-decoration:none}
+
 /* ─── Section Divider ─── */
 .section-label{
   font-size:10px;font-weight:700;text-transform:uppercase;
@@ -923,6 +956,12 @@ footer .footer-links a:hover{color:var(--pri-d)}
       </div>
     </div>
 
+    <!-- Smart Insights -->
+    <div id="insightsCard" class="card" style="display:none">
+      <h3><span class="icon-wrap"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></span> Insights</h3>
+      <div id="insightsList"></div>
+    </div>
+
     <!-- Stat Cards -->
     <div class="stats">
       <div class="stat needs">
@@ -1056,6 +1095,12 @@ footer .footer-links a:hover{color:var(--pri-d)}
       <a href="#" class="btn-cta" target="_blank">
         Get the Full Template — $6.99
       </a>
+    </div>
+
+    <!-- Content Feed -->
+    <div class="card" id="feedCard" style="display:none">
+      <h3><span class="icon-wrap"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/></svg></span> Tips & Updates</h3>
+      <div id="feedList"></div>
     </div>
 
   </div>
@@ -2051,6 +2096,8 @@ document.addEventListener("DOMContentLoaded", () => {
   renderCustomQuickAdds();
   initAiChat();
   renderNotes();
+  renderInsights();
+  loadFeed();
   // Enter key on inline add input
   document.getElementById("inlineAddName").addEventListener("keydown", e => {
     if (e.key === "Enter") confirmInlineAdd();
@@ -2284,6 +2331,9 @@ function updateDashboard() {
 
   // Donut
   updateDonut(needsSpent, wantsSpent, savingsSpent);
+
+  // Refresh insights
+  renderInsights();
 }
 
 function updateProgress(name, spent, budget, cls) {
@@ -2827,6 +2877,137 @@ function checkForUpdates() {
       toast("⚠️ Couldn't check for updates — are you online?");
     });
   });
+}
+
+// ─── SMART INSIGHTS ────────────────────────────────────────
+function renderInsights() {
+  const data = getData();
+  const card = document.getElementById("insightsCard");
+  const list = document.getElementById("insightsList");
+  if (!card || !list) return;
+  if (data.expenses.length < 3) { card.style.display = "none"; return; }
+
+  const income = data.income || 0;
+  const needs = data.expenses.filter(e => e.cat === "Needs").reduce((s,e) => s+e.amt, 0);
+  const wants = data.expenses.filter(e => e.cat === "Wants").reduce((s,e) => s+e.amt, 0);
+  const savings = data.expenses.filter(e => e.cat === "Savings").reduce((s,e) => s+e.amt, 0);
+  const total = needs + wants + savings;
+  const remaining = income - total;
+
+  const insights = [];
+  const svgUp = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>';
+  const svgDown = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 18 13.5 8.5 8.5 13.5 1 6"/><polyline points="17 18 23 18 23 12"/></svg>';
+  const svgGoal = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>';
+  const svgDollar = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>';
+
+  // Remaining budget
+  if (income > 0) {
+    const now = new Date();
+    const daysLeft = new Date(now.getFullYear(), now.getMonth()+1, 0).getDate() - now.getDate();
+    const perDay = daysLeft > 0 ? remaining / daysLeft : 0;
+    insights.push({
+      icon: svgDollar, cls: remaining >= 0 ? "info" : "down",
+      title: fmt(Math.abs(remaining)) + (remaining >= 0 ? " remaining" : " over budget"),
+      body: daysLeft > 0 ? "That's about " + fmt(perDay) + "/day for the next " + daysLeft + " days." : "Last day of the month!"
+    });
+  }
+
+  // Needs/Wants/Savings vs budget
+  if (income > 0) {
+    const needsPct = Math.round(needs/income*100);
+    const wantsPct = Math.round(wants/income*100);
+    if (needsPct < 45) insights.push({ icon: svgUp, cls: "up", title: "Needs at " + needsPct + "% — well under 50%", body: "You're spending efficiently on essentials. " + fmt(income*0.5 - needs) + " under your needs budget." });
+    else if (needsPct > 55) insights.push({ icon: svgDown, cls: "down", title: "Needs at " + needsPct + "% — over the 50% target", body: "Consider if any 'needs' expenses could be reduced. " + fmt(needs - income*0.5) + " over budget." });
+
+    if (wantsPct < 20) insights.push({ icon: svgUp, cls: "up", title: "Wants spending very low at " + wantsPct + "%", body: "You're being disciplined! You have " + fmt(income*0.3 - wants) + " left in your wants budget." });
+    else if (wantsPct > 35) insights.push({ icon: svgDown, cls: "down", title: "Wants at " + wantsPct + "% — over 30% target", body: "Check your dining, entertainment, and shopping categories for quick wins." });
+  }
+
+  // Savings goals progress
+  data.goals.forEach(g => {
+    const pct = g.target > 0 ? Math.round(g.saved/g.target*100) : 0;
+    if (pct >= 100) insights.push({ icon: svgGoal, cls: "goal", title: g.name + " — Complete!", body: "You reached your " + fmt(g.target) + " goal. Time to set a new one!" });
+    else if (pct >= 50 && pct < 100) insights.push({ icon: svgGoal, cls: "goal", title: g.name + " — " + pct + "% there!", body: fmt(g.saved) + " saved of " + fmt(g.target) + ". " + fmt(g.target - g.saved) + " to go." });
+  });
+
+  // Top expense category
+  const subTotals = {};
+  data.expenses.forEach(e => { subTotals[e.sub] = (subTotals[e.sub]||0) + e.amt; });
+  const topSub = Object.entries(subTotals).sort((a,b) => b[1]-a[1])[0];
+  if (topSub && topSub[1] > 0) {
+    insights.push({ icon: svgDollar, cls: "info", title: "Biggest category: " + topSub[0], body: fmt(topSub[1]) + " spent on " + topSub[0] + " this month — " + Math.round(topSub[1]/total*100) + "% of your total spending." });
+  }
+
+  // Show max 4 insights
+  const show = insights.slice(0, 4);
+  if (show.length === 0) { card.style.display = "none"; return; }
+
+  card.style.display = "block";
+  list.innerHTML = show.map(i => `
+    <div class="insight">
+      <div class="insight-icon ${i.cls}">${i.icon}</div>
+      <div style="flex:1">
+        <div class="insight-title">${i.title}</div>
+        <div class="insight-body">${i.body}</div>
+      </div>
+    </div>
+  `).join("");
+}
+
+// ─── CONTENT FEED ──────────────────────────────────────────
+const FEED_URL = "posts.json"; // ← Change to your GitHub raw URL when deployed
+
+function loadFeed() {
+  const card = document.getElementById("feedCard");
+  const list = document.getElementById("feedList");
+  if (!card || !list) return;
+
+  // Try to fetch feed
+  fetch(FEED_URL, { cache: "no-cache" })
+    .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
+    .then(posts => {
+      localStorage.setItem("bt_feed_cache", JSON.stringify(posts));
+      renderFeed(posts);
+    })
+    .catch(() => {
+      // Offline — try cache
+      const cached = localStorage.getItem("bt_feed_cache");
+      if (cached) renderFeed(JSON.parse(cached));
+    });
+}
+
+function renderFeed(posts) {
+  const card = document.getElementById("feedCard");
+  const list = document.getElementById("feedList");
+  if (!card || !list || !posts || posts.length === 0) return;
+
+  // Sort: pinned first, then newest
+  posts.sort((a, b) => {
+    if (a.pinned && !b.pinned) return -1;
+    if (!a.pinned && b.pinned) return 1;
+    return new Date(b.date) - new Date(a.date);
+  });
+
+  // Show max 5 posts
+  const show = posts.slice(0, 5);
+
+  card.style.display = "block";
+  list.innerHTML = show.map(p => {
+    const d = new Date(p.date + "T00:00:00");
+    const dateStr = d.toLocaleDateString("en-US", { month:"short", day:"numeric", year:"numeric" });
+    const linkHtml = p.link ? `<a href="${p.link}" class="feed-link" target="_blank">${p.linkText || "Learn more"}</a>` : "";
+
+    return `<div class="feed-item ${p.type}${p.pinned ? " pinned" : ""}">
+      <div class="feed-meta">
+        <span class="feed-tag ${p.type}">${p.type}</span>
+        <span class="feed-date">${dateStr}</span>
+        ${p.pinned ? '<span style="font-size:10px;color:var(--pri-d);font-weight:600">Pinned</span>' : ""}
+      </div>
+      <div class="feed-title">${p.title}</div>
+      <div class="feed-body">${p.body}</div>
+      ${linkHtml}
+    </div>`;
+  }).join("");
 }
 
 // ─── FINANCIAL JOURNAL ─────────────────────────────────────
@@ -3609,5 +3790,5 @@ window.addEventListener('appinstalled', () => {
   toast("🎉 App installed successfully!");
 });
 </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a0eb1c574fb0e2df',t:'MTc4MTk2MjA0NA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</body>
 </html>
