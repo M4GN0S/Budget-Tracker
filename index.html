@@ -392,6 +392,22 @@ tbody tr:hover td{background:var(--pri-l)}
   box-shadow:0 4px 10px rgba(108,154,139,.2);
 }
 
+/* ─── Quick Add + Button ─── */
+.qa-add-btn{
+  border:1.5px dashed var(--brd) !important;
+  background:transparent !important;
+  color:var(--txt2) !important;
+  font-size:16px !important;
+  padding:5px 12px !important;
+  min-width:36px;
+  justify-content:center;
+}
+.qa-add-btn:hover{
+  border-color:var(--pri) !important;
+  color:var(--pri) !important;
+  background:var(--pri-l) !important;
+}
+
 /* ─── Custom Quick Add ─── */
 .qa-custom{position:relative;padding-right:28px !important}
 .qa-custom .qa-remove{
@@ -922,6 +938,7 @@ footer .footer-links a:hover{color:var(--pri-d)}
             <button class="quick-pill" onclick="quickAdd('Transportation','Needs')">🚗 Gas/Transit</button>
             <button class="quick-pill" onclick="quickAdd('Utilities','Needs')">⚡ Utilities</button>
             <button class="quick-pill" onclick="quickAdd('Healthcare','Needs')">💊 Healthcare</button>
+            <button class="quick-pill qa-add-btn" onclick="showInlineAdd('Needs')" title="Add custom">＋</button>
           </div>
         </div>
         <div style="margin-bottom:10px">
@@ -931,38 +948,26 @@ footer .footer-links a:hover{color:var(--pri-d)}
             <button class="quick-pill" onclick="quickAdd('Entertainment','Wants')">🎬 Entertainment</button>
             <button class="quick-pill" onclick="quickAdd('Shopping','Wants')">👗 Shopping</button>
             <button class="quick-pill" onclick="quickAdd('Subscriptions','Wants')">🎧 Subscriptions</button>
+            <button class="quick-pill qa-add-btn" onclick="showInlineAdd('Wants')" title="Add custom">＋</button>
           </div>
         </div>
-        <div style="margin-bottom:10px">
+        <div style="margin-bottom:0">
           <div class="section-label">Savings</div>
           <div style="display:flex;flex-wrap:wrap;gap:6px" id="quickSavings">
             <button class="quick-pill" onclick="quickAdd('Emergency Fund','Savings')">🏦 Emergency Fund</button>
             <button class="quick-pill" onclick="quickAdd('Investments','Savings')">📈 Investments</button>
+            <button class="quick-pill qa-add-btn" onclick="showInlineAdd('Savings')" title="Add custom">＋</button>
           </div>
         </div>
       </div>
-      <!-- Custom Quick Add -->
-      <div style="margin-top:14px;border-top:1px solid var(--brd);padding-top:14px;overflow:hidden">
-        <div class="section-label">Add Your Own</div>
-        <div class="add-form" style="grid-template-columns:2fr 1fr auto">
-          <div class="fg">
-            <label>Name</label>
-            <input type="text" id="customQaName" placeholder="e.g. Coffee ☕">
-          </div>
-          <div class="fg">
-            <label>Category</label>
-            <select id="customQaCat">
-              <option value="Needs">🏠 Needs</option>
-              <option value="Wants" selected>🎮 Wants</option>
-              <option value="Savings">💰 Savings</option>
-            </select>
-          </div>
-          <div class="fg">
-            <label>&nbsp;</label>
-            <button class="btn btn-pri btn-sm" onclick="addCustomQuickAdd()">+ Add</button>
-          </div>
+      <!-- Inline add (hidden by default, appears when + is clicked) -->
+      <div id="inlineAddRow" style="display:none;margin-top:12px;border-top:1px solid var(--brd);padding-top:12px">
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+          <span style="font-size:12px;font-weight:700;color:var(--txt2)" id="inlineAddLabel">Adding to: Needs</span>
+          <input type="text" id="inlineAddName" placeholder="Type name & press Enter" style="flex:1;min-width:140px;padding:8px 12px;border:1.5px solid var(--pri);border-radius:10px;font-size:13px;font-family:inherit;outline:none;background:var(--input-bg);color:var(--txt);box-sizing:border-box">
+          <button class="btn btn-pri btn-sm" onclick="confirmInlineAdd()">Add</button>
+          <button class="btn btn-sec btn-sm" onclick="hideInlineAdd()">Cancel</button>
         </div>
-        <div id="customQaList" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:10px"></div>
       </div>
     </div>
 
@@ -1356,6 +1361,11 @@ document.addEventListener("DOMContentLoaded", () => {
   renderGoals();
   renderRecent();
   renderCustomQuickAdds();
+  // Enter key on inline add input
+  document.getElementById("inlineAddName").addEventListener("keydown", e => {
+    if (e.key === "Enter") confirmInlineAdd();
+    if (e.key === "Escape") hideInlineAdd();
+  });
   showDashNewsletter();
   maybeShowNlPopup();
   // If already subscribed, update Settings form state
@@ -1440,22 +1450,40 @@ function updateSubcategories(selectVal) {
   }
 }
 
-// ─── CUSTOM QUICK ADD ──────────────────────────────────────
-function addCustomQuickAdd() {
-  const name = document.getElementById("customQaName").value.trim();
-  const cat = document.getElementById("customQaCat").value;
-  if (!name) { toast("⚠️ Enter a name for the quick add"); return; }
+// ─── CUSTOM QUICK ADD (Inline per category) ────────────────
+let inlineAddCat = "";
+
+function showInlineAdd(cat) {
+  inlineAddCat = cat;
+  const row = document.getElementById("inlineAddRow");
+  const label = document.getElementById("inlineAddLabel");
+  const input = document.getElementById("inlineAddName");
+  const catIcon = cat === "Needs" ? "🏠" : cat === "Wants" ? "🎮" : "💰";
+  label.textContent = catIcon + " Adding to: " + cat;
+  row.style.display = "block";
+  input.value = "";
+  input.focus();
+}
+
+function hideInlineAdd() {
+  document.getElementById("inlineAddRow").style.display = "none";
+  inlineAddCat = "";
+}
+
+function confirmInlineAdd() {
+  const name = document.getElementById("inlineAddName").value.trim();
+  if (!name) { toast("⚠️ Enter a name"); return; }
+  if (!inlineAddCat) return;
 
   const customs = JSON.parse(localStorage.getItem("bt_custom_qa") || "[]");
-  // Prevent duplicates
-  if (customs.find(c => c.name.toLowerCase() === name.toLowerCase())) {
-    toast("⚠️ '" + name + "' already exists"); return;
+  if (customs.find(c => c.name.toLowerCase() === name.toLowerCase() && c.cat === inlineAddCat)) {
+    toast("⚠️ '" + name + "' already exists in " + inlineAddCat); return;
   }
-  customs.push({ name, cat });
+  customs.push({ name, cat: inlineAddCat });
   localStorage.setItem("bt_custom_qa", JSON.stringify(customs));
-  document.getElementById("customQaName").value = "";
   renderCustomQuickAdds();
-  toast("✅ '" + name + "' added to Quick Add!");
+  hideInlineAdd();
+  toast("✅ '" + name + "' added to " + inlineAddCat + "!");
 }
 
 function removeCustomQuickAdd(idx) {
@@ -1469,19 +1497,27 @@ function removeCustomQuickAdd(idx) {
 
 function renderCustomQuickAdds() {
   const customs = JSON.parse(localStorage.getItem("bt_custom_qa") || "[]");
-  const el = document.getElementById("customQaList");
-  if (!el) return;
-  if (customs.length === 0) {
-    el.innerHTML = '<span style="font-size:12px;color:var(--txt2)">No custom items yet — add your frequent expenses above!</span>';
-    return;
-  }
-  el.innerHTML = customs.map((c, i) => {
-    const catIcon = c.cat === "Needs" ? "🏠" : c.cat === "Wants" ? "🎮" : "💰";
-    return `<button class="quick-pill qa-custom" onclick="quickAdd('${c.name.replace(/'/g,"\\'")}','${c.cat}')">
-      ${catIcon} ${c.name}
-      <span class="qa-remove" onclick="event.stopPropagation();removeCustomQuickAdd(${i})">✕</span>
-    </button>`;
-  }).join("");
+  // Inject custom pills into each category's container (before the + button)
+  ["Needs", "Wants", "Savings"].forEach(cat => {
+    const container = document.getElementById("quick" + cat);
+    if (!container) return;
+    // Remove old custom pills (keep built-in + the add button)
+    container.querySelectorAll(".qa-custom").forEach(el => el.remove());
+    // Find the + button to insert before it
+    const addBtn = container.querySelector(".qa-add-btn");
+    // Add custom pills for this category
+    customs.filter(c => c.cat === cat).forEach((c, i) => {
+      const origIdx = customs.indexOf(c);
+      const pill = document.createElement("button");
+      pill.className = "quick-pill qa-custom";
+      pill.onclick = () => quickAdd(c.name, c.cat);
+      const catIcon = cat === "Needs" ? "🏠" : cat === "Wants" ? "🎮" : "💰";
+      pill.innerHTML = catIcon + " " + c.name +
+        '<span class="qa-remove" onclick="event.stopPropagation();removeCustomQuickAdd(' + origIdx + ')">✕</span>';
+      if (addBtn) container.insertBefore(pill, addBtn);
+      else container.appendChild(pill);
+    });
+  });
 }
 
 // ─── DELETE ────────────────────────────────────────────────
@@ -2209,5 +2245,5 @@ window.addEventListener('appinstalled', () => {
   toast("🎉 App installed successfully!");
 });
 </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a0e8ccec9d57e2fa',t:'MTc4MTkzNzgxOQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a0e8da79db138ca6',t:'MTc4MTkzODM3NA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
