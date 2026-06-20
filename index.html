@@ -25,6 +25,7 @@
   --bg:#F0F4F3;--card:#fff;
   --txt:#1A2421;--txt2:#5A6B66;--brd:#DFE6E9;
   --rad:16px;--sh:0 4px 20px rgba(0,0,0,.06);--sh2:0 8px 32px rgba(0,0,0,.10);
+  --on-pri:#fff;--input-bg:#fff;
 }
 
 body{
@@ -52,9 +53,9 @@ header{
   position:relative;
   text-align:center;
   padding:40px 24px 36px;
-  background:linear-gradient(135deg,var(--pri-d) 0%,var(--pri) 50%,#8BB5A8 100%);
+  background:linear-gradient(135deg,var(--pri-d) 0%,var(--pri) 50%,var(--pri) 100%);
   border-radius:24px;
-  color:#fff;
+  color:var(--on-pri);
   margin-bottom:24px;
   overflow:hidden;
   box-shadow:0 8px 32px rgba(74,122,107,.35);
@@ -89,8 +90,8 @@ header p{font-size:14px;opacity:.88;font-weight:400;max-width:420px;margin:0 aut
 
 /* ─── Install Banner ─── */
 .install-banner{
-  background:linear-gradient(135deg,#1A2421,var(--pri-d));
-  border-radius:var(--rad);padding:16px 20px;color:#fff;
+  background:linear-gradient(135deg,var(--txt),var(--pri-d));
+  border-radius:var(--rad);padding:16px 20px;color:var(--on-pri);
   margin-bottom:20px;display:none;
   align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;
   box-shadow:var(--sh2);
@@ -98,7 +99,7 @@ header p{font-size:14px;opacity:.88;font-weight:400;max-width:420px;margin:0 aut
 .install-banner.show{display:flex}
 .install-banner .ib-text{font-size:13px}
 .install-banner .ib-text strong{font-size:15px;display:block;margin-bottom:2px}
-.install-banner .btn-install{background:#fff;color:var(--pri-d);padding:8px 20px;border-radius:20px;font-weight:700;font-size:13px;transition:.2s}
+.install-banner .btn-install{background:var(--card);color:var(--pri-d);padding:8px 20px;border-radius:20px;font-weight:700;font-size:13px;transition:.2s}
 .install-banner .btn-install:hover{transform:scale(1.04);box-shadow:0 4px 12px rgba(0,0,0,.2)}
 .install-banner .btn-dismiss{background:none;color:rgba(255,255,255,.55);font-size:11px;padding:4px 8px;transition:.2s}
 .install-banner .btn-dismiss:hover{color:#fff}
@@ -125,7 +126,7 @@ header p{font-size:14px;opacity:.88;font-weight:400;max-width:420px;margin:0 aut
 .tab:hover{background:var(--pri-l);color:var(--pri-d)}
 .tab.active{
   background:linear-gradient(135deg,var(--pri-d),var(--pri));
-  color:#fff;
+  color:var(--on-pri);
   box-shadow:0 4px 14px rgba(74,122,107,.35);
 }
 
@@ -200,7 +201,7 @@ header p{font-size:14px;opacity:.88;font-weight:400;max-width:420px;margin:0 aut
 
 /* ─── Income Bar ─── */
 .income-bar{
-  background:linear-gradient(135deg,var(--pri-l),#fff);
+  background:linear-gradient(135deg,var(--pri-l),var(--card));
   border:1.5px solid var(--pri);
   border-radius:var(--rad);
   padding:20px 24px;
@@ -226,10 +227,10 @@ header p{font-size:14px;opacity:.88;font-weight:400;max-width:420px;margin:0 aut
   font-size:22px;font-weight:800;color:var(--pri-d);
   border:2px solid var(--pri);border-radius:12px;
   padding:8px 16px 8px 36px;
-  width:200px;text-align:right;background:#fff;
+  width:200px;text-align:right;background:var(--input-bg);
   outline:none;transition:.2s;
 }
-.income-bar input:focus{border-color:var(--pri-d);box-shadow:0 0 0 4px rgba(108,154,139,.18)}
+.income-bar input:focus{border-color:var(--pri-d);background:var(--input-bg);box-shadow:0 0 0 4px rgba(108,154,139,.18)}
 
 /* ─── Stats Grid ─── */
 .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:18px}
@@ -245,8 +246,8 @@ header p{font-size:14px;opacity:.88;font-weight:400;max-width:420px;margin:0 aut
   content:'';position:absolute;top:0;left:0;right:0;height:4px;border-radius:var(--rad) var(--rad) 0 0;
 }
 .stat.needs::before{background:linear-gradient(90deg,var(--pri-d),var(--pri))}
-.stat.wants::before{background:linear-gradient(90deg,#d4793e,var(--acc))}
-.stat.savings::before{background:linear-gradient(90deg,#3a9a3a,var(--suc))}
+.stat.wants::before{background:linear-gradient(90deg,var(--acc),var(--acc))}
+.stat.savings::before{background:linear-gradient(90deg,var(--suc),var(--suc))}
 .stat-icon{
   width:40px;height:40px;border-radius:10px;
   display:flex;align-items:center;justify-content:center;
@@ -275,12 +276,12 @@ header p{font-size:14px;opacity:.88;font-weight:400;max-width:420px;margin:0 aut
   position:relative;
 }
 .fill-n{background:linear-gradient(90deg,var(--pri-d),var(--pri))}
-.fill-w{background:linear-gradient(90deg,#d4793e,var(--acc))}
-.fill-s{background:linear-gradient(90deg,#3a9a3a,var(--suc))}
-.fill-over{background:linear-gradient(90deg,#b02020,var(--dan))}
+.fill-w{background:linear-gradient(90deg,var(--acc),var(--acc))}
+.fill-s{background:linear-gradient(90deg,var(--suc),var(--suc))}
+.fill-over{background:linear-gradient(90deg,var(--dan),var(--dan))}
 .prog-pct{
   position:absolute;right:6px;top:50%;transform:translateY(-50%);
-  font-size:9px;font-weight:700;color:#fff;white-space:nowrap;
+  font-size:9px;font-weight:700;color:#fff;white-space:nowrap;text-shadow:0 1px 2px rgba(0,0,0,.3);
 }
 
 /* ─── Summary Cards ─── */
@@ -307,7 +308,7 @@ header p{font-size:14px;opacity:.88;font-weight:400;max-width:420px;margin:0 aut
 .table-wrap{overflow-x:auto;border-radius:12px;border:1px solid var(--brd)}
 table{width:100%;border-collapse:collapse;font-size:13px}
 thead{background:linear-gradient(135deg,var(--pri-d),var(--pri))}
-th{color:#fff;padding:11px 14px;text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:.8px;font-weight:700}
+th{color:var(--on-pri);padding:11px 14px;text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:.8px;font-weight:700}
 td{padding:11px 14px;border-bottom:1px solid rgba(0,0,0,.04)}
 tbody tr:last-child td{border-bottom:none}
 tbody tr{transition:background .15s}
@@ -319,8 +320,8 @@ tbody tr:hover td{background:var(--pri-l)}
   padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;
 }
 .cat-pill.needs{background:var(--pri-l);color:var(--pri-d)}
-.cat-pill.wants{background:var(--acc-l);color:#b5622a}
-.cat-pill.savings{background:var(--suc-l);color:#2d6e2d}
+.cat-pill.wants{background:var(--acc-l);color:var(--acc)}
+.cat-pill.savings{background:var(--suc-l);color:var(--suc)}
 
 /* ─── Form ─── */
 .add-form{
@@ -351,7 +352,7 @@ tbody tr:hover td{background:var(--pri-l)}
   box-sizing:border-box;
 }
 .fg input:focus,.fg select:focus{
-  border-color:var(--pri);background:#fff;
+  border-color:var(--pri);background:var(--input-bg);
   box-shadow:0 0 0 3px rgba(108,154,139,.15);
 }
 
@@ -359,7 +360,7 @@ tbody tr:hover td{background:var(--pri-l)}
 .btn{padding:10px 20px;border-radius:10px;font-weight:700;font-size:13px;transition:all .2s;display:inline-flex;align-items:center;gap:6px}
 .btn-pri{
   background:linear-gradient(135deg,var(--pri-d),var(--pri));
-  color:#fff;box-shadow:0 4px 12px rgba(74,122,107,.3);
+  color:var(--on-pri);box-shadow:0 4px 12px rgba(74,122,107,.3);
 }
 .btn-pri:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(74,122,107,.4)}
 .btn-pri:active{transform:translateY(0)}
@@ -368,12 +369,12 @@ tbody tr:hover td{background:var(--pri-l)}
   padding:5px 10px;font-size:11px;border-radius:7px;font-weight:700;
   border:1px solid rgba(217,83,79,.15);
 }
-.btn-dan:hover{background:var(--dan);color:#fff}
+.btn-dan:hover{background:var(--dan);color:var(--on-pri)}
 .btn-sec{
   background:var(--pri-l);color:var(--pri-d);
   border:1.5px solid rgba(108,154,139,.3);
 }
-.btn-sec:hover{background:#d0e3db;border-color:var(--pri)}
+.btn-sec:hover{background:var(--pri-l);border-color:var(--pri)}
 .btn-sm{padding:7px 14px;font-size:12px}
 
 /* ─── Quick Add Pills ─── */
@@ -391,11 +392,23 @@ tbody tr:hover td{background:var(--pri-l)}
   box-shadow:0 4px 10px rgba(108,154,139,.2);
 }
 
+/* ─── Custom Quick Add ─── */
+.qa-custom{position:relative;padding-right:28px !important}
+.qa-custom .qa-remove{
+  position:absolute;right:4px;top:50%;transform:translateY(-50%);
+  width:18px;height:18px;border-radius:50%;
+  background:var(--dan-l);color:var(--dan);
+  font-size:10px;font-weight:800;
+  display:flex;align-items:center;justify-content:center;
+  border:none;cursor:pointer;opacity:0;transition:.2s;
+}
+.qa-custom:hover .qa-remove{opacity:1}
+
 /* ─── CTA Banner ─── */
 .cta{
   background:linear-gradient(135deg,var(--pri-d) 0%,var(--pri) 60%,var(--acc) 100%);
   border-radius:var(--rad);padding:28px 24px;
-  text-align:center;color:#fff;margin:0 0 18px;
+  text-align:center;color:var(--on-pri);margin:0 0 18px;
   position:relative;overflow:hidden;
   box-shadow:0 8px 24px rgba(74,122,107,.3);
 }
@@ -407,7 +420,7 @@ tbody tr:hover td{background:var(--pri-l)}
 .cta h3{font-size:20px;margin-bottom:6px;font-weight:800}
 .cta p{font-size:13px;opacity:.9;margin-bottom:16px;max-width:460px;margin-left:auto;margin-right:auto;margin-bottom:16px}
 .cta .btn-cta{
-  background:#fff;color:var(--pri-d);
+  background:var(--card);color:var(--pri-d);
   font-size:14px;font-weight:800;
   padding:12px 32px;border-radius:25px;
   display:inline-flex;align-items:center;gap:8px;
@@ -465,16 +478,16 @@ tbody tr:hover td{background:var(--pri-l)}
 .goal-card{
   border:1.5px solid var(--brd);border-radius:12px;
   padding:16px;margin-bottom:12px;
-  background:linear-gradient(135deg,var(--card),var(--bg));
+  background:var(--card);
   transition:all .2s;
 }
 .goal-card:hover{border-color:var(--pri);box-shadow:var(--sh)}
 .goal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
 .goal-name{font-weight:700;font-size:14px}
 .goal-status{font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px}
-.goal-status.complete{background:var(--suc-l);color:#2d6e2d}
+.goal-status.complete{background:var(--suc-l);color:var(--suc)}
 .goal-status.almost{background:var(--pri-l);color:var(--pri-d)}
-.goal-status.halfway{background:var(--acc-l);color:#b5622a}
+.goal-status.halfway{background:var(--acc-l);color:var(--acc)}
 .goal-status.started{background:var(--bg);color:var(--txt2)}
 
 /* ─── Data Stats ─── */
@@ -489,7 +502,7 @@ tbody tr:hover td{background:var(--pri-l)}
 /* ─── Toast ─── */
 .toast{
   position:fixed;bottom:24px;right:24px;
-  background:var(--txt);color:#fff;
+  background:var(--txt);color:var(--bg);
   padding:13px 22px;border-radius:12px;
   font-size:13px;font-weight:600;
   transform:translateY(120px) scale(.9);opacity:0;
@@ -533,7 +546,7 @@ tbody tr:hover td{background:var(--pri-l)}
   background:var(--bg);color:var(--txt2);cursor:pointer;transition:.2s;
   border:1.5px solid var(--brd);
 }
-.platform-tab.active{background:var(--pri);color:#fff;border-color:var(--pri);box-shadow:0 3px 10px rgba(74,122,107,.3)}
+.platform-tab.active{background:var(--pri);color:var(--on-pri);border-color:var(--pri);box-shadow:0 3px 10px rgba(74,122,107,.3)}
 .modal .step{
   display:flex;gap:12px;margin-bottom:10px;
   padding:12px;background:var(--bg);border-radius:10px;
@@ -541,13 +554,13 @@ tbody tr:hover td{background:var(--pri-l)}
 }
 .modal .step-num{
   width:28px;height:28px;background:linear-gradient(135deg,var(--pri-d),var(--pri));
-  color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  color:var(--on-pri);border-radius:50%;display:flex;align-items:center;justify-content:center;
   font-size:12px;font-weight:800;flex-shrink:0;
 }
 .modal .step-text{font-size:13px;color:var(--txt);line-height:1.5}
 .modal .step-text strong{display:block;margin-bottom:2px;font-weight:700}
 .info-box{padding:12px;border-radius:10px;font-size:12px;margin-top:10px;border:1px solid transparent}
-.info-box.warn{background:var(--acc-l);color:#8a4a1a;border-color:rgba(232,152,94,.3)}
+.info-box.warn{background:var(--acc-l);color:var(--acc);border-color:rgba(232,152,94,.3)}
 .info-box.info{background:var(--pri-l);color:var(--pri-d);border-color:rgba(108,154,139,.3)}
 .modal-actions{margin-top:18px;display:flex;gap:8px;justify-content:center}
 
@@ -604,7 +617,7 @@ footer .footer-links a:hover{color:var(--pri-d)}
 }
 .steps-list .step-n{
   width:22px;height:22px;flex-shrink:0;
-  background:var(--pri);color:#fff;border-radius:50%;
+  background:var(--pri);color:var(--on-pri);border-radius:50%;
   display:flex;align-items:center;justify-content:center;
   font-size:11px;font-weight:800;margin-top:1px;
 }
@@ -619,6 +632,8 @@ footer .footer-links a:hover{color:var(--pri-d)}
   .summary-grid{grid-template-columns:1fr 1fr}
   .export-grid{grid-template-columns:1fr}
   .theme-swatch{justify-content:center}
+  /* Contact form name/email stack */
+  #contactForm div[style*="grid-template-columns:1fr 1fr"]{grid-template-columns:1fr !important}
   /* Goals add-form — override inline style */
   .goals-form{grid-template-columns:1fr 1fr !important}
   /* Data stat grid */
@@ -801,6 +816,22 @@ footer .footer-links a:hover{color:var(--pri-d)}
       </div>
     </div>
 
+    <!-- Newsletter on Dashboard -->
+    <div class="card" id="dashNewsletter" style="border-left:4px solid var(--acc);display:none">
+      <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+        <div style="flex:1;min-width:200px">
+          <div style="font-size:14px;font-weight:800;color:var(--txt);margin-bottom:4px">📬 Get Free Budget Tips & Templates</div>
+          <div style="font-size:12px;color:var(--txt2)">Join our newsletter — money tips, new tools, and exclusive templates. No spam ever.</div>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;flex:1;min-width:200px" id="dashNlForm">
+          <input type="email" id="dashNlEmail" placeholder="your@email.com" style="flex:1;min-width:140px;padding:9px 14px;border:1.5px solid var(--brd);border-radius:10px;font-size:13px;font-family:inherit;outline:none;background:var(--bg);color:var(--txt);box-sizing:border-box">
+          <button class="btn btn-pri btn-sm" onclick="submitDashNewsletter()">Subscribe</button>
+        </div>
+        <div id="dashNlDone" style="display:none;font-size:13px;font-weight:700;color:var(--suc)">✅ You're subscribed!</div>
+        <button onclick="dismissDashNl()" style="background:none;color:var(--txt2);font-size:16px;padding:4px;line-height:1;flex-shrink:0" title="Dismiss">✕</button>
+      </div>
+    </div>
+
     <!-- Summary -->
     <div class="summary-grid">
       <div class="summary-card spent">
@@ -882,31 +913,56 @@ footer .footer-links a:hover{color:var(--pri-d)}
     <!-- Quick Add -->
     <div class="card">
       <h3><span class="icon-wrap">⚡</span> Quick Add</h3>
-      <div style="margin-bottom:10px">
-        <div class="section-label">Needs</div>
-        <div style="display:flex;flex-wrap:wrap;gap:6px">
-          <button class="quick-pill" onclick="quickAdd('Rent/Mortgage','Needs')">🏠 Rent</button>
-          <button class="quick-pill" onclick="quickAdd('Groceries','Needs')">🛒 Groceries</button>
-          <button class="quick-pill" onclick="quickAdd('Transportation','Needs')">🚗 Gas/Transit</button>
-          <button class="quick-pill" onclick="quickAdd('Utilities','Needs')">⚡ Utilities</button>
-          <button class="quick-pill" onclick="quickAdd('Healthcare','Needs')">💊 Healthcare</button>
+      <div id="quickAddList">
+        <div style="margin-bottom:10px">
+          <div class="section-label">Needs</div>
+          <div style="display:flex;flex-wrap:wrap;gap:6px" id="quickNeeds">
+            <button class="quick-pill" onclick="quickAdd('Rent/Mortgage','Needs')">🏠 Rent</button>
+            <button class="quick-pill" onclick="quickAdd('Groceries','Needs')">🛒 Groceries</button>
+            <button class="quick-pill" onclick="quickAdd('Transportation','Needs')">🚗 Gas/Transit</button>
+            <button class="quick-pill" onclick="quickAdd('Utilities','Needs')">⚡ Utilities</button>
+            <button class="quick-pill" onclick="quickAdd('Healthcare','Needs')">💊 Healthcare</button>
+          </div>
+        </div>
+        <div style="margin-bottom:10px">
+          <div class="section-label">Wants</div>
+          <div style="display:flex;flex-wrap:wrap;gap:6px" id="quickWants">
+            <button class="quick-pill" onclick="quickAdd('Dining Out','Wants')">🍕 Dining Out</button>
+            <button class="quick-pill" onclick="quickAdd('Entertainment','Wants')">🎬 Entertainment</button>
+            <button class="quick-pill" onclick="quickAdd('Shopping','Wants')">👗 Shopping</button>
+            <button class="quick-pill" onclick="quickAdd('Subscriptions','Wants')">🎧 Subscriptions</button>
+          </div>
+        </div>
+        <div style="margin-bottom:10px">
+          <div class="section-label">Savings</div>
+          <div style="display:flex;flex-wrap:wrap;gap:6px" id="quickSavings">
+            <button class="quick-pill" onclick="quickAdd('Emergency Fund','Savings')">🏦 Emergency Fund</button>
+            <button class="quick-pill" onclick="quickAdd('Investments','Savings')">📈 Investments</button>
+          </div>
         </div>
       </div>
-      <div style="margin-bottom:10px">
-        <div class="section-label">Wants</div>
-        <div style="display:flex;flex-wrap:wrap;gap:6px">
-          <button class="quick-pill" onclick="quickAdd('Dining Out','Wants')">🍕 Dining Out</button>
-          <button class="quick-pill" onclick="quickAdd('Entertainment','Wants')">🎬 Entertainment</button>
-          <button class="quick-pill" onclick="quickAdd('Shopping','Wants')">👗 Shopping</button>
-          <button class="quick-pill" onclick="quickAdd('Subscriptions','Wants')">🎧 Subscriptions</button>
+      <!-- Custom Quick Add -->
+      <div style="margin-top:14px;border-top:1px solid var(--brd);padding-top:14px">
+        <div class="section-label">Add Your Own</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:end">
+          <div class="fg" style="flex:2;min-width:120px">
+            <label>Name</label>
+            <input type="text" id="customQaName" placeholder="e.g. Coffee ☕">
+          </div>
+          <div class="fg" style="flex:1;min-width:100px">
+            <label>Category</label>
+            <select id="customQaCat">
+              <option value="Needs">🏠 Needs</option>
+              <option value="Wants" selected>🎮 Wants</option>
+              <option value="Savings">💰 Savings</option>
+            </select>
+          </div>
+          <div class="fg" style="flex:0">
+            <label>&nbsp;</label>
+            <button class="btn btn-pri btn-sm" onclick="addCustomQuickAdd()">+ Add</button>
+          </div>
         </div>
-      </div>
-      <div>
-        <div class="section-label">Savings</div>
-        <div style="display:flex;flex-wrap:wrap;gap:6px">
-          <button class="quick-pill" onclick="quickAdd('Emergency Fund','Savings')">🏦 Emergency Fund</button>
-          <button class="quick-pill" onclick="quickAdd('Investments','Savings')">📈 Investments</button>
-        </div>
+        <div id="customQaList" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:10px"></div>
       </div>
     </div>
 
@@ -1037,6 +1093,77 @@ footer .footer-links a:hover{color:var(--pri-d)}
       </div>
     </div>
 
+    <!-- Newsletter / Stay Updated -->
+    <div class="card" style="border-left:4px solid var(--acc)">
+      <h3><span class="icon-wrap" style="background:var(--acc-l)">📬</span> Stay Updated</h3>
+      <p style="font-size:13px;color:var(--txt2);margin:10px 0 14px">Get free budget tips, new templates, and product updates. No spam — unsubscribe anytime.</p>
+      <div id="newsletterForm">
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <input type="email" id="nlEmail" placeholder="your@email.com" style="flex:1;min-width:200px;padding:10px 14px;border:1.5px solid var(--brd);border-radius:10px;font-size:13px;font-family:inherit;outline:none;background:var(--bg);color:var(--txt);box-sizing:border-box">
+          <button class="btn btn-pri" onclick="submitNewsletter()">Subscribe ✉️</button>
+        </div>
+      </div>
+      <div id="newsletterSuccess" style="display:none;padding:14px;background:var(--suc-l);border-radius:10px;text-align:center">
+        <div style="font-size:24px;margin-bottom:6px">🎉</div>
+        <div style="font-size:14px;font-weight:700;color:var(--suc)">You're subscribed!</div>
+        <div style="font-size:12px;color:var(--txt2);margin-top:4px">Check your inbox for a welcome email.</div>
+      </div>
+    </div>
+
+    <!-- Contact / Feedback -->
+    <div class="card">
+      <h3><span class="icon-wrap">💬</span> Contact & Feedback</h3>
+      <p style="font-size:13px;color:var(--txt2);margin:10px 0 14px">Found a bug? Have a feature idea? We'd love to hear from you!</p>
+      <div id="contactForm">
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+            <input type="text" id="cfName" placeholder="Your name (optional)" style="padding:10px 14px;border:1.5px solid var(--brd);border-radius:10px;font-size:13px;font-family:inherit;outline:none;background:var(--bg);color:var(--txt);box-sizing:border-box;min-width:0">
+            <input type="email" id="cfEmail" placeholder="Your email (optional)" style="padding:10px 14px;border:1.5px solid var(--brd);border-radius:10px;font-size:13px;font-family:inherit;outline:none;background:var(--bg);color:var(--txt);box-sizing:border-box;min-width:0">
+          </div>
+          <select id="cfType" style="padding:10px 14px;border:1.5px solid var(--brd);border-radius:10px;font-size:13px;font-family:inherit;outline:none;background:var(--bg);color:var(--txt)">
+            <option value="feedback">💡 Feature Request / Idea</option>
+            <option value="bug">🐛 Bug Report</option>
+            <option value="question">❓ Question</option>
+            <option value="testimonial">⭐ Testimonial / Review</option>
+            <option value="other">💬 Other</option>
+          </select>
+          <textarea id="cfMessage" rows="4" placeholder="Tell us what's on your mind..." style="padding:10px 14px;border:1.5px solid var(--brd);border-radius:10px;font-size:13px;font-family:inherit;outline:none;background:var(--bg);color:var(--txt);resize:vertical;min-height:80px;box-sizing:border-box"></textarea>
+          <button class="btn btn-pri" onclick="submitContact()" style="align-self:flex-start">Send Message 📩</button>
+        </div>
+      </div>
+      <div id="contactSuccess" style="display:none;padding:14px;background:var(--suc-l);border-radius:10px;text-align:center">
+        <div style="font-size:24px;margin-bottom:6px">✅</div>
+        <div style="font-size:14px;font-weight:700;color:var(--suc)">Message sent!</div>
+        <div style="font-size:12px;color:var(--txt2);margin-top:4px">Thanks for your feedback. We'll get back to you if needed.</div>
+        <button class="btn btn-sec btn-sm" onclick="resetContact()" style="margin-top:10px">Send Another</button>
+      </div>
+    </div>
+
+    <!-- App Info / Version -->
+    <div class="card">
+      <h3><span class="icon-wrap">ℹ️</span> About This App</h3>
+      <div style="height:10px"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:12px">
+        <div style="padding:10px;background:var(--bg);border-radius:8px;border:1px solid var(--brd)">
+          <div style="color:var(--txt2);font-weight:600">Version</div>
+          <div style="font-weight:800;color:var(--txt);margin-top:2px">1.0.0</div>
+        </div>
+        <div style="padding:10px;background:var(--bg);border-radius:8px;border:1px solid var(--brd)">
+          <div style="color:var(--txt2);font-weight:600">Last Updated</div>
+          <div style="font-weight:800;color:var(--txt);margin-top:2px">June 2026</div>
+        </div>
+        <div style="padding:10px;background:var(--bg);border-radius:8px;border:1px solid var(--brd)">
+          <div style="color:var(--txt2);font-weight:600">Status</div>
+          <div style="font-weight:800;color:var(--suc);margin-top:2px" id="appStatus">✅ Up to date</div>
+        </div>
+        <div style="padding:10px;background:var(--bg);border-radius:8px;border:1px solid var(--brd)">
+          <div style="color:var(--txt2);font-weight:600">Data Storage</div>
+          <div style="font-weight:800;color:var(--txt);margin-top:2px">🔒 Local only</div>
+        </div>
+      </div>
+      <button class="btn btn-sec btn-sm" onclick="checkForUpdates()" style="margin-top:12px;width:100%;justify-content:center">🔄 Check for Updates</button>
+    </div>
+
     <!-- Export -->
     <div class="card">
       <h3><span class="icon-wrap">📤</span> Export Your Data</h3>
@@ -1132,6 +1259,32 @@ footer .footer-links a:hover{color:var(--pri-d)}
 
 </div><!-- /wrap -->
 
+<!-- ─── NEWSLETTER POPUP (first visit only) ─── -->
+<div class="modal-overlay" id="nlPopup">
+  <div class="modal" style="max-width:420px;text-align:center">
+    <button class="close-modal" onclick="closeNlPopup()" style="position:absolute;right:16px;top:16px">✕</button>
+    <div style="font-size:48px;margin-bottom:12px">💰</div>
+    <h3 style="font-size:20px;margin-bottom:8px">Want to Save More Money?</h3>
+    <p style="font-size:13px;color:var(--txt2);margin-bottom:18px">Get free budget tips, savings strategies, and exclusive templates delivered to your inbox. No spam — ever.</p>
+    <div id="popupNlForm">
+      <div style="display:flex;gap:8px;max-width:320px;margin:0 auto">
+        <input type="email" id="popupNlEmail" placeholder="your@email.com" style="flex:1;padding:10px 14px;border:1.5px solid var(--brd);border-radius:10px;font-size:13px;font-family:inherit;outline:none;background:var(--bg);color:var(--txt);box-sizing:border-box;min-width:0">
+        <button class="btn btn-pri" onclick="submitPopupNl()">Join Free</button>
+      </div>
+      <div style="font-size:11px;color:var(--txt2);margin-top:10px">🔒 We respect your privacy. Unsubscribe anytime.</div>
+    </div>
+    <div id="popupNlDone" style="display:none">
+      <div style="font-size:36px;margin-bottom:8px">🎉</div>
+      <div style="font-size:16px;font-weight:800;color:var(--suc)">You're in!</div>
+      <div style="font-size:13px;color:var(--txt2);margin-top:4px">Welcome to the community.</div>
+      <button class="btn btn-sec btn-sm" onclick="closeNlPopup()" style="margin-top:14px">Start Budgeting →</button>
+    </div>
+    <div style="margin-top:14px" id="popupSkip">
+      <button onclick="closeNlPopup()" style="background:none;color:var(--txt2);font-size:12px;font-family:inherit;padding:4px 8px">Maybe later</button>
+    </div>
+  </div>
+</div>
+
 <!-- ─── INSTALL GUIDE MODAL ─── -->
 <div class="modal-overlay" id="installModal">
   <div class="modal">
@@ -1202,6 +1355,16 @@ document.addEventListener("DOMContentLoaded", () => {
   renderHistory();
   renderGoals();
   renderRecent();
+  renderCustomQuickAdds();
+  showDashNewsletter();
+  maybeShowNlPopup();
+  // If already subscribed, update Settings form state
+  if (localStorage.getItem("bt_nl_subscribed")) {
+    const nlf = document.getElementById("newsletterForm");
+    const nls = document.getElementById("newsletterSuccess");
+    if (nlf) nlf.style.display = "none";
+    if (nls) nls.style.display = "block";
+  }
 });
 
 // ─── TABS ──────────────────────────────────────────────────
@@ -1275,6 +1438,50 @@ function updateSubcategories(selectVal) {
       }
     }
   }
+}
+
+// ─── CUSTOM QUICK ADD ──────────────────────────────────────
+function addCustomQuickAdd() {
+  const name = document.getElementById("customQaName").value.trim();
+  const cat = document.getElementById("customQaCat").value;
+  if (!name) { toast("⚠️ Enter a name for the quick add"); return; }
+
+  const customs = JSON.parse(localStorage.getItem("bt_custom_qa") || "[]");
+  // Prevent duplicates
+  if (customs.find(c => c.name.toLowerCase() === name.toLowerCase())) {
+    toast("⚠️ '" + name + "' already exists"); return;
+  }
+  customs.push({ name, cat });
+  localStorage.setItem("bt_custom_qa", JSON.stringify(customs));
+  document.getElementById("customQaName").value = "";
+  renderCustomQuickAdds();
+  toast("✅ '" + name + "' added to Quick Add!");
+}
+
+function removeCustomQuickAdd(idx) {
+  const customs = JSON.parse(localStorage.getItem("bt_custom_qa") || "[]");
+  const removed = customs[idx];
+  customs.splice(idx, 1);
+  localStorage.setItem("bt_custom_qa", JSON.stringify(customs));
+  renderCustomQuickAdds();
+  toast("🗑️ '" + (removed ? removed.name : "Item") + "' removed");
+}
+
+function renderCustomQuickAdds() {
+  const customs = JSON.parse(localStorage.getItem("bt_custom_qa") || "[]");
+  const el = document.getElementById("customQaList");
+  if (!el) return;
+  if (customs.length === 0) {
+    el.innerHTML = '<span style="font-size:12px;color:var(--txt2)">No custom items yet — add your frequent expenses above!</span>';
+    return;
+  }
+  el.innerHTML = customs.map((c, i) => {
+    const catIcon = c.cat === "Needs" ? "🏠" : c.cat === "Wants" ? "🎮" : "💰";
+    return `<button class="quick-pill qa-custom" onclick="quickAdd('${c.name.replace(/'/g,"\\'")}','${c.cat}')">
+      ${catIcon} ${c.name}
+      <span class="qa-remove" onclick="event.stopPropagation();removeCustomQuickAdd(${i})">✕</span>
+    </button>`;
+  }).join("");
 }
 
 // ─── DELETE ────────────────────────────────────────────────
@@ -1674,6 +1881,185 @@ function renderDataStats() {
   </div>`;
 }
 
+// ─── NEWSLETTER SIGNUP ─────────────────────────────────────
+// Sends to Google Sheets via a free Apps Script web app
+// SETUP: Create a Google Sheet, go to Extensions → Apps Script, deploy as web app
+// Replace YOUR_SCRIPT_URL with your deployed URL
+
+const NEWSLETTER_URL = "YOUR_GOOGLE_APPS_SCRIPT_URL_HERE"; // ← Replace this
+const CONTACT_URL = "YOUR_GOOGLE_APPS_SCRIPT_URL_HERE";    // ← Replace this (can be same sheet)
+
+function submitNewsletter() {
+  const email = document.getElementById("nlEmail").value.trim();
+  if (!email || !email.includes("@") || !email.includes(".")) {
+    toast("⚠️ Please enter a valid email address");
+    return;
+  }
+  saveNewsletterEmail(email);
+  document.getElementById("newsletterForm").style.display = "none";
+  document.getElementById("newsletterSuccess").style.display = "block";
+  localStorage.setItem("bt_nl_subscribed", "1");
+  // Also hide dashboard version
+  document.getElementById("dashNewsletter").style.display = "none";
+  toast("🎉 Subscribed! Welcome aboard!");
+}
+
+// ─── DASHBOARD NEWSLETTER ──────────────────────────────────
+function submitDashNewsletter() {
+  const email = document.getElementById("dashNlEmail").value.trim();
+  if (!email || !email.includes("@") || !email.includes(".")) { toast("⚠️ Please enter a valid email"); return; }
+  saveNewsletterEmail(email);
+  document.getElementById("dashNlForm").style.display = "none";
+  document.getElementById("dashNlDone").style.display = "block";
+  localStorage.setItem("bt_nl_subscribed", "1");
+  toast("🎉 Subscribed! Welcome aboard!");
+}
+
+function dismissDashNl() {
+  document.getElementById("dashNewsletter").style.display = "none";
+  localStorage.setItem("bt_nl_dismissed", "1");
+}
+
+// Show dashboard newsletter card (if not subscribed/dismissed)
+function showDashNewsletter() {
+  if (!localStorage.getItem("bt_nl_subscribed") && !localStorage.getItem("bt_nl_dismissed")) {
+    document.getElementById("dashNewsletter").style.display = "block";
+  }
+}
+
+// ─── POPUP NEWSLETTER (first visit) ────────────────────────
+function submitPopupNl() {
+  const email = document.getElementById("popupNlEmail").value.trim();
+  if (!email || !email.includes("@") || !email.includes(".")) { toast("⚠️ Please enter a valid email"); return; }
+  saveNewsletterEmail(email);
+  document.getElementById("popupNlForm").style.display = "none";
+  document.getElementById("popupSkip").style.display = "none";
+  document.getElementById("popupNlDone").style.display = "block";
+  localStorage.setItem("bt_nl_subscribed", "1");
+  // Also hide dashboard version
+  document.getElementById("dashNewsletter").style.display = "none";
+  // Also update settings version
+  document.getElementById("newsletterForm").style.display = "none";
+  document.getElementById("newsletterSuccess").style.display = "block";
+}
+
+function closeNlPopup() {
+  document.getElementById("nlPopup").classList.remove("show");
+  document.body.style.overflow = "";
+  localStorage.setItem("bt_nl_popup_shown", "1");
+}
+
+function maybeShowNlPopup() {
+  // Only show once, only if not subscribed, after 30 seconds
+  if (localStorage.getItem("bt_nl_popup_shown") || localStorage.getItem("bt_nl_subscribed")) return;
+  setTimeout(() => {
+    // Double-check they haven't subscribed during the 30s wait
+    if (localStorage.getItem("bt_nl_subscribed")) return;
+    document.getElementById("nlPopup").classList.add("show");
+    document.body.style.overflow = "hidden";
+  }, 30000); // 30 seconds
+}
+
+// ─── SHARED: Save newsletter email ─────────────────────────
+function saveNewsletterEmail(email) {
+  // Save locally
+  const subs = JSON.parse(localStorage.getItem("bt_newsletter") || "[]");
+  // Prevent duplicates
+  if (!subs.find(s => s.email === email)) {
+    subs.push({ email, date: new Date().toISOString() });
+    localStorage.setItem("bt_newsletter", JSON.stringify(subs));
+  }
+  // Send to Google Sheet
+  if (NEWSLETTER_URL && !NEWSLETTER_URL.includes("YOUR_")) {
+    fetch(NEWSLETTER_URL, {
+      method: "POST", mode: "no-cors",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ type: "newsletter", email, date: new Date().toISOString() })
+    }).catch(() => {});
+  }
+}
+
+// ─── CONTACT / FEEDBACK FORM ───────────────────────────────
+function submitContact() {
+  const name    = document.getElementById("cfName").value.trim();
+  const email   = document.getElementById("cfEmail").value.trim();
+  const type    = document.getElementById("cfType").value;
+  const message = document.getElementById("cfMessage").value.trim();
+
+  if (!message) {
+    toast("⚠️ Please enter a message");
+    return;
+  }
+
+  // Save locally
+  const msgs = JSON.parse(localStorage.getItem("bt_messages") || "[]");
+  msgs.push({ name, email, type, message, date: new Date().toISOString() });
+  localStorage.setItem("bt_messages", JSON.stringify(msgs));
+
+  // Try to send to Google Sheet
+  if (CONTACT_URL && !CONTACT_URL.includes("YOUR_")) {
+    fetch(CONTACT_URL, {
+      method: "POST", mode: "no-cors",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ type: "contact", name, email, msgType: type, message, date: new Date().toISOString() })
+    }).catch(() => {});
+  }
+
+  // Show success
+  document.getElementById("contactForm").style.display = "none";
+  document.getElementById("contactSuccess").style.display = "block";
+  toast("✅ Message sent! Thanks for the feedback!");
+}
+
+function resetContact() {
+  document.getElementById("cfName").value = "";
+  document.getElementById("cfEmail").value = "";
+  document.getElementById("cfMessage").value = "";
+  document.getElementById("cfType").selectedIndex = 0;
+  document.getElementById("contactForm").style.display = "block";
+  document.getElementById("contactSuccess").style.display = "none";
+}
+
+// ─── CHECK FOR UPDATES ─────────────────────────────────────
+function checkForUpdates() {
+  const statusEl = document.getElementById("appStatus");
+  statusEl.textContent = "🔄 Checking...";
+  statusEl.style.color = "var(--acc)";
+
+  if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+    navigator.serviceWorker.getRegistration().then(reg => {
+      if (reg) {
+        reg.update().then(() => {
+          setTimeout(() => {
+            if (reg.waiting) {
+              statusEl.textContent = "🆕 Update available!";
+              statusEl.style.color = "var(--acc)";
+              if (confirm("A new version is available! Reload to update?")) {
+                reg.waiting.postMessage({ type: "SKIP_WAITING" });
+                window.location.reload();
+              }
+            } else {
+              statusEl.textContent = "✅ Up to date";
+              statusEl.style.color = "var(--suc)";
+              toast("✅ You're on the latest version!");
+            }
+          }, 1500);
+        });
+      }
+    }).catch(() => {
+      statusEl.textContent = "✅ Up to date";
+      statusEl.style.color = "var(--suc)";
+      toast("✅ You're on the latest version!");
+    });
+  } else {
+    setTimeout(() => {
+      statusEl.textContent = "✅ Up to date";
+      statusEl.style.color = "var(--suc)";
+      toast("✅ App is current! (v1.0.0)");
+    }, 1000);
+  }
+}
+
 // ─── FILE DOWNLOAD ─────────────────────────────────────────
 function downloadFile(content, filename, mimeType) {
   const blob = new Blob([content], { type: mimeType + ";charset=utf-8" });
@@ -1691,11 +2077,11 @@ function dateStamp() {
 
 // ─── THEMES ────────────────────────────────────────────────
 const THEMES = {
-  sage:     { pri:"#6C9A8B", priL:"#E8F0ED", priD:"#4A7A6B", acc:"#E8985E", accL:"#FDF0E6", suc:"#5CB85C", sucL:"#EAF7EA", dan:"#D9534F", danL:"#FDEAEA", bg:"#F0F4F3", card:"#fff", txt:"#1A2421", txt2:"#5A6B66", brd:"#DFE6E9" },
-  blush:    { pri:"#D4A0A0", priL:"#F7EDED", priD:"#B07878", acc:"#C9956B", accL:"#FBF0E5", suc:"#7EC8A0", sucL:"#E5F5EC", dan:"#D9534F", danL:"#FDEAEA", bg:"#FDF6F6", card:"#fff", txt:"#2D3436", txt2:"#636E72", brd:"#F0DEDE" },
-  dark:     { pri:"#89B4FA", priL:"#1E293B", priD:"#74C7EC", acc:"#FAB387", accL:"#2D2D44", suc:"#A6E3A1", sucL:"#1A2E1A", dan:"#F38BA8", danL:"#3D1F28", bg:"#0F172A", card:"#1E293B", txt:"#E2E8F0", txt2:"#94A3B8", brd:"#334155" },
-  ocean:    { pri:"#5B8FB9", priL:"#E5EFF7", priD:"#3A6D94", acc:"#E8985E", accL:"#FDF0E6", suc:"#5CB85C", sucL:"#EAF7EA", dan:"#D9534F", danL:"#FDEAEA", bg:"#F0F5FA", card:"#fff", txt:"#2D3436", txt2:"#636E72", brd:"#D0DEE9" },
-  lavender: { pri:"#9B89B3", priL:"#F0ECF5", priD:"#7A6899", acc:"#D4956B", accL:"#FBF0E5", suc:"#7EC8A0", sucL:"#E5F5EC", dan:"#D9534F", danL:"#FDEAEA", bg:"#F7F5FA", card:"#fff", txt:"#2D3436", txt2:"#636E72", brd:"#E0D8EA" }
+  sage:     { pri:"#6C9A8B", priL:"#E8F0ED", priD:"#4A7A6B", acc:"#E8985E", accL:"#FDF0E6", suc:"#5CB85C", sucL:"#EAF7EA", dan:"#D9534F", danL:"#FDEAEA", bg:"#F0F4F3", card:"#fff", txt:"#1A2421", txt2:"#5A6B66", brd:"#DFE6E9", onPri:"#fff", inputBg:"#fff" },
+  blush:    { pri:"#D4A0A0", priL:"#F7EDED", priD:"#B07878", acc:"#C9956B", accL:"#FBF0E5", suc:"#7EC8A0", sucL:"#E5F5EC", dan:"#D9534F", danL:"#FDEAEA", bg:"#FDF6F6", card:"#fff", txt:"#2D3436", txt2:"#636E72", brd:"#F0DEDE", onPri:"#fff", inputBg:"#fff" },
+  dark:     { pri:"#89B4FA", priL:"#1E293B", priD:"#74C7EC", acc:"#FAB387", accL:"#2D2D44", suc:"#A6E3A1", sucL:"#1A2E1A", dan:"#F38BA8", danL:"#3D1F28", bg:"#0F172A", card:"#1E293B", txt:"#E2E8F0", txt2:"#94A3B8", brd:"#334155", onPri:"#0F172A", inputBg:"#0F172A" },
+  ocean:    { pri:"#5B8FB9", priL:"#E5EFF7", priD:"#3A6D94", acc:"#E8985E", accL:"#FDF0E6", suc:"#5CB85C", sucL:"#EAF7EA", dan:"#D9534F", danL:"#FDEAEA", bg:"#F0F5FA", card:"#fff", txt:"#2D3436", txt2:"#636E72", brd:"#D0DEE9", onPri:"#fff", inputBg:"#fff" },
+  lavender: { pri:"#9B89B3", priL:"#F0ECF5", priD:"#7A6899", acc:"#D4956B", accL:"#FBF0E5", suc:"#7EC8A0", sucL:"#E5F5EC", dan:"#D9534F", danL:"#FDEAEA", bg:"#F7F5FA", card:"#fff", txt:"#2D3436", txt2:"#636E72", brd:"#E0D8EA", onPri:"#fff", inputBg:"#fff" }
 };
 
 function applyTheme(t) {
@@ -1706,6 +2092,8 @@ function applyTheme(t) {
   r.setProperty("--dan",   t.dan);   r.setProperty("--dan-l", t.danL);
   r.setProperty("--bg",    t.bg);    r.setProperty("--card",  t.card);
   r.setProperty("--txt",   t.txt);   r.setProperty("--txt2",  t.txt2);  r.setProperty("--brd", t.brd);
+  r.setProperty("--on-pri", t.onPri || "#fff");
+  r.setProperty("--input-bg", t.inputBg || "#fff");
 }
 
 function setTheme(name, dotEl) {
@@ -1790,5 +2178,5 @@ window.addEventListener('appinstalled', () => {
   toast("🎉 App installed successfully!");
 });
 </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a0af6e8e38a2e186',t:'MTc4MTMzNjI2NQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a0e876f8591406b9',t:'MTc4MTkzNDI5OA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
