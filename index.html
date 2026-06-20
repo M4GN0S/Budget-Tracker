@@ -763,26 +763,29 @@ tbody tr:hover td{background:var(--pri-l)}
 .insight-title{font-size:13px;font-weight:700;color:var(--txt);margin-bottom:2px}
 .insight-body{font-size:12px;color:var(--txt2);line-height:1.5}
 
-/* ─── Content Feed ─── */
-.feed-item{border-left:3px solid var(--brd);padding:12px 14px;margin-bottom:8px;border-radius:0 10px 10px 0;background:var(--bg)}
+/* ─── Content Feed / In-App Newsletter ─── */
+.feed-item{padding:16px;margin-bottom:10px;border-radius:var(--rad);background:var(--card);border:1px solid var(--brd);position:relative;transition:.2s}
 .feed-item:last-child{margin-bottom:0}
-.feed-item.tip{border-left-color:var(--pri)}
-.feed-item.product{border-left-color:var(--acc)}
-.feed-item.challenge{border-left-color:#7A6899}
-.feed-item.announcement{border-left-color:var(--suc)}
-.feed-item.seasonal{border-left-color:var(--acc)}
-.feed-item.pinned{background:var(--pri-l)}
-.feed-meta{display:flex;align-items:center;gap:6px;margin-bottom:4px}
-.feed-tag{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;padding:2px 6px;border-radius:8px}
+.feed-item:hover{box-shadow:var(--sh)}
+.feed-item.unread{border-left:3px solid var(--pri)}
+.feed-item.pinned{background:linear-gradient(135deg,var(--card),var(--pri-l));border-left:3px solid var(--suc)}
+.feed-meta{display:flex;align-items:center;gap:6px;margin-bottom:6px;flex-wrap:wrap}
+.feed-tag{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;padding:2px 8px;border-radius:8px}
 .feed-tag.tip{background:var(--pri-l);color:var(--pri-d)}
 .feed-tag.product{background:var(--acc-l);color:var(--acc)}
 .feed-tag.challenge{background:#F0ECF5;color:#7A6899}
 .feed-tag.announcement{background:var(--suc-l);color:var(--suc)}
 .feed-tag.seasonal{background:var(--acc-l);color:var(--acc)}
+.feed-new-dot{width:6px;height:6px;border-radius:50%;background:var(--pri);flex-shrink:0}
 .feed-date{font-size:10px;color:var(--txt2)}
-.feed-title{font-size:13px;font-weight:700;margin-bottom:4px}
-.feed-body{font-size:12px;color:var(--txt2);line-height:1.5}
-.feed-link{display:inline-block;margin-top:8px;padding:5px 14px;border-radius:8px;font-size:11px;font-weight:700;background:var(--pri);color:var(--on-pri);text-decoration:none}
+.feed-title{font-size:14px;font-weight:700;margin-bottom:6px;line-height:1.4}
+.feed-body{font-size:13px;color:var(--txt2);line-height:1.7}
+.feed-link{display:inline-block;margin-top:10px;padding:7px 18px;border-radius:10px;font-size:12px;font-weight:700;background:linear-gradient(135deg,var(--pri-d),var(--pri));color:var(--on-pri);text-decoration:none;transition:.2s}
+.feed-link:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(74,122,107,.3)}
+.feed-header-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px}
+.feed-header-bar h3{margin:0}
+.feed-unread-badge{font-size:10px;font-weight:700;background:var(--pri);color:var(--on-pri);padding:2px 8px;border-radius:10px}
+.feed-empty{text-align:center;padding:24px 16px;color:var(--txt2);font-size:13px}
 
 /* ─── Section Divider ─── */
 .section-label{
@@ -1097,10 +1100,18 @@ footer .footer-links a:hover{color:var(--pri-d)}
       </a>
     </div>
 
-    <!-- Content Feed -->
-    <div class="card" id="feedCard" style="display:none">
-      <h3><span class="icon-wrap"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/></svg></span> Tips & Updates</h3>
-      <div id="feedList"></div>
+    <!-- In-App Newsletter -->
+    <div id="feedCard" style="display:none">
+      <div class="card">
+        <div class="feed-header-bar">
+          <h3><span class="icon-wrap"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22 6 12 13 2 6"/></svg></span> The Budget Brief</h3>
+          <span class="feed-unread-badge" id="feedBadge" style="display:none">0 new</span>
+        </div>
+        <div id="feedList"></div>
+        <div style="text-align:center;margin-top:12px">
+          <button class="btn btn-sec btn-sm" id="feedMarkRead" onclick="markAllFeedRead()" style="display:none">Mark all as read</button>
+        </div>
+      </div>
     </div>
 
   </div>
@@ -2954,15 +2965,14 @@ function renderInsights() {
   `).join("");
 }
 
-// ─── CONTENT FEED ──────────────────────────────────────────
+// ─── IN-APP NEWSLETTER (Content Feed) ──────────────────────
 const FEED_URL = "posts.json"; // ← Change to your GitHub raw URL when deployed
+// e.g. "https://raw.githubusercontent.com/YOURUSERNAME/YOURREPO/main/posts.json"
 
 function loadFeed() {
   const card = document.getElementById("feedCard");
-  const list = document.getElementById("feedList");
-  if (!card || !list) return;
+  if (!card) return;
 
-  // Try to fetch feed
   fetch(FEED_URL, { cache: "no-cache" })
     .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
     .then(posts => {
@@ -2970,16 +2980,41 @@ function loadFeed() {
       renderFeed(posts);
     })
     .catch(() => {
-      // Offline — try cache
       const cached = localStorage.getItem("bt_feed_cache");
       if (cached) renderFeed(JSON.parse(cached));
     });
 }
 
+function getReadPosts() {
+  return JSON.parse(localStorage.getItem("bt_feed_read") || "[]");
+}
+
+function markAllFeedRead() {
+  const cached = localStorage.getItem("bt_feed_cache");
+  if (!cached) return;
+  const posts = JSON.parse(cached);
+  const readIds = posts.map(p => p.id);
+  localStorage.setItem("bt_feed_read", JSON.stringify(readIds));
+  renderFeed(posts);
+  toast("All posts marked as read");
+}
+
+function markPostRead(id) {
+  const read = getReadPosts();
+  if (!read.includes(id)) {
+    read.push(id);
+    localStorage.setItem("bt_feed_read", JSON.stringify(read));
+  }
+}
+
 function renderFeed(posts) {
   const card = document.getElementById("feedCard");
   const list = document.getElementById("feedList");
+  const badge = document.getElementById("feedBadge");
+  const markBtn = document.getElementById("feedMarkRead");
   if (!card || !list || !posts || posts.length === 0) return;
+
+  const readIds = getReadPosts();
 
   // Sort: pinned first, then newest
   posts.sort((a, b) => {
@@ -2988,17 +3023,30 @@ function renderFeed(posts) {
     return new Date(b.date) - new Date(a.date);
   });
 
-  // Show max 5 posts
-  const show = posts.slice(0, 5);
+  const show = posts.slice(0, 8);
+  const unreadCount = show.filter(p => !readIds.includes(p.id)).length;
+
+  // Show/hide unread badge
+  if (badge) {
+    if (unreadCount > 0) {
+      badge.textContent = unreadCount + " new";
+      badge.style.display = "inline-block";
+    } else {
+      badge.style.display = "none";
+    }
+  }
+  if (markBtn) markBtn.style.display = unreadCount > 0 ? "inline-flex" : "none";
 
   card.style.display = "block";
   list.innerHTML = show.map(p => {
     const d = new Date(p.date + "T00:00:00");
-    const dateStr = d.toLocaleDateString("en-US", { month:"short", day:"numeric", year:"numeric" });
-    const linkHtml = p.link ? `<a href="${p.link}" class="feed-link" target="_blank">${p.linkText || "Learn more"}</a>` : "";
+    const dateStr = d.toLocaleDateString("en-US", { month:"short", day:"numeric" });
+    const isUnread = !readIds.includes(p.id);
+    const linkHtml = p.link ? `<a href="${p.link}" class="feed-link" target="_blank" onclick="markPostRead(${p.id})">${p.linkText || "Learn more →"}</a>` : "";
 
-    return `<div class="feed-item ${p.type}${p.pinned ? " pinned" : ""}">
+    return `<div class="feed-item ${p.type}${p.pinned ? " pinned" : ""}${isUnread ? " unread" : ""}" onclick="markPostRead(${p.id});this.classList.remove('unread');var dot=this.querySelector('.feed-new-dot');if(dot)dot.remove()">
       <div class="feed-meta">
+        ${isUnread ? '<span class="feed-new-dot"></span>' : ""}
         <span class="feed-tag ${p.type}">${p.type}</span>
         <span class="feed-date">${dateStr}</span>
         ${p.pinned ? '<span style="font-size:10px;color:var(--pri-d);font-weight:600">Pinned</span>' : ""}
