@@ -1163,7 +1163,7 @@ footer .footer-links a:hover{color:var(--pri-d)}
         </div>
         <div style="padding:10px;background:var(--bg);border-radius:8px;border:1px solid var(--brd)">
           <div style="color:var(--txt2);font-weight:600">Data Storage</div>
-          <div style="font-weight:800;color:var(--txt);margin-top:2px">🔒 Local only</div>
+          <div style="font-weight:800;color:var(--txt);margin-top:2px">🔒 Local + Backup</div>
         </div>
       </div>
       <button class="btn btn-sec btn-sm" onclick="checkForUpdates()" style="margin-top:12px;width:100%;justify-content:center">🔄 Check for Updates</button>
@@ -1173,6 +1173,11 @@ footer .footer-links a:hover{color:var(--pri-d)}
     <div class="card">
       <h3><span class="icon-wrap">📤</span> Export Your Data</h3>
       <p style="font-size:13px;color:var(--txt2);margin:10px 0 16px">Download your budget data to open in Google Sheets, Excel, or as a backup file.</p>
+      <!-- Quick clipboard backup -->
+      <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap">
+        <button class="btn btn-sec btn-sm" onclick="copyBackupToClipboard()">📋 Copy Backup to Clipboard</button>
+        <button class="btn btn-sec btn-sm" onclick="restoreFromClipboard()">📥 Restore from Clipboard</button>
+      </div>
       <div class="export-grid">
         <div class="export-btn" onclick="exportCSV()">
           <div class="eb-icon">📊</div>
@@ -1339,16 +1344,194 @@ footer .footer-links a:hover{color:var(--pri-d)}
 <div class="toast" id="toast"></div>
 
 <script>
-// ─── DATA STORE ────────────────────────────────────────────
+// ─── DATA STORE + AUTO-BACKUP SYSTEM ───────────────────────
 const STORAGE_KEY = "budget_tracker_503020";
+const BACKUP_PREFIX = "bt_backup_";
+const MAX_BACKUPS = 5;
+const IDB_NAME = "BudgetTrackerBackup";
+const IDB_STORE = "backups";
 
 function getData() {
-  const d = localStorage.getItem(STORAGE_KEY);
-  return d ? JSON.parse(d) : { income: 0, expenses: [], goals: [] };
+  // Try primary storage first
+  let d = localStorage.getItem(STORAGE_KEY);
+  if (d) {
+    try { return JSON.parse(d); } catch(e) {}
+  }
+  // Primary corrupted or empty — try recovering
+  const recovered = recoverFromBackup();
+  if (recovered) return recovered;
+  // Nothing found — return fresh
+  return { income: 0, expenses: [], goals: [] };
 }
+
 function saveData(data) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  const json = JSON.stringify(data);
+  // 1. Save to primary localStorage
+  localStorage.setItem(STORAGE_KEY, json);
+  // 2. Rolling backup in localStorage (every save)
+  saveRollingBackup(data);
+  // 3. IndexedDB backup (every 5th save, or if >3 expenses)
+  if (data.expenses.length > 0) {
+    saveToIndexedDB(data);
+  }
 }
+
+// ─── LAYER 1: Rolling localStorage Backups ─────────────────
+// Keeps 5 timestamped copies — rotates automatically
+function saveRollingBackup(data) {
+  try {
+    const now = Date.now();
+    const backupKey = BACKUP_PREFIX + now;
+    const backup = { _ts: now, _count: data.expenses.length, data };
+    localStorage.setItem(backupKey, JSON.stringify(backup));
+    // Clean old backups — keep only MAX_BACKUPS
+    const allKeys = Object.keys(localStorage)
+      .filter(k => k.startsWith(BACKUP_PREFIX))
+      .sort()
+      .reverse();
+    if (allKeys.length > MAX_BACKUPS) {
+      allKeys.slice(MAX_BACKUPS).forEach(k => localStorage.removeItem(k));
+    }
+  } catch(e) {
+    // Storage full — silently skip backup
+    console.warn("Backup skipped — storage full");
+  }
+}
+
+// ─── LAYER 2: IndexedDB Backup (larger, more durable) ──────
+function openIDB() {
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open(IDB_NAME, 1);
+    req.onupgradeneeded = () => {
+      const db = req.result;
+      if (!db.objectStoreNames.contains(IDB_STORE)) {
+        db.createObjectStore(IDB_STORE, { keyPath: "id" });
+      }
+    };
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+  });
+}
+
+function saveToIndexedDB(data) {
+  openIDB().then(db => {
+    const tx = db.transaction(IDB_STORE, "readwrite");
+    const store = tx.objectStore(IDB_STORE);
+    // Keep only latest backup in IDB
+    store.put({
+      id: "latest",
+      timestamp: new Date().toISOString(),
+      expenseCount: data.expenses.length,
+      data: data
+    });
+  }).catch(() => {}); // Silently fail
+}
+
+function getFromIndexedDB() {
+  return openIDB().then(db => {
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(IDB_STORE, "readonly");
+      const store = tx.objectStore(IDB_STORE);
+      const req = store.get("latest");
+      req.onsuccess = () => resolve(req.result ? req.result.data : null);
+      req.onerror = () => resolve(null);
+    });
+  }).catch(() => null);
+}
+
+// ─── RECOVERY: Try all backup layers ───────────────────────
+function recoverFromBackup() {
+  // Try rolling backups (newest first)
+  const backupKeys = Object.keys(localStorage)
+    .filter(k => k.startsWith(BACKUP_PREFIX))
+    .sort()
+    .reverse();
+
+  for (const key of backupKeys) {
+    try {
+      const backup = JSON.parse(localStorage.getItem(key));
+      if (backup && backup.data && backup.data.expenses) {
+        console.log("✅ Recovered from backup:", key, "(" + backup.data.expenses.length + " expenses)");
+        // Restore to primary
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(backup.data));
+        return backup.data;
+      }
+    } catch(e) {}
+  }
+
+  // Try IndexedDB
+  // Note: IDB is async, so we can't use it in synchronous getData()
+  // Instead, we trigger async recovery and reload
+  getFromIndexedDB().then(data => {
+    if (data && data.expenses && data.expenses.length > 0) {
+      console.log("✅ Recovered from IndexedDB (" + data.expenses.length + " expenses)");
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+      toast("🔄 Data recovered from backup! Reloading...");
+      setTimeout(() => window.location.reload(), 1500);
+    }
+  });
+
+  return null;
+}
+
+// ─── LAYER 3: One-click clipboard backup ───────────────────
+function copyBackupToClipboard() {
+  const data = getData();
+  const backup = {
+    _app: "50/30/20 Budget Tracker",
+    _version: "1.0",
+    _exported: new Date().toISOString(),
+    _expenseCount: data.expenses.length,
+    _goalCount: data.goals.length,
+    income: data.income,
+    expenses: data.expenses,
+    goals: data.goals
+  };
+  const json = JSON.stringify(backup, null, 2);
+  navigator.clipboard.writeText(json).then(() => {
+    toast("📋 Backup copied to clipboard! Paste into a note to save.");
+  }).catch(() => {
+    // Fallback for older browsers
+    const ta = document.createElement("textarea");
+    ta.value = json;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand("copy");
+    document.body.removeChild(ta);
+    toast("📋 Backup copied to clipboard!");
+  });
+}
+
+function restoreFromClipboard() {
+  navigator.clipboard.readText().then(text => {
+    try {
+      const backup = JSON.parse(text);
+      if (!backup.expenses || !Array.isArray(backup.expenses)) {
+        toast("⚠️ Clipboard doesn't contain valid backup data");
+        return;
+      }
+      if (!confirm("Restore from clipboard?\n\n📊 " + backup.expenses.length + " expenses\n🎯 " + (backup.goals||[]).length + " goals\n💰 Income: $" + (backup.income||0) + "\n\n⚠️ This will REPLACE all current data.")) return;
+      const data = { income: backup.income||0, expenses: backup.expenses, goals: backup.goals||[] };
+      saveData(data);
+      document.getElementById("incomeInput").value = data.income || "";
+      updateDashboard(); renderHistory(); renderGoals();
+      toast("✅ Restored " + data.expenses.length + " expenses from clipboard!");
+    } catch(e) {
+      toast("⚠️ Couldn't parse clipboard content — make sure you copied a backup");
+    }
+  }).catch(() => {
+    toast("⚠️ Clipboard access denied — try the JSON import instead");
+  });
+}
+
+// ─── AUTO-SAVE on page close ───────────────────────────────
+window.addEventListener("beforeunload", () => {
+  // Force one final backup when user leaves
+  try {
+    const d = localStorage.getItem(STORAGE_KEY);
+    if (d) saveToIndexedDB(JSON.parse(d));
+  } catch(e) {}
+});
 
 // ─── INIT ──────────────────────────────────────────────────
 document.addEventListener("DOMContentLoaded", () => {
@@ -2245,5 +2428,5 @@ window.addEventListener('appinstalled', () => {
   toast("🎉 App installed successfully!");
 });
 </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a0e8da79db138ca6',t:'MTc4MTkzODM3NA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a0e8eb74afda715b',t:'MTc4MTkzOTA3MA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
