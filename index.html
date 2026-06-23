@@ -772,6 +772,41 @@ tbody tr:hover td{background:var(--pri-l)}
 .insight-title{font-size:13px;font-weight:700;color:var(--txt);margin-bottom:2px}
 .insight-body{font-size:12px;color:var(--txt2);line-height:1.5}
 
+/* ─── Feed Bell Notification ─── */
+.feed-bell{position:relative;cursor:pointer;display:flex;align-items:center;justify-content:center;width:40px;height:40px;border-radius:12px;background:var(--card);border:1.5px solid var(--brd);transition:.2s;flex-shrink:0}
+.feed-bell:hover{background:var(--pri-l);border-color:var(--pri)}
+.feed-bell svg{color:var(--txt2);transition:.2s}
+.feed-bell:hover svg{color:var(--pri-d)}
+.feed-bell-badge{position:absolute;top:-4px;right:-4px;min-width:18px;height:18px;border-radius:9px;background:var(--dan);color:#fff;font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center;padding:0 4px;line-height:1;box-shadow:0 2px 6px rgba(0,0,0,.2);animation:badgePop .3s ease}
+.feed-bell-badge:empty{display:none}
+@keyframes badgePop{0%{transform:scale(0)}50%{transform:scale(1.3)}100%{transform:scale(1)}}
+.feed-bell-dropdown{display:none;position:absolute;top:calc(100% + 8px);right:0;width:340px;max-height:420px;background:var(--card);border-radius:16px;box-shadow:0 16px 48px rgba(0,0,0,.18);border:1px solid var(--brd);z-index:850;overflow:hidden;animation:fadeUp .2s ease}
+.feed-bell-dropdown.show{display:block}
+.feed-dd-head{display:flex;align-items:center;justify-content:space-between;padding:14px 16px 10px;border-bottom:1px solid var(--brd)}
+.feed-dd-head h4{margin:0;font-size:14px;font-weight:800;color:var(--txt)}
+.feed-dd-head button{font-size:11px;font-weight:600;color:var(--pri);background:none;border:none;cursor:pointer;padding:2px 6px}
+.feed-dd-head button:hover{text-decoration:underline}
+.feed-dd-list{overflow-y:auto;max-height:320px;padding:6px}
+.feed-dd-item{display:flex;gap:10px;padding:10px 12px;border-radius:10px;cursor:pointer;transition:.15s;align-items:flex-start}
+.feed-dd-item:hover{background:var(--bg)}
+.feed-dd-item .dd-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:5px}
+.feed-dd-item .dd-dot.unread{background:var(--pri)}
+.feed-dd-item .dd-dot.read{background:var(--brd)}
+.feed-dd-item .dd-text{flex:1;min-width:0}
+.feed-dd-item .dd-title{font-size:13px;font-weight:700;color:var(--txt);line-height:1.3;margin-bottom:2px;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.feed-dd-item .dd-meta{font-size:10px;color:var(--txt2);display:flex;gap:6px;align-items:center}
+.feed-dd-item .dd-tag{font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;padding:1px 6px;border-radius:6px}
+.feed-dd-item .dd-tag.tip{background:var(--pri-l);color:var(--pri-d)}
+.feed-dd-item .dd-tag.product{background:var(--acc-l);color:var(--acc)}
+.feed-dd-item .dd-tag.challenge{background:#F0ECF5;color:#7A6899}
+.feed-dd-item .dd-tag.announcement{background:var(--suc-l);color:var(--suc)}
+.feed-dd-item .dd-tag.seasonal{background:var(--acc-l);color:var(--acc)}
+.feed-dd-empty{text-align:center;padding:32px 16px;color:var(--txt2);font-size:13px}
+.feed-dd-footer{padding:8px 12px;border-top:1px solid var(--brd);text-align:center}
+.feed-dd-footer button{font-size:11px;font-weight:600;color:var(--pri);background:none;border:none;cursor:pointer;padding:4px 8px}
+.feed-dd-footer button:hover{text-decoration:underline}
+@media(max-width:400px){.feed-bell-dropdown{width:calc(100vw - 32px);right:-8px}}
+
 /* ─── Content Feed / In-App Newsletter ─── */
 .feed-item{padding:16px;margin-bottom:10px;border-radius:var(--rad);background:var(--card);border:1px solid var(--brd);position:relative;transition:.2s}
 .feed-item:last-child{margin-bottom:0}
@@ -984,9 +1019,27 @@ footer .footer-links a:hover{color:var(--pri-d)}
         <label>Monthly Take-Home Income</label>
         <p>Enter your income — everything calculates automatically</p>
       </div>
-      <div class="income-input-wrap">
-        <span class="currency">$</span>
-        <input type="number" id="incomeInput" placeholder="5,000" step="100" oninput="updateDashboard()">
+      <div style="display:flex;align-items:center;gap:10px">
+        <div class="income-input-wrap">
+          <span class="currency">$</span>
+          <input type="number" id="incomeInput" placeholder="5,000" step="100" oninput="updateDashboard()">
+        </div>
+        <!-- Feed Bell -->
+        <div class="feed-bell" id="feedBellBtn" onclick="toggleFeedBell()" title="The Budget Brief" style="display:none">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+          <span class="feed-bell-badge" id="feedBellBadge"></span>
+          <!-- Dropdown -->
+          <div class="feed-bell-dropdown" id="feedBellDropdown" onclick="event.stopPropagation()">
+            <div class="feed-dd-head">
+              <h4>The Budget Brief</h4>
+              <button onclick="markAllFromBell()" id="bellMarkAllBtn">Mark all read</button>
+            </div>
+            <div class="feed-dd-list" id="feedBellList"></div>
+            <div class="feed-dd-footer">
+              <button onclick="scrollToFeedSection()">View all articles</button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -3028,6 +3081,18 @@ function renderInsights() {
 const FEED_URL = "posts.json"; // ← Change to your GitHub raw URL when deployed
 // e.g. "https://raw.githubusercontent.com/YOURUSERNAME/YOURREPO/main/posts.json"
 
+// Embedded fallback posts — works offline and on file:// protocol
+const EMBEDDED_POSTS = [
+  {"id":1,"type":"announcement","title":"Welcome to The Budget Brief","body":"This is your personal finance feed \u2014 tips, challenges, and updates delivered right inside your budget tracker.","content":"Welcome to <strong>The Budget Brief</strong> \u2014 your personal finance newsletter built right into your budget tracker.\n\nEvery week, we publish actionable money tips, savings challenges, and product updates directly in this feed. No email required. No sign-up needed. Just open your app and check what\u2019s new.\n\n<strong>What you\u2019ll find here:</strong>\n\n\u2022 <strong>Money Tips</strong> \u2014 Practical strategies to save more and spend smarter\n\u2022 <strong>Challenges</strong> \u2014 Fun weekly/monthly savings challenges to keep you motivated\n\u2022 <strong>Product Updates</strong> \u2014 New tools and templates to level up your finances\n\u2022 <strong>Seasonal Reminders</strong> \u2014 Tax prep, holiday budgeting, year-end reviews\n\n<strong>How it works:</strong>\n\nNew posts appear automatically when you open the app. Unread posts have a green dot \u2014 click to read. That\u2019s it.\n\nWelcome aboard. Let\u2019s make your money work harder. \ud83d\udcaa","date":"2026-06-20","link":null,"linkText":null,"pinned":true,"readTime":"1 min"},
+  {"id":2,"type":"tip","title":"The 24-Hour Rule for Impulse Purchases","body":"Before buying anything over $25 in your \u2018Wants\u2019 category, wait 24 hours. This single habit can save you $200-400/month.","content":"<strong>The 24-Hour Rule</strong> is the simplest money-saving habit you can build.\n\nHere\u2019s how it works: Before buying anything over $25 that falls into your <strong>\u2018Wants\u2019</strong> category, wait 24 hours. That\u2019s it. Don\u2019t say no \u2014 just say \"not yet.\"\n\n<strong>Why it works:</strong>\n\n\u2022 70% of impulse purchases are regretted within a week\n\u2022 The dopamine hit of \"I want this\" fades within hours\n\u2022 After 24 hours, you evaluate with logic instead of emotion\n\n<strong>How to implement it:</strong>\n\n1. See something you want to buy (over $25)\n2. Add it to your phone\u2019s notes app instead of your cart\n3. Set a reminder for 24 hours later\n4. If you still want it tomorrow \u2014 buy it guilt-free\n5. If you forgot about it \u2014 you just saved money\n\n<strong>Expected savings: $2,880/year</strong>\n\nTry it this week. Start with just one purchase. \ud83c\udfaf","date":"2026-06-18","link":null,"linkText":null,"pinned":false,"readTime":"3 min"},
+  {"id":3,"type":"product","title":"New: Annual Analysis Spreadsheet","body":"See your full-year spending trends, tax-ready reports, and net worth tracking. Import your app data with one click.","content":"Introducing the <strong>Annual Analysis Spreadsheet</strong> \u2014 the perfect companion to your Budget Tracker app.\n\n<strong>What\u2019s included:</strong>\n\n\u2022 <strong>12-Month Dashboard</strong> \u2014 See all your spending at a glance\n\u2022 <strong>Category Trends</strong> \u2014 Watch how your ratios change over time\n\u2022 <strong>Tax-Ready Reports</strong> \u2014 Categorized expense summaries\n\u2022 <strong>Net Worth Tracker</strong> \u2014 Track assets, liabilities, and growth\n\u2022 <strong>Year-over-Year Comparison</strong> \u2014 Compare spending patterns\n\nAvailable for Google Sheets and Microsoft Excel.","date":"2026-06-15","link":"#","linkText":"Get it \u2014 $9.99","pinned":false,"readTime":"2 min"},
+  {"id":4,"type":"challenge","title":"7-Day No-Dining-Out Challenge","body":"The average person spends $300+/month eating out. Challenge yourself: cook every meal for 7 days and track how much you save.","content":"<strong>The 7-Day No-Dining-Out Challenge</strong>\n\nThe average American spends $314/month on food outside the home. That\u2019s $3,768/year \u2014 enough for a nice vacation.\n\n<strong>The challenge:</strong> Cook every meal for 7 consecutive days. No restaurants, no takeout, no delivery apps.\n\n<strong>Rules:</strong>\n\n1. All meals cooked at home for 7 days\n2. Track grocery spending in the app under \"Needs \u2192 Groceries\"\n3. At the end of 7 days, compare your food spending to last week\n\n<strong>Expected savings: ~$43 in just one week</strong>\n\nWho\u2019s in? Start this Monday. \ud83c\udf73","date":"2026-06-13","link":null,"linkText":null,"pinned":false,"readTime":"3 min"},
+  {"id":5,"type":"tip","title":"Your First Month: Don\u2019t Aim for Perfect","body":"Don\u2019t stress about hitting exactly 50/30/20. The real power is in awareness \u2014 just seeing where your money goes changes everything.","content":"<strong>Your first month with the 50/30/20 rule doesn\u2019t need to be perfect.</strong>\n\nMost people have no idea where their money goes. The simple act of logging expenses changes your behavior without you even trying.\n\n<strong>What to expect:</strong>\n\n\u2022 <strong>Week 1:</strong> \"I had no idea I spent that much on coffee\"\n\u2022 <strong>Week 2:</strong> You start naturally thinking before buying\n\u2022 <strong>Week 3:</strong> You notice patterns\n\u2022 <strong>Week 4:</strong> Your ratios are already closer to 50/30/20\n\nBy month 3, most people are within 5% of their target ratios. The system works \u2014 you just have to give it time.\n\nYou\u2019re already ahead of 80% of people just by tracking. Keep going. \ud83d\udcca","date":"2026-06-10","link":null,"linkText":null,"pinned":false,"readTime":"3 min"},
+  {"id":6,"type":"product","title":"Coming Soon: Debt Payoff Calculator","body":"Snowball or avalanche? Our new calculator will show you exactly when you\u2019ll be debt-free and how much interest you\u2019ll save.","content":"<strong>The Debt Payoff Calculator is coming soon.</strong>\n\nIf you\u2019re carrying debt \u2014 credit cards, student loans, car payments \u2014 this tool will show you the fastest path to freedom.\n\n<strong>What it\u2019ll do:</strong>\n\n\u2022 Compare <strong>Snowball</strong> vs <strong>Avalanche</strong> methods\n\u2022 See your exact payoff date\n\u2022 Calculate how much interest you\u2019ll save\n\u2022 Month-by-month payment schedule\n\nSign up for our newsletter to be notified when it launches.","date":"2026-06-08","link":null,"linkText":null,"pinned":false,"readTime":"2 min"},
+  {"id":7,"type":"tip","title":"The Subscription Audit: Find Hidden Money","body":"The average person has 12 active subscriptions. Cancel what you don\u2019t use and save $50-80/month instantly.","content":"<strong>Do a subscription audit right now. It takes 10 minutes and saves $50-80/month.</strong>\n\nThe average person has 12 paid subscriptions and underestimates their total cost by 2.5x.\n\n<strong>The 10-minute audit:</strong>\n\n1. Open Activity tab \u2192 filter by \"Wants\"\n2. Look for recurring charges\n3. For each one, ask: \"Did I use this in the last 30 days?\"\n4. If no \u2192 cancel it\n\n<strong>Pro strategy: The rotation method</strong>\n\nInstead of 4 streaming services ($60/month), subscribe to one at a time. Same content, 75% savings.\n\nOpen your bank statement right now. Cancel at least one thing today. \ud83d\udcb0","date":"2026-06-05","link":null,"linkText":null,"pinned":false,"readTime":"3 min"},
+  {"id":8,"type":"seasonal","title":"Mid-Year Financial Check-In","body":"We\u2019re halfway through 2026. Time to review your spending patterns and adjust your goals for the second half.","content":"<strong>It\u2019s June \u2014 the perfect time for a mid-year financial review.</strong>\n\n<strong>The 15-minute mid-year review:</strong>\n\n<strong>Step 1:</strong> Export your data (Settings \u2192 Export CSV)\n<strong>Step 2:</strong> Check your Needs/Wants/Savings ratios\n<strong>Step 3:</strong> Review your goals \u2014 on track, behind, or complete?\n<strong>Step 4:</strong> Identify your biggest financial win this year\n<strong>Step 5:</strong> Set ONE focus for the next 6 months\n\nYou\u2019ve got 6 months left to make 2026 your best financial year yet. \ud83d\ude80","date":"2026-06-01","link":null,"linkText":null,"pinned":false,"readTime":"4 min"}
+];
+
 function loadFeed() {
   const card = document.getElementById("feedCard");
   if (!card) return;
@@ -3039,8 +3104,15 @@ function loadFeed() {
       renderFeed(posts);
     })
     .catch(() => {
+      // Try cache first, then fall back to embedded posts
       const cached = localStorage.getItem("bt_feed_cache");
-      if (cached) renderFeed(JSON.parse(cached));
+      if (cached) {
+        renderFeed(JSON.parse(cached));
+      } else {
+        // Use embedded posts as last resort (works on file:// protocol)
+        localStorage.setItem("bt_feed_cache", JSON.stringify(EMBEDDED_POSTS));
+        renderFeed(EMBEDDED_POSTS);
+      }
     });
 }
 
@@ -3076,6 +3148,8 @@ function renderFeed(posts) {
   if (!card || !list || !posts || posts.length === 0) return;
 
   feedPostsCache = posts;
+  // Also update the bell dropdown
+  renderBellDropdown(posts);
   const readIds = getReadPosts();
 
   posts.sort((a, b) => {
@@ -3118,9 +3192,13 @@ function openArticle(id) {
   if (!post) return;
 
   markPostRead(id);
-  // Update the feed card to remove unread dot
+  // Update both the feed card and the bell dropdown
   const cached = localStorage.getItem("bt_feed_cache");
-  if (cached) renderFeed(JSON.parse(cached));
+  if (cached) {
+    const cachedPosts = JSON.parse(cached);
+    renderFeed(cachedPosts);
+    renderBellDropdown(cachedPosts);
+  }
 
   const d = new Date(post.date + "T00:00:00");
   const dateStr = d.toLocaleDateString("en-US", { month:"long", day:"numeric", year:"numeric" });
@@ -3154,6 +3232,119 @@ function openArticle(id) {
 function closeArticle() {
   document.getElementById("articleOverlay").classList.remove("show");
   document.body.style.overflow = "";
+}
+
+// ─── FEED BELL NOTIFICATION ───────────────────────────────
+
+function toggleFeedBell() {
+  const dd = document.getElementById("feedBellDropdown");
+  if (!dd) return;
+  const isOpen = dd.classList.contains("show");
+  // Close any open dropdown first
+  closeFeedBell();
+  if (!isOpen) {
+    dd.classList.add("show");
+    // Close on outside click
+    setTimeout(() => document.addEventListener("click", closeFeedBellOnOutside), 10);
+  }
+}
+
+function closeFeedBell() {
+  const dd = document.getElementById("feedBellDropdown");
+  if (dd) dd.classList.remove("show");
+  document.removeEventListener("click", closeFeedBellOnOutside);
+}
+
+function closeFeedBellOnOutside(e) {
+  const bell = document.getElementById("feedBellBtn");
+  if (bell && !bell.contains(e.target)) closeFeedBell();
+}
+
+function renderBellDropdown(posts) {
+  const bellBtn = document.getElementById("feedBellBtn");
+  const badge = document.getElementById("feedBellBadge");
+  const list = document.getElementById("feedBellList");
+  const markBtn = document.getElementById("bellMarkAllBtn");
+  if (!bellBtn || !list) return;
+
+  if (!posts || posts.length === 0) {
+    bellBtn.style.display = "none";
+    return;
+  }
+
+  bellBtn.style.display = "flex";
+  const readIds = getReadPosts();
+
+  // Sort: unread first, then by date
+  const sorted = [...posts].sort((a, b) => {
+    const aRead = readIds.includes(a.id);
+    const bRead = readIds.includes(b.id);
+    if (!aRead && bRead) return -1;
+    if (aRead && !bRead) return 1;
+    return new Date(b.date) - new Date(a.date);
+  });
+
+  const show = sorted.slice(0, 8);
+  const unreadCount = posts.filter(p => !readIds.includes(p.id)).length;
+
+  // Update badge
+  if (unreadCount > 0) {
+    badge.textContent = unreadCount > 9 ? "9+" : unreadCount;
+    badge.style.display = "flex";
+  } else {
+    badge.textContent = "";
+    badge.style.display = "none";
+  }
+
+  // Update mark all button
+  if (markBtn) markBtn.style.display = unreadCount > 0 ? "inline" : "none";
+
+  // Render items
+  if (show.length === 0) {
+    list.innerHTML = '<div class="feed-dd-empty">No articles yet — check back soon!</div>';
+    return;
+  }
+
+  list.innerHTML = show.map(p => {
+    const d = new Date(p.date + "T00:00:00");
+    const dateStr = d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+    const isUnread = !readIds.includes(p.id);
+    return `<div class="feed-dd-item" onclick="openArticleFromBell(${p.id})">
+      <span class="dd-dot ${isUnread ? 'unread' : 'read'}"></span>
+      <div class="dd-text">
+        <div class="dd-title">${p.title}</div>
+        <div class="dd-meta">
+          <span class="dd-tag ${p.type}">${p.type}</span>
+          <span>${dateStr}</span>
+          ${p.readTime ? '<span>' + p.readTime + '</span>' : ''}
+        </div>
+      </div>
+    </div>`;
+  }).join("");
+}
+
+function openArticleFromBell(id) {
+  closeFeedBell();
+  openArticle(id);
+}
+
+function markAllFromBell() {
+  markAllFeedRead();
+  // Re-render the bell dropdown
+  const cached = localStorage.getItem("bt_feed_cache");
+  if (cached) renderBellDropdown(JSON.parse(cached));
+}
+
+function scrollToFeedSection() {
+  closeFeedBell();
+  const feedCard = document.getElementById("feedCard");
+  if (feedCard) {
+    feedCard.scrollIntoView({ behavior: "smooth", block: "start" });
+    // Brief highlight effect
+    feedCard.style.transition = "box-shadow .3s ease";
+    feedCard.style.boxShadow = "0 0 0 3px var(--pri)";
+    setTimeout(() => { feedCard.style.boxShadow = ""; }, 1500);
+  }
 }
 
 // ─── FINANCIAL JOURNAL ─────────────────────────────────────
