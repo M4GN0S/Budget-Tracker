@@ -777,6 +777,11 @@ tbody tr:hover td{background:var(--pri-l)}
 .note-tag.idea{background:#F0ECF5;color:#7A6899}
 .note-tag.receipt{background:var(--dan-l);color:var(--dan)}
 .note-body{font-size:13px;color:var(--txt);line-height:1.6;white-space:pre-wrap;word-wrap:break-word}
+/* Checkboxes in notes */
+.note-body .note-check{display:inline-flex;align-items:center;gap:6px;cursor:pointer;padding:2px 0}
+.note-body .note-check input[type="checkbox"]{width:16px;height:16px;accent-color:var(--pri);cursor:pointer;margin:0;flex-shrink:0}
+.note-body .note-check.checked span{text-decoration:line-through;opacity:.5}
+
 .note-body strong{font-weight:700}
 .note-body em{font-style:italic}
 .note-actions{display:flex;gap:4px;align-items:center}
@@ -811,6 +816,15 @@ tbody tr:hover td{background:var(--pri-l)}
 .chat-bubble strong{font-weight:700}
 .chat-bubble ul,.chat-bubble ol{padding-left:18px;margin:6px 0}
 .chat-bubble li{margin-bottom:4px}
+/* AI tables in chat */
+.chat-bubble table{width:100%;border-collapse:collapse;margin:8px 0;font-size:12px}
+.chat-bubble th{text-align:left;padding:6px 10px;font-weight:700;border-bottom:2px solid var(--brd);color:var(--txt);font-size:11px}
+.chat-bubble td{padding:6px 10px;border-bottom:1px solid var(--brd);color:var(--txt)}
+.chat-bubble tr:last-child td{border-bottom:none}
+.chat-bubble tr:hover{background:rgba(0,0,0,.03)}
+.chat-bubble code{background:var(--bg);padding:1px 5px;border-radius:4px;font-size:12px;font-family:monospace}
+.chat-bubble h4,.chat-bubble h3{font-size:14px;font-weight:800;margin:10px 0 4px;color:var(--txt)}
+.chat-bubble blockquote{border-left:3px solid var(--pri);padding-left:10px;margin:8px 0;color:var(--txt2);font-style:italic}
 .chat-input-row{display:flex;gap:8px;margin-top:12px}
 .chat-input{flex:1;padding:11px 16px;border:1.5px solid var(--brd);border-radius:12px;font-size:13px;font-family:inherit;outline:none;background:var(--input-bg);color:var(--txt);resize:none;min-width:0}
 .chat-input:focus{border-color:var(--pri);box-shadow:0 0 0 3px rgba(108,154,139,.12)}
@@ -2651,10 +2665,12 @@ function saveUserName() {
   const input = document.getElementById("userNameInput");
   const name = input.value.trim();
   if (!name) { toast("Please enter a name"); return; }
+  const oldName = getUserName();
   localStorage.setItem("bt_user_name", name);
   localStorage.setItem("bt_personalize_done", "1");
   document.getElementById("personalizeCard").style.display = "none";
   updateGreeting();
+  syncUserProfile(oldName, name);
   toast("Hey " + name + "! Your tracker is personalized.");
 }
 
@@ -2662,11 +2678,13 @@ function saveSettingsName() {
   const input = document.getElementById("settingsUserName");
   const name = input.value.trim();
   if (!name) { toast("Please enter a name"); return; }
+  const oldName = getUserName();
   localStorage.setItem("bt_user_name", name);
   localStorage.setItem("bt_personalize_done", "1");
   updateGreeting();
   checkPersonalizeCard();
-  // Visual feedback — button + inline message
+  syncUserProfile(oldName, name);
+  // Visual feedback
   const btn = document.getElementById("saveNameBtn");
   const msg = document.getElementById("nameSavedMsg");
   if (btn) {
@@ -2680,6 +2698,32 @@ function saveSettingsName() {
     setTimeout(() => { msg.style.display = "none"; }, 3000);
   }
   toast("Name updated to " + name + "!");
+}
+
+// Sync user profile to backend — updates name on the Users sheet
+function syncUserProfile(oldName, newName) {
+  const payload = {
+    type: "user_profile",
+    clientId: getClientId(),
+    userName: newName,
+    oldName: oldName || "",
+    ts: new Date().toISOString()
+  };
+
+  if (TELEMETRY_URL && !TELEMETRY_URL.includes("YOUR_")) {
+    fetch(TELEMETRY_URL, {
+      method: "POST", mode: "no-cors",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    }).catch(() => {});
+  }
+
+  // Also log as telemetry event
+  if (oldName && oldName !== newName) {
+    sendTelemetry("name_change", { oldName, newName });
+  } else if (!oldName) {
+    sendTelemetry("name_set", { name: newName });
+  }
 }
 
 function dismissPersonalize() {
@@ -3785,6 +3829,7 @@ function saveArticleComment() {
   sendTelemetry("comment", {
     articleId: currentArticleId,
     articleTitle: post?.title || "",
+    commentText: text,
     commentLength: text.length,
     isEdit
   });
@@ -4125,6 +4170,58 @@ function clearAllNotes() {
   toast("🗑️ All notes cleared");
 }
 
+function formatNoteBody(text, noteId) {
+  let body = text
+    .replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")
+    .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
+    .replace(/\*(.*?)\*/g, "<em>$1</em>")
+    .replace(/^- (.+)$/gm, "• $1");
+
+  // Checkbox support: [] unchecked, [x] checked
+  body = body.replace(/^\[(x| )\] (.+)$/gm, function(match, state, label) {
+    const checked = state === "x";
+    return '<label class="note-check' + (checked ? ' checked' : '') + '"><input type="checkbox"' + (checked ? " checked" : "") + ' onchange="toggleNoteCheck(' + noteId + ',this)"><span>' + label + '</span></label>';
+  });
+
+  return body;
+}
+
+function toggleNoteCheck(noteId, checkbox) {
+  const notes = JSON.parse(localStorage.getItem("bt_notes") || "[]");
+  const note = notes.find(n => n.id === noteId);
+  if (!note) return;
+
+  // Find which checkbox line this is and toggle it
+  const lines = note.text.split("\n");
+  let checkIndex = 0;
+  const noteEl = checkbox.closest('[data-note-id]');
+  const allChecks = noteEl ? noteEl.querySelectorAll('input[type="checkbox"]') : [];
+  for (let i = 0; i < allChecks.length; i++) {
+    if (allChecks[i] === checkbox) { checkIndex = i; break; }
+  }
+
+  let found = 0;
+  for (let i = 0; i < lines.length; i++) {
+    if (/^\[(x| )\] /.test(lines[i])) {
+      if (found === checkIndex) {
+        lines[i] = checkbox.checked
+          ? lines[i].replace(/^\[ \]/, "[x]")
+          : lines[i].replace(/^\[x\]/, "[ ]");
+        break;
+      }
+      found++;
+    }
+  }
+
+  note.text = lines.join("\n");
+  note.edited = new Date().toISOString();
+  localStorage.setItem("bt_notes", JSON.stringify(notes));
+
+  // Update the label style without full re-render
+  const label = checkbox.closest('.note-check');
+  if (label) label.classList.toggle('checked', checkbox.checked);
+}
+
 function renderNotes() {
   const notes = JSON.parse(localStorage.getItem("bt_notes") || "[]");
   const search = (document.getElementById("noteSearchInput")?.value || "").toLowerCase();
@@ -4136,7 +4233,6 @@ function renderNotes() {
   if (noteFilter !== "all") filtered = filtered.filter(n => n.tag === noteFilter);
   if (search) filtered = filtered.filter(n => n.text.toLowerCase().includes(search) || (n.tag||"").includes(search));
 
-  // Sort: pinned first, then newest
   filtered.sort((a, b) => {
     if (a.pinned && !b.pinned) return -1;
     if (!a.pinned && b.pinned) return 1;
@@ -4146,39 +4242,30 @@ function renderNotes() {
   if (countEl) countEl.textContent = filtered.length + " note" + (filtered.length !== 1 ? "s" : "") + (noteFilter !== "all" ? " (" + noteFilter + ")" : "");
 
   if (filtered.length === 0) {
-    el.innerHTML = `<div class="empty-state"><div class="empty-icon">📓</div><p>${search ? "No notes matching '" + search + "'" : "No notes yet"}</p><span>${search ? "Try a different search" : "Start journaling your financial thoughts above!"}</span></div>`;
+    el.innerHTML = '<div class="empty-state"><div class="empty-icon">📓</div><p>' + (search ? "No notes matching '" + search + "'" : "No notes yet") + '</p><span>' + (search ? "Try a different search" : "Start journaling your financial thoughts above!") + '</span></div>';
     return;
   }
 
   const tagIcons = { note:"📝", goal:"🎯", reminder:"⏰", reflection:"💭", idea:"💡", receipt:"🧾" };
 
+  // List view
   el.innerHTML = filtered.map(n => {
     const d = new Date(n.date);
     const dateStr = d.toLocaleDateString("en-US", { month:"short", day:"numeric", year:"numeric" });
     const timeStr = d.toLocaleTimeString("en-US", { hour:"numeric", minute:"2-digit" });
     const icon = tagIcons[n.tag] || "📝";
+    const body = formatNoteBody(n.text, n.id);
 
-    // Simple markdown: **bold**, *italic*, - lists
-    let body = n.text
-      .replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")
-      .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
-      .replace(/\*(.*?)\*/g, "<em>$1</em>")
-      .replace(/^- (.+)$/gm, "• $1");
-
-    return `<div class="note-card${n.pinned ? " pinned" : ""}" data-note-id="${n.id}">
-      <div class="note-header">
-        <div style="display:flex;align-items:center;gap:6px">
-          <span class="note-tag ${n.tag}">${icon} ${n.tag}</span>
-          <span class="note-date">${dateStr} ${timeStr}${n.edited ? " (edited)" : ""}</span>
-        </div>
-        <div class="note-actions">
-          <button onclick="togglePinNote(${n.id})" title="${n.pinned ? "Unpin" : "Pin"}">${n.pinned ? "📌" : "📍"}</button>
-          <button onclick="editNote(${n.id})" title="Edit">✏️</button>
-          <button onclick="deleteNote(${n.id})" title="Delete">🗑️</button>
-        </div>
-      </div>
-      <div class="note-body">${body}</div>
-    </div>`;
+    return '<div class="note-card' + (n.pinned ? " pinned" : "") + '" data-note-id="' + n.id + '">' +
+      '<div class="note-header"><div style="display:flex;align-items:center;gap:6px">' +
+        '<span class="note-tag ' + n.tag + '">' + icon + ' ' + n.tag + '</span>' +
+        '<span class="note-date">' + dateStr + ' ' + timeStr + (n.edited ? " (edited)" : "") + '</span>' +
+      '</div><div class="note-actions">' +
+        '<button onclick="togglePinNote(' + n.id + ')" title="' + (n.pinned ? "Unpin" : "Pin") + '">' + (n.pinned ? "📌" : "📍") + '</button>' +
+        '<button onclick="editNote(' + n.id + ')" title="Edit">✏️</button>' +
+        '<button onclick="deleteNote(' + n.id + ')" title="Delete">🗑️</button>' +
+      '</div></div>' +
+      '<div class="note-body">' + body + '</div></div>';
   }).join("");
 }
 
@@ -4445,7 +4532,11 @@ RULES:
 2. Be specific — reference their ACTUAL numbers, categories, and goals.
 3. Be encouraging and non-judgmental. Never shame spending habits.
 4. Keep responses concise — 2-3 short paragraphs max. Use bullet points when listing tips.
-5. For tax, investment, insurance, and legal topics: provide helpful general guidance but ALWAYS add: "⚠️ This is general guidance — consult a qualified professional for decisions specific to your situation."
+5. When comparing numbers or showing breakdowns, use markdown tables. Example:
+| Category | Spent | Budget | Status |
+|----------|-------|--------|--------|
+| Needs | $800 | $1,000 | ✅ On track |
+6. For tax, investment, insurance, and legal topics: provide helpful general guidance but ALWAYS add: "⚠️ This is general guidance — consult a qualified professional for decisions specific to your situation."
 6. NEVER invent or assume data you don't have. Only reference what's in the context below.
 7. Always end advice with an encouraging note.
 8. If the user has no expenses yet, encourage them to start tracking and explain the 50/30/20 rule.
@@ -4656,6 +4747,113 @@ function aiQuickAction(type) {
   sendChat();
 }
 
+function formatChatMarkdown(text) {
+  // Split into lines for block-level processing
+  const lines = text.split("\n");
+  let html = "";
+  let inTable = false;
+  let tableRows = [];
+  let inList = false;
+  let listItems = [];
+
+  function flushList() {
+    if (listItems.length > 0) {
+      html += "<ul>" + listItems.map(li => "<li>" + li + "</li>").join("") + "</ul>";
+      listItems = [];
+    }
+    inList = false;
+  }
+
+  function flushTable() {
+    if (tableRows.length < 2) {
+      // Not a valid table — just render as text
+      html += tableRows.join("<br>") + "<br>";
+    } else {
+      html += '<table>';
+      tableRows.forEach((row, i) => {
+        // Skip separator row (|---|---|)
+        if (/^\|[\s\-:|]+\|$/.test(row.trim())) return;
+        const cells = row.split("|").filter((c, idx, arr) => idx > 0 && idx < arr.length - 1).map(c => c.trim());
+        const tag = i === 0 ? "th" : "td";
+        html += "<tr>" + cells.map(c => "<" + tag + ">" + inlineFormat(c) + "</" + tag + ">").join("") + "</tr>";
+      });
+      html += '</table>';
+    }
+    tableRows = [];
+    inTable = false;
+  }
+
+  function inlineFormat(t) {
+    return t
+      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+      .replace(/\*(.*?)\*/g, '<em>$1</em>')
+      .replace(/`([^`]+)`/g, '<code>$1</code>');
+  }
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    const trimmed = line.trim();
+
+    // Table row detection
+    if (trimmed.startsWith("|") && trimmed.endsWith("|")) {
+      if (!inTable) { flushList(); inTable = true; }
+      tableRows.push(trimmed);
+      continue;
+    } else if (inTable) {
+      flushTable();
+    }
+
+    // Bullet list
+    if (/^[\-\*•] /.test(trimmed)) {
+      if (!inList) inList = true;
+      listItems.push(inlineFormat(trimmed.replace(/^[\-\*•] /, "")));
+      continue;
+    } else if (inList) {
+      flushList();
+    }
+
+    // Numbered list
+    if (/^\d+\. /.test(trimmed)) {
+      html += "<br>" + inlineFormat(trimmed) + "<br>";
+      continue;
+    }
+
+    // Headings
+    if (trimmed.startsWith("### ")) {
+      html += "<h4>" + inlineFormat(trimmed.substring(4)) + "</h4>";
+      continue;
+    }
+    if (trimmed.startsWith("## ")) {
+      html += "<h3>" + inlineFormat(trimmed.substring(3)) + "</h3>";
+      continue;
+    }
+
+    // Blockquote
+    if (trimmed.startsWith("> ")) {
+      html += "<blockquote>" + inlineFormat(trimmed.substring(2)) + "</blockquote>";
+      continue;
+    }
+
+    // Empty line
+    if (trimmed === "") {
+      html += "<br>";
+      continue;
+    }
+
+    // Regular text
+    html += inlineFormat(trimmed) + "<br>";
+  }
+
+  // Flush remaining
+  if (inTable) flushTable();
+  if (inList) flushList();
+
+  // Clean up excessive <br>
+  html = html.replace(/(<br>){3,}/g, "<br><br>");
+
+  return html;
+}
+
 function addChatMessage(type, text) {
   const container = document.getElementById("chatMessages");
   const div = document.createElement("div");
@@ -4664,11 +4862,8 @@ function addChatMessage(type, text) {
   const userSvg = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>';
   const avatar = type === "bot" ? botSvg : userSvg;
 
-  // Simple markdown-like formatting
-  let formatted = text
-    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-    .replace(/\n- /g, '\n• ')
-    .replace(/\n/g, '<br>');
+  // Markdown formatting with table support
+  let formatted = formatChatMarkdown(text);
 
   div.innerHTML = `
     <div class="chat-avatar">${avatar}</div>
