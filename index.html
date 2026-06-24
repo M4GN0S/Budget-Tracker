@@ -46,7 +46,12 @@ a{color:var(--pri);text-decoration:none}
 button{cursor:pointer;border:none;font-family:inherit}
 
 /* ─── Layout ─── */
-.wrap{max-width:1000px;margin:0 auto;padding:20px 16px 40px;overflow-x:hidden}
+.wrap{max-width:1200px;margin:0 auto;padding:20px 16px 40px}
+.app-layout{display:block}
+.app-content{min-width:0}
+@media(min-width:901px){
+  .app-layout{display:flex;align-items:flex-start;min-height:100vh}
+}
 
 /* ─── Header ─── */
 header{
@@ -121,7 +126,7 @@ header p{font-size:14px;opacity:.88;font-weight:400;max-width:420px;margin:0 aut
   color:var(--txt2);white-space:nowrap;
   transition:all .2s cubic-bezier(.4,0,.2,1);
   display:flex;align-items:center;gap:8px;
-  flex-shrink:0;
+  flex-shrink:0;cursor:pointer;
 }
 .tab .tab-icon{display:flex;align-items:center}
 .tab .tab-label{}
@@ -162,6 +167,62 @@ header p{font-size:14px;opacity:.88;font-weight:400;max-width:420px;margin:0 aut
 }
 /* Hidden tabs (moved into More) */
 .tab.overflow-hidden{display:none !important}
+/* Sidebar divider hidden by default (only shows in sidebar mode) */
+.sidebar-divider{display:none}
+
+/* ─── Desktop Sidebar (>900px) ─── */
+@media(min-width:901px){
+  .tabs-wrapper{
+    position:sticky;
+    top:20px;
+    align-self:flex-start;
+    flex-direction:column;
+    width:200px;
+    flex-shrink:0;
+    margin-bottom:0;
+    margin-right:24px;
+    padding:8px;
+    border-radius:16px;
+    max-height:calc(100vh - 40px);
+    overflow:visible;
+  }
+  .tabs-main{
+    flex-direction:column;
+    gap:2px;
+    overflow:visible;
+    flex:unset;
+    width:100%;
+  }
+  .tab{
+    width:100%;
+    padding:11px 16px;
+    border-radius:12px;
+    font-size:13px;
+    gap:10px;
+    flex-shrink:0;
+  }
+  .tab.active{
+    box-shadow:0 2px 10px rgba(74,122,107,.25);
+  }
+  /* Never overflow into More on sidebar — all tabs visible */
+  .tab.overflow-hidden{display:flex !important}
+  .more-trigger{display:none !important}
+  .more-dropdown{display:none !important}
+  /* Sidebar divider between core and secondary */
+  .tab[data-priority="secondary"]:first-of-type{
+    /* Handled by .sidebar-divider in HTML */
+  }
+  .sidebar-divider{
+    height:1px;
+    background:var(--brd);
+    margin:6px 8px;
+    display:block;
+  }
+  .app-content{
+    flex:1;
+    min-width:0;
+  }
+}
 
 /* ─── Mobile Bottom Nav ─── */
 @media(max-width:700px){
@@ -277,6 +338,20 @@ header p{font-size:14px;opacity:.88;font-weight:400;max-width:420px;margin:0 aut
 }
 
 /* ─── Income Bar ─── */
+/* ─── User Greeting ─── */
+.greeting{font-size:22px;font-weight:800;color:var(--txt);margin-bottom:6px;line-height:1.3}
+.greeting-sub{font-size:12px;color:var(--txt2);margin-bottom:18px}
+.greeting .wave{display:inline-block;animation:wave .6s ease-in-out}
+@keyframes wave{0%,100%{transform:rotate(0)}25%{transform:rotate(20deg)}75%{transform:rotate(-10deg)}}
+/* Personalize card */
+.personalize-card{background:linear-gradient(135deg,var(--pri-l),var(--card));border:1.5px solid var(--pri);border-radius:var(--rad);padding:20px;margin-bottom:18px;animation:fadeUp .3s ease}
+.personalize-card h4{font-size:15px;font-weight:800;color:var(--txt);margin-bottom:4px;display:flex;align-items:center;gap:8px}
+.personalize-card p{font-size:12px;color:var(--txt2);margin-bottom:14px;line-height:1.5}
+.personalize-card input{padding:10px 14px;border:1.5px solid var(--brd);border-radius:10px;font-size:14px;font-family:inherit;outline:none;background:var(--input-bg);color:var(--txt);box-sizing:border-box;width:100%;max-width:280px}
+.personalize-card input:focus{border-color:var(--pri);box-shadow:0 0 0 3px rgba(108,154,139,.12)}
+.personalize-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+
+/* ─── Income ─── */
 .income-bar{
   background:linear-gradient(135deg,var(--pri-l),var(--card));
   border:1.5px solid var(--pri);
@@ -295,7 +370,6 @@ header p{font-size:14px;opacity:.88;font-weight:400;max-width:420px;margin:0 aut
   display:flex;align-items:center;gap:6px;margin-bottom:3px;
 }
 .income-bar .income-label p{font-size:11px;color:var(--txt2)}
-.income-input-wrap{position:relative}
 .income-input-wrap .currency{
   position:absolute;left:14px;top:50%;transform:translateY(-50%);
   font-size:20px;font-weight:800;color:var(--pri);pointer-events:none;
@@ -308,6 +382,19 @@ header p{font-size:14px;opacity:.88;font-weight:400;max-width:420px;margin:0 aut
   outline:none;transition:.2s;
 }
 .income-bar input:focus{border-color:var(--pri-d);background:var(--input-bg);box-shadow:0 0 0 4px rgba(108,154,139,.18)}
+/* Custom spinner for income input */
+.income-input-wrap{position:relative;display:flex;align-items:center}
+.income-spin{position:absolute;right:6px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:1px}
+.spin-btn{width:22px;height:14px;display:flex;align-items:center;justify-content:center;background:var(--bg);border:1px solid var(--brd);color:var(--txt2);cursor:pointer;padding:0;transition:.15s}
+.spin-btn.spin-up{border-radius:4px 4px 0 0}
+.spin-btn.spin-down{border-radius:0 0 4px 4px}
+.spin-btn:hover{background:var(--pri-l);color:var(--pri-d);border-color:var(--pri)}
+.spin-btn:active{background:var(--pri);color:var(--on-pri)}
+.income-bar input{padding-right:36px}
+/* Fix number input spinners in dark mode across all themes */
+input[type="number"]{-moz-appearance:textfield}
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
 
 /* ─── Stats Grid ─── */
 .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:18px}
@@ -658,16 +745,7 @@ tbody tr:hover td{background:var(--pri-l)}
 .modal-actions{margin-top:18px;display:flex;gap:8px;justify-content:center}
 
 /* ─── Content Width Constraint ─── */
-/* Panels with long-form content shouldn't stretch full width on large screens */
-#tab-goals .card,
-#tab-notes .card,
-#tab-ai > *,
-#tab-data .card,
-#tab-data .cta{max-width:720px;margin-left:auto;margin-right:auto}
-/* AI chat needs slightly different handling */
-#tab-ai #aiSetup .card,
-#tab-ai #aiChat .card{max-width:720px;margin-left:auto;margin-right:auto}
-#tab-ai > div[style*="font-size:11px"]{max-width:720px;margin-left:auto;margin-right:auto}
+/* All panels fill the content area uniformly — no per-panel max-width */
 
 /* ─── Accordion ─── */
 .accordion{border:1px solid var(--brd);border-radius:var(--rad);margin-bottom:12px;overflow:hidden;background:var(--card)}
@@ -684,7 +762,7 @@ tbody tr:hover td{background:var(--pri-l)}
 .accordion.open .accordion-chevron{transform:rotate(180deg)}
 .accordion-body{max-height:0;overflow:hidden;transition:max-height .3s ease}
 .accordion.open .accordion-body{max-height:5000px}
-.accordion-content{padding:0 18px 18px}
+.accordion-content{padding:14px 18px 18px}
 
 /* ─── Financial Journal ─── */
 .note-card{background:var(--card);border:1px solid var(--brd);border-radius:12px;padding:14px;margin-bottom:10px;transition:.2s;position:relative}
@@ -748,6 +826,12 @@ tbody tr:hover td{background:var(--pri-l)}
 .typing-dots span:nth-child(3){animation-delay:.4s}
 @keyframes dotBounce{0%,80%,100%{transform:translateY(0)}40%{transform:translateY(-6px)}}
 .ai-setup-needed{text-align:center;padding:32px 20px}
+@media(min-width:901px){
+  .ai-setup-needed{text-align:left;padding:24px 20px}
+  .ai-setup-needed h3{justify-content:flex-start}
+  .ai-setup-needed p{margin-left:0;margin-right:0}
+  .ai-setup-needed > div:first-child{margin:0 0 16px}
+}
 .ai-premium-banner{background:linear-gradient(135deg,var(--pri-d),var(--acc));border-radius:12px;padding:20px;color:var(--on-pri);text-align:center;margin-top:14px}
 .ai-premium-banner .btn-cta{
   background:var(--card);color:var(--pri-d);
@@ -759,6 +843,16 @@ tbody tr:hover td{background:var(--pri-l)}
 }
 .ai-premium-banner .btn-cta:hover{transform:scale(1.04);box-shadow:0 8px 24px rgba(0,0,0,.2)}
 .api-key-input{font-family:'SF Mono',Consolas,monospace;font-size:12px;letter-spacing:.5px}
+
+/* ─── Streak Counter ─── */
+.streak-bar{display:flex;align-items:center;gap:12px;padding:14px 18px;background:var(--card);border-radius:var(--rad);margin-bottom:18px;border:1px solid var(--brd);box-shadow:var(--sh)}
+.streak-bar .streak-fire{font-size:24px;line-height:1}
+.streak-bar .streak-info{flex:1}
+.streak-bar .streak-count{font-size:18px;font-weight:800;color:var(--txt)}
+.streak-bar .streak-label{font-size:11px;color:var(--txt2);font-weight:500}
+.streak-bar .streak-best{font-size:10px;color:var(--txt2);background:var(--bg);padding:3px 10px;border-radius:12px;font-weight:600;white-space:nowrap}
+.streak-bar.inactive .streak-fire{opacity:.3}
+.streak-bar.inactive .streak-count{color:var(--txt2)}
 
 /* ─── Smart Insights ─── */
 .insight{display:flex;gap:12px;align-items:flex-start;padding:12px;background:var(--bg);border-radius:10px;border:1px solid var(--brd);margin-bottom:8px}
@@ -837,7 +931,8 @@ tbody tr:hover td{background:var(--pri-l)}
 .article-overlay.show{display:flex}
 .article{background:var(--card);border-radius:20px;max-width:600px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.25);animation:modalIn .3s cubic-bezier(.4,0,.2,1);margin:auto}
 .article-head{padding:24px 24px 0;display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
-.article-head .close-modal{flex-shrink:0}
+.article-head .close-modal{flex-shrink:0;background:var(--bg);color:var(--txt2);width:32px;height:32px;border-radius:8px;font-size:16px;display:flex;align-items:center;justify-content:center;transition:.2s}
+.article-head .close-modal:hover{background:var(--dan-l);color:var(--dan)}
 .article-meta{display:flex;align-items:center;gap:8px;padding:8px 24px;flex-wrap:wrap}
 .article-meta .feed-tag{font-size:10px}
 .article-read-time{font-size:11px;color:var(--txt2);font-weight:500}
@@ -845,6 +940,26 @@ tbody tr:hover td{background:var(--pri-l)}
 .article-body{padding:0 24px 24px;font-size:14px;color:var(--txt);line-height:1.8}
 .article-body strong{font-weight:700;color:var(--txt)}
 .article-footer{padding:16px 24px;border-top:1px solid var(--brd);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
+/* Article engagement — reactions, comment, save */
+.article-engage{padding:0 24px 20px;display:flex;flex-direction:column;gap:16px}
+.article-reactions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.article-reactions .react-label{font-size:12px;font-weight:600;color:var(--txt2);margin-right:4px}
+.react-btn{padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;background:var(--bg);color:var(--txt2);border:1.5px solid var(--brd);cursor:pointer;transition:.2s;display:flex;align-items:center;gap:5px}
+.react-btn:hover{border-color:var(--pri);color:var(--pri-d);background:var(--pri-l)}
+.react-btn.active{background:var(--pri);color:var(--on-pri);border-color:var(--pri)}
+.article-comment{background:var(--bg);border-radius:12px;padding:14px;border:1px solid var(--brd)}
+.article-comment .comment-label{font-size:12px;font-weight:700;color:var(--txt);margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.article-comment textarea{width:100%;padding:10px 12px;border:1.5px solid var(--brd);border-radius:10px;font-size:13px;font-family:inherit;outline:none;background:var(--input-bg);color:var(--txt);resize:vertical;min-height:60px;box-sizing:border-box;line-height:1.6}
+.article-comment textarea:focus{border-color:var(--pri);box-shadow:0 0 0 3px rgba(108,154,139,.12)}
+.article-comment .comment-actions{display:flex;gap:8px;margin-top:8px;align-items:center}
+.article-comment .comment-saved{font-size:11px;color:var(--suc);font-weight:600;display:none}
+.article-save-btn{display:flex;align-items:center;gap:8px;padding:10px 18px;border-radius:12px;font-size:13px;font-weight:700;background:var(--bg);color:var(--pri-d);border:1.5px solid var(--brd);cursor:pointer;transition:.2s;width:100%}
+.article-save-btn:hover{background:var(--pri-l);border-color:var(--pri)}
+.article-save-btn.saved{background:var(--suc-l);color:var(--suc);border-color:var(--suc)}
+.article-save-btn svg{flex-shrink:0}
+@media(max-width:600px){
+  .article-engage{padding:0 18px 16px}
+}
 @media(max-width:600px){
   .article-title{font-size:18px;padding:4px 18px 10px}
   .article-head{padding:18px 18px 0}
@@ -975,7 +1090,10 @@ footer .footer-links a:hover{color:var(--pri-d)}
     </div>
   </div>
 
-  <!-- ─── TABS ─── -->
+  <!-- ─── APP LAYOUT (sidebar + content) ─── -->
+  <div class="app-layout">
+
+  <!-- ─── TABS / SIDEBAR ─── -->
   <div class="tabs-wrapper" id="tabsWrapper">
     <div class="tabs-main" id="tabsMain">
       <div class="tab active" data-tab="dashboard" data-priority="core" onclick="showTab('dashboard',this)">
@@ -987,6 +1105,7 @@ footer .footer-links a:hover{color:var(--pri-d)}
       <div class="tab" data-tab="history" data-priority="core" onclick="showTab('history',this)">
         <span class="tab-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></span><span class="tab-label">Activity</span>
       </div>
+      <span class="sidebar-divider"></span>
       <div class="tab" data-tab="goals" data-priority="secondary" onclick="showTab('goals',this)">
         <span class="tab-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></span><span class="tab-label">Goals</span>
       </div>
@@ -1000,7 +1119,7 @@ footer .footer-links a:hover{color:var(--pri-d)}
         <span class="tab-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06A1.65 1.65 0 009 4.6a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg></span><span class="tab-label">Settings</span>
       </div>
     </div>
-    <!-- More button + dropdown (appears when tabs overflow) -->
+    <!-- More button + dropdown (appears when tabs overflow on mid-width screens) -->
     <div class="more-trigger" id="moreTrigger" onclick="toggleMoreMenu()" style="display:none">
       <span class="tab-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg></span><span class="tab-label">More</span>
       <span class="more-dot"></span>
@@ -1008,10 +1127,31 @@ footer .footer-links a:hover{color:var(--pri-d)}
     <div class="more-dropdown" id="moreDropdown"></div>
   </div>
 
+  <!-- ─── CONTENT AREA ─── -->
+  <div class="app-content">
+
   <!-- ─────────────────────────────────────── -->
   <!-- DASHBOARD PANEL                         -->
   <!-- ─────────────────────────────────────── -->
   <div id="tab-dashboard" class="panel active">
+  <div id="dashMain">
+
+    <!-- Greeting -->
+    <div id="greetingBar">
+      <div class="greeting" id="greetingText"></div>
+      <div class="greeting-sub" id="greetingSub"></div>
+    </div>
+
+    <!-- Personalize (soft onboarding — appears after 3+ expenses) -->
+    <div class="personalize-card" id="personalizeCard" style="display:none">
+      <h4><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--pri)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> Personalize Your Tracker</h4>
+      <p>What should we call you? This is just for your dashboard greeting — nothing is shared.</p>
+      <div class="personalize-row">
+        <input type="text" id="userNameInput" placeholder="e.g. Maria, Boss, Kuya..." maxlength="30" onkeydown="if(event.key==='Enter')saveUserName()">
+        <button class="btn btn-pri btn-sm" onclick="saveUserName()">Save</button>
+        <button class="btn btn-sec btn-sm" onclick="dismissPersonalize()">Maybe later</button>
+      </div>
+    </div>
 
     <!-- Income -->
     <div class="income-bar">
@@ -1022,7 +1162,11 @@ footer .footer-links a:hover{color:var(--pri-d)}
       <div style="display:flex;align-items:center;gap:10px">
         <div class="income-input-wrap">
           <span class="currency">$</span>
-          <input type="number" id="incomeInput" placeholder="5,000" step="100" oninput="updateDashboard()">
+          <input type="text" inputmode="decimal" id="incomeInput" placeholder="5,000" oninput="formatIncomeInput(this);updateDashboard()" autocomplete="off">
+          <div class="income-spin">
+            <button class="spin-btn spin-up" onclick="spinIncome(1)" tabindex="-1"><svg width="10" height="10" viewBox="0 0 10 10"><polyline points="2 7 5 3 8 7" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+            <button class="spin-btn spin-down" onclick="spinIncome(-1)" tabindex="-1"><svg width="10" height="10" viewBox="0 0 10 10"><polyline points="2 3 5 7 8 3" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+          </div>
         </div>
         <!-- Feed Bell -->
         <div class="feed-bell" id="feedBellBtn" onclick="toggleFeedBell()" title="The Budget Brief" style="display:none">
@@ -1041,6 +1185,16 @@ footer .footer-links a:hover{color:var(--pri-d)}
           </div>
         </div>
       </div>
+    </div>
+
+    <!-- Streak Counter -->
+    <div class="streak-bar" id="streakBar" style="display:none">
+      <div class="streak-fire" id="streakIcon">🔥</div>
+      <div class="streak-info">
+        <div class="streak-count" id="streakCount">0-day streak</div>
+        <div class="streak-label" id="streakLabel">Keep tracking daily!</div>
+      </div>
+      <div class="streak-best" id="streakBest" style="display:none">Best: 0</div>
     </div>
 
     <!-- Smart Insights -->
@@ -1147,19 +1301,18 @@ footer .footer-links a:hover{color:var(--pri-d)}
       </div>
     </div>
 
-    <!-- Newsletter on Dashboard -->
-    <div class="card" id="dashNewsletter" style="border-left:4px solid var(--acc);display:none">
+    <!-- Newsletter Lead Gen -->
+    <div class="card" id="dashNewsletter" style="border-left:4px solid var(--acc)">
       <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
         <div style="flex:1;min-width:200px">
           <div style="font-size:14px;font-weight:800;color:var(--txt);margin-bottom:4px">Get Free Budget Tips & Templates</div>
           <div style="font-size:12px;color:var(--txt2)">Join our newsletter — money tips, new tools, and exclusive templates. No spam ever.</div>
         </div>
         <div style="display:flex;gap:8px;flex-wrap:wrap;flex:1;min-width:200px" id="dashNlForm">
-          <input type="email" id="dashNlEmail" placeholder="your@email.com" style="flex:1;min-width:140px;padding:9px 14px;border:1.5px solid var(--brd);border-radius:10px;font-size:13px;font-family:inherit;outline:none;background:var(--bg);color:var(--txt);box-sizing:border-box">
+          <input type="email" id="dashNlEmail" placeholder="your@email.com" style="flex:1;min-width:140px;padding:9px 14px;border:1.5px solid var(--brd);border-radius:10px;font-size:13px;font-family:inherit;outline:none;background:var(--input-bg);color:var(--txt);box-sizing:border-box">
           <button class="btn btn-pri btn-sm" onclick="submitDashNewsletter()">Subscribe</button>
         </div>
         <div id="dashNlDone" style="display:none;font-size:13px;font-weight:700;color:var(--suc)">You're subscribed!</div>
-        <button onclick="dismissDashNl()" style="background:none;color:var(--txt2);font-size:16px;padding:4px;line-height:1;flex-shrink:0" title="Dismiss">✕</button>
       </div>
     </div>
 
@@ -1184,21 +1337,28 @@ footer .footer-links a:hover{color:var(--pri-d)}
       </a>
     </div>
 
-    <!-- In-App Newsletter -->
-    <div id="feedCard" style="display:none">
-      <div class="card">
-        <div class="feed-header-bar">
-          <h3><span class="icon-wrap"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22 6 12 13 2 6"/></svg></span> The Budget Brief</h3>
+  </div><!-- /dashMain -->
+
+  <!-- Budget Brief sub-view (inside dashboard panel) -->
+  <div id="briefView" style="display:none">
+    <button class="btn btn-sec btn-sm" onclick="closeBriefView()" style="margin-bottom:16px;display:inline-flex;align-items:center;gap:6px">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      Back to Dashboard
+    </button>
+    <div class="card" id="feedCard">
+      <div class="feed-header-bar">
+        <h3><span class="icon-wrap"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22 6 12 13 2 6"/></svg></span> The Budget Brief</h3>
+        <div style="display:flex;gap:8px;align-items:center">
           <span class="feed-unread-badge" id="feedBadge" style="display:none">0 new</span>
-        </div>
-        <div id="feedList"></div>
-        <div style="text-align:center;margin-top:12px">
           <button class="btn btn-sec btn-sm" id="feedMarkRead" onclick="markAllFeedRead()" style="display:none">Mark all as read</button>
         </div>
       </div>
+      <p style="font-size:13px;color:var(--txt2);margin-bottom:16px">Your personal finance feed — tips, challenges, product updates, and money strategies.</p>
+      <div id="feedList"></div>
     </div>
-
   </div>
+
+  </div><!-- /tab-dashboard -->
 
   <!-- ─────────────────────────────────────── -->
   <!-- ADD EXPENSES PANEL                      -->
@@ -1384,7 +1544,6 @@ footer .footer-links a:hover{color:var(--pri-d)}
     </div>
   </div>
 
-  </div>
   <!-- ─────────────────────────────────────── -->
   <!-- FINANCIAL JOURNAL PANEL                 -->
   <!-- ─────────────────────────────────────── -->
@@ -1443,7 +1602,6 @@ footer .footer-links a:hover{color:var(--pri-d)}
     </div>
   </div>
 
-  </div>
   <!-- ─────────────────────────────────────── -->
   <!-- AI ADVISOR PANEL                        -->
   <!-- ─────────────────────────────────────── -->
@@ -1558,257 +1716,251 @@ footer .footer-links a:hover{color:var(--pri-d)}
     </div>
   </div>
 
-  </div>
   <!-- ─────────────────────────────────────── -->
   <!-- SETTINGS PANEL                          -->
   <!-- ─────────────────────────────────────── -->
   <div id="tab-data" class="panel">
 
-    <!-- Theme -->
-    <div class="card">
-      <h3><span class="icon-wrap"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="6.5" r="2.5"/><circle cx="17.5" cy="10.5" r="2.5"/><circle cx="8.5" cy="7.5" r="2.5"/><circle cx="6.5" cy="12.5" r="2.5"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.9 0 1.5-.7 1.5-1.5 0-.4-.1-.7-.4-1-.3-.3-.4-.7-.4-1 0-.8.7-1.5 1.5-1.5H16c3.3 0 6-2.7 6-6 0-5.5-4.5-9-10-9z"/></svg></span> Color Theme</h3>
-      <p style="font-size:13px;color:var(--txt2);margin:10px 0 18px">Choose a theme that suits your style. Your preference is saved automatically.</p>
-      <div style="display:flex;gap:20px;flex-wrap:wrap">
-        <div class="theme-item">
-          <div class="theme-dot active" style="background:#6C9A8B" onclick="setTheme('sage',this)" title="Sage Green"></div>
-          <span class="theme-name">Sage</span>
+    <!-- ── Color Theme ── -->
+    <div class="accordion open" onclick="toggleAccordion(this)">
+      <div class="accordion-header">
+        <div class="acc-left">
+          <div class="acc-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="6.5" r="2.5"/><circle cx="17.5" cy="10.5" r="2.5"/><circle cx="8.5" cy="7.5" r="2.5"/><circle cx="6.5" cy="12.5" r="2.5"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.9 0 1.5-.7 1.5-1.5 0-.4-.1-.7-.4-1-.3-.3-.4-.7-.4-1 0-.8.7-1.5 1.5-1.5H16c3.3 0 6-2.7 6-6 0-5.5-4.5-9-10-9z"/></svg></div>
+          <span>Appearance</span>
         </div>
-        <div class="theme-item">
-          <div class="theme-dot" style="background:#D4A0A0" onclick="setTheme('blush',this)" title="Blush Pink"></div>
-          <span class="theme-name">Blush</span>
-        </div>
-        <div class="theme-item">
-          <div class="theme-dot" style="background:#2D3436" onclick="setTheme('dark',this)" title="Dark Mode"></div>
-          <span class="theme-name">Dark</span>
-        </div>
-        <div class="theme-item">
-          <div class="theme-dot" style="background:#5B8FB9" onclick="setTheme('ocean',this)" title="Ocean Blue"></div>
-          <span class="theme-name">Ocean</span>
-        </div>
-        <div class="theme-item">
-          <div class="theme-dot" style="background:#9B89B3" onclick="setTheme('lavender',this)" title="Lavender"></div>
-          <span class="theme-name">Lavender</span>
-        </div>
+        <svg class="accordion-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
       </div>
-    </div>
-
-    <!-- Install -->
-    <div class="card">
-      <h3><span class="icon-wrap"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></span> Install App</h3>
-      <p style="font-size:13px;color:var(--txt2);margin:10px 0 16px">Install this app on your device for quick access. It works offline after the first visit — no app store needed.</p>
-      
-      <div style="display:flex;flex-direction:column;gap:12px">
-        <!-- Android -->
-        <div style="padding:12px;background:var(--bg);border-radius:10px;border:1px solid var(--brd)">
-          <div style="font-size:12px;font-weight:700;color:var(--txt);margin-bottom:4px">Android (Chrome)</div>
-          <div style="font-size:12px;color:var(--txt2);line-height:1.6">
-            Tap the <strong>three dots menu</strong> (top right) → <strong>"Install app"</strong> or <strong>"Add to Home screen"</strong>
+      <div class="accordion-body"><div class="accordion-content">
+        <div class="section-label" style="margin-bottom:8px">Color Theme</div>
+        <div style="display:flex;gap:20px;flex-wrap:wrap;margin-bottom:18px">
+          <div class="theme-item">
+            <div class="theme-dot active" style="background:#6C9A8B" onclick="event.stopPropagation();setTheme('sage',this)" title="Sage Green"></div>
+            <span class="theme-name">Sage</span>
+          </div>
+          <div class="theme-item">
+            <div class="theme-dot" style="background:#D4A0A0" onclick="event.stopPropagation();setTheme('blush',this)" title="Blush Pink"></div>
+            <span class="theme-name">Blush</span>
+          </div>
+          <div class="theme-item">
+            <div class="theme-dot" style="background:#2D3436" onclick="event.stopPropagation();setTheme('dark',this)" title="Dark Mode"></div>
+            <span class="theme-name">Dark</span>
+          </div>
+          <div class="theme-item">
+            <div class="theme-dot" style="background:#5B8FB9" onclick="event.stopPropagation();setTheme('ocean',this)" title="Ocean Blue"></div>
+            <span class="theme-name">Ocean</span>
+          </div>
+          <div class="theme-item">
+            <div class="theme-dot" style="background:#9B89B3" onclick="event.stopPropagation();setTheme('lavender',this)" title="Lavender"></div>
+            <span class="theme-name">Lavender</span>
           </div>
         </div>
-        <!-- iPhone -->
-        <div style="padding:12px;background:var(--bg);border-radius:10px;border:1px solid var(--brd)">
-          <div style="font-size:12px;font-weight:700;color:var(--txt);margin-bottom:4px">iPhone / iPad (Safari only)</div>
-          <div style="font-size:12px;color:var(--txt2);line-height:1.6">
-            Tap the <strong>Share button</strong> (square with arrow) → scroll down → <strong>"Add to Home Screen"</strong>
-          </div>
-        </div>
-        <!-- Desktop -->
-        <div style="padding:12px;background:var(--bg);border-radius:10px;border:1px solid var(--brd)">
-          <div style="font-size:12px;font-weight:700;color:var(--txt);margin-bottom:4px">Desktop (Chrome / Edge)</div>
-          <div style="font-size:12px;color:var(--txt2);line-height:1.6">
-            Look for the <strong>install icon</strong> in the address bar (right side) → click <strong>"Install"</strong>
-          </div>
-        </div>
-      </div>
-
-      <div style="font-size:11px;color:var(--txt2);margin-top:12px;padding:10px;background:var(--pri-l);border-radius:8px;line-height:1.5">
-        Once installed, the app opens in its own window without a browser bar and works completely offline. Your data stays on your device.
-      </div>
+        <div class="section-label" style="margin-bottom:8px">Currency</div>
+        <select id="currencySelect" onclick="event.stopPropagation()" onchange="setCurrency(this.value)" style="padding:9px 14px;border:1.5px solid var(--brd);border-radius:10px;font-size:13px;font-family:inherit;outline:none;background:var(--input-bg);color:var(--txt);min-width:200px">
+          <option value="$">$ — US Dollar (USD)</option>
+          <option value="₱">₱ — Philippine Peso (PHP)</option>
+          <option value="€">€ — Euro (EUR)</option>
+          <option value="£">£ — British Pound (GBP)</option>
+          <option value="¥">¥ — Japanese Yen (JPY)</option>
+          <option value="₩">₩ — Korean Won (KRW)</option>
+          <option value="₹">₹ — Indian Rupee (INR)</option>
+          <option value="A$">A$ — Australian Dollar (AUD)</option>
+          <option value="C$">C$ — Canadian Dollar (CAD)</option>
+          <option value="CHF">CHF — Swiss Franc (CHF)</option>
+          <option value="R$">R$ — Brazilian Real (BRL)</option>
+          <option value="฿">฿ — Thai Baht (THB)</option>
+          <option value="RM">RM — Malaysian Ringgit (MYR)</option>
+          <option value="S$">S$ — Singapore Dollar (SGD)</option>
+          <option value="Rp">Rp — Indonesian Rupiah (IDR)</option>
+          <option value="₫">₫ — Vietnamese Dong (VND)</option>
+        </select>
+      </div></div>
     </div>
 
-    <!-- AI Settings -->
-    <div class="card">
-      <h3><span class="icon-wrap"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/><path d="M14 8l-1 3h2l-1 3"/><circle cx="9" cy="10" r="0.5" fill="currentColor"/></svg></span> AI Advisor Settings</h3>
-      <div style="height:10px"></div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:12px;margin-bottom:12px">
-        <div style="padding:10px;background:var(--bg);border-radius:8px;border:1px solid var(--brd)">
-          <div style="color:var(--txt2);font-weight:600">Provider</div>
-          <div style="font-weight:800;color:var(--txt);margin-top:2px" id="settingsAiProvider">Not set</div>
+    <!-- ── App & Install ── -->
+    <div class="accordion" onclick="toggleAccordion(this)">
+      <div class="accordion-header">
+        <div class="acc-left">
+          <div class="acc-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></div>
+          <span>App & Install</span>
         </div>
-        <div style="padding:10px;background:var(--bg);border-radius:8px;border:1px solid var(--brd)">
-          <div style="color:var(--txt2);font-weight:600">API Key</div>
-          <div style="font-weight:800;margin-top:2px" id="settingsAiKeyStatus">Not configured</div>
+        <svg class="accordion-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="accordion-body"><div class="accordion-content">
+        <!-- Version info -->
+        <!-- Your Name -->
+        <div class="section-label" style="margin-bottom:6px">Your Name</div>
+        <div style="display:flex;gap:8px;align-items:center;margin-bottom:16px;flex-wrap:wrap">
+          <input type="text" id="settingsUserName" placeholder="Enter your name..." maxlength="30" onclick="event.stopPropagation()" onkeydown="if(event.key==='Enter'){event.stopPropagation();saveSettingsName()}" style="padding:9px 14px;border:1.5px solid var(--brd);border-radius:10px;font-size:13px;font-family:inherit;outline:none;background:var(--input-bg);color:var(--txt);box-sizing:border-box;flex:1;min-width:150px;max-width:280px">
+          <button class="btn btn-pri btn-sm" id="saveNameBtn" onclick="event.stopPropagation();saveSettingsName()">Save</button>
+          <span id="nameSavedMsg" style="display:none;font-size:12px;font-weight:700;color:var(--suc);white-space:nowrap">Saved!</span>
         </div>
-      </div>
-      <div style="display:flex;gap:8px;flex-wrap:wrap">
-        <button class="btn btn-sec btn-sm" onclick="showTab('ai',document.querySelector('[data-tab=ai]'))">Configure AI →</button>
-        <button class="btn btn-dan btn-sm" onclick="removeAiKey()" id="removeKeyBtn" style="display:none">Remove Key</button>
-      </div>
-      <div style="font-size:11px;color:var(--txt2);margin-top:8px;padding:8px;background:var(--bg);border-radius:8px;border:1px solid var(--brd)">
-        • <strong>Security:</strong> Your API key is obfuscated in browser storage. It is never sent to us — only to your chosen AI provider when you chat. Anyone with physical access to your device could potentially extract it. Treat it like a password.
-      </div>
+        <!-- Version info -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:12px;margin-bottom:16px">
+          <div style="padding:10px;background:var(--bg);border-radius:8px;border:1px solid var(--brd)">
+            <div style="color:var(--txt2);font-weight:600">Version</div>
+            <div style="font-weight:800;color:var(--txt);margin-top:2px">1.0.0</div>
+          </div>
+          <div style="padding:10px;background:var(--bg);border-radius:8px;border:1px solid var(--brd)">
+            <div style="color:var(--txt2);font-weight:600">Status</div>
+            <div style="font-weight:800;color:var(--suc);margin-top:2px" id="appStatus">Up to date</div>
+          </div>
+        </div>
+        <button class="btn btn-sec btn-sm" onclick="event.stopPropagation();checkForUpdates()" style="width:100%;justify-content:center;margin-bottom:16px">Check for Updates</button>
+        <!-- Install instructions -->
+        <div class="section-label" style="margin-bottom:8px">Install on Your Device</div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div style="padding:10px 12px;background:var(--bg);border-radius:8px;border:1px solid var(--brd);font-size:12px;line-height:1.6">
+            <strong>Android:</strong> Three dots menu → "Install app"
+          </div>
+          <div style="padding:10px 12px;background:var(--bg);border-radius:8px;border:1px solid var(--brd);font-size:12px;line-height:1.6">
+            <strong>iPhone:</strong> Share button → "Add to Home Screen"
+          </div>
+          <div style="padding:10px 12px;background:var(--bg);border-radius:8px;border:1px solid var(--brd);font-size:12px;line-height:1.6">
+            <strong>Desktop:</strong> Install icon in address bar → "Install"
+          </div>
+        </div>
+      </div></div>
     </div>
 
-    <!-- Newsletter / Stay Updated -->
-    <div class="card" style="border-left:4px solid var(--acc)">
-      <h3><span class="icon-wrap" style="background:var(--acc-l)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22 6 12 13 2 6"/></svg></span> Stay Updated</h3>
-      <p style="font-size:13px;color:var(--txt2);margin:10px 0 14px">Get free budget tips, new templates, and product updates. No spam — unsubscribe anytime.</p>
-      <div id="newsletterForm">
+    <!-- ── AI Advisor ── -->
+    <div class="accordion" onclick="toggleAccordion(this)">
+      <div class="accordion-header">
+        <div class="acc-left">
+          <div class="acc-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/><path d="M14 8l-1 3h2l-1 3"/><circle cx="9" cy="10" r="0.5" fill="currentColor"/></svg></div>
+          <span>AI Advisor</span>
+          <span class="acc-badge" id="settingsAiKeyStatus">Not configured</span>
+        </div>
+        <svg class="accordion-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="accordion-body"><div class="accordion-content">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:12px;margin-bottom:12px">
+          <div style="padding:10px;background:var(--bg);border-radius:8px;border:1px solid var(--brd)">
+            <div style="color:var(--txt2);font-weight:600">Provider</div>
+            <div style="font-weight:800;color:var(--txt);margin-top:2px" id="settingsAiProvider">Not set</div>
+          </div>
+          <div style="padding:10px;background:var(--bg);border-radius:8px;border:1px solid var(--brd)">
+            <div style="color:var(--txt2);font-weight:600">Status</div>
+            <div style="font-weight:800;margin-top:2px" id="settingsAiStatus2">Not set</div>
+          </div>
+        </div>
         <div style="display:flex;gap:8px;flex-wrap:wrap">
-          <input type="email" id="nlEmail" placeholder="your@email.com" style="flex:1;min-width:200px;padding:10px 14px;border:1.5px solid var(--brd);border-radius:10px;font-size:13px;font-family:inherit;outline:none;background:var(--bg);color:var(--txt);box-sizing:border-box">
-          <button class="btn btn-pri" onclick="submitNewsletter()">Subscribe</button>
+          <button class="btn btn-sec btn-sm" onclick="event.stopPropagation();showTab('ai',document.querySelector('[data-tab=ai]'))">Configure AI →</button>
+          <button class="btn btn-dan btn-sm" onclick="event.stopPropagation();removeAiKey()" id="removeKeyBtn" style="display:none">Remove Key</button>
         </div>
-      </div>
-      <div id="newsletterSuccess" style="display:none;padding:14px;background:var(--suc-l);border-radius:10px;text-align:center">
-        <div style="margin-bottom:6px"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--suc)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
-        <div style="font-size:14px;font-weight:700;color:var(--suc)">You're subscribed!</div>
-        <div style="font-size:12px;color:var(--txt2);margin-top:4px">Check your inbox for a welcome email.</div>
-      </div>
+        <div style="font-size:11px;color:var(--txt2);margin-top:10px;line-height:1.5">
+          Your API key is obfuscated in storage and never sent to us — only to your chosen AI provider.
+        </div>
+      </div></div>
     </div>
 
-    <!-- Contact / Feedback -->
-    <div class="card">
-      <h3><span class="icon-wrap"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></span> Contact & Feedback</h3>
-      <p style="font-size:13px;color:var(--txt2);margin:10px 0 14px">Found a bug? Have a feature idea? We'd love to hear from you!</p>
-      <div id="contactForm">
-        <div style="display:flex;flex-direction:column;gap:10px">
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-            <input type="text" id="cfName" placeholder="Your name (optional)" style="padding:10px 14px;border:1.5px solid var(--brd);border-radius:10px;font-size:13px;font-family:inherit;outline:none;background:var(--bg);color:var(--txt);box-sizing:border-box;min-width:0">
-            <input type="email" id="cfEmail" placeholder="Your email (optional)" style="padding:10px 14px;border:1.5px solid var(--brd);border-radius:10px;font-size:13px;font-family:inherit;outline:none;background:var(--bg);color:var(--txt);box-sizing:border-box;min-width:0">
-          </div>
-          <select id="cfType" style="padding:10px 14px;border:1.5px solid var(--brd);border-radius:10px;font-size:13px;font-family:inherit;outline:none;background:var(--bg);color:var(--txt)">
-            <option value="feedback">Feature Request / Idea</option>
-            <option value="bug">Bug Report</option>
-            <option value="question">Question</option>
-            <option value="testimonial">Testimonial / Review</option>
-            <option value="other">Other</option>
-          </select>
-          <textarea id="cfMessage" rows="4" placeholder="Tell us what's on your mind..." style="padding:10px 14px;border:1.5px solid var(--brd);border-radius:10px;font-size:13px;font-family:inherit;outline:none;background:var(--bg);color:var(--txt);resize:vertical;min-height:80px;box-sizing:border-box"></textarea>
-          <button class="btn btn-pri" onclick="submitContact()" style="align-self:flex-start">Send Message 📩</button>
+    <!-- ── Contact Us ── -->
+    <div class="accordion" onclick="toggleAccordion(this)">
+      <div class="accordion-header">
+        <div class="acc-left">
+          <div class="acc-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></div>
+          <span>Contact Us</span>
         </div>
+        <svg class="accordion-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
       </div>
-      <div id="contactSuccess" style="display:none;padding:14px;background:var(--suc-l);border-radius:10px;text-align:center">
-        <div style="margin-bottom:6px"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--suc)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
-        <div style="font-size:14px;font-weight:700;color:var(--suc)">Message sent!</div>
-        <div style="font-size:12px;color:var(--txt2);margin-top:4px">Thanks for your feedback. We'll get back to you if needed.</div>
-        <button class="btn btn-sec btn-sm" onclick="resetContact()" style="margin-top:10px">Send Another</button>
-      </div>
+      <div class="accordion-body"><div class="accordion-content">
+        <p style="font-size:12px;color:var(--txt2);margin-bottom:12px">Found a bug? Have a feature idea? We'd love to hear from you.</p>
+        <div id="contactForm">
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+              <input type="text" id="cfName" placeholder="Name (optional)" onclick="event.stopPropagation()" style="padding:9px 12px;border:1.5px solid var(--brd);border-radius:10px;font-size:12px;font-family:inherit;outline:none;background:var(--input-bg);color:var(--txt);box-sizing:border-box;min-width:0">
+              <input type="email" id="cfEmail" placeholder="Email (optional)" onclick="event.stopPropagation()" style="padding:9px 12px;border:1.5px solid var(--brd);border-radius:10px;font-size:12px;font-family:inherit;outline:none;background:var(--input-bg);color:var(--txt);box-sizing:border-box;min-width:0">
+            </div>
+            <select id="cfType" onclick="event.stopPropagation()" style="padding:9px 12px;border:1.5px solid var(--brd);border-radius:10px;font-size:12px;font-family:inherit;outline:none;background:var(--input-bg);color:var(--txt)">
+              <option value="feedback">Feature Request / Idea</option>
+              <option value="bug">Bug Report</option>
+              <option value="question">Question</option>
+              <option value="testimonial">Testimonial / Review</option>
+              <option value="other">Other</option>
+            </select>
+            <textarea id="cfMessage" rows="3" placeholder="Tell us what's on your mind..." onclick="event.stopPropagation()" style="padding:9px 12px;border:1.5px solid var(--brd);border-radius:10px;font-size:12px;font-family:inherit;outline:none;background:var(--input-bg);color:var(--txt);resize:vertical;min-height:60px;box-sizing:border-box"></textarea>
+            <button class="btn btn-pri btn-sm" onclick="event.stopPropagation();submitContact()" style="align-self:flex-start">Send Message</button>
+          </div>
+        </div>
+        <div id="contactSuccess" style="display:none;padding:12px;background:var(--suc-l);border-radius:10px;text-align:center">
+          <div style="font-size:13px;font-weight:700;color:var(--suc)">Message sent!</div>
+          <button class="btn btn-sec btn-sm" onclick="event.stopPropagation();resetContact()" style="margin-top:8px">Send Another</button>
+        </div>
+      </div></div>
     </div>
 
-    <!-- App Info / Version -->
-    <div class="card">
-      <h3><span class="icon-wrap"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg></span> About This App</h3>
-      <div style="height:10px"></div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:12px">
-        <div style="padding:10px;background:var(--bg);border-radius:8px;border:1px solid var(--brd)">
-          <div style="color:var(--txt2);font-weight:600">Version</div>
-          <div style="font-weight:800;color:var(--txt);margin-top:2px">1.0.0</div>
+    <!-- ── Data Management ── -->
+    <div class="accordion" onclick="toggleAccordion(this)">
+      <div class="accordion-header">
+        <div class="acc-left">
+          <div class="acc-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></div>
+          <span>Data Management</span>
         </div>
-        <div style="padding:10px;background:var(--bg);border-radius:8px;border:1px solid var(--brd)">
-          <div style="color:var(--txt2);font-weight:600">Last Updated</div>
-          <div style="font-weight:800;color:var(--txt);margin-top:2px">June 2026</div>
-        </div>
-        <div style="padding:10px;background:var(--bg);border-radius:8px;border:1px solid var(--brd)">
-          <div style="color:var(--txt2);font-weight:600">Status</div>
-          <div style="font-weight:800;color:var(--suc);margin-top:2px" id="appStatus">Up to date</div>
-        </div>
-        <div style="padding:10px;background:var(--bg);border-radius:8px;border:1px solid var(--brd)">
-          <div style="color:var(--txt2);font-weight:600">Data Storage</div>
-          <div style="font-weight:800;color:var(--txt);margin-top:2px">Local + Backup</div>
-        </div>
+        <svg class="accordion-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
       </div>
-      <button class="btn btn-sec btn-sm" onclick="checkForUpdates()" style="margin-top:12px;width:100%;justify-content:center">Check for Updates</button>
-    </div>
-
-    <!-- Export -->
-    <div class="card">
-      <h3><span class="icon-wrap"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></span> Export Your Data</h3>
-      <p style="font-size:13px;color:var(--txt2);margin:10px 0 16px">Download your budget data to open in Google Sheets, Excel, or as a backup file.</p>
-      <!-- Quick clipboard backup -->
-      <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap">
-        <button class="btn btn-sec btn-sm" onclick="copyBackupToClipboard()">Copy Backup to Clipboard</button>
-        <button class="btn btn-sec btn-sm" onclick="restoreFromClipboard()">Restore from Clipboard</button>
-      </div>
-      <div class="export-grid">
-        <div class="export-btn" onclick="exportCSV()">
-          <div class="eb-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg></div>
-          <div>
-            <div class="eb-text">Export as CSV</div>
-            <div class="eb-sub">Opens in Google Sheets, Excel, Numbers</div>
+      <div class="accordion-body"><div class="accordion-content">
+        <!-- Quick backup -->
+        <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap">
+          <button class="btn btn-sec btn-sm" onclick="event.stopPropagation();copyBackupToClipboard()">Copy Backup to Clipboard</button>
+          <button class="btn btn-sec btn-sm" onclick="event.stopPropagation();restoreFromClipboard()">Restore from Clipboard</button>
+        </div>
+        <!-- Export -->
+        <div class="section-label" style="margin-bottom:8px">Export</div>
+        <div class="export-grid" style="margin-bottom:16px">
+          <div class="export-btn" onclick="event.stopPropagation();exportCSV()">
+            <div class="eb-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg></div>
+            <div><div class="eb-text">CSV</div><div class="eb-sub">Sheets, Excel, Numbers</div></div>
+          </div>
+          <div class="export-btn" onclick="event.stopPropagation();exportExcel()">
+            <div class="eb-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+            <div><div class="eb-text">Excel (.xls)</div><div class="eb-sub">Formatted spreadsheet</div></div>
+          </div>
+          <div class="export-btn" onclick="event.stopPropagation();exportJSON()">
+            <div class="eb-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/></svg></div>
+            <div><div class="eb-text">Full Backup</div><div class="eb-sub">JSON — everything</div></div>
           </div>
         </div>
-        <div class="export-btn" onclick="exportExcel()">
-          <div class="eb-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></div>
-          <div>
-            <div class="eb-text">Export as Excel (.xls)</div>
-            <div class="eb-sub">Formatted spreadsheet with categories</div>
+        <!-- Import -->
+        <div class="section-label" style="margin-bottom:8px">Import</div>
+        <div class="export-grid" style="margin-bottom:16px">
+          <div class="export-btn" onclick="event.stopPropagation();document.getElementById('csvFileInput').click()">
+            <div class="eb-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg></div>
+            <div><div class="eb-text">Import CSV</div><div class="eb-sub">Load expenses</div></div>
+          </div>
+          <div class="export-btn" onclick="event.stopPropagation();document.getElementById('jsonFileInput').click()">
+            <div class="eb-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/></svg></div>
+            <div><div class="eb-text">Restore Backup</div><div class="eb-sub">JSON — full restore</div></div>
           </div>
         </div>
-        <div class="export-btn" onclick="exportJSON()">
-          <div class="eb-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg></div>
-          <div>
-            <div class="eb-text">Full Backup (JSON)</div>
-            <div class="eb-sub">Expenses, goals, income, settings</div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Import -->
-    <div class="card">
-      <h3><span class="icon-wrap"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></span> Import Data</h3>
-      <p style="font-size:13px;color:var(--txt2);margin:10px 0 16px">Restore from a backup or import expenses from a CSV file.</p>
-      <div class="export-grid" style="margin-bottom:14px">
-        <div class="export-btn" onclick="document.getElementById('csvFileInput').click()">
-          <div class="eb-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg></div>
-          <div>
-            <div class="eb-text">Import CSV</div>
-            <div class="eb-sub">Load expenses from a CSV file</div>
-          </div>
-        </div>
-        <div class="export-btn" onclick="document.getElementById('jsonFileInput').click()">
-          <div class="eb-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg></div>
-          <div>
-            <div class="eb-text">Restore Backup (JSON)</div>
-            <div class="eb-sub">Restore all data from a backup file</div>
-          </div>
-        </div>
-      </div>
-      <input type="file" id="csvFileInput" accept=".csv" onchange="importCSV(event)" style="display:none">
-      <input type="file" id="jsonFileInput" accept=".json" onchange="importJSON(event)" style="display:none">
-    </div>
-
-    <!-- Transfer Guide -->
-    <div class="card" style="border-left:4px solid var(--pri)">
-      <h3><span class="icon-wrap"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 014-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 01-4 4H3"/></svg></span> How to Transfer Between Devices</h3>
-      <div style="height:12px"></div>
-      <ol class="steps-list">
-        <li><span class="step-n">1</span><div><strong style="color:var(--txt)">On Device A:</strong> Click "Full Backup (JSON)" — this saves a file to your device</div></li>
-        <li><span class="step-n">2</span><div><strong style="color:var(--txt)">Transfer the file</strong> to Device B via email, cloud drive, or USB</div></li>
-        <li><span class="step-n">3</span><div><strong style="color:var(--txt)">On Device B:</strong> Click "Restore Backup (JSON)" and select the file</div></li>
-        <li><span class="step-n">✓</span><div style="color:var(--suc);font-weight:600">All your data — expenses, goals, income — is restored!</div></li>
-      </ol>
+        <input type="file" id="csvFileInput" accept=".csv" onchange="importCSV(event)" style="display:none">
+        <input type="file" id="jsonFileInput" accept=".json" onchange="importJSON(event)" style="display:none">
+        <!-- Transfer guide -->
+        <div class="section-label" style="margin-bottom:8px">Transfer Between Devices</div>
+        <ol class="steps-list" style="margin-bottom:0">
+          <li><span class="step-n">1</span><div><strong>Device A:</strong> Export Full Backup (JSON)</div></li>
+          <li><span class="step-n">2</span><div><strong>Transfer</strong> via email, cloud, or USB</div></li>
+          <li><span class="step-n">3</span><div><strong>Device B:</strong> Restore Backup (JSON)</div></li>
+        </ol>
+        <!-- Data stats -->
+        <div class="section-label" style="margin:16px 0 8px">Data Summary</div>
+        <div id="dataStats"></div>
+      </div></div>
     </div>
 
     <!-- CTA -->
     <div class="cta">
       <h3>Want Deeper Analysis?</h3>
-      <p>Export your data → Open in our premium Google Sheets template → Get 12-month tracking, charts, annual overview, and savings goals automatically!</p>
+      <p>Export your data → Open in our premium Google Sheets template → Get 12-month tracking, charts, annual overview, and savings goals!</p>
       <a href="#" class="btn-cta" target="_blank">
         Get the Full Spreadsheet Template — $6.99
       </a>
     </div>
 
-    <!-- Data Stats -->
-    <div class="card">
-      <h3><span class="icon-wrap"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span> Your Data Summary</h3>
-      <div style="height:14px"></div>
-      <div id="dataStats"></div>
-    </div>
-
   </div>
 
   </div>
+
+  </div><!-- /app-content -->
+  </div><!-- /app-layout -->
 
   <!-- ─── FOOTER ─── -->
   <footer>
@@ -1902,6 +2054,49 @@ footer .footer-links a:hover{color:var(--pri-d)}
     <div class="article-meta" id="articleMeta"></div>
     <div class="article-title" id="articleTitle"></div>
     <div class="article-body" id="articleBody"></div>
+
+    <!-- Engagement: Reactions + Comment + Save -->
+    <div class="article-engage" id="articleEngage">
+      <!-- Save to Journal -->
+      <button class="article-save-btn" id="articleSaveBtn" onclick="saveArticleToJournal()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+        <span id="saveBtnText">Save to Journal</span>
+      </button>
+
+      <!-- Reactions -->
+      <div class="article-reactions">
+        <span class="react-label">Was this helpful?</span>
+        <button class="react-btn" data-reaction="helpful" onclick="reactToArticle('helpful',this)">👍 Helpful</button>
+        <button class="react-btn" data-reaction="learned" onclick="reactToArticle('learned',this)">💡 Learned</button>
+        <button class="react-btn" data-reaction="love" onclick="reactToArticle('love',this)">🔥 Love</button>
+      </div>
+
+      <!-- Comment -->
+      <div class="article-comment">
+        <div class="comment-label">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+          Your Thoughts
+        </div>
+        <!-- Saved comment display -->
+        <div id="commentDisplay" style="display:none">
+          <div id="commentDisplayContent" style="font-size:13px;color:var(--txt);line-height:1.6;white-space:pre-wrap;word-wrap:break-word"></div>
+          <div style="display:flex;align-items:center;gap:8px;margin-top:6px">
+            <span id="commentDisplayDate" style="font-size:10px;color:var(--txt2)"></span>
+            <button class="btn btn-sec btn-sm" onclick="editArticleComment()" style="font-size:11px;padding:4px 10px">Edit</button>
+          </div>
+        </div>
+        <!-- Comment input (new or editing) -->
+        <div id="commentInputArea">
+          <textarea id="articleCommentInput" placeholder="What did you think of this article? Any tips you'll try?" rows="3"></textarea>
+          <div class="comment-actions">
+            <button class="btn btn-pri btn-sm" onclick="saveArticleComment()">Post Comment</button>
+            <button class="btn btn-sec btn-sm" id="commentCancelEdit" onclick="cancelCommentEdit()" style="display:none">Cancel</button>
+            <span class="comment-saved" id="commentSavedMsg">Posted!</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div class="article-footer" id="articleFooter"></div>
   </div>
 </div>
@@ -2079,7 +2274,7 @@ function restoreFromClipboard() {
       if (!confirm("Restore from clipboard?\n\n📊 " + backup.expenses.length + " expenses\n🎯 " + (backup.goals||[]).length + " goals\n💰 Income: $" + (backup.income||0) + "\n\n⚠️ This will REPLACE all current data.")) return;
       const data = { income: backup.income||0, expenses: backup.expenses, goals: backup.goals||[] };
       saveData(data);
-      document.getElementById("incomeInput").value = data.income || "";
+      setIncomeDisplay(data.income);
       updateDashboard(); renderHistory(); renderGoals();
       toast("✅ Restored " + data.expenses.length + " expenses from clipboard!");
     } catch(e) {
@@ -2209,9 +2404,14 @@ document.addEventListener("DOMContentLoaded", () => {
     localStorage.setItem(REMINDER_KEY, JSON.stringify(rs));
   } catch(e) {}
   loadTheme();
+  loadCurrency();
   const data = getData();
-  document.getElementById("incomeInput").value = data.income || "";
+  setIncomeDisplay(data.income);
   document.getElementById("expDate").valueAsDate = new Date();
+  getClientId(); // Generate UUID on first visit
+  updateGreeting();
+  checkPersonalizeCard();
+  renderStreak();
   updateDashboard();
   renderHistory();
   renderGoals();
@@ -2230,12 +2430,9 @@ document.addEventListener("DOMContentLoaded", () => {
   maybeShowNlPopup();
   // Check backup reminder after everything loads
   setTimeout(checkBackupReminder, 8000);
-  // If already subscribed, update Settings form state
+  // If already subscribed, update dashboard newsletter state
   if (localStorage.getItem("bt_nl_subscribed")) {
-    const nlf = document.getElementById("newsletterForm");
-    const nls = document.getElementById("newsletterSuccess");
-    if (nlf) nlf.style.display = "none";
-    if (nls) nls.style.display = "block";
+    showDashNewsletter();
   }
 });
 
@@ -2252,6 +2449,10 @@ function showTab(id, el) {
   if (id === "notes") renderNotes();
   if (id === "ai") initAiChat();
   if (id === "data") renderDataStats();
+  // Close brief sub-view when switching tabs
+  closeBriefView();
+  // Scroll to top on tab switch (desktop)
+  if (window.innerWidth > 900) window.scrollTo({ top: 0, behavior: "smooth" });
   // Close More dropdown if open
   const dd = document.getElementById("moreDropdown");
   if (dd) dd.classList.remove("show");
@@ -2269,8 +2470,29 @@ function toast(msg) {
 }
 
 // ─── FORMAT ────────────────────────────────────────────────
-const fmt = n => "$" + Math.abs(n).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-const fmtShort = n => "$" + Math.abs(n).toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+// ─── CURRENCY ──────────────────────────────────────────────
+function getCurrency() { return localStorage.getItem("bt_currency") || "$"; }
+function setCurrency(sym) {
+  localStorage.setItem("bt_currency", sym);
+  // Update the income $ label
+  const el = document.querySelector(".income-input-wrap .currency");
+  if (el) el.textContent = sym;
+  // Re-render everything
+  updateDashboard();
+  renderHistory();
+  renderGoals();
+  renderInsights();
+  toast("Currency set to " + sym);
+}
+function loadCurrency() {
+  const sym = getCurrency();
+  const el = document.querySelector(".income-input-wrap .currency");
+  if (el) el.textContent = sym;
+  const sel = document.getElementById("currencySelect");
+  if (sel) sel.value = sym;
+}
+const fmt = n => getCurrency() + Math.abs(n).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+const fmtShort = n => getCurrency() + Math.abs(n).toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 
 // ─── ADD EXPENSE ───────────────────────────────────────────
 function addExpense() {
@@ -2411,12 +2633,256 @@ function clearAll() {
   renderRecent();
 }
 
+// ─── USER PROFILE & UUID ───────────────────────────────────
+function getClientId() {
+  let id = localStorage.getItem("bt_client_id");
+  if (!id) {
+    id = "bt_" + crypto.randomUUID();
+    localStorage.setItem("bt_client_id", id);
+  }
+  return id;
+}
+
+function getUserName() {
+  return localStorage.getItem("bt_user_name") || "";
+}
+
+function saveUserName() {
+  const input = document.getElementById("userNameInput");
+  const name = input.value.trim();
+  if (!name) { toast("Please enter a name"); return; }
+  localStorage.setItem("bt_user_name", name);
+  localStorage.setItem("bt_personalize_done", "1");
+  document.getElementById("personalizeCard").style.display = "none";
+  updateGreeting();
+  toast("Hey " + name + "! Your tracker is personalized.");
+}
+
+function saveSettingsName() {
+  const input = document.getElementById("settingsUserName");
+  const name = input.value.trim();
+  if (!name) { toast("Please enter a name"); return; }
+  localStorage.setItem("bt_user_name", name);
+  localStorage.setItem("bt_personalize_done", "1");
+  updateGreeting();
+  checkPersonalizeCard();
+  // Visual feedback — button + inline message
+  const btn = document.getElementById("saveNameBtn");
+  const msg = document.getElementById("nameSavedMsg");
+  if (btn) {
+    btn.textContent = "Saved!";
+    btn.style.background = "var(--suc)";
+    setTimeout(() => { btn.textContent = "Save"; btn.style.background = ""; }, 2000);
+  }
+  if (msg) {
+    msg.style.display = "inline";
+    msg.textContent = "Hi, " + name + "!";
+    setTimeout(() => { msg.style.display = "none"; }, 3000);
+  }
+  toast("Name updated to " + name + "!");
+}
+
+function dismissPersonalize() {
+  localStorage.setItem("bt_personalize_dismissed", "1");
+  document.getElementById("personalizeCard").style.display = "none";
+}
+
+function updateGreeting() {
+  const name = getUserName();
+  const el = document.getElementById("greetingText");
+  const sub = document.getElementById("greetingSub");
+  if (!el) return;
+
+  const hour = new Date().getHours();
+  let timeGreet = "Good evening";
+  if (hour < 12) timeGreet = "Good morning";
+  else if (hour < 17) timeGreet = "Good afternoon";
+
+  if (name) {
+    el.innerHTML = '<span class="wave">👋</span> ' + timeGreet + ", " + name + "!";
+  } else {
+    el.innerHTML = '<span class="wave">👋</span> ' + timeGreet + "!";
+  }
+
+  // Smart subtitle based on data
+  const data = getData();
+  const expCount = data.expenses.length;
+  const income = data.income || 0;
+
+  if (expCount === 0 && income === 0) {
+    sub.textContent = "Start by entering your monthly income below.";
+  } else if (expCount === 0) {
+    sub.textContent = "You've set your income — now add your first expense!";
+  } else if (expCount < 5) {
+    sub.textContent = "You're building a habit — keep tracking!";
+  } else {
+    const total = data.expenses.reduce((s, e) => s + e.amt, 0);
+    const remaining = income - total;
+    if (remaining > 0) {
+      sub.textContent = "You have " + fmt(remaining) + " remaining this month. Keep it up!";
+    } else if (income > 0) {
+      sub.textContent = "You've exceeded your budget by " + fmt(Math.abs(remaining)) + ". Let's review your spending.";
+    } else {
+      sub.textContent = "You've logged " + expCount + " expenses. Set your income to see your budget.";
+    }
+  }
+}
+
+function checkPersonalizeCard() {
+  const name = getUserName();
+  const dismissed = localStorage.getItem("bt_personalize_dismissed");
+  const done = localStorage.getItem("bt_personalize_done");
+  const data = getData();
+
+  // Show personalize card if: no name, not dismissed, has 3+ expenses
+  if (!name && !dismissed && !done && data.expenses.length >= 3) {
+    document.getElementById("personalizeCard").style.display = "block";
+  } else {
+    document.getElementById("personalizeCard").style.display = "none";
+  }
+}
+
+// ─── STREAK COUNTER ────────────────────────────────────────
+function calculateStreak() {
+  const data = getData();
+  if (data.expenses.length === 0) return { current: 0, best: 0, activeToday: false };
+
+  // Get unique dates with expenses (YYYY-MM-DD)
+  const dates = [...new Set(data.expenses.map(e => e.date))].sort().reverse();
+  if (dates.length === 0) return { current: 0, best: 0, activeToday: false };
+
+  const today = new Date().toISOString().split("T")[0];
+  const yesterday = new Date(Date.now() - 86400000).toISOString().split("T")[0];
+
+  // Check if streak is still active (today or yesterday has an expense)
+  const activeToday = dates[0] === today;
+  const activeYesterday = dates[0] === yesterday;
+
+  if (!activeToday && !activeYesterday) {
+    // Streak is broken — calculate what it was for best record
+    const best = parseInt(localStorage.getItem("bt_streak_best") || "0");
+    return { current: 0, best, activeToday: false };
+  }
+
+  // Count consecutive days backwards from the most recent
+  let streak = 1;
+  for (let i = 0; i < dates.length - 1; i++) {
+    const curr = new Date(dates[i] + "T00:00:00");
+    const prev = new Date(dates[i + 1] + "T00:00:00");
+    const diffDays = (curr - prev) / 86400000;
+    if (diffDays === 1) {
+      streak++;
+    } else {
+      break;
+    }
+  }
+
+  // Update best streak
+  const prevBest = parseInt(localStorage.getItem("bt_streak_best") || "0");
+  if (streak > prevBest) {
+    localStorage.setItem("bt_streak_best", streak.toString());
+  }
+  const best = Math.max(streak, prevBest);
+
+  return { current: streak, best, activeToday };
+}
+
+function renderStreak() {
+  const bar = document.getElementById("streakBar");
+  if (!bar) return;
+
+  const { current, best, activeToday } = calculateStreak();
+  const data = getData();
+
+  // Don't show if no expenses at all
+  if (data.expenses.length === 0) {
+    bar.style.display = "none";
+    return;
+  }
+
+  bar.style.display = "flex";
+
+  const icon = document.getElementById("streakIcon");
+  const count = document.getElementById("streakCount");
+  const label = document.getElementById("streakLabel");
+  const bestEl = document.getElementById("streakBest");
+
+  if (current === 0) {
+    bar.className = "streak-bar inactive";
+    icon.textContent = "💤";
+    count.textContent = "Streak paused";
+    label.textContent = "Add an expense today to restart!";
+  } else {
+    bar.className = "streak-bar";
+    icon.textContent = current >= 30 ? "🏆" : current >= 14 ? "⭐" : current >= 7 ? "🔥" : "📊";
+    count.textContent = current + "-day streak";
+    if (!activeToday) {
+      label.textContent = "Log today to keep it alive!";
+    } else if (current === 1) {
+      label.textContent = "Day 1 — the journey begins!";
+    } else if (current < 7) {
+      label.textContent = "Building momentum — keep going!";
+    } else if (current < 14) {
+      label.textContent = "One week strong!";
+    } else if (current < 30) {
+      label.textContent = "Incredible consistency!";
+    } else {
+      label.textContent = "Legendary discipline!";
+    }
+  }
+
+  // Show best streak if > current and > 1
+  if (best > 1 && best > current) {
+    bestEl.textContent = "Best: " + best + " days";
+    bestEl.style.display = "block";
+  } else {
+    bestEl.style.display = "none";
+  }
+}
+
+// ─── NUMBER FORMATTING ─────────────────────────────────────
+function formatIncomeInput(el) {
+  const pos = el.selectionStart;
+  const oldLen = el.value.length;
+  let raw = el.value.replace(/[^0-9.]/g, "");
+  const parts = raw.split(".");
+  if (parts.length > 2) raw = parts[0] + "." + parts.slice(1).join("");
+  if (raw) {
+    const [whole, dec] = raw.split(".");
+    const formatted = whole.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    el.value = dec !== undefined ? formatted + "." + dec : formatted;
+  }
+  const newLen = el.value.length;
+  el.setSelectionRange(pos + (newLen - oldLen), pos + (newLen - oldLen));
+}
+
+function parseIncome() {
+  return parseFloat(document.getElementById("incomeInput").value.replace(/,/g, "")) || 0;
+}
+
+function setIncomeDisplay(val) {
+  const el = document.getElementById("incomeInput");
+  if (!val) { el.value = ""; return; }
+  el.value = Number(val).toLocaleString("en-US");
+}
+
+function spinIncome(dir) {
+  const current = parseIncome();
+  const step = current >= 10000 ? 500 : current >= 1000 ? 100 : 50;
+  const next = Math.max(0, current + (dir * step));
+  setIncomeDisplay(next);
+  updateDashboard();
+}
+
 // ─── DASHBOARD ─────────────────────────────────────────────
 function updateDashboard() {
   const data = getData();
-  const income = parseFloat(document.getElementById("incomeInput").value) || 0;
+  const income = parseIncome();
   data.income = income;
   saveData(data);
+  updateGreeting();
+  checkPersonalizeCard();
+  renderStreak();
 
   const needsBudget   = income * 0.5;
   const wantsBudget   = income * 0.3;
@@ -2730,7 +3196,7 @@ function importCSV(event) {
         if (lines[i].toLowerCase().includes("income")) {
           const parts = lines[i].split(",");
           const val = parseFloat(parts[parts.length-1]);
-          if (!isNaN(val) && val>0) { data.income=val; document.getElementById("incomeInput").value=val; }
+          if (!isNaN(val) && val>0) { data.income=val; setIncomeDisplay(val); }
         }
       }
       saveData(data); updateDashboard(); renderHistory(); toast("✅ Imported " + imported + " expenses!");
@@ -2764,7 +3230,7 @@ function importJSON(event) {
       if (!confirm("Restore this backup?\n\n📊 " + backup.expenses.length + " expenses\n🎯 " + (backup.goals||[]).length + " goals\n💰 Income: $" + (backup.income||0) + "\n\n⚠️ This will REPLACE all current data.")) return;
       const data = { income:backup.income||0, expenses:backup.expenses||[], goals:backup.goals||[] };
       saveData(data);
-      document.getElementById("incomeInput").value = data.income||"";
+      setIncomeDisplay(data.income);
       updateDashboard(); renderHistory(); renderGoals();
       toast("✅ Backup restored! " + data.expenses.length + " expenses loaded");
     } catch(err) { toast("❌ Error reading backup: " + err.message); }
@@ -2775,6 +3241,9 @@ function importJSON(event) {
 
 // ─── DATA STATS ────────────────────────────────────────────
 function renderDataStats() {
+  // Load saved name into settings field
+  const nameInput = document.getElementById("settingsUserName");
+  if (nameInput) nameInput.value = getUserName();
   const data = getData();
   const el = document.getElementById("dataStats");
   if (!el) return;
@@ -2797,21 +3266,13 @@ function renderDataStats() {
 // SETUP: Create a Google Sheet, go to Extensions → Apps Script, deploy as web app
 // Replace YOUR_SCRIPT_URL with your deployed URL
 
-const NEWSLETTER_URL = "YOUR_GOOGLE_APPS_SCRIPT_URL_HERE"; // ← Replace this
-const CONTACT_URL = "YOUR_GOOGLE_APPS_SCRIPT_URL_HERE";    // ← Replace this (can be same sheet)
+const NEWSLETTER_URL = "https://script.google.com/macros/s/AKfycbyGWVy0zk9janw7xmm83RogIGVsm9ft-y4lv3IFDom4vw5a9IsjHK5ZyxlC4huA-5MN/exec"; // ← Replace this
+const CONTACT_URL = "https://script.google.com/macros/s/AKfycbyGWVy0zk9janw7xmm83RogIGVsm9ft-y4lv3IFDom4vw5a9IsjHK5ZyxlC4huA-5MN/exec";    // ← Replace this (can be same sheet)
+const TELEMETRY_URL = "https://script.google.com/macros/s/AKfycbyGWVy0zk9janw7xmm83RogIGVsm9ft-y4lv3IFDom4vw5a9IsjHK5ZyxlC4huA-5MN/exec";  // ← Replace this (can be same sheet)
 
 function submitNewsletter() {
-  const email = document.getElementById("nlEmail").value.trim();
-  if (!email || !email.includes("@") || !email.includes(".")) {
-    toast("⚠️ Please enter a valid email address");
-    return;
-  }
-  saveNewsletterEmail(email);
-  document.getElementById("newsletterForm").style.display = "none";
-  document.getElementById("newsletterSuccess").style.display = "block";
-  localStorage.setItem("bt_nl_subscribed", "1");
-  // Also hide dashboard version
-  document.getElementById("dashNewsletter").style.display = "none";
+  // Settings newsletter removed — redirect to dashboard version
+  submitDashNewsletter();
   toast("🎉 Subscribed! Welcome aboard!");
 }
 
@@ -2826,15 +3287,15 @@ function submitDashNewsletter() {
   toast("🎉 Subscribed! Welcome aboard!");
 }
 
-function dismissDashNl() {
-  document.getElementById("dashNewsletter").style.display = "none";
-  localStorage.setItem("bt_nl_dismissed", "1");
-}
-
-// Show dashboard newsletter card (if not subscribed/dismissed)
+// Show dashboard newsletter card — always visible, but swap form for "subscribed" message
 function showDashNewsletter() {
-  if (!localStorage.getItem("bt_nl_subscribed") && !localStorage.getItem("bt_nl_dismissed")) {
-    document.getElementById("dashNewsletter").style.display = "block";
+  const card = document.getElementById("dashNewsletter");
+  if (!card) return;
+  if (localStorage.getItem("bt_nl_subscribed")) {
+    const form = document.getElementById("dashNlForm");
+    const done = document.getElementById("dashNlDone");
+    if (form) form.style.display = "none";
+    if (done) done.style.display = "block";
   }
 }
 
@@ -2849,9 +3310,6 @@ function submitPopupNl() {
   localStorage.setItem("bt_nl_subscribed", "1");
   // Also hide dashboard version
   document.getElementById("dashNewsletter").style.display = "none";
-  // Also update settings version
-  document.getElementById("newsletterForm").style.display = "none";
-  document.getElementById("newsletterSuccess").style.display = "block";
 }
 
 function closeNlPopup() {
@@ -2872,20 +3330,42 @@ function maybeShowNlPopup() {
 }
 
 // ─── SHARED: Save newsletter email ─────────────────────────
+// ─── TELEMETRY ─────────────────────────────────────────────
+function sendTelemetry(event, data) {
+  if (TELEMETRY_URL && !TELEMETRY_URL.includes("YOUR_")) {
+    const payload = {
+      type: "telemetry",
+      clientId: getClientId(),
+      userName: getUserName(),
+      event,
+      data,
+      ts: new Date().toISOString()
+    };
+    fetch(TELEMETRY_URL, {
+      method: "POST", mode: "no-cors",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    }).catch(() => {});
+  }
+}
+
 function saveNewsletterEmail(email) {
   // Save locally
   const subs = JSON.parse(localStorage.getItem("bt_newsletter") || "[]");
-  // Prevent duplicates
   if (!subs.find(s => s.email === email)) {
     subs.push({ email, date: new Date().toISOString() });
     localStorage.setItem("bt_newsletter", JSON.stringify(subs));
   }
-  // Send to Google Sheet
+  // Send to Google Sheet with clientId
   if (NEWSLETTER_URL && !NEWSLETTER_URL.includes("YOUR_")) {
     fetch(NEWSLETTER_URL, {
       method: "POST", mode: "no-cors",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ type: "newsletter", email, date: new Date().toISOString() })
+      body: JSON.stringify({
+        type: "newsletter", email,
+        clientId: getClientId(), userName: getUserName(),
+        date: new Date().toISOString()
+      })
     }).catch(() => {});
   }
 }
@@ -2912,7 +3392,7 @@ function submitContact() {
     fetch(CONTACT_URL, {
       method: "POST", mode: "no-cors",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ type: "contact", name, email, msgType: type, message, date: new Date().toISOString() })
+      body: JSON.stringify({ type: "contact", name, email, msgType: type, message, clientId: getClientId(), userName: getUserName(), date: new Date().toISOString() })
     }).catch(() => {});
   }
 
@@ -3167,7 +3647,6 @@ function renderFeed(posts) {
   }
   if (markBtn) markBtn.style.display = unreadCount > 0 ? "inline-flex" : "none";
 
-  card.style.display = "block";
   list.innerHTML = show.map(p => {
     const d = new Date(p.date + "T00:00:00");
     const dateStr = d.toLocaleDateString("en-US", { month:"short", day:"numeric" });
@@ -3225,6 +3704,12 @@ function openArticle(id) {
     footer.style.display = "none";
   }
 
+  // Set current article and render engagement
+  currentArticleId = id;
+  renderArticleReactions();
+  renderArticleComment();
+  renderSaveButton();
+
   document.getElementById("articleOverlay").classList.add("show");
   document.body.style.overflow = "hidden";
 }
@@ -3232,6 +3717,187 @@ function openArticle(id) {
 function closeArticle() {
   document.getElementById("articleOverlay").classList.remove("show");
   document.body.style.overflow = "";
+}
+
+// Track which article is currently open
+let currentArticleId = null;
+
+// ─── ARTICLE REACTIONS ─────────────────────────────────────
+function getArticleReactions() {
+  return JSON.parse(localStorage.getItem("bt_article_reactions") || "{}");
+}
+
+function reactToArticle(reaction, btn) {
+  if (!currentArticleId) return;
+  const reactions = getArticleReactions();
+  const key = String(currentArticleId);
+  const current = reactions[key];
+
+  // Toggle — clicking same reaction removes it
+  if (current === reaction) {
+    delete reactions[key];
+  } else {
+    reactions[key] = reaction;
+  }
+  localStorage.setItem("bt_article_reactions", JSON.stringify(reactions));
+  renderArticleReactions();
+
+  // Telemetry
+  const post = feedPostsCache.find(p => p.id === currentArticleId);
+  sendTelemetry("reaction", {
+    articleId: currentArticleId,
+    articleTitle: post?.title || "",
+    reaction: reactions[key] || "removed"
+  });
+}
+
+function renderArticleReactions() {
+  const reactions = getArticleReactions();
+  const current = reactions[String(currentArticleId)] || null;
+  document.querySelectorAll(".react-btn").forEach(btn => {
+    const r = btn.dataset.reaction;
+    btn.classList.toggle("active", r === current);
+  });
+}
+
+// ─── ARTICLE COMMENTS ──────────────────────────────────────
+function getArticleComments() {
+  return JSON.parse(localStorage.getItem("bt_article_comments") || "{}");
+}
+
+function saveArticleComment() {
+  if (!currentArticleId) return;
+  const input = document.getElementById("articleCommentInput");
+  const text = input.value.trim();
+  if (!text) { toast("Write something first!"); return; }
+
+  const comments = getArticleComments();
+  const isEdit = !!comments[String(currentArticleId)];
+  comments[String(currentArticleId)] = {
+    text,
+    date: new Date().toISOString(),
+    edited: isEdit
+  };
+  localStorage.setItem("bt_article_comments", JSON.stringify(comments));
+
+  // Telemetry
+  const post = feedPostsCache.find(p => p.id === currentArticleId);
+  sendTelemetry("comment", {
+    articleId: currentArticleId,
+    articleTitle: post?.title || "",
+    commentLength: text.length,
+    isEdit
+  });
+
+  // Show posted comment
+  renderArticleComment();
+  toast(isEdit ? "Comment updated!" : "Comment posted!");
+}
+
+function editArticleComment() {
+  const comments = getArticleComments();
+  const comment = comments[String(currentArticleId)];
+  if (!comment) return;
+  document.getElementById("articleCommentInput").value = comment.text;
+  document.getElementById("commentDisplay").style.display = "none";
+  document.getElementById("commentInputArea").style.display = "block";
+  document.getElementById("commentCancelEdit").style.display = "inline-flex";
+  document.getElementById("articleCommentInput").focus();
+}
+
+function cancelCommentEdit() {
+  renderArticleComment();
+}
+
+function renderArticleComment() {
+  const comments = getArticleComments();
+  const comment = comments[String(currentArticleId)];
+  const display = document.getElementById("commentDisplay");
+  const inputArea = document.getElementById("commentInputArea");
+  const cancelBtn = document.getElementById("commentCancelEdit");
+  const msg = document.getElementById("commentSavedMsg");
+  msg.style.display = "none";
+
+  if (comment) {
+    // Show the posted comment
+    const content = document.getElementById("commentDisplayContent");
+    const dateEl = document.getElementById("commentDisplayDate");
+    const userName = getUserName() || "You";
+    const d = new Date(comment.date);
+    const dateStr = d.toLocaleDateString("en-US", { month: "short", day: "numeric" }) + " at " + d.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
+    content.textContent = comment.text;
+    dateEl.textContent = userName + " · " + dateStr + (comment.edited ? " · edited" : "");
+    display.style.display = "block";
+    inputArea.style.display = "none";
+    cancelBtn.style.display = "none";
+  } else {
+    // Show empty input
+    display.style.display = "none";
+    inputArea.style.display = "block";
+    cancelBtn.style.display = "none";
+    document.getElementById("articleCommentInput").value = "";
+  }
+}
+
+// ─── SAVE ARTICLE TO JOURNAL ───────────────────────────────
+function saveArticleToJournal() {
+  if (!currentArticleId) return;
+  const post = feedPostsCache.find(p => p.id === currentArticleId);
+  if (!post) return;
+
+  // Check if already saved
+  const notes = JSON.parse(localStorage.getItem("bt_notes") || "[]");
+  const alreadySaved = notes.some(n => n.articleId === currentArticleId);
+
+  if (alreadySaved) {
+    toast("Already in your Journal!");
+    return;
+  }
+
+  // Create the journal note — full article content, stripped of HTML
+  const raw = post.content || post.body || "";
+  const clean = raw.replace(/<strong>/g, "**").replace(/<\/strong>/g, "**")
+    .replace(/<br\s*\/?>/g, "\n").replace(/<\/p><p[^>]*>/g, "\n\n")
+    .replace(/<[^>]+>/g, "").replace(/\n{3,}/g, "\n\n").trim();
+  notes.push({
+    id: Date.now(),
+    text: "From Budget Brief: " + post.title + "\n\n" + clean,
+    tag: post.type === "tip" ? "idea" : post.type === "challenge" ? "goal" : "note",
+    pinned: false,
+    date: new Date().toISOString(),
+    edited: null,
+    articleId: currentArticleId
+  });
+  localStorage.setItem("bt_notes", JSON.stringify(notes));
+  renderNotes();
+
+  // Telemetry
+  sendTelemetry("save_to_journal", {
+    articleId: currentArticleId,
+    articleTitle: post.title,
+    articleType: post.type
+  });
+
+  // Update button state
+  const btn = document.getElementById("articleSaveBtn");
+  const txt = document.getElementById("saveBtnText");
+  btn.classList.add("saved");
+  txt.textContent = "Saved to Journal!";
+  toast("Saved to Journal!");
+}
+
+function renderSaveButton() {
+  const notes = JSON.parse(localStorage.getItem("bt_notes") || "[]");
+  const alreadySaved = notes.some(n => n.articleId === currentArticleId);
+  const btn = document.getElementById("articleSaveBtn");
+  const txt = document.getElementById("saveBtnText");
+  if (alreadySaved) {
+    btn.classList.add("saved");
+    txt.textContent = "Saved to Journal";
+  } else {
+    btn.classList.remove("saved");
+    txt.textContent = "Save to Journal";
+  }
 }
 
 // ─── FEED BELL NOTIFICATION ───────────────────────────────
@@ -3275,12 +3941,10 @@ function renderBellDropdown(posts) {
   bellBtn.style.display = "flex";
   const readIds = getReadPosts();
 
-  // Sort: unread first, then by date
+  // Sort: pinned first, then newest first (date descending)
   const sorted = [...posts].sort((a, b) => {
-    const aRead = readIds.includes(a.id);
-    const bRead = readIds.includes(b.id);
-    if (!aRead && bRead) return -1;
-    if (aRead && !bRead) return 1;
+    if (a.pinned && !b.pinned) return -1;
+    if (!a.pinned && b.pinned) return 1;
     return new Date(b.date) - new Date(a.date);
   });
 
@@ -3337,14 +4001,27 @@ function markAllFromBell() {
 
 function scrollToFeedSection() {
   closeFeedBell();
-  const feedCard = document.getElementById("feedCard");
-  if (feedCard) {
-    feedCard.scrollIntoView({ behavior: "smooth", block: "start" });
-    // Brief highlight effect
-    feedCard.style.transition = "box-shadow .3s ease";
-    feedCard.style.boxShadow = "0 0 0 3px var(--pri)";
-    setTimeout(() => { feedCard.style.boxShadow = ""; }, 1500);
-  }
+  openBriefView();
+}
+
+function openBriefView() {
+  // Switch to dashboard tab first if not already there
+  const dashTab = document.querySelector('[data-tab="dashboard"]');
+  if (dashTab && !dashTab.classList.contains("active")) showTab("dashboard", dashTab);
+  // Toggle views
+  const main = document.getElementById("dashMain");
+  const brief = document.getElementById("briefView");
+  if (main) main.style.display = "none";
+  if (brief) brief.style.display = "block";
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function closeBriefView() {
+  const main = document.getElementById("dashMain");
+  const brief = document.getElementById("briefView");
+  if (main) main.style.display = "block";
+  if (brief) brief.style.display = "none";
+  window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
 // ─── FINANCIAL JOURNAL ─────────────────────────────────────
@@ -3393,14 +4070,45 @@ function editNote(id) {
   const notes = JSON.parse(localStorage.getItem("bt_notes") || "[]");
   const note = notes.find(n => n.id === id);
   if (!note) return;
-  const newText = prompt("Edit note:", note.text);
-  if (newText === null) return;
-  if (!newText.trim()) { toast("⚠️ Note can't be empty"); return; }
-  note.text = newText.trim();
+
+  // Find the note element and replace body with textarea
+  const noteEl = document.querySelector('[data-note-id="' + id + '"]');
+  if (!noteEl) return;
+  const bodyEl = noteEl.querySelector(".note-body");
+  const actionsEl = noteEl.querySelector(".note-actions");
+  if (!bodyEl) return;
+
+  // Replace body with edit textarea
+  const textarea = document.createElement("textarea");
+  textarea.value = note.text;
+  textarea.className = "note-edit-area";
+  textarea.style.cssText = "width:100%;padding:10px 12px;border:1.5px solid var(--pri);border-radius:10px;font-size:13px;font-family:inherit;outline:none;background:var(--input-bg);color:var(--txt);resize:vertical;min-height:100px;box-sizing:border-box;line-height:1.6";
+  textarea.rows = Math.max(3, note.text.split("\n").length);
+
+  const btnRow = document.createElement("div");
+  btnRow.style.cssText = "display:flex;gap:8px;margin-top:8px";
+  btnRow.innerHTML = '<button class="btn btn-pri btn-sm" onclick="saveNoteEdit(' + id + ')">Save</button><button class="btn btn-sec btn-sm" onclick="renderNotes()">Cancel</button>';
+
+  bodyEl.replaceWith(textarea);
+  if (actionsEl) actionsEl.style.display = "none";
+  textarea.parentNode.insertBefore(btnRow, textarea.nextSibling);
+  textarea.focus();
+  textarea.setSelectionRange(textarea.value.length, textarea.value.length);
+}
+
+function saveNoteEdit(id) {
+  const notes = JSON.parse(localStorage.getItem("bt_notes") || "[]");
+  const note = notes.find(n => n.id === id);
+  if (!note) return;
+  const textarea = document.querySelector('[data-note-id="' + id + '"] .note-edit-area');
+  if (!textarea) return;
+  const newText = textarea.value.trim();
+  if (!newText) { toast("Note can't be empty"); return; }
+  note.text = newText;
   note.edited = new Date().toISOString();
   localStorage.setItem("bt_notes", JSON.stringify(notes));
   renderNotes();
-  toast("✏️ Note updated");
+  toast("Note updated!");
 }
 
 function filterNotes(tag, el) {
@@ -3457,7 +4165,7 @@ function renderNotes() {
       .replace(/\*(.*?)\*/g, "<em>$1</em>")
       .replace(/^- (.+)$/gm, "• $1");
 
-    return `<div class="note-card${n.pinned ? " pinned" : ""}">
+    return `<div class="note-card${n.pinned ? " pinned" : ""}" data-note-id="${n.id}">
       <div class="note-header">
         <div style="display:flex;align-items:center;gap:6px">
           <span class="note-tag ${n.tag}">${icon} ${n.tag}</span>
@@ -3714,14 +4422,16 @@ function buildAiContext() {
   const notes = JSON.parse(localStorage.getItem("bt_notes") || "[]");
   const recentNotes = notes.slice(-5).map(n => `[${n.tag||"note"}] ${n.text}`).join("\n");
 
+  const userName = getUserName();
   return `YOUR NAME: ${botName}
-${customPrompt ? "\nUSER'S CUSTOM INSTRUCTIONS:\n" + customPrompt + "\n" : ""}
+${userName ? "USER'S NAME: " + userName + "\n" : ""}${customPrompt ? "\nUSER'S CUSTOM INSTRUCTIONS:\n" + customPrompt + "\n" : ""}
 ${recentNotes ? "USER'S RECENT FINANCIAL NOTES:\n" + recentNotes + "\n" : ""}
 USER'S FINANCIAL DATA (current month):
-Monthly Income: $${income.toFixed(2)}
-Budget: 50% Needs ($${(income*0.5).toFixed(2)}), 30% Wants ($${(income*0.3).toFixed(2)}), 20% Savings ($${(income*0.2).toFixed(2)})
-Actual Spending: Needs $${needs.toFixed(2)} (${income>0?Math.round(needs/income*100):0}%), Wants $${wants.toFixed(2)} (${income>0?Math.round(wants/income*100):0}%), Savings $${savings.toFixed(2)} (${income>0?Math.round(savings/income*100):0}%)
-Total Spent: $${total.toFixed(2)} | Remaining: $${(income-total).toFixed(2)}
+Currency: ${getCurrency()}
+Monthly Income: ${getCurrency()}${income.toFixed(2)}
+Budget: 50% Needs (${getCurrency()}${(income*0.5).toFixed(2)}), 30% Wants (${getCurrency()}${(income*0.3).toFixed(2)}), 20% Savings (${getCurrency()}${(income*0.2).toFixed(2)})
+Actual Spending: Needs ${getCurrency()}${needs.toFixed(2)} (${income>0?Math.round(needs/income*100):0}%), Wants ${getCurrency()}${wants.toFixed(2)} (${income>0?Math.round(wants/income*100):0}%), Savings ${getCurrency()}${savings.toFixed(2)} (${income>0?Math.round(savings/income*100):0}%)
+Total Spent: ${getCurrency()}${total.toFixed(2)} | Remaining: ${getCurrency()}${(income-total).toFixed(2)}
 Top Expenses: ${topExpenses || "None yet"}
 Category Breakdown: ${subBreakdown || "None yet"}
 Savings Goals: ${goalInfo}
@@ -4139,8 +4849,18 @@ function handleTabOverflow() {
   const dropdown = document.getElementById("moreDropdown");
   if (!wrapper || !main || !moreTrigger || !dropdown) return;
 
+  const isSidebar = window.innerWidth > 900;
   const isMobile = window.innerWidth <= 700;
   const allTabs = main.querySelectorAll(".tab");
+
+  // Desktop sidebar mode — all tabs visible, no overflow logic needed
+  if (isSidebar) {
+    allTabs.forEach(t => t.classList.remove("overflow-hidden"));
+    moreTrigger.style.display = "none";
+    dropdown.innerHTML = "";
+    dropdown.classList.remove("show");
+    return;
+  }
 
   // Reset
   allTabs.forEach(t => t.classList.remove("overflow-hidden"));
@@ -4227,6 +4947,10 @@ function handleTabOverflow() {
 
   const hasOverflowActive = dropdown.querySelector(".tab.active");
   moreTrigger.classList.toggle("has-active", !!hasOverflowActive);
+}
+
+function toggleAccordion(el) {
+  el.classList.toggle("open");
 }
 
 function toggleMoreMenu() {
