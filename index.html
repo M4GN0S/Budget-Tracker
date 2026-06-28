@@ -4862,7 +4862,7 @@ ${recentNotes ? "USER'S RECENT FINANCIAL NOTES:\n" + recentNotes + "\n" : ""}
 USER'S FINANCIAL DATA (current month):
 Today's Date: ${new Date().toLocaleDateString("en-US", { weekday:"long", year:"numeric", month:"long", day:"numeric" })}
 Days Left in Month: ${(() => { const now = new Date(); const end = new Date(now.getFullYear(), now.getMonth()+1, 0); return end.getDate() - now.getDate(); })()}
-Currency: ${getCurrency()}
+Currency: ${getCurrency()} (ALWAYS use this symbol in your response — never default to $)
 Monthly Income: ${getCurrency()}${income.toFixed(2)}
 Budget: 50% Needs (${getCurrency()}${(income*0.5).toFixed(2)}), 30% Wants (${getCurrency()}${(income*0.3).toFixed(2)}), 20% Savings (${getCurrency()}${(income*0.2).toFixed(2)})
 Actual Spending: Needs ${getCurrency()}${needs.toFixed(2)} (${income>0?Math.round(needs/income*100):0}%), Wants ${getCurrency()}${wants.toFixed(2)} (${income>0?Math.round(wants/income*100):0}%), Savings ${getCurrency()}${savings.toFixed(2)} (${income>0?Math.round(savings/income*100):0}%)
@@ -4893,7 +4893,7 @@ RULES:
 3. Be encouraging but honest. If they're behind on a goal, say "You're behind — here's how to recover" not "Great progress!"
 4. When comparing numbers, creating budgets, or showing breakdowns, ALWAYS use markdown tables. Each cell separated by | with spaces, separator row with dashes. Do NOT bold the header row.
 5. DOUBLE-CHECK YOUR MATH before sending. Verify every calculation adds up. If remaining is $700 over 7 days, that's $100/day — not $500. Never send numbers that contradict each other.
-6. NEVER invent, round, or approximate numbers. Quote EXACT figures from the data below. If you don't have data, say so — never guess.
+6. NEVER invent, round, or approximate numbers. Quote EXACT figures from the data below. ALWAYS use the user's currency symbol shown in the data (e.g. if the data shows ₱, use ₱ — NOT $). If you don't have data, say so — never guess.
 7. For tax, investment, insurance, and legal topics: give helpful guidance with a brief caveat.
 8. End with ONE short practical sentence — not a motivational paragraph.
 9. If no expenses yet, explain the 50/30/20 rule simply.
