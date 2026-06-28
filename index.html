@@ -4869,12 +4869,13 @@ Number of Transactions: ${data.expenses.length}`;
 const SYSTEM_PROMPT = `You are a personal budget advisor inside a 50/30/20 budget tracking app.
 
 CONVERSATION STYLE:
-- Talk like a knowledgeable friend texting about money — casual, warm, direct.
-- Do NOT start every message with a greeting or the user's name. Just answer naturally.
-- Only use the user's name occasionally and organically, like a real person would — maybe once every 3-4 messages, not every single time.
-- Do NOT introduce yourself or say your name in every response. Only on the very first message.
-- Skip pleasantries like "Great question!" or "Absolutely!" — just get to the point.
-- Keep it concise — 2-3 short paragraphs max. Use bullet points for lists.
+- Talk like a sharp friend who's good with money — casual, direct, no fluff.
+- Do NOT greet the user or use their name in every response. Use their name at most once every 4-5 messages, and only naturally.
+- Do NOT introduce yourself. Do NOT say your name. Just answer.
+- NEVER start with "Great question!", "Absolutely!", "I totally get it!", "I understand how frustrating..." or any filler. Just get straight to the answer.
+- Be blunt when needed. If they're overspending, say so plainly — don't sugarcoat it with three paragraphs of empathy first.
+- Give SPECIFIC, ACTIONABLE advice with exact numbers. Don't say "consider reducing spending" — say "Cut groceries from ₱5,000 to ₱3,500 by meal-prepping. That saves ₱1,500/month."
+- Max 2 short paragraphs + bullet points if needed. No walls of text.
 
 RULES:
 1. Give budgeting, saving, spending, tax prep, investment basics, and financial planning advice based on the user's actual data below.
@@ -5407,15 +5408,15 @@ function addChatMessage(type, text) {
 
       if (a.type === "add_expense") {
         const [desc, cat, sub, amt] = a.params;
-        return '<div class="ai-action" data-action-id="' + a.id + '" onclick="runAiAction(\'' + a.id + '\')">' +
+        return '<div class="ai-action" data-action-id="' + a.id + '" onclick="runAiAction(&quot;' + a.id + '&quot;)">' +
           iconExpense + '<div class="action-text">Add expense: <strong>' + (desc||"") + '</strong> — ' + currency + parseFloat(amt || 0).toFixed(2) + '<div class="action-detail">' + (cat||"") + ' → ' + (sub||"") + '</div></div></div>';
       } else if (a.type === "add_note") {
         const [tag, noteText] = a.params;
-        return '<div class="ai-action" data-action-id="' + a.id + '" onclick="runAiAction(\'' + a.id + '\')">' +
+        return '<div class="ai-action" data-action-id="' + a.id + '" onclick="runAiAction(&quot;' + a.id + '&quot;)">' +
           iconNote + '<div class="action-text">Add to Journal: <strong>' + ((noteText||"").substring(0, 60)) + ((noteText||"").length > 60 ? "..." : "") + '</strong><div class="action-detail">Tag: ' + (tag||"note") + '</div></div></div>';
       } else if (a.type === "add_goal") {
         const [name, target, saved] = a.params;
-        return '<div class="ai-action" data-action-id="' + a.id + '" onclick="runAiAction(\'' + a.id + '\')">' +
+        return '<div class="ai-action" data-action-id="' + a.id + '" onclick="runAiAction(&quot;' + a.id + '&quot;)">' +
           iconGoal + '<div class="action-text">Create goal: <strong>' + (name||"") + '</strong> — ' + currency + parseFloat(target || 0).toLocaleString() + '<div class="action-detail">Starting with ' + currency + parseFloat(saved || 0).toLocaleString() + ' saved</div></div></div>';
       }
       return "";
