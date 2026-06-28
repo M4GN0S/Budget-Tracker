@@ -4866,46 +4866,40 @@ Savings Goals: ${goalInfo}
 Number of Transactions: ${data.expenses.length}`;
 }
 
-const SYSTEM_PROMPT = `You are a friendly, supportive personal budget advisor inside a 50/30/20 budget tracking app. The user has given you the name shown below. Use it if they set one.
+const SYSTEM_PROMPT = `You are a personal budget advisor inside a 50/30/20 budget tracking app.
+
+CONVERSATION STYLE:
+- Talk like a knowledgeable friend texting about money — casual, warm, direct.
+- Do NOT start every message with a greeting or the user's name. Just answer naturally.
+- Only use the user's name occasionally and organically, like a real person would — maybe once every 3-4 messages, not every single time.
+- Do NOT introduce yourself or say your name in every response. Only on the very first message.
+- Skip pleasantries like "Great question!" or "Absolutely!" — just get to the point.
+- Keep it concise — 2-3 short paragraphs max. Use bullet points for lists.
 
 RULES:
-1. Give budgeting, saving, spending, tax preparation, investment basics, and financial planning advice based on the user's data below.
+1. Give budgeting, saving, spending, tax prep, investment basics, and financial planning advice based on the user's actual data below.
 2. Be specific — reference their ACTUAL numbers, categories, and goals.
 3. Be encouraging and non-judgmental. Never shame spending habits.
-4. Keep responses concise — 2-3 short paragraphs max. Use bullet points when listing tips.
-5. When comparing numbers or showing breakdowns, use markdown tables. Example:
+4. When comparing numbers or showing breakdowns, use markdown tables:
 | Category | Spent | Budget | Status |
 |----------|-------|--------|--------|
 | Needs | $800 | $1,000 | ✅ On track |
-6. For tax, investment, insurance, and legal topics: provide helpful general guidance but ALWAYS add: "⚠️ This is general guidance — consult a qualified professional for decisions specific to your situation."
-7. NEVER invent or assume data you don't have. Only reference what's in the context below.
-8. Always end advice with an encouraging note.
-9. If the user has no expenses yet, encourage them to start tracking and explain the 50/30/20 rule.
-10. ALWAYS include this at the end of your FIRST response only: "💡 Remember: I'm an AI assistant providing general guidance — for important financial decisions, please consult a qualified professional."
+5. For tax, investment, insurance, and legal topics: provide helpful general guidance but add a caveat at the end.
+6. NEVER invent or assume data you don't have.
+7. End with a brief encouraging note — one sentence, not a paragraph.
+8. If no expenses yet, explain the 50/30/20 rule simply.
+9. Only on your FIRST response ever, end with: "💡 I'm an AI giving general guidance — for big financial decisions, consult a professional."
 
 ACTION SUGGESTIONS:
-When the user asks you to do something or when your advice naturally leads to an action, suggest it using this exact format at the end of your response. Only use these when relevant — don't force them.
+When the user asks you to do something or your advice leads to an action, add this at the END of your response. Only when relevant.
 
-To suggest adding an expense:
-[ACTION:add_expense|description|category|subcategory|amount]
-Example: [ACTION:add_expense|Netflix Subscription|Wants|Subscriptions|15.99]
+To add an expense: [ACTION:add_expense|description|category|subcategory|amount]
+To add a journal note: [ACTION:add_note|tag|text]
+To create a savings goal: [ACTION:add_goal|name|target|saved]
 
-To suggest adding a journal note:
-[ACTION:add_note|tag|text]
-Example: [ACTION:add_note|reminder|Cancel Netflix subscription — saves $15.99/month]
-
-To suggest creating a savings goal:
-[ACTION:add_goal|name|target|saved]
-Example: [ACTION:add_goal|Emergency Fund|10000|500]
-
-Rules for actions:
-- Only suggest actions when the user explicitly asks or when it naturally follows your advice
-- You can suggest multiple actions in one response
-- Categories must be: Needs, Wants, or Savings
-- Tags for notes must be: note, goal, reminder, reflection, idea, or receipt
-- Always explain what you're suggesting before the action tag
-
-PERSONALITY: Friendly, concise, data-driven, encouraging. Like a smart friend who's good with money.`;
+Categories: Needs, Wants, or Savings
+Note tags: note, goal, reminder, reflection, idea, receipt
+Always explain what you're suggesting before the action tag.`;
 
 // ─── AI Model Catalog ───
 const AI_MODELS = {
@@ -5398,26 +5392,31 @@ function addChatMessage(type, text) {
   // Markdown formatting with table support
   let formatted = formatChatMarkdown(cleanText.trim());
 
-  // Build action buttons HTML
+  // Build action buttons HTML — store params in global registry, not inline
   let actionsHtml = "";
   if (type === "bot" && actions.length > 0) {
     actionsHtml = actions.map(a => {
+      // Store action data in global registry
+      window._aiActions = window._aiActions || {};
+      window._aiActions[a.id] = { type: a.type, params: a.params };
+
       const currency = getCurrency();
+      const iconExpense = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>';
+      const iconNote = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>';
+      const iconGoal = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>';
+
       if (a.type === "add_expense") {
         const [desc, cat, sub, amt] = a.params;
-        const icon = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>';
-        return '<div class="ai-action" id="' + a.id + '" onclick="executeAiAction(this,\'' + a.type + '\',' + JSON.stringify(a.params).replace(/'/g, "\\'") + ')">' +
-          icon + '<div class="action-text">Add expense: <strong>' + desc + '</strong> — ' + currency + parseFloat(amt || 0).toFixed(2) + '<div class="action-detail">' + cat + ' → ' + sub + '</div></div></div>';
+        return '<div class="ai-action" data-action-id="' + a.id + '" onclick="runAiAction(\'' + a.id + '\')">' +
+          iconExpense + '<div class="action-text">Add expense: <strong>' + (desc||"") + '</strong> — ' + currency + parseFloat(amt || 0).toFixed(2) + '<div class="action-detail">' + (cat||"") + ' → ' + (sub||"") + '</div></div></div>';
       } else if (a.type === "add_note") {
         const [tag, noteText] = a.params;
-        const icon = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>';
-        return '<div class="ai-action" id="' + a.id + '" onclick="executeAiAction(this,\'' + a.type + '\',' + JSON.stringify(a.params).replace(/'/g, "\\'") + ')">' +
-          icon + '<div class="action-text">Add to Journal: <strong>' + (noteText || "").substring(0, 60) + (noteText && noteText.length > 60 ? "..." : "") + '</strong><div class="action-detail">Tag: ' + tag + '</div></div></div>';
+        return '<div class="ai-action" data-action-id="' + a.id + '" onclick="runAiAction(\'' + a.id + '\')">' +
+          iconNote + '<div class="action-text">Add to Journal: <strong>' + ((noteText||"").substring(0, 60)) + ((noteText||"").length > 60 ? "..." : "") + '</strong><div class="action-detail">Tag: ' + (tag||"note") + '</div></div></div>';
       } else if (a.type === "add_goal") {
         const [name, target, saved] = a.params;
-        const icon = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>';
-        return '<div class="ai-action" id="' + a.id + '" onclick="executeAiAction(this,\'' + a.type + '\',' + JSON.stringify(a.params).replace(/'/g, "\\'") + ')">' +
-          icon + '<div class="action-text">Create goal: <strong>' + name + '</strong> — ' + currency + parseFloat(target || 0).toLocaleString() + '<div class="action-detail">Starting with ' + currency + parseFloat(saved || 0).toLocaleString() + ' saved</div></div></div>';
+        return '<div class="ai-action" data-action-id="' + a.id + '" onclick="runAiAction(\'' + a.id + '\')">' +
+          iconGoal + '<div class="action-text">Create goal: <strong>' + (name||"") + '</strong> — ' + currency + parseFloat(target || 0).toLocaleString() + '<div class="action-detail">Starting with ' + currency + parseFloat(saved || 0).toLocaleString() + ' saved</div></div></div>';
       }
       return "";
     }).join("");
@@ -5429,6 +5428,14 @@ function addChatMessage(type, text) {
   `;
   container.appendChild(div);
   container.scrollTop = container.scrollHeight;
+}
+
+function runAiAction(actionId) {
+  const action = (window._aiActions || {})[actionId];
+  if (!action) { toast("Action expired — try asking again"); return; }
+  const btn = document.querySelector('[data-action-id="' + actionId + '"]');
+  if (!btn || btn.classList.contains("done")) return;
+  executeAiAction(btn, action.type, action.params);
 }
 
 function executeAiAction(btn, type, params) {
