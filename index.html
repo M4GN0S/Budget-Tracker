@@ -4777,10 +4777,14 @@ function initAiChat() {
     const chatTitle = chat.querySelector("h3");
     if (chatTitle) chatTitle.innerHTML = '<span class="icon-wrap"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/><path d="M14 8l-1 3h2l-1 3"/><circle cx="9" cy="10" r="0.5" fill="currentColor"/></svg></span> ' + botName;
 
-    // Show welcome message if chat is empty
+    // Restore chat history or show welcome
     const msgContainer = document.getElementById("chatMessages");
     if (msgContainer && msgContainer.children.length === 0) {
-      addChatMessage("bot", `Hi! I'm **${botName}**. I can see your spending data and give you personalized tips — including budgeting, saving strategies, tax prep guidance, and investment basics.\n\nTry asking me something or click one of the quick actions above!`);
+      loadChatHistory();
+      // If still empty after restore, show welcome
+      if (msgContainer.children.length === 0) {
+        addChatMessage("bot", `Hey! I can see your spending data — ask me anything about your budget, or tap a quick action above.`);
+      }
     }
     if (settingsKey) { settingsKey.textContent = "✅ Configured"; settingsKey.style.color = "var(--suc)"; }
     if (removeBtn) removeBtn.style.display = "inline-flex";
@@ -4830,19 +4834,20 @@ function buildAiContext() {
   const total = needs + wants + savings;
 
   // Top expenses
+  const c = getCurrency();
   const sorted = [...data.expenses].sort((a,b) => b.amt - a.amt).slice(0, 5);
-  const topExpenses = sorted.map(e => `${e.desc}: $${e.amt.toFixed(2)} (${e.cat})`).join(", ");
+  const topExpenses = sorted.map(e => `${e.desc}: ${c}${e.amt.toFixed(2)} (${e.cat})`).join(", ");
 
   // Sub-category breakdown
   const subTotals = {};
   data.expenses.forEach(e => { subTotals[e.sub] = (subTotals[e.sub]||0) + e.amt; });
   const subBreakdown = Object.entries(subTotals).sort((a,b) => b[1]-a[1]).slice(0,8)
-    .map(([k,v]) => `${k}: $${v.toFixed(2)}`).join(", ");
+    .map(([k,v]) => `${k}: ${c}${v.toFixed(2)}`).join(", ");
 
   // Goals
   const goalInfo = data.goals.map(g => {
     const pct = g.target > 0 ? Math.round((g.saved/g.target)*100) : 0;
-    return `${g.name}: $${g.saved} / $${g.target} (${pct}%)`;
+    return `${g.name}: ${c}${g.saved} / ${c}${g.target} (${pct}%)`;
   }).join("; ") || "No goals set";
 
   const botName = localStorage.getItem("bt_bot_name") || "AI Advisor";
@@ -4886,7 +4891,7 @@ RULES:
 |----------|-------|--------|--------|
 | Needs | $800 | $1,000 | ✅ On track |
 5. For tax, investment, insurance, and legal topics: provide helpful general guidance but add a caveat at the end.
-6. NEVER invent or assume data you don't have.
+6. NEVER invent, round, or approximate numbers. Quote the EXACT figures from the data below. If Needs is $13,700 say $13,700 — not $14,000 or "about $13,700". If you don't have data, say so — never guess.
 7. End with a brief encouraging note — one sentence, not a paragraph.
 8. If no expenses yet, explain the 50/30/20 rule simply.
 9. Only on your FIRST response ever, end with: "💡 I'm an AI giving general guidance — for big financial decisions, consult a professional."
@@ -5132,6 +5137,35 @@ async function populateModelDropdownDynamic(selectId, provider, apiKey, selected
 
 let chatHistory = [];
 
+function saveChatHistory() {
+  try {
+    // Save last 20 messages + the displayed HTML
+    const container = document.getElementById("chatMessages");
+    localStorage.setItem("bt_chat_history", JSON.stringify(chatHistory.slice(-20)));
+    if (container) localStorage.setItem("bt_chat_html", container.innerHTML);
+  } catch(e) {}
+}
+
+function loadChatHistory() {
+  try {
+    const saved = localStorage.getItem("bt_chat_history");
+    const html = localStorage.getItem("bt_chat_html");
+    if (saved) chatHistory = JSON.parse(saved);
+    if (html) {
+      const container = document.getElementById("chatMessages");
+      if (container && chatHistory.length > 0) {
+        container.innerHTML = html;
+        // Re-register any action buttons from restored HTML
+        container.querySelectorAll("[data-action-id]").forEach(btn => {
+          if (btn.classList.contains("done")) return;
+          // Mark restored action buttons as expired since we lost the registry
+          btn.classList.add("done");
+        });
+      }
+    }
+  } catch(e) {}
+}
+
 async function sendChat() {
   const input = document.getElementById("chatInput");
   const msg = input.value.trim();
@@ -5166,8 +5200,9 @@ async function sendChat() {
     chatHistory.push({ role: "assistant", content: response });
     // Usage already tracked via parseRateLimitHeaders inside callGemini/callOpenAI
 
-    // Keep history manageable (last 10 messages)
+    // Keep history manageable and persist
     if (chatHistory.length > 20) chatHistory = chatHistory.slice(-20);
+    saveChatHistory();
 
   } catch(err) {
     removeTyping(typingId);
@@ -5385,9 +5420,21 @@ function addChatMessage(type, text) {
 
   // Extract action tags before formatting
   const actions = [];
-  let cleanText = text.replace(/\[ACTION:(add_expense|add_note|add_goal)\|([^\]]+)\]/g, function(match, actionType, params) {
-    actions.push({ type: actionType, params: params.split("|"), id: "action_" + Date.now() + "_" + actions.length });
-    return ""; // Remove from displayed text
+  let cleanText = text.replace(/\[ACTION:(add_expense|add_note|add_goal)\|([^\]]+)\]/g, function(match, actionType, rawParams) {
+    let params;
+    if (actionType === "add_note") {
+      // For notes: first param is tag, rest is the full text (may contain pipes)
+      const firstPipe = rawParams.indexOf("|");
+      if (firstPipe > -1) {
+        params = [rawParams.substring(0, firstPipe), rawParams.substring(firstPipe + 1)];
+      } else {
+        params = ["note", rawParams];
+      }
+    } else {
+      params = rawParams.split("|");
+    }
+    actions.push({ type: actionType, params, id: "action_" + Date.now() + "_" + actions.length });
+    return "";
   });
 
   // Markdown formatting with table support
@@ -5517,10 +5564,12 @@ function removeTyping(id) {
 
 function clearChat() {
   chatHistory = [];
-  const botName = localStorage.getItem("bt_bot_name") || "AI Advisor";
+  localStorage.removeItem("bt_chat_history");
+  localStorage.removeItem("bt_chat_html");
+  window._aiActions = {};
   const container = document.getElementById("chatMessages");
   container.innerHTML = "";
-  addChatMessage("bot", `Chat cleared! I'm **${botName}** — how can I help you with your budget?`);
+  addChatMessage("bot", "Chat cleared — what do you want to look at?");
 }
 
 function showApiGuide() {
