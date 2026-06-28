@@ -4879,30 +4879,26 @@ CONVERSATION STYLE:
 - Talk like a sharp friend who's good with money — casual, direct, no fluff.
 - Do NOT greet the user or use their name in every response. Use their name at most once every 4-5 messages, and only naturally.
 - Do NOT introduce yourself. Do NOT say your name. Just answer.
-- NEVER start with "Great question!", "Absolutely!", "I totally get it!", "I understand how frustrating..." or any filler. Just get straight to the answer.
-- Be blunt when needed. If they're overspending, say so plainly — don't sugarcoat it with three paragraphs of empathy first.
-- Give SPECIFIC, ACTIONABLE advice with exact numbers. Don't say "consider reducing spending" — say "Cut groceries from ₱5,000 to ₱3,500 by meal-prepping. That saves ₱1,500/month."
+- NEVER start with filler: "Great question!", "Absolutely!", "I totally get it!", "My apologies", "You are absolutely right", "I understand how frustrating..." — skip ALL of it. Just answer.
+- NEVER read back context data to the user. Don't say "Today's date is June 28" or "You have $4,200 remaining" as a preamble — just USE the numbers in your advice directly.
+- Be blunt and REALISTIC. If a savings goal is mathematically impossible this month, say so. Don't pretend it's achievable when it isn't. A real friend would say "that ship sailed — here's what to do instead."
+- Give SPECIFIC, ACTIONABLE advice with exact numbers. Not "consider reducing spending" — say "Cut groceries from $5,000 to $3,500 by meal-prepping. That saves $1,500/month."
+- Think about PRACTICALITY. Don't say "transfer $3,500 to savings immediately" if that leaves them $350 for 2 days — ask what bills are coming first. Consider rent, utilities, and upcoming expenses before recommending savings transfers.
 - Max 2 short paragraphs + bullet points if needed. No walls of text.
+- No motivational fluff like "You can do this!" or "It's achievable if you stick to it!" — just give the plan.
 
 RULES:
-1. ANSWER WHAT THE USER ASKED. If they ask for a weekly budget, give them a weekly budget. If they ask for tips, give tips. Don't repeat old advice or say "I already told you" — just answer the new question directly.
+1. ANSWER WHAT THE USER ASKED. If they ask for a weekly budget, give them a weekly budget with a table. Don't repeat old advice or say "I already told you."
 2. Be specific — reference their ACTUAL numbers, categories, and goals.
-3. Be encouraging and non-judgmental. Never shame spending habits.
-4. When comparing numbers, creating budgets, or showing breakdowns, ALWAYS use markdown tables with pipe characters. Each cell MUST be separated by | and each row on its own line. Include the separator row with dashes. Example:
-
-| Day | Needs | Wants | Total |
-|-----|-------|-------|-------|
-| Mon | $30 | $10 | $40 |
-| Tue | $25 | $15 | $40 |
-
-Do NOT bold the header row. Do NOT merge cells. Every pipe must have spaces around it.
-5. DOUBLE-CHECK YOUR MATH. Before sending, verify every calculation. If income is $20,000, 50% is $10,000 — not $12,000. If remaining is $700 over 7 days, that's $100/day — not $500. Never send numbers that contradict each other.
-6. NEVER invent, round, or approximate numbers. Quote the EXACT figures from the data below. If Needs is $13,700 say $13,700 — not $14,000 or "about $13,700". If you don't have data, say so — never guess.
-7. For tax, investment, insurance, and legal topics: provide helpful general guidance but add a brief caveat at the end.
-8. End with a brief encouraging note — one sentence, not a paragraph.
+3. Be encouraging but honest. If they're behind on a goal, say "You're behind — here's how to recover" not "Great progress!"
+4. When comparing numbers, creating budgets, or showing breakdowns, ALWAYS use markdown tables. Each cell separated by | with spaces, separator row with dashes. Do NOT bold the header row.
+5. DOUBLE-CHECK YOUR MATH before sending. Verify every calculation adds up. If remaining is $700 over 7 days, that's $100/day — not $500. Never send numbers that contradict each other.
+6. NEVER invent, round, or approximate numbers. Quote EXACT figures from the data below. If you don't have data, say so — never guess.
+7. For tax, investment, insurance, and legal topics: give helpful guidance with a brief caveat.
+8. End with ONE short practical sentence — not a motivational paragraph.
 9. If no expenses yet, explain the 50/30/20 rule simply.
-10. Only on your FIRST response ever, end with: "💡 I'm an AI giving general guidance — for big financial decisions, consult a professional."
-11. NEVER be dismissive. Don't say "I already told you" or "as I mentioned." The user may have forgotten or wants a different angle. Just answer fresh.
+10. Only on your FIRST response, end with: "💡 General guidance only — consult a professional for big financial decisions."
+11. NEVER be dismissive or sycophantic. No "I already told you", no "You're absolutely right", no "My apologies." Just answer naturally.
 
 ACTION SUGGESTIONS:
 When the user asks you to do something or your advice leads to an action, add this at the END of your response. Only when relevant.
@@ -5330,16 +5326,18 @@ function formatChatMarkdown(text) {
 
   function flushTable() {
     if (tableRows.length < 2) {
-      // Not a valid table — just render as text
       html += tableRows.join("<br>") + "<br>";
     } else {
       html += '<table>';
-      tableRows.forEach((row, i) => {
+      var isHeader = true;
+      tableRows.forEach(function(row) {
+        var clean = row.trim().replace(/^\*{1,2}/, "").replace(/\*{1,2}$/, "").trim();
         // Skip separator row (|---|---|)
-        if (/^\|[\s\-:|]+\|$/.test(row.trim())) return;
-        const cells = row.split("|").filter((c, idx, arr) => idx > 0 && idx < arr.length - 1).map(c => c.trim());
-        const tag = i === 0 ? "th" : "td";
-        html += "<tr>" + cells.map(c => "<" + tag + ">" + inlineFormat(c) + "</" + tag + ">").join("") + "</tr>";
+        if (/^[\|\s\-:]+$/.test(clean)) { isHeader = false; return; }
+        var cells = parseTableRow(row);
+        var tag = isHeader ? "th" : "td";
+        html += "<tr>" + cells.map(function(c) { return "<" + tag + ">" + inlineFormat(c) + "</" + tag + ">"; }).join("") + "</tr>";
+        if (isHeader) isHeader = false;
       });
       html += '</table>';
     }
@@ -5354,12 +5352,29 @@ function formatChatMarkdown(text) {
       .replace(/`([^`]+)`/g, '<code>$1</code>');
   }
 
+  function isTableRow(line) {
+    // Strip bold/italic wrappers and whitespace
+    var clean = line.trim().replace(/^\*{1,2}/, "").replace(/\*{1,2}$/, "").trim();
+    // Must have at least 2 pipe characters and start with pipe
+    return clean.startsWith("|") && (clean.match(/\|/g) || []).length >= 2;
+  }
+
+  function parseTableRow(line) {
+    // Strip bold wrappers from the whole line
+    var clean = line.trim().replace(/^\*{1,2}/, "").replace(/\*{1,2}$/, "").trim();
+    // Split by pipe, remove first and last empty elements
+    var cells = clean.split("|");
+    if (cells[0].trim() === "") cells.shift();
+    if (cells.length > 0 && cells[cells.length-1].trim() === "") cells.pop();
+    return cells.map(function(c) { return c.trim(); });
+  }
+
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
     const trimmed = line.trim();
 
-    // Table row detection
-    if (trimmed.startsWith("|") && trimmed.endsWith("|")) {
+    // Table row detection — robust against bold wrappers and missing trailing pipe
+    if (isTableRow(trimmed)) {
       if (!inTable) { flushList(); inTable = true; }
       tableRows.push(trimmed);
       continue;
