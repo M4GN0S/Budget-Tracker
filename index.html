@@ -825,6 +825,37 @@ tbody tr:hover td{background:var(--pri-l)}
 .chat-bubble code{background:var(--bg);padding:1px 5px;border-radius:4px;font-size:12px;font-family:monospace}
 .chat-bubble h4,.chat-bubble h3{font-size:14px;font-weight:800;margin:10px 0 4px;color:var(--txt)}
 .chat-bubble blockquote{border-left:3px solid var(--pri);padding-left:10px;margin:8px 0;color:var(--txt2);font-style:italic}
+/* AI action suggestion buttons */
+.ai-action{display:flex;align-items:center;gap:8px;padding:10px 14px;margin:8px 0 4px;border-radius:10px;background:var(--pri-l);border:1.5px solid var(--pri);cursor:pointer;transition:.2s;font-size:12px;font-weight:600;color:var(--pri-d)}
+.ai-action:hover{background:var(--pri);color:var(--on-pri);transform:translateY(-1px);box-shadow:0 4px 12px rgba(74,122,107,.25)}
+.ai-action svg{flex-shrink:0}
+.ai-action .action-text{flex:1}
+.ai-action .action-detail{font-weight:400;opacity:.8;font-size:11px}
+.ai-action.done{background:var(--suc-l);border-color:var(--suc);color:var(--suc);pointer-events:none;opacity:.7}
+.ai-action.done::after{content:" ✓ Done";font-weight:700}
+/* Failover chain */
+.failover-item{display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--bg);border-radius:8px;border:1px solid var(--brd);font-size:12px}
+.failover-item .fo-num{width:20px;height:20px;border-radius:50%;background:var(--pri-l);color:var(--pri-d);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;flex-shrink:0}
+.failover-item .fo-provider{font-weight:700;color:var(--txt)}
+.failover-item .fo-status{font-size:10px;color:var(--suc);font-weight:600}
+.failover-item .fo-remove{background:none;border:none;color:var(--txt2);cursor:pointer;font-size:14px;padding:2px;opacity:.5;transition:.2s;margin-left:auto}
+.failover-item .fo-remove:hover{opacity:1;color:var(--dan)}
+/* Usage bar */
+.usage-bar{display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--bg);border-radius:10px;margin-bottom:12px;border:1px solid var(--brd);font-size:11px}
+.usage-bar .usage-text{flex:1;color:var(--txt2);font-weight:500}
+.usage-bar .usage-text strong{color:var(--txt);font-weight:700}
+.usage-bar .usage-track{width:80px;height:6px;background:var(--brd);border-radius:3px;overflow:hidden;flex-shrink:0}
+.usage-bar .usage-fill{height:100%;border-radius:3px;transition:width .3s ease}
+.usage-bar .usage-fill.green{background:var(--suc)}
+.usage-bar .usage-fill.yellow{background:#E8A838}
+.usage-bar .usage-fill.red{background:var(--dan)}
+.usage-bar .usage-reset{font-size:9px;color:var(--txt2);white-space:nowrap}
+/* Premium CTA in chat */
+.ai-premium-nudge{padding:14px;background:linear-gradient(135deg,var(--pri-l),var(--acc-l));border-radius:12px;border:1.5px solid var(--pri);margin:10px 0;text-align:center}
+.ai-premium-nudge .nudge-title{font-size:14px;font-weight:800;color:var(--txt);margin-bottom:4px}
+.ai-premium-nudge .nudge-sub{font-size:11px;color:var(--txt2);margin-bottom:10px}
+.ai-premium-nudge .btn-upgrade{display:inline-block;padding:8px 24px;border-radius:20px;font-size:12px;font-weight:700;background:linear-gradient(135deg,var(--pri-d),var(--pri));color:var(--on-pri);text-decoration:none;transition:.2s;border:none;cursor:pointer}
+.ai-premium-nudge .btn-upgrade:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(74,122,107,.3)}
 .chat-input-row{display:flex;gap:8px;margin-top:12px}
 .chat-input{flex:1;padding:11px 16px;border:1.5px solid var(--brd);border-radius:12px;font-size:13px;font-family:inherit;outline:none;background:var(--input-bg);color:var(--txt);resize:none;min-width:0}
 .chat-input:focus{border-color:var(--pri);box-shadow:0 0 0 3px rgba(108,154,139,.12)}
@@ -1645,7 +1676,12 @@ footer .footer-links a:hover{color:var(--pri-d)}
           </div>
           <div class="fg" id="modelSelectGroup">
             <label>Model</label>
-            <select id="aiModel"></select>
+            <div style="display:flex;gap:6px;align-items:center">
+              <select id="aiModel" style="flex:1"></select>
+              <button class="btn btn-sec btn-sm" onclick="refreshModels()" title="Fetch latest models from API" style="font-size:11px;padding:6px 10px;flex-shrink:0">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg>
+              </button>
+            </div>
             <div id="modelInfo" style="font-size:10px;color:var(--txt2);margin-top:3px"></div>
           </div>
           <div id="customProviderFields" style="display:none">
@@ -1705,6 +1741,21 @@ footer .footer-links a:hover{color:var(--pri-d)}
           </label>
           <select id="chatModelSelect" onchange="switchModelFromChat()"></select>
           <span class="model-badge free" id="chatModelBadge">Free</span>
+        </div>
+        <!-- Usage Counter -->
+        <div class="usage-bar" id="usageBar">
+          <div class="usage-text" id="usageText"><strong>0</strong> / — requests (estimated)</div>
+          <div class="usage-track"><div class="usage-fill green" id="usageFill" style="width:0%"></div></div>
+          <div class="usage-reset" id="usageReset"></div>
+        </div>
+        <div id="usageDisclaimer" style="font-size:9px;color:var(--txt2);margin:-8px 0 10px 2px;line-height:1.4;display:none">
+          Usage reads directly from your provider's rate-limit headers. If you use this key in other apps, the count reflects total usage across all apps.
+        </div>
+        <!-- Premium nudge (hidden by default) -->
+        <div class="ai-premium-nudge" id="premiumNudge" style="display:none">
+          <div class="nudge-title">You've hit today's free limit</div>
+          <div class="nudge-sub">Upgrade to Managed AI — unlimited messages, no key needed, just chat.</div>
+          <button class="btn-upgrade" onclick="window.open('#premium','_blank')">Upgrade — $1.99/month</button>
         </div>
         <!-- Quick Actions -->
         <div class="quick-actions">
@@ -1863,6 +1914,23 @@ footer .footer-links a:hover{color:var(--pri-d)}
         </div>
         <div style="font-size:11px;color:var(--txt2);margin-top:10px;line-height:1.5">
           Your API key is obfuscated in storage and never sent to us — only to your chosen AI provider.
+        </div>
+        <!-- Failover Chain -->
+        <div class="section-label" style="margin:16px 0 8px">AI Failover Chain</div>
+        <p style="font-size:11px;color:var(--txt2);margin-bottom:10px;line-height:1.5">
+          Add backup providers so if your primary AI hits rate limits, it automatically tries the next one.
+        </p>
+        <div id="failoverList" style="display:flex;flex-direction:column;gap:6px;margin-bottom:10px"></div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">
+          <select id="failoverProviderAdd" onclick="event.stopPropagation()" style="padding:7px 10px;border:1.5px solid var(--brd);border-radius:8px;font-size:12px;font-family:inherit;background:var(--input-bg);color:var(--txt);outline:none">
+            <option value="">Add backup provider...</option>
+            <option value="gemini">Gemini</option>
+            <option value="groq">Groq</option>
+            <option value="openai">OpenAI</option>
+            <option value="openrouter">OpenRouter</option>
+          </select>
+          <input type="password" id="failoverKeyAdd" placeholder="API key" onclick="event.stopPropagation()" style="padding:7px 10px;border:1.5px solid var(--brd);border-radius:8px;font-size:12px;font-family:inherit;background:var(--input-bg);color:var(--txt);outline:none;flex:1;min-width:120px;box-sizing:border-box">
+          <button class="btn btn-pri btn-sm" onclick="event.stopPropagation();addFailover()" style="font-size:11px">Add</button>
         </div>
       </div></div>
     </div>
@@ -3288,6 +3356,8 @@ function renderDataStats() {
   // Load saved name into settings field
   const nameInput = document.getElementById("settingsUserName");
   if (nameInput) nameInput.value = getUserName();
+  // Render failover chain
+  renderFailoverList();
   const data = getData();
   const el = document.getElementById("dataStats");
   if (!el) return;
@@ -3310,9 +3380,9 @@ function renderDataStats() {
 // SETUP: Create a Google Sheet, go to Extensions → Apps Script, deploy as web app
 // Replace YOUR_SCRIPT_URL with your deployed URL
 
-const NEWSLETTER_URL = "https://script.google.com/macros/s/AKfycbyGWVy0zk9janw7xmm83RogIGVsm9ft-y4lv3IFDom4vw5a9IsjHK5ZyxlC4huA-5MN/exec"; // ← Replace this
-const CONTACT_URL = "https://script.google.com/macros/s/AKfycbyGWVy0zk9janw7xmm83RogIGVsm9ft-y4lv3IFDom4vw5a9IsjHK5ZyxlC4huA-5MN/exec";    // ← Replace this (can be same sheet)
-const TELEMETRY_URL = "https://script.google.com/macros/s/AKfycbyGWVy0zk9janw7xmm83RogIGVsm9ft-y4lv3IFDom4vw5a9IsjHK5ZyxlC4huA-5MN/exec";  // ← Replace this (can be same sheet)
+const NEWSLETTER_URL = "YOUR_GOOGLE_APPS_SCRIPT_URL_HERE"; // ← Replace this
+const CONTACT_URL = "YOUR_GOOGLE_APPS_SCRIPT_URL_HERE";    // ← Replace this (can be same sheet)
+const TELEMETRY_URL = "YOUR_GOOGLE_APPS_SCRIPT_URL_HERE";  // ← Replace this (can be same sheet)
 
 function submitNewsletter() {
   // Settings newsletter removed — redirect to dashboard version
@@ -4318,6 +4388,20 @@ function saveAiKey() {
   initAiChat();
 }
 
+async function refreshModels() {
+  const provider = document.getElementById("aiProvider").value;
+  const keyInput = document.getElementById("aiKeyInput").value.trim();
+  const config = getAiConfig();
+  const key = keyInput || config?.key || "";
+  if (!key) { toast("Enter your API key first"); return; }
+
+  // Clear cache to force re-fetch
+  localStorage.removeItem("bt_models_" + provider);
+  toast("Fetching models from " + provider + "...");
+  await populateModelDropdownDynamic("aiModel", provider, key);
+  toast("Models refreshed!");
+}
+
 function toggleCustomProvider() {
   const sel = document.getElementById("aiProvider").value;
   document.getElementById("customProviderFields").style.display = sel === "custom" ? "block" : "none";
@@ -4390,6 +4474,258 @@ function switchModelFromChat() {
   toast("Switched to " + (select.options[select.selectedIndex]?.text?.split(" —")[0] || select.value));
 }
 
+// ─── AI FAILOVER CHAIN ─────────────────────────────────────
+function getFailoverChain() {
+  try { return JSON.parse(localStorage.getItem("bt_failover") || "[]"); }
+  catch(e) { return []; }
+}
+
+function addFailover() {
+  const providerSel = document.getElementById("failoverProviderAdd");
+  const keyInput = document.getElementById("failoverKeyAdd");
+  const provider = providerSel.value;
+  const key = keyInput.value.trim();
+  if (!provider) { toast("Select a provider"); return; }
+  if (!key || key.length < 10) { toast("Enter a valid API key"); return; }
+
+  const chain = getFailoverChain();
+  // Check for duplicate provider
+  if (chain.some(f => f.provider === provider)) {
+    toast("Already in the chain — remove it first to update the key");
+    return;
+  }
+  chain.push({ provider, key: obfuscate(key) });
+  localStorage.setItem("bt_failover", JSON.stringify(chain));
+  providerSel.value = "";
+  keyInput.value = "";
+  renderFailoverList();
+  toast("Backup added: " + provider);
+}
+
+function removeFailover(index) {
+  const chain = getFailoverChain();
+  chain.splice(index, 1);
+  localStorage.setItem("bt_failover", JSON.stringify(chain));
+  renderFailoverList();
+  toast("Backup removed");
+}
+
+function renderFailoverList() {
+  const el = document.getElementById("failoverList");
+  if (!el) return;
+  const chain = getFailoverChain();
+  const providerNames = { gemini: "Google Gemini", groq: "Groq", openai: "OpenAI", openrouter: "OpenRouter" };
+
+  if (chain.length === 0) {
+    el.innerHTML = '<div style="font-size:11px;color:var(--txt2);padding:6px 0">No backups configured. Your primary provider will be the only one used.</div>';
+    return;
+  }
+
+  el.innerHTML = chain.map((f, i) => {
+    return '<div class="failover-item">' +
+      '<span class="fo-num">' + (i + 1) + '</span>' +
+      '<span class="fo-provider">' + (providerNames[f.provider] || f.provider) + '</span>' +
+      '<span class="fo-status">Ready</span>' +
+      '<button class="fo-remove" onclick="event.stopPropagation();removeFailover(' + i + ')" title="Remove">✕</button>' +
+    '</div>';
+  }).join("");
+}
+
+// ─── AI USAGE TRACKING (reads real provider headers) ───────
+// Rate limit headers returned by providers:
+//   x-ratelimit-limit-requests      — max requests in window
+//   x-ratelimit-remaining-requests  — requests left
+//   x-ratelimit-reset-requests      — when it resets
+// We read these from API responses for accurate, real-time usage.
+
+let lastRateLimit = { remaining: null, limit: null, reset: null, source: "estimate" };
+
+function parseRateLimitHeaders(res) {
+  // Try to read standard rate limit headers
+  const remaining = res.headers.get("x-ratelimit-remaining-requests");
+  const limit = res.headers.get("x-ratelimit-limit-requests");
+  const reset = res.headers.get("x-ratelimit-reset-requests");
+
+  if (remaining !== null && limit !== null) {
+    lastRateLimit = {
+      remaining: parseInt(remaining),
+      limit: parseInt(limit),
+      reset: reset || null,
+      source: "provider"
+    };
+  }
+
+  // Also track local count as fallback
+  const usage = getUsageData();
+  usage.count++;
+  usage.total++;
+  localStorage.setItem("bt_ai_usage", JSON.stringify(usage));
+
+  renderUsageBar();
+}
+
+function getUsageData() {
+  try {
+    const raw = JSON.parse(localStorage.getItem("bt_ai_usage") || "{}");
+    const today = new Date().toISOString().split("T")[0];
+    if (raw.date !== today) {
+      return { date: today, count: 0, total: raw.total || 0 };
+    }
+    return raw;
+  } catch(e) { return { date: new Date().toISOString().split("T")[0], count: 0, total: 0 }; }
+}
+
+function incrementUsage() {
+  // Now handled inside parseRateLimitHeaders
+  renderUsageBar();
+}
+
+function getDailyLimit() {
+  // Use real provider data if available
+  if (lastRateLimit.source === "provider" && lastRateLimit.limit) {
+    return lastRateLimit.limit;
+  }
+  // Fallback: estimate based on provider
+  const config = getAiConfig();
+  if (!config) return 500;
+  const limits = { gemini: 1500, groq: 1000, openai: 200, openrouter: 50, custom: 999 };
+  return limits[config.provider] || 500;
+}
+
+function renderUsageBar() {
+  const textEl = document.getElementById("usageText");
+  const fillEl = document.getElementById("usageFill");
+  const resetEl = document.getElementById("usageReset");
+  if (!textEl || !fillEl) return;
+
+  const localUsage = getUsageData();
+  let used, limit, pct, sourceLabel;
+
+  if (lastRateLimit.source === "provider" && lastRateLimit.limit) {
+    // Real data from provider headers
+    limit = lastRateLimit.limit;
+    used = limit - lastRateLimit.remaining;
+    pct = Math.min(100, Math.round((used / limit) * 100));
+    sourceLabel = "from provider";
+  } else {
+    // Fallback: local count + estimated limit
+    limit = getDailyLimit();
+    used = localUsage.count;
+    pct = limit > 0 ? Math.min(100, Math.round((used / limit) * 100)) : 0;
+    sourceLabel = "estimated";
+  }
+
+  textEl.innerHTML = "<strong>" + used + "</strong> / " + limit.toLocaleString() + " requests (" + sourceLabel + ")";
+  fillEl.style.width = pct + "%";
+  fillEl.className = "usage-fill " + (pct >= 90 ? "red" : pct >= 70 ? "yellow" : "green");
+
+  // Reset time
+  if (lastRateLimit.reset) {
+    const resetDate = new Date(lastRateLimit.reset);
+    if (!isNaN(resetDate)) {
+      const mins = Math.max(0, Math.ceil((resetDate - Date.now()) / 60000));
+      if (resetEl) resetEl.textContent = mins > 60 ? Math.ceil(mins / 60) + "h reset" : mins + "m reset";
+    } else if (lastRateLimit.reset.includes("s")) {
+      if (resetEl) resetEl.textContent = lastRateLimit.reset + " reset";
+    }
+  } else {
+    const now = new Date();
+    const midnight = new Date(now);
+    midnight.setHours(24, 0, 0, 0);
+    const hoursLeft = Math.ceil((midnight - now) / 3600000);
+    if (resetEl) resetEl.textContent = "~" + hoursLeft + "h reset";
+  }
+
+  // Premium nudge
+  const nudge = document.getElementById("premiumNudge");
+  if (nudge) nudge.style.display = pct >= 100 ? "block" : "none";
+
+  // Show disclaimer when using real provider data
+  const disc = document.getElementById("usageDisclaimer");
+  if (disc) disc.style.display = lastRateLimit.source === "provider" ? "block" : "none";
+
+  // Milestone alerts (based on local session, not spammy)
+  if (pct >= 90 && !window._usageWarned90) {
+    window._usageWarned90 = true;
+    toast("⚠️ 90% of your AI limit used (" + used + "/" + limit + ")");
+  } else if (pct >= 70 && pct < 90 && !window._usageWarned70) {
+    window._usageWarned70 = true;
+    toast("You've used 70% of your AI requests (" + used + "/" + limit + ")");
+  }
+}
+
+async function callWithFailover(context, chatHistory) {
+  const config = getAiConfig();
+  if (!config) throw new Error("No AI configured");
+
+  // Build the chain: primary first, then failovers
+  const chain = [];
+
+  // Primary
+  const chatSelect = document.getElementById("chatModelSelect");
+  const activeModel = chatSelect?.value || config.model || AI_MODELS[config.provider]?.models[0]?.id || "";
+  chain.push({
+    provider: config.provider,
+    key: config.key,
+    model: activeModel,
+    customUrl: config.customUrl,
+    customModel: config.customModel,
+    label: config.provider
+  });
+
+  // Failovers
+  const failovers = getFailoverChain();
+  failovers.forEach(f => {
+    const defaultModel = AI_MODELS[f.provider]?.models[0]?.id || "";
+    chain.push({
+      provider: f.provider,
+      key: deobfuscate(f.key),
+      model: defaultModel,
+      label: f.provider
+    });
+  });
+
+  let lastError = null;
+
+  for (let i = 0; i < chain.length; i++) {
+    const c = chain[i];
+    try {
+      let endpoint;
+      if (c.provider === "custom") {
+        endpoint = { url: c.customUrl, type: "openai", model: c.customModel || "default" };
+      } else {
+        endpoint = getModelEndpoint(c.provider, c.model);
+      }
+      if (!endpoint) continue;
+
+      let response;
+      if (endpoint.type === "gemini") {
+        response = await callGemini(c.key, endpoint.url, context, chatHistory);
+      } else {
+        response = await callOpenAI(c.key, endpoint.url, endpoint.model, context, chatHistory);
+      }
+
+      // Success — if we used a fallback, tell the user
+      if (i > 0) {
+        response = "*Answered via " + c.label + " (backup #" + i + "):*\n\n" + response;
+      }
+      return response;
+
+    } catch (err) {
+      lastError = err;
+      const em = err.message || "";
+      // Only failover on rate limits or server errors — NOT auth errors
+      const isRateLimit = em.includes("429") || em.includes("RESOURCE_EXHAUSTED") || em.includes("rate") || em.includes("quota");
+      const isServerErr = em.includes("500") || em.includes("502") || em.includes("503");
+      if (!isRateLimit && !isServerErr) throw err; // Auth/config errors — don't failover
+      // Continue to next provider
+    }
+  }
+
+  // All providers failed
+  throw lastError || new Error("All AI providers exhausted");
+}
+
 function removeAiKey() {
   if (!confirm("Remove your API key? You'll need to re-enter it to use AI.")) return;
   localStorage.removeItem(AI_KEY_STORAGE);
@@ -4423,13 +4759,14 @@ function initAiChat() {
   if (config && config.key) {
     if (setup) setup.style.display = "none";
     if (chat) chat.style.display = "block";
+    renderUsageBar();
     const providerNames = { gemini:"Google Gemini", groq:"Groq", openai:"OpenAI", openrouter:"OpenRouter", custom:"Custom" };
     const providerLabel = config.provider === "custom" ? "Custom (" + (config.customUrl || "").replace(/https?:\/\//, "").split("/")[0] + ")" : providerNames[config.provider];
     if (settingsProvider) settingsProvider.textContent = providerLabel;
 
     // Populate the model dropdown in chat bar
     if (config.provider !== "custom") {
-      populateModelDropdown("chatModelSelect", config.provider, config.model || AI_MODELS[config.provider]?.models[0]?.id);
+      populateModelDropdownDynamic("chatModelSelect", config.provider, config.key, config.model || AI_MODELS[config.provider]?.models[0]?.id);
       document.getElementById("chatModelBar").style.display = "flex";
     } else {
       document.getElementById("chatModelBar").style.display = "none";
@@ -4469,7 +4806,11 @@ function initAiChat() {
   if (providerSel) {
     const p = config ? config.provider : providerSel.value;
     if (p && p !== "custom") {
-      populateModelDropdown("aiModel", p, config?.model || "");
+      if (config?.key) {
+        populateModelDropdownDynamic("aiModel", p, config.key, config.model || "");
+      } else {
+        populateModelDropdown("aiModel", p, config?.model || "");
+      }
       document.getElementById("modelSelectGroup").style.display = "block";
     } else if (p === "custom") {
       document.getElementById("modelSelectGroup").style.display = "none";
@@ -4537,10 +4878,32 @@ RULES:
 |----------|-------|--------|--------|
 | Needs | $800 | $1,000 | ✅ On track |
 6. For tax, investment, insurance, and legal topics: provide helpful general guidance but ALWAYS add: "⚠️ This is general guidance — consult a qualified professional for decisions specific to your situation."
-6. NEVER invent or assume data you don't have. Only reference what's in the context below.
-7. Always end advice with an encouraging note.
-8. If the user has no expenses yet, encourage them to start tracking and explain the 50/30/20 rule.
-9. ALWAYS include this at the end of your FIRST response only: "💡 Remember: I'm an AI assistant providing general guidance — for important financial decisions, please consult a qualified professional."
+7. NEVER invent or assume data you don't have. Only reference what's in the context below.
+8. Always end advice with an encouraging note.
+9. If the user has no expenses yet, encourage them to start tracking and explain the 50/30/20 rule.
+10. ALWAYS include this at the end of your FIRST response only: "💡 Remember: I'm an AI assistant providing general guidance — for important financial decisions, please consult a qualified professional."
+
+ACTION SUGGESTIONS:
+When the user asks you to do something or when your advice naturally leads to an action, suggest it using this exact format at the end of your response. Only use these when relevant — don't force them.
+
+To suggest adding an expense:
+[ACTION:add_expense|description|category|subcategory|amount]
+Example: [ACTION:add_expense|Netflix Subscription|Wants|Subscriptions|15.99]
+
+To suggest adding a journal note:
+[ACTION:add_note|tag|text]
+Example: [ACTION:add_note|reminder|Cancel Netflix subscription — saves $15.99/month]
+
+To suggest creating a savings goal:
+[ACTION:add_goal|name|target|saved]
+Example: [ACTION:add_goal|Emergency Fund|10000|500]
+
+Rules for actions:
+- Only suggest actions when the user explicitly asks or when it naturally follows your advice
+- You can suggest multiple actions in one response
+- Categories must be: Needs, Wants, or Savings
+- Tags for notes must be: note, goal, reminder, reflection, idea, or receipt
+- Always explain what you're suggesting before the action tag
 
 PERSONALITY: Friendly, concise, data-driven, encouraging. Like a smart friend who's good with money.`;
 
@@ -4609,6 +4972,169 @@ function getModelEndpoint(provider, modelId) {
   return { url: catalog.baseUrl, type: "openai", model: modelId };
 }
 
+// ─── DYNAMIC MODEL FETCHING ───────────────────────────────
+// Queries each provider's API for available models, caches result
+
+const MODEL_LIST_ENDPOINTS = {
+  gemini:     { url: "https://generativelanguage.googleapis.com/v1beta/models", authType: "param" },
+  groq:       { url: "https://api.groq.com/openai/v1/models", authType: "bearer" },
+  openai:     { url: "https://api.openai.com/v1/models", authType: "bearer" },
+  openrouter: { url: "https://openrouter.ai/api/v1/models", authType: "bearer" }
+};
+
+// Filter patterns — only show chat/generation models, skip embeddings/whisper/etc
+const MODEL_FILTERS = {
+  gemini:     m => m.name && /gemini/i.test(m.name) && /generateContent/i.test((m.supportedGenerationMethods || []).join(",")),
+  groq:       m => m.id && !/whisper|guard|compound|safeguard/i.test(m.id),
+  openai:     m => m.id && /gpt|o1|o3/i.test(m.id) && !/realtime|audio|search|dall/i.test(m.id),
+  openrouter: m => m.id && /:free$/.test(m.id)
+};
+
+async function fetchAvailableModels(provider, apiKey) {
+  const endpoint = MODEL_LIST_ENDPOINTS[provider];
+  if (!endpoint || !apiKey) return null;
+
+  try {
+    const headers = { "Content-Type": "application/json" };
+    let url = endpoint.url;
+
+    if (endpoint.authType === "param") {
+      url += "?key=" + apiKey;
+    } else {
+      headers["Authorization"] = "Bearer " + apiKey;
+    }
+
+    // Gemini needs header auth too
+    if (provider === "gemini") {
+      headers["x-goog-api-key"] = apiKey;
+      url = endpoint.url + "?key=" + apiKey;
+    }
+
+    const res = await fetch(url, { headers });
+    if (!res.ok) return null;
+    const data = await res.json();
+
+    // Parse response — each provider has different structure
+    let models = [];
+    const filter = MODEL_FILTERS[provider] || (() => true);
+
+    if (provider === "gemini") {
+      models = (data.models || []).filter(filter).map(m => ({
+        id: m.name.replace("models/", ""),
+        name: m.displayName || m.name.replace("models/", ""),
+        desc: m.description ? m.description.substring(0, 60) : "",
+        free: true
+      }));
+    } else if (provider === "openrouter") {
+      models = (data.data || []).filter(filter).map(m => ({
+        id: m.id,
+        name: m.name || m.id.split("/").pop().replace(/:free$/, ""),
+        desc: (m.context_length ? m.context_length.toLocaleString() + " ctx" : ""),
+        free: /:free$/.test(m.id)
+      }));
+      // Cap at 20 most relevant
+      models = models.slice(0, 20);
+    } else {
+      // OpenAI-compatible (Groq, OpenAI)
+      models = (data.data || []).filter(filter).map(m => ({
+        id: m.id,
+        name: m.id,
+        desc: m.owned_by || "",
+        free: provider === "groq"
+      }));
+    }
+
+    // Sort by name
+    models.sort((a, b) => a.name.localeCompare(b.name));
+
+    if (models.length > 0) {
+      // Cache with timestamp
+      localStorage.setItem("bt_models_" + provider, JSON.stringify({ ts: Date.now(), models }));
+      return models;
+    }
+    return null;
+  } catch (e) {
+    return null;
+  }
+}
+
+function getCachedModels(provider) {
+  try {
+    const raw = localStorage.getItem("bt_models_" + provider);
+    if (!raw) return null;
+    const cached = JSON.parse(raw);
+    // Cache valid for 24 hours
+    if (Date.now() - cached.ts > 24 * 60 * 60 * 1000) return null;
+    return cached.models;
+  } catch (e) { return null; }
+}
+
+async function populateModelDropdownDynamic(selectId, provider, apiKey, selectedModel) {
+  const select = document.getElementById(selectId);
+  if (!select) return;
+
+  // 1. Show fallback immediately
+  populateModelDropdown(selectId, provider, selectedModel);
+
+  if (!apiKey) return;
+
+  // 2. Check cache first
+  let dynamicModels = getCachedModels(provider);
+
+  // 3. If no cache, fetch from API
+  if (!dynamicModels) {
+    // Add a loading indicator
+    const loadOpt = document.createElement("option");
+    loadOpt.textContent = "Loading models from API...";
+    loadOpt.disabled = true;
+    select.insertBefore(loadOpt, select.firstChild);
+
+    dynamicModels = await fetchAvailableModels(provider, apiKey);
+
+    // Remove loading indicator
+    if (loadOpt.parentNode) loadOpt.remove();
+  }
+
+  if (!dynamicModels || dynamicModels.length === 0) return;
+
+  // 4. Merge: dynamic models first, then add any fallback models not in dynamic list
+  const dynamicIds = new Set(dynamicModels.map(m => m.id));
+  const fallback = AI_MODELS[provider]?.models || [];
+  const fallbackOnly = fallback.filter(m => !dynamicIds.has(m.id));
+
+  // Rebuild dropdown with dynamic models
+  select.innerHTML = "";
+
+  // Dynamic models section
+  dynamicModels.forEach(m => {
+    const opt = document.createElement("option");
+    opt.value = m.id;
+    opt.textContent = m.name + (m.free ? " (free)" : " (paid)") + (m.desc ? " — " + m.desc : "");
+    select.appendChild(opt);
+  });
+
+  // Fallback-only section (if any)
+  if (fallbackOnly.length > 0) {
+    const sep = document.createElement("option");
+    sep.disabled = true;
+    sep.textContent = "── Other known models ──";
+    select.appendChild(sep);
+    fallbackOnly.forEach(m => {
+      const opt = document.createElement("option");
+      opt.value = m.id;
+      opt.textContent = m.name + (m.free ? " (free)" : " (paid)") + " — " + m.desc;
+      select.appendChild(opt);
+    });
+  }
+
+  // Restore selection
+  if (selectedModel && select.querySelector('option[value="' + selectedModel + '"]')) {
+    select.value = selectedModel;
+  }
+
+  updateModelInfo(selectId, provider);
+}
+
 let chatHistory = [];
 
 async function sendChat() {
@@ -4618,6 +5144,15 @@ async function sendChat() {
 
   const config = getAiConfig();
   if (!config) { toast("⚠️ Set up your API key first"); return; }
+
+  // Check usage limit
+  const usage = getUsageData();
+  const limit = getDailyLimit();
+  if (usage.count >= limit) {
+    const nudge = document.getElementById("premiumNudge");
+    if (nudge) nudge.style.display = "block";
+    toast("Daily limit reached — your providers may reject requests");
+  }
 
   // Add user message to UI
   addChatMessage("user", msg);
@@ -4629,30 +5164,12 @@ async function sendChat() {
 
   try {
     const context = buildAiContext();
-
-    // Resolve the model — prefer chat dropdown, fall back to config, then catalog default
-    const chatSelect = document.getElementById("chatModelSelect");
-    const activeModel = chatSelect?.value || config.model || AI_MODELS[config.provider]?.models[0]?.id || "";
-    let endpoint;
-
-    if (config.provider === "custom") {
-      endpoint = { url: config.customUrl, type: "openai", model: config.customModel || "default" };
-    } else {
-      endpoint = getModelEndpoint(config.provider, activeModel);
-    }
-
-    if (!endpoint) { throw new Error("Could not resolve AI endpoint. Check your provider settings."); }
-
-    let response;
-    if (endpoint.type === "gemini") {
-      response = await callGemini(config.key, endpoint.url, context, chatHistory);
-    } else {
-      response = await callOpenAI(config.key, endpoint.url, endpoint.model, context, chatHistory);
-    }
+    const response = await callWithFailover(context, chatHistory);
 
     removeTyping(typingId);
     addChatMessage("bot", response);
     chatHistory.push({ role: "assistant", content: response });
+    // Usage already tracked via parseRateLimitHeaders inside callGemini/callOpenAI
 
     // Keep history manageable (last 10 messages)
     if (chatHistory.length > 20) chatHistory = chatHistory.slice(-20);
@@ -4690,7 +5207,6 @@ async function callGemini(key, url, context, history) {
       parts: [{ text: SYSTEM_PROMPT + "\n\n" + context }]
     },
     generationConfig: {
-      maxOutputTokens: 800,
       temperature: 0.7
     }
   };
@@ -4716,7 +5232,12 @@ async function callGemini(key, url, context, history) {
   }
 
   const data = await res.json();
-  return data.candidates?.[0]?.content?.parts?.[0]?.text || "I couldn't generate a response. Please try again.";
+  const text = data.candidates?.[0]?.content?.parts?.[0]?.text || "I couldn't generate a response. Please try again.";
+
+  // Extract rate limit headers
+  parseRateLimitHeaders(res);
+
+  return text;
 }
 
 async function callOpenAI(key, url, model, context, history) {
@@ -4728,11 +5249,16 @@ async function callOpenAI(key, url, model, context, history) {
   const res = await fetch(url, {
     method: "POST",
     headers: { "Content-Type": "application/json", "Authorization": "Bearer " + key },
-    body: JSON.stringify({ model, messages, max_tokens: 600, temperature: 0.7 })
+    body: JSON.stringify({ model, messages, temperature: 0.7 })
   });
   if (!res.ok) throw new Error(res.status + " " + res.statusText);
   const data = await res.json();
-  return data.choices?.[0]?.message?.content || "I couldn't generate a response. Please try again.";
+  const text = data.choices?.[0]?.message?.content || "I couldn't generate a response. Please try again.";
+
+  // Extract rate limit headers
+  parseRateLimitHeaders(res);
+
+  return text;
 }
 
 function aiQuickAction(type) {
@@ -4862,15 +5388,102 @@ function addChatMessage(type, text) {
   const userSvg = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>';
   const avatar = type === "bot" ? botSvg : userSvg;
 
+  // Extract action tags before formatting
+  const actions = [];
+  let cleanText = text.replace(/\[ACTION:(add_expense|add_note|add_goal)\|([^\]]+)\]/g, function(match, actionType, params) {
+    actions.push({ type: actionType, params: params.split("|"), id: "action_" + Date.now() + "_" + actions.length });
+    return ""; // Remove from displayed text
+  });
+
   // Markdown formatting with table support
-  let formatted = formatChatMarkdown(text);
+  let formatted = formatChatMarkdown(cleanText.trim());
+
+  // Build action buttons HTML
+  let actionsHtml = "";
+  if (type === "bot" && actions.length > 0) {
+    actionsHtml = actions.map(a => {
+      const currency = getCurrency();
+      if (a.type === "add_expense") {
+        const [desc, cat, sub, amt] = a.params;
+        const icon = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>';
+        return '<div class="ai-action" id="' + a.id + '" onclick="executeAiAction(this,\'' + a.type + '\',' + JSON.stringify(a.params).replace(/'/g, "\\'") + ')">' +
+          icon + '<div class="action-text">Add expense: <strong>' + desc + '</strong> — ' + currency + parseFloat(amt || 0).toFixed(2) + '<div class="action-detail">' + cat + ' → ' + sub + '</div></div></div>';
+      } else if (a.type === "add_note") {
+        const [tag, noteText] = a.params;
+        const icon = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>';
+        return '<div class="ai-action" id="' + a.id + '" onclick="executeAiAction(this,\'' + a.type + '\',' + JSON.stringify(a.params).replace(/'/g, "\\'") + ')">' +
+          icon + '<div class="action-text">Add to Journal: <strong>' + (noteText || "").substring(0, 60) + (noteText && noteText.length > 60 ? "..." : "") + '</strong><div class="action-detail">Tag: ' + tag + '</div></div></div>';
+      } else if (a.type === "add_goal") {
+        const [name, target, saved] = a.params;
+        const icon = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>';
+        return '<div class="ai-action" id="' + a.id + '" onclick="executeAiAction(this,\'' + a.type + '\',' + JSON.stringify(a.params).replace(/'/g, "\\'") + ')">' +
+          icon + '<div class="action-text">Create goal: <strong>' + name + '</strong> — ' + currency + parseFloat(target || 0).toLocaleString() + '<div class="action-detail">Starting with ' + currency + parseFloat(saved || 0).toLocaleString() + ' saved</div></div></div>';
+      }
+      return "";
+    }).join("");
+  }
 
   div.innerHTML = `
     <div class="chat-avatar">${avatar}</div>
-    <div class="chat-bubble">${formatted}</div>
+    <div class="chat-bubble">${formatted}${actionsHtml}</div>
   `;
   container.appendChild(div);
   container.scrollTop = container.scrollHeight;
+}
+
+function executeAiAction(btn, type, params) {
+  if (btn.classList.contains("done")) return;
+
+  if (type === "add_expense") {
+    const [desc, cat, sub, amt] = params;
+    const amount = parseFloat(amt);
+    if (!desc || !amount) { toast("Invalid expense data"); return; }
+    const data = getData();
+    data.expenses.push({
+      id: Date.now(),
+      date: new Date().toISOString().split("T")[0],
+      desc: desc,
+      cat: cat || "Needs",
+      sub: sub || "Other",
+      amt: amount
+    });
+    saveData(data);
+    updateDashboard();
+    renderHistory();
+    renderRecent();
+    toast("Added: " + desc + " — " + fmt(amount));
+  } else if (type === "add_note") {
+    const [tag, text] = params;
+    if (!text) { toast("Invalid note data"); return; }
+    const notes = JSON.parse(localStorage.getItem("bt_notes") || "[]");
+    notes.push({
+      id: Date.now(),
+      text: text,
+      tag: tag || "note",
+      pinned: false,
+      date: new Date().toISOString(),
+      edited: null
+    });
+    localStorage.setItem("bt_notes", JSON.stringify(notes));
+    renderNotes();
+    toast("Added to Journal!");
+  } else if (type === "add_goal") {
+    const [name, target, saved] = params;
+    if (!name || !target) { toast("Invalid goal data"); return; }
+    const data = getData();
+    data.goals.push({
+      id: Date.now(),
+      name: name,
+      target: parseFloat(target),
+      saved: parseFloat(saved) || 0
+    });
+    saveData(data);
+    renderGoals();
+    toast("Goal created: " + name);
+  }
+
+  // Mark button as done
+  btn.classList.add("done");
 }
 
 function showTyping() {
