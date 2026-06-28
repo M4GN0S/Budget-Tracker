@@ -4860,6 +4860,8 @@ function buildAiContext() {
 ${userName ? "USER'S NAME: " + userName + "\n" : ""}${customPrompt ? "\nUSER'S CUSTOM INSTRUCTIONS:\n" + customPrompt + "\n" : ""}
 ${recentNotes ? "USER'S RECENT FINANCIAL NOTES:\n" + recentNotes + "\n" : ""}
 USER'S FINANCIAL DATA (current month):
+Today's Date: ${new Date().toLocaleDateString("en-US", { weekday:"long", year:"numeric", month:"long", day:"numeric" })}
+Days Left in Month: ${(() => { const now = new Date(); const end = new Date(now.getFullYear(), now.getMonth()+1, 0); return end.getDate() - now.getDate(); })()}
 Currency: ${getCurrency()}
 Monthly Income: ${getCurrency()}${income.toFixed(2)}
 Budget: 50% Needs (${getCurrency()}${(income*0.5).toFixed(2)}), 30% Wants (${getCurrency()}${(income*0.3).toFixed(2)}), 20% Savings (${getCurrency()}${(income*0.2).toFixed(2)})
@@ -4886,10 +4888,14 @@ RULES:
 1. ANSWER WHAT THE USER ASKED. If they ask for a weekly budget, give them a weekly budget. If they ask for tips, give tips. Don't repeat old advice or say "I already told you" — just answer the new question directly.
 2. Be specific — reference their ACTUAL numbers, categories, and goals.
 3. Be encouraging and non-judgmental. Never shame spending habits.
-4. When comparing numbers, creating budgets, or showing breakdowns, ALWAYS use markdown tables:
+4. When comparing numbers, creating budgets, or showing breakdowns, ALWAYS use markdown tables with pipe characters. Each cell MUST be separated by | and each row on its own line. Include the separator row with dashes. Example:
+
 | Day | Needs | Wants | Total |
 |-----|-------|-------|-------|
-| Mon | $30   | $10   | $40   |
+| Mon | $30 | $10 | $40 |
+| Tue | $25 | $15 | $40 |
+
+Do NOT bold the header row. Do NOT merge cells. Every pipe must have spaces around it.
 5. DOUBLE-CHECK YOUR MATH. Before sending, verify every calculation. If income is $20,000, 50% is $10,000 — not $12,000. If remaining is $700 over 7 days, that's $100/day — not $500. Never send numbers that contradict each other.
 6. NEVER invent, round, or approximate numbers. Quote the EXACT figures from the data below. If Needs is $13,700 say $13,700 — not $14,000 or "about $13,700". If you don't have data, say so — never guess.
 7. For tax, investment, insurance, and legal topics: provide helpful general guidance but add a brief caveat at the end.
