@@ -1254,19 +1254,19 @@ footer .footer-links a:hover{color:var(--pri-d)}
         <div class="stat-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
         <div class="lbl">50% — Needs</div>
         <div class="amt" id="needsAmt">$0</div>
-        <div class="sub" id="needsSub">Budget: $0</div>
+        <div class="sub" id="needsSub">Budget: —</div>
       </div>
       <div class="stat wants">
         <div class="stat-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg></div>
         <div class="lbl">30% — Wants</div>
         <div class="amt" id="wantsAmt">$0</div>
-        <div class="sub" id="wantsSub">Budget: $0</div>
+        <div class="sub" id="wantsSub">Budget: —</div>
       </div>
       <div class="stat savings">
         <div class="stat-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></div>
         <div class="lbl">20% — Savings</div>
         <div class="amt" id="savingsAmt">$0</div>
-        <div class="sub" id="savingsSub">Budget: $0</div>
+        <div class="sub" id="savingsSub">Budget: —</div>
       </div>
     </div>
 
@@ -2353,7 +2353,7 @@ function restoreFromClipboard() {
         toast("⚠️ Clipboard doesn't contain valid backup data");
         return;
       }
-      if (!confirm("Restore from clipboard?\n\n📊 " + backup.expenses.length + " expenses\n🎯 " + (backup.goals||[]).length + " goals\n💰 Income: $" + (backup.income||0) + "\n\n⚠️ This will REPLACE all current data.")) return;
+      if (!confirm("Restore from clipboard?\n\n📊 " + backup.expenses.length + " expenses\n🎯 " + (backup.goals||[]).length + " goals\n💰 Income: " + getCurrency() + " " + Number(backup.income||0).toLocaleString() + "\n\n⚠️ This will REPLACE all current data.")) return;
       const data = { income: backup.income||0, expenses: backup.expenses, goals: backup.goals||[] };
       saveData(data);
       setIncomeDisplay(data.income);
@@ -2573,8 +2573,8 @@ function loadCurrency() {
   const sel = document.getElementById("currencySelect");
   if (sel) sel.value = sym;
 }
-const fmt = n => getCurrency() + Math.abs(n).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-const fmtShort = n => getCurrency() + Math.abs(n).toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+const fmt = n => getCurrency() + " " + Math.abs(n).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+const fmtShort = n => getCurrency() + " " + Math.abs(n).toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 
 // ─── ADD EXPENSE ───────────────────────────────────────────
 function addExpense() {
@@ -3339,7 +3339,7 @@ function importJSON(event) {
     try {
       const backup = JSON.parse(e.target.result);
       if (!backup.expenses || !Array.isArray(backup.expenses)) { toast("⚠️ Invalid backup file"); return; }
-      if (!confirm("Restore this backup?\n\n📊 " + backup.expenses.length + " expenses\n🎯 " + (backup.goals||[]).length + " goals\n💰 Income: $" + (backup.income||0) + "\n\n⚠️ This will REPLACE all current data.")) return;
+      if (!confirm("Restore this backup?\n\n📊 " + backup.expenses.length + " expenses\n🎯 " + (backup.goals||[]).length + " goals\n💰 Income: " + getCurrency() + " " + Number(backup.income||0).toLocaleString() + "\n\n⚠️ This will REPLACE all current data.")) return;
       const data = { income:backup.income||0, expenses:backup.expenses||[], goals:backup.goals||[] };
       saveData(data);
       setIncomeDisplay(data.income);
@@ -4835,19 +4835,20 @@ function buildAiContext() {
 
   // Top expenses
   const c = getCurrency();
+  const fmtC = v => c + " " + Number(v).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   const sorted = [...data.expenses].sort((a,b) => b.amt - a.amt).slice(0, 5);
-  const topExpenses = sorted.map(e => `${e.desc}: ${c}${e.amt.toFixed(2)} (${e.cat})`).join(", ");
+  const topExpenses = sorted.map(e => `${e.desc}: ${fmtC(e.amt)} (${e.cat})`).join(", ");
 
   // Sub-category breakdown
   const subTotals = {};
   data.expenses.forEach(e => { subTotals[e.sub] = (subTotals[e.sub]||0) + e.amt; });
   const subBreakdown = Object.entries(subTotals).sort((a,b) => b[1]-a[1]).slice(0,8)
-    .map(([k,v]) => `${k}: ${c}${v.toFixed(2)}`).join(", ");
+    .map(([k,v]) => `${k}: ${fmtC(v)}`).join(", ");
 
   // Goals
   const goalInfo = data.goals.map(g => {
     const pct = g.target > 0 ? Math.round((g.saved/g.target)*100) : 0;
-    return `${g.name}: ${c}${g.saved} / ${c}${g.target} (${pct}%)`;
+    return `${g.name}: ${fmtC(g.saved)} / ${fmtC(g.target)} (${pct}%)`;
   }).join("; ") || "No goals set";
 
   const botName = localStorage.getItem("bt_bot_name") || "AI Advisor";
@@ -4856,17 +4857,18 @@ function buildAiContext() {
   const recentNotes = notes.slice(-5).map(n => `[${n.tag||"note"}] ${n.text}`).join("\n");
 
   const userName = getUserName();
+  const fmtCtx = v => getCurrency() + " " + v.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   return `YOUR NAME: ${botName}
 ${userName ? "USER'S NAME: " + userName + "\n" : ""}${customPrompt ? "\nUSER'S CUSTOM INSTRUCTIONS:\n" + customPrompt + "\n" : ""}
 ${recentNotes ? "USER'S RECENT FINANCIAL NOTES:\n" + recentNotes + "\n" : ""}
 USER'S FINANCIAL DATA (current month):
 Today's Date: ${new Date().toLocaleDateString("en-US", { weekday:"long", year:"numeric", month:"long", day:"numeric" })}
 Days Left in Month: ${(() => { const now = new Date(); const end = new Date(now.getFullYear(), now.getMonth()+1, 0); return end.getDate() - now.getDate(); })()}
-Currency: ${getCurrency()} (ALWAYS use this symbol in your response — never default to $)
-Monthly Income: ${getCurrency()}${income.toFixed(2)}
-Budget: 50% Needs (${getCurrency()}${(income*0.5).toFixed(2)}), 30% Wants (${getCurrency()}${(income*0.3).toFixed(2)}), 20% Savings (${getCurrency()}${(income*0.2).toFixed(2)})
-Actual Spending: Needs ${getCurrency()}${needs.toFixed(2)} (${income>0?Math.round(needs/income*100):0}%), Wants ${getCurrency()}${wants.toFixed(2)} (${income>0?Math.round(wants/income*100):0}%), Savings ${getCurrency()}${savings.toFixed(2)} (${income>0?Math.round(savings/income*100):0}%)
-Total Spent: ${getCurrency()}${total.toFixed(2)} | Remaining: ${getCurrency()}${(income-total).toFixed(2)}
+Currency: ${getCurrency()} (ALWAYS use this symbol with a space before the number, e.g. "${getCurrency()} 13,700.00" — never default to $)
+Monthly Income: ${fmtCtx(income)}
+Budget: 50% Needs (${fmtCtx(income*0.5)}), 30% Wants (${fmtCtx(income*0.3)}), 20% Savings (${fmtCtx(income*0.2)})
+Actual Spending: Needs ${fmtCtx(needs)} (${income>0?Math.round(needs/income*100):0}%), Wants ${fmtCtx(wants)} (${income>0?Math.round(wants/income*100):0}%), Savings ${fmtCtx(savings)} (${income>0?Math.round(savings/income*100):0}%)
+Total Spent: ${fmtCtx(total)} | Remaining: ${fmtCtx(income-total)}
 Top Expenses: ${topExpenses || "None yet"}
 Category Breakdown: ${subBreakdown || "None yet"}
 Savings Goals: ${goalInfo}
