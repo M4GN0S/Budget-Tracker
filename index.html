@@ -4212,9 +4212,40 @@ function toggleFeedBell() {
   closeFeedBell();
   if (!isOpen) {
     dd.classList.add("show");
+    // On mobile, pan the page so the notifications area is comfortably in view
+    scrollFeedBellIntoView();
     // Close on outside click
     setTimeout(() => document.addEventListener("click", closeFeedBellOnOutside), 10);
   }
+}
+
+function scrollFeedBellIntoView() {
+  // Only pan on smaller screens where the dropdown can fall below the fold
+  if (window.innerWidth > 600) return;
+  const bell = document.getElementById("feedBellBtn");
+  if (!bell) return;
+  // Wait for the dropdown to render so we can measure its real height
+  requestAnimationFrame(() => {
+    const dd = document.getElementById("feedBellDropdown");
+    const bellRect = bell.getBoundingClientRect();
+    const ddHeight = dd ? dd.offsetHeight : 360;
+    // Leave a little breathing room above the bell
+    const topPadding = 16;
+    // Desired position: bell near the top, with the dropdown fitting below it
+    const desiredTopInViewport = topPadding;
+    const currentScroll = window.pageYOffset || document.documentElement.scrollTop;
+    let target = currentScroll + bellRect.top - desiredTopInViewport;
+
+    // If the dropdown bottom would overflow, make sure it's still visible
+    const dropdownBottom = bellRect.bottom + 8 + ddHeight;
+    if (dropdownBottom > window.innerHeight) {
+      const overflow = dropdownBottom - window.innerHeight + topPadding;
+      target = Math.max(target, currentScroll + overflow);
+    }
+
+    target = Math.max(0, target);
+    window.scrollTo({ top: target, behavior: "smooth" });
+  });
 }
 
 function closeFeedBell() {
