@@ -841,6 +841,8 @@ tbody tr:hover td{background:var(--pri-l)}
 .note-tag.reflection{background:var(--pri-l);color:var(--pri-d)}
 .note-tag.idea{background:#F0ECF5;color:#7A6899}
 .note-tag.receipt{background:var(--dan-l);color:var(--dan)}
+.note-tag.checklist{background:var(--suc-l);color:var(--suc)}
+.note-tag.tip{background:var(--acc-l);color:var(--acc)}
 .note-body{font-size:13px;color:var(--txt);line-height:1.6;white-space:pre-wrap;word-wrap:break-word}
 /* Checkboxes in notes */
 .note-body .note-check{display:inline-flex;align-items:center;gap:6px;cursor:pointer;padding:2px 0}
@@ -867,7 +869,9 @@ tbody tr:hover td{background:var(--pri-l)}
 .note-row .nr-tag.reflection{background:var(--pri-l);color:var(--pri-d)}
 .note-row .nr-tag.idea{background:#F0ECF5;color:#7A6899}
 .note-row .nr-tag.receipt{background:var(--dan-l);color:var(--dan)}
-.note-row .nr-meta{flex-shrink:0;display:flex;align-items:center;gap:8px}
+.note-row .nr-tag.checklist{background:var(--suc-l);color:var(--suc)}
+.note-row .nr-tag.tip{background:var(--acc-l);color:var(--acc)}
+.note-row .nr-meta{flex-shrink:0;display:flex;align-items:center;gap:8px;justify-content:flex-end}
 .note-row .nr-date{font-size:10.5px;color:var(--txt2);white-space:nowrap}
 .note-row .nr-checkbadge{font-size:10px;font-weight:700;color:var(--txt2);display:inline-flex;align-items:center;gap:3px;background:var(--bg);border:1px solid var(--brd);border-radius:8px;padding:1px 6px}
 .note-row .nr-checkbadge svg{width:11px;height:11px}
@@ -909,6 +913,79 @@ tbody tr:hover td{background:var(--pri-l)}
 }
 .note-search{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
 .note-search input{flex:1;min-width:150px}
+/* Smart title suggest */
+.title-row{display:flex;gap:8px;align-items:stretch}
+.title-row input{flex:1;min-width:0}
+.suggest-btn{flex-shrink:0;display:inline-flex;align-items:center;gap:6px;padding:0 14px;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;background:var(--acc-l);color:var(--acc);border:1.5px solid var(--acc);transition:.18s;white-space:nowrap}
+.suggest-btn:hover{background:var(--acc);color:#fff;box-shadow:0 4px 12px rgba(185,146,107,.28)}
+.suggest-btn:active{transform:scale(.97)}
+.suggest-btn svg{flex-shrink:0}
+.suggest-btn.flash{animation:suggestPulse .5s ease}
+@keyframes suggestPulse{0%{transform:scale(1)}40%{transform:scale(1.08)}100%{transform:scale(1)}}
+@media(max-width:420px){.suggest-btn span{display:none}.suggest-btn{padding:0 12px}}
+.exp-cat-hint{margin-top:10px;padding:8px 12px;border-radius:10px;background:var(--acc-l);color:var(--acc);font-size:12px;font-weight:600;border:1px solid var(--acc);animation:fadeUp .2s ease}
+.exp-cat-hint strong{font-weight:800}
+.note-tag-hint{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:9px;background:var(--acc-l);color:var(--acc);font-size:11px;font-weight:700;border:1px solid var(--acc);animation:fadeUp .2s ease}
+.note-tag-hint strong{font-weight:800;text-transform:capitalize}
+.search-hl{background:var(--acc-l);color:var(--acc);border-radius:3px;padding:0 1px;font-weight:800}
+/* Trending topics / keyword cloud */
+.kw-card{padding-bottom:16px}
+.kw-card-head{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.kw-card-head .icon-wrap{color:var(--pri)}
+.kw-card-title{font-size:13px;font-weight:800;color:var(--txt);letter-spacing:.2px}
+.kw-card-sub{font-size:11px;color:var(--txt2);margin-left:auto}
+.kw-cloud{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.kw-chip{display:inline-flex;align-items:center;gap:6px;font-family:inherit;font-weight:700;line-height:1;color:var(--txt2);background:var(--bg);border:1.5px solid var(--brd);border-radius:20px;padding:6px 12px;cursor:pointer;transition:.15s}
+.kw-chip:hover{border-color:var(--pri);color:var(--pri);transform:translateY(-1px)}
+.kw-chip .kw-count{font-size:10px;font-weight:800;opacity:.6;background:rgba(0,0,0,.05);border-radius:10px;padding:1px 6px;line-height:1.5}
+.kw-chip.kw-warm{color:var(--pri);border-color:color-mix(in srgb, var(--pri) 45%, var(--brd))}
+.kw-chip.kw-hot{color:var(--on-pri,#fff);background:var(--pri);border-color:var(--pri)}
+.kw-chip.kw-hot .kw-count{background:rgba(255,255,255,.22);opacity:.95}
+.kw-chip.kw-hot:hover{color:var(--on-pri,#fff);filter:brightness(1.06)}
+.kw-chip.active{outline:2px solid var(--acc);outline-offset:1px;color:var(--acc);border-color:var(--acc)}
+.kw-chip.active.kw-hot{outline-color:var(--acc)}
+/* Duplicate / near-duplicate warning (journal add form) */
+.note-dup-warn{margin-top:4px;padding:13px 15px;background:#FBF3E7;border:1px solid var(--acc);border-left:3px solid var(--acc);border-radius:12px;animation:dupIn .18s ease}
+@keyframes dupIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+.note-dup-warn .dup-head{display:flex;align-items:center;gap:7px;font-size:13px;font-weight:800;color:var(--acc);margin-bottom:6px}
+.note-dup-warn .dup-body{font-size:12.5px;color:var(--txt);line-height:1.5;margin-bottom:9px}
+.note-dup-warn .dup-pct{display:inline-block;font-size:10.5px;font-weight:800;background:var(--acc);color:#fff;border-radius:20px;padding:1px 8px;margin-left:3px;vertical-align:middle}
+.note-dup-warn .dup-existing{display:flex;align-items:center;gap:9px;padding:9px 11px;background:var(--bg);border:1px solid var(--brd);border-radius:10px;cursor:pointer;margin-bottom:11px;transition:.15s}
+.note-dup-warn .dup-existing:hover{border-color:var(--acc);box-shadow:0 2px 8px rgba(0,0,0,.06)}
+.note-dup-warn .dup-existing-title{flex:1;min-width:0;font-size:13px;font-weight:700;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.note-dup-warn .dup-existing-tag{flex:none;font-size:10px;font-weight:700;text-transform:capitalize;padding:2px 8px;border-radius:20px;background:var(--brd);color:var(--txt2)}
+.note-dup-warn .dup-existing svg{flex:none;color:var(--txt2)}
+.note-dup-warn .dup-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+.note-dup-warn .dup-btn{font-size:12px;font-weight:700;font-family:inherit;padding:8px 14px;border-radius:9px;cursor:pointer;border:1.5px solid var(--brd);transition:.15s}
+.note-dup-warn .dup-btn-ghost{background:transparent;color:var(--txt2)}
+.note-dup-warn .dup-btn-ghost:hover{background:var(--bg);color:var(--txt)}
+.note-dup-warn .dup-btn-pri{background:var(--acc);color:#fff;border-color:var(--acc)}
+.note-dup-warn .dup-btn-pri:hover{filter:brightness(1.06)}
+/* Auto-summary TL;DR banner (inside journal modal) */
+.note-tldr{margin:2px 24px 6px;padding:11px 14px;background:var(--acc-l);border:1px solid var(--acc);border-left:3px solid var(--acc);border-radius:10px;display:flex;flex-direction:column;gap:5px}
+.note-tldr .tldr-label{font-size:10px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;color:var(--acc);display:flex;align-items:center;gap:6px}
+.note-tldr .tldr-text{font-size:13.5px;line-height:1.5;color:var(--txt);font-style:italic}
+/* Supportive sentiment nudge (inside journal modal) */
+.note-mood{margin:10px 24px 4px;padding:14px 16px;background:linear-gradient(135deg,var(--pri-l,rgba(126,154,142,.12)),rgba(126,154,142,.06));border:1px solid color-mix(in srgb, var(--pri) 35%, var(--brd));border-left:3px solid var(--pri);border-radius:12px}
+.note-mood .mood-head{display:flex;align-items:center;gap:7px;font-size:11px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;color:var(--pri);margin-bottom:7px}
+.note-mood .mood-body{font-size:13.5px;line-height:1.55;color:var(--txt);margin-bottom:12px}
+.note-mood .mood-btn{display:inline-flex;align-items:center;gap:7px;font-family:inherit;font-size:12.5px;font-weight:700;color:var(--on-pri,#fff);background:var(--pri);border:1.5px solid var(--pri);border-radius:10px;padding:9px 14px;cursor:pointer;transition:.15s}
+.note-mood .mood-btn:hover{filter:brightness(1.07);transform:translateY(-1px)}
+/* Related notes (inside journal modal) */
+.note-related{padding:14px 24px 4px;border-top:1px solid var(--brd);margin-top:6px}
+.note-related-label{font-size:10px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;color:var(--txt2);margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.note-related-item{display:flex;align-items:center;gap:10px;padding:9px 11px;border:1px solid var(--brd);border-radius:10px;margin-bottom:7px;cursor:pointer;transition:.15s;background:var(--bg)}
+.note-related-item:hover{border-color:var(--pri);box-shadow:var(--sh)}
+.note-related-item .nri-title{flex:1;min-width:0;font-size:12.5px;font-weight:700;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.note-related-item .nri-tag{flex-shrink:0;font-size:8.5px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;padding:2px 7px;border-radius:8px;background:var(--pri-l);color:var(--pri-d)}
+.note-related-item .nri-tag.goal{background:var(--suc-l);color:var(--suc)}
+.note-related-item .nri-tag.reminder{background:var(--acc-l);color:var(--acc)}
+.note-related-item .nri-tag.idea{background:#F0ECF5;color:#7A6899}
+.note-related-item .nri-tag.receipt{background:var(--dan-l);color:var(--dan)}
+.note-related-item .nri-tag.checklist{background:var(--suc-l);color:var(--suc)}
+.note-related-item .nri-tag.tip{background:var(--acc-l);color:var(--acc)}
+.note-related-item .nri-chev{flex-shrink:0;color:var(--txt2);opacity:.5;display:flex}
+@media(max-width:600px){.note-related{padding-left:18px;padding-right:18px}}
 .tag-filters{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:12px}
 .tag-filter{padding:4px 12px;border-radius:16px;font-size:11px;font-weight:600;background:var(--bg);color:var(--txt2);border:1.5px solid var(--brd);cursor:pointer;transition:.2s}
 .tag-filter:hover,.tag-filter.active{background:var(--pri-l);color:var(--pri-d);border-color:var(--pri)}
@@ -1571,11 +1648,11 @@ footer .footer-links a:hover{color:var(--pri-d)}
         </div>
         <div class="fg">
           <label>Description</label>
-          <input type="text" id="expDesc" placeholder="e.g. Groceries at Costco">
+          <input type="text" id="expDesc" placeholder="e.g. Groceries at Costco" oninput="onExpenseDescInput()">
         </div>
         <div class="fg">
           <label>Category</label>
-          <select id="expCat" onchange="updateSubcategories()">
+          <select id="expCat" onchange="markExpCatManual();updateSubcategories()">
             <option value="Needs">Needs</option>
             <option value="Wants">Wants</option>
             <option value="Savings">Savings</option>
@@ -1583,7 +1660,7 @@ footer .footer-links a:hover{color:var(--pri-d)}
         </div>
         <div class="fg">
           <label>Sub-Category</label>
-          <select id="expSub">
+          <select id="expSub" onchange="markExpCatManual()">
             <optgroup label="Needs">
               <option>Rent/Mortgage</option><option>Groceries</option>
               <option>Utilities</option><option>Transportation</option>
@@ -1609,6 +1686,7 @@ footer .footer-links a:hover{color:var(--pri-d)}
           <button class="btn btn-pri" onclick="addExpense()">+ Add</button>
         </div>
       </div>
+      <div class="exp-cat-hint" id="expCatHint" style="display:none"></div>
     </div>
 
     <!-- Quick Add -->
@@ -1749,25 +1827,44 @@ footer .footer-links a:hover{color:var(--pri-d)}
       <h3><span class="icon-wrap"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg></span> Financial Journal</h3>
       <p style="font-size:12px;color:var(--txt2);margin-bottom:14px">Jot down financial thoughts, reminders, and plans. Your AI advisor can reference these notes too.</p>
       <div style="display:flex;flex-direction:column;gap:10px">
-        <input type="text" id="noteTitle" placeholder="Title (optional) — e.g. Cancel subscriptions" style="padding:10px 14px;border:1.5px solid var(--brd);border-radius:10px;font-size:13px;font-weight:700;font-family:inherit;outline:none;background:var(--bg);color:var(--txt);width:100%;box-sizing:border-box">
-        <textarea id="noteInput" rows="3" placeholder="Write your note... Tip: use - for bullets, [ ] for a checklist, **bold**" style="padding:10px 14px;border:1.5px solid var(--brd);border-radius:10px;font-size:13px;font-family:inherit;outline:none;background:var(--bg);color:var(--txt);resize:vertical;min-height:70px;width:100%;box-sizing:border-box"></textarea>
+        <div class="title-row">
+          <input type="text" id="noteTitle" required maxlength="80" oninput="onNoteTitleInput()" placeholder="Title (required) — or tap Suggest" style="padding:10px 14px;border:1.5px solid var(--brd);border-radius:10px;font-size:13px;font-weight:700;font-family:inherit;outline:none;background:var(--bg);color:var(--txt);width:100%;box-sizing:border-box;transition:border-color .2s">
+          <button type="button" class="suggest-btn" id="suggestTitleBtn" onclick="suggestNoteTitle()" title="Suggest a title from your note">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 4.6L18.5 9l-4.6 1.9L12 15l-1.9-4.1L5.5 9l4.6-1.4z"/><path d="M19 14l.8 2 2 .8-2 .8-.8 2-.8-2-2-.8 2-.8z"/></svg>
+            <span>Suggest</span>
+          </button>
+        </div>
+        <textarea id="noteInput" rows="3" oninput="onNoteBodyInput()" placeholder="Write your note... Tip: use - for bullets, [ ] for a checklist, **bold**" style="padding:10px 14px;border:1.5px solid var(--brd);border-radius:10px;font-size:13px;font-family:inherit;outline:none;background:var(--bg);color:var(--txt);resize:vertical;min-height:70px;width:100%;box-sizing:border-box"></textarea>
         <p style="font-size:11px;color:var(--txt2);margin:-2px 2px 0">Formatting: <code>- item</code> = bullet · <code>[ ] task</code> = checkbox · <code>**bold**</code> · <code>*italic*</code></p>
         <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-          <select id="noteTag" style="padding:8px 12px;border:1.5px solid var(--brd);border-radius:10px;font-size:12px;font-family:inherit;background:var(--bg);color:var(--txt);outline:none">
+          <select id="noteTag" onchange="markNoteTagManual()" style="padding:8px 12px;border:1.5px solid var(--brd);border-radius:10px;font-size:12px;font-family:inherit;background:var(--bg);color:var(--txt);outline:none">
             <option value="note">Note</option>
             <option value="goal">Goal</option>
             <option value="reminder">Reminder</option>
             <option value="reflection">Reflection</option>
             <option value="idea">Idea</option>
             <option value="receipt">Receipt</option>
+            <option value="checklist">Checklist</option>
           </select>
+          <span class="note-tag-hint" id="noteTagHint" style="display:none"></span>
           <label style="display:flex;align-items:center;gap:4px;font-size:12px;color:var(--txt2);cursor:pointer">
             <input type="checkbox" id="notePin"> Pin to top
           </label>
           <div style="flex:1"></div>
           <button class="btn btn-pri btn-sm" onclick="addNote()">+ Add Note</button>
         </div>
+        <div class="note-dup-warn" id="noteDupWarn" style="display:none"></div>
       </div>
+    </div>
+
+    <!-- Trending Topics (keyword cloud) -->
+    <div class="card kw-card" id="keywordCloudCard" style="display:none">
+      <div class="kw-card-head">
+        <span class="icon-wrap"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg></span>
+        <span class="kw-card-title">Trending topics</span>
+        <span class="kw-card-sub">Tap a topic to filter your notes</span>
+      </div>
+      <div class="kw-cloud" id="keywordCloud"></div>
     </div>
 
     <!-- Search & Filter -->
@@ -1775,14 +1872,8 @@ footer .footer-links a:hover{color:var(--pri-d)}
       <div class="note-search">
         <input type="text" id="noteSearchInput" placeholder="Search notes..." oninput="renderNotes()" style="padding:9px 14px;border:1.5px solid var(--brd);border-radius:10px;font-size:13px;font-family:inherit;outline:none;background:var(--bg);color:var(--txt);box-sizing:border-box">
       </div>
-      <div class="tag-filters">
+      <div class="tag-filters" id="tagFilters">
         <button class="tag-filter active" onclick="filterNotes('all',this)">All</button>
-        <button class="tag-filter" onclick="filterNotes('note',this)">Notes</button>
-        <button class="tag-filter" onclick="filterNotes('goal',this)">Goals</button>
-        <button class="tag-filter" onclick="filterNotes('reminder',this)">Reminders</button>
-        <button class="tag-filter" onclick="filterNotes('reflection',this)">Reflections</button>
-        <button class="tag-filter" onclick="filterNotes('idea',this)">Ideas</button>
-        <button class="tag-filter" onclick="filterNotes('receipt',this)">Receipts</button>
       </div>
       <div style="display:flex;justify-content:space-between;align-items:center">
         <span class="note-count" id="noteCount">0 notes</span>
@@ -2304,7 +2395,10 @@ footer .footer-links a:hover{color:var(--pri-d)}
     </div>
     <div class="note-modal-title" id="noteModalTitle"></div>
     <div class="note-modal-date" id="noteModalDate"></div>
+    <div class="note-tldr" id="noteModalTldr" style="display:none"></div>
     <div class="note-modal-body" id="noteModalBody"></div>
+    <div class="note-mood" id="noteModalMood" style="display:none"></div>
+    <div class="note-related" id="noteModalRelated" style="display:none"></div>
     <div class="note-modal-foot" id="noteModalFoot"></div>
   </div>
 </div>
@@ -2783,6 +2877,85 @@ const UI_ICONS = {
 };
 
 // ─── ADD EXPENSE ───────────────────────────────────────────
+// ─── SMART EXPENSE CATEGORY GUESSING (0 KB, offline keyword engine) ───
+// Maps description keywords/merchants to {cat, sub}. Sub must match an <option> in #expSub.
+// Order matters: more specific patterns first. Tuned for global + PH context.
+const EXPENSE_LEXICON = [
+  // ── Needs ──
+  { sub: "Rent/Mortgage", cat: "Needs", kw: ["rent","mortgage","landlord","lease","amortization","amortize","housing","apartment","condo dues","association dues"] },
+  { sub: "Groceries",     cat: "Needs", kw: ["grocery","groceries","supermarket","market","costco","walmart","kroger","aldi","trader joe","sm supermarket","savemore","puregold","robinsons supermarket","landers","s&r","wet market","palengke","food shopping","produce"] },
+  { sub: "Utilities",     cat: "Needs", kw: ["utility","utilities","electric","electricity","meralco","power bill","water bill","maynilad","manila water","gas bill","internet","wifi","pldt","globe","converge","sky cable","broadband","cable bill","trash","garbage"] },
+  { sub: "Transportation",cat: "Needs", kw: ["gas","fuel","petrol","gasoline","shell","petron","caltex","diesel","transport","transit","bus","train","mrt","lrt","jeep","jeepney","tricycle","grab","uber","lyft","taxi","toll","parking","fare","commute","angkas","joyride"] },
+  { sub: "Insurance",     cat: "Needs", kw: ["insurance","premium","life insurance","car insurance","health insurance","philhealth","sss","pag-ibig","hmo","maxicare","intellicare"] },
+  { sub: "Healthcare",    cat: "Needs", kw: ["doctor","hospital","clinic","pharmacy","medicine","meds","drug","dental","dentist","mercury drug","watsons","checkup","consultation","lab test","prescription","health","therapy","medical"] },
+  { sub: "Phone",         cat: "Needs", kw: ["phone bill","mobile","load","prepaid load","postpaid","cellphone","sim","data plan","smart","tnt","dito","cellular"] },
+  // ── Wants ──
+  { sub: "Dining Out",    cat: "Wants", kw: ["restaurant","dining","dinner","lunch","breakfast","cafe","coffee","starbucks","mcdo","mcdonald","jollibee","kfc","chowking","mang inasal","burger","pizza","food panda","foodpanda","grabfood","takeout","take out","fast food","bar","drinks","milk tea","bubble tea","snack","merienda","bistro","diner","bonchon","jco","dunkin"] },
+  { sub: "Entertainment", cat: "Wants", kw: ["movie","cinema","netflix","spotify","disney","hbo","youtube premium","concert","ticket","game","gaming","steam","playstation","xbox","nintendo","amusement","theme park","bowling","arcade","ktv","videoke","streaming"] },
+  { sub: "Shopping",      cat: "Wants", kw: ["shopping","clothes","clothing","shoes","apparel","fashion","mall","lazada","shopee","amazon","zalora","uniqlo","h&m","zara","nike","adidas","accessories","gadget","electronics","makeup","cosmetics","skincare"] },
+  { sub: "Subscriptions", cat: "Wants", kw: ["subscription","subscribe","icloud","google one","dropbox","adobe","canva","chatgpt plus","notion","patreon","prime video","apple music","audible","saas"] },
+  { sub: "Hobbies",       cat: "Wants", kw: ["hobby","hobbies","books","book","craft","paint","art supplies","camera","photography","plants","plant","guitar","music gear","fishing","collectible","figure"] },
+  { sub: "Travel",        cat: "Wants", kw: ["travel","flight","airfare","airline","cebu pacific","airasia","philippine airlines","hotel","airbnb","resort","vacation","trip","tour","booking","agoda","baggage"] },
+  { sub: "Gym",           cat: "Wants", kw: ["gym","gym membership","fitness","anytime fitness","gold's gym","workout","crossfit","yoga","pilates","gym trainer"] },
+  // ── Savings ──
+  { sub: "Emergency Fund",cat: "Savings", kw: ["emergency fund","emergency savings","rainy day","buffer fund","reserve"] },
+  { sub: "Investments",   cat: "Savings", kw: ["invest","investment","stocks","stock","mutual fund","index fund","etf","crypto","bitcoin","bonds","reit","cola fin","gstocks","uitf","trading"] },
+  { sub: "Savings Goal",  cat: "Savings", kw: ["savings","save","savings goal","piggy bank","sinking fund","goal fund","set aside"] },
+  { sub: "Debt Payment",  cat: "Savings", kw: ["debt","loan","credit card payment","cc payment","installment","utang","pay off","payoff","student loan","car loan","personal loan"] },
+];
+
+// Returns {cat, sub, matched} or null. matched = the keyword that triggered it.
+function guessExpenseCategory(desc) {
+  if (!desc) return null;
+  const text = " " + desc.toLowerCase().replace(/[^\w\s&'-]/g, " ").replace(/\s+/g, " ") + " ";
+  let best = null;
+  for (const entry of EXPENSE_LEXICON) {
+    for (const kw of entry.kw) {
+      // Word-boundary-ish match so "rent" doesn't hit "different"
+      const k = kw.toLowerCase();
+      const idx = text.indexOf(" " + k + " ");
+      const idxLoose = text.indexOf(k);
+      const hit = idx > -1 || (k.includes(" ") && idxLoose > -1);
+      if (hit) {
+        const score = k.length + (k.includes(" ") ? 5 : 0); // prefer longer / multi-word matches
+        if (!best || score > best.score) best = { cat: entry.cat, sub: entry.sub, matched: kw, score };
+      }
+    }
+  }
+  return best;
+}
+
+// Live handler bound to the description input
+let _expCatUserOverride = false;
+function onExpenseDescInput() {
+  const descEl = document.getElementById("expDesc");
+  const hintEl = document.getElementById("expCatHint");
+  if (!descEl) return;
+  // If the user manually picked a category, don't fight them
+  if (_expCatUserOverride) { if (hintEl) hintEl.style.display = "none"; return; }
+  const guess = guessExpenseCategory(descEl.value.trim());
+  if (!guess) { if (hintEl) hintEl.style.display = "none"; return; }
+  const catEl = document.getElementById("expCat");
+  const subEl = document.getElementById("expSub");
+  if (catEl) catEl.value = guess.cat;
+  if (subEl) {
+    for (const o of subEl.options) {
+      if (o.value === guess.sub || o.text === guess.sub) { subEl.value = o.value; break; }
+    }
+  }
+  if (hintEl) {
+    hintEl.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px"><path d="M12 3l1.9 4.6L18.5 9l-4.6 1.9L12 15l-1.9-4.1L5.5 9l4.6-1.4z"/></svg> Auto-detected: <strong>' + guess.cat + ' → ' + guess.sub + '</strong> · you can change it';
+    hintEl.style.display = "block";
+  }
+}
+
+// Called when the user manually changes the category/sub — stop auto-overriding
+function markExpCatManual() {
+  _expCatUserOverride = true;
+  const hintEl = document.getElementById("expCatHint");
+  if (hintEl) hintEl.style.display = "none";
+}
+
 function addExpense() {
   const date = document.getElementById("expDate").value;
   const desc = document.getElementById("expDesc").value.trim();
@@ -2801,6 +2974,10 @@ function addExpense() {
 
   document.getElementById("expDesc").value = "";
   document.getElementById("expAmt").value = "";
+  // Reset smart-guess state for the next entry
+  _expCatUserOverride = false;
+  const hintEl = document.getElementById("expCatHint");
+  if (hintEl) hintEl.style.display = "none";
 
   toast("" + desc + " — " + fmt(amt) + " added!");
   updateDashboard();
@@ -2811,6 +2988,10 @@ function quickAdd(sub, cat) {
   document.getElementById("expCat").value = cat;
   updateSubcategories(sub);
   document.getElementById("expDesc").value = sub;
+  // Quick Add explicitly sets the category — lock it so the guesser won't override
+  _expCatUserOverride = true;
+  const hintEl = document.getElementById("expCatHint");
+  if (hintEl) hintEl.style.display = "none";
   document.getElementById("expAmt").focus();
   toast("Fill in the amount for " + sub);
 }
@@ -4446,16 +4627,32 @@ function closeBriefView() {
 let noteFilter = "all";
 
 function addNote() {
-  const title = document.getElementById("noteTitle").value.trim();
+  const titleEl = document.getElementById("noteTitle");
+  const title = titleEl.value.trim();
   const text = document.getElementById("noteInput").value.trim();
   const tag = document.getElementById("noteTag").value;
   const pinned = document.getElementById("notePin").checked;
-  if (!text) { toast("Write something first!"); return; }
+
+  if (!title) {
+    toast("Give your entry a title first!");
+    titleEl.focus();
+    titleEl.style.borderColor = "var(--dan)";
+    setTimeout(() => { titleEl.style.borderColor = ""; }, 1600);
+    return;
+  }
+  if (!text) { toast("Write something in the body first!"); return; }
+
+  // ── Duplicate guard: if a very-similar note already exists, warn first ──
+  if (!_dupAck) {
+    const dup = findDuplicateNote(title, text);
+    if (dup) { showDuplicateWarning(dup); return; }
+  }
+  _dupAck = false; // consume the acknowledgement
 
   const notes = JSON.parse(localStorage.getItem("bt_notes") || "[]");
   notes.push({
     id: Date.now(),
-    title: title || "",
+    title: title,
     text,
     tag,
     pinned,
@@ -4466,8 +4663,543 @@ function addNote() {
   document.getElementById("noteTitle").value = "";
   document.getElementById("noteInput").value = "";
   document.getElementById("notePin").checked = false;
+  // Reset smart auto-tag state for the next entry
+  _noteTagUserOverride = false;
+  document.getElementById("noteTag").value = "note";
+  const tagHint = document.getElementById("noteTagHint");
+  if (tagHint) tagHint.style.display = "none";
+  hideDuplicateWarning();
+  document.getElementById("noteTitle").placeholder = "Title (required) — or tap Suggest";
   renderNotes();
   toast("Note saved!");
+}
+
+// ── Duplicate-warning UI (non-blocking; user decides) ──
+let _dupAck = false;        // when true, addNote() skips the duplicate check once
+let _dupTargetId = null;    // id of the existing note we flagged as a near-duplicate
+
+function showDuplicateWarning(dup) {
+  _dupTargetId = dup.note.id;
+  const box = document.getElementById("noteDupWarn");
+  if (!box) return;
+  const pct = Math.round(dup.score * 100);
+  const verb = dup.score >= 0.9 ? "looks like a duplicate of" : "looks similar to";
+  const warnIcon = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>';
+  box.innerHTML =
+    '<div class="dup-head">' + warnIcon + 'You already have a note about this</div>' +
+    '<div class="dup-body">This ' + verb + ' an existing note ' +
+      '<span class="dup-pct">' + pct + '% match</span>:</div>' +
+    '<div class="dup-existing" onclick="openDuplicateNote()">' +
+      '<span class="dup-existing-title">' + escHtml(getNoteTitle(dup.note)) + '</span>' +
+      '<span class="dup-existing-tag ' + dup.note.tag + '">' + dup.note.tag + '</span>' +
+      '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>' +
+    '</div>' +
+    '<div class="dup-actions">' +
+      '<button class="dup-btn dup-btn-ghost" onclick="openDuplicateNote()">Open existing</button>' +
+      '<button class="dup-btn dup-btn-ghost" onclick="hideDuplicateWarning()">Keep editing</button>' +
+      '<button class="dup-btn dup-btn-pri" onclick="saveNoteAnyway()">Save anyway</button>' +
+    '</div>';
+  box.style.display = "block";
+  box.scrollIntoView({ behavior: "smooth", block: "nearest" });
+}
+
+function hideDuplicateWarning() {
+  const box = document.getElementById("noteDupWarn");
+  if (box) { box.style.display = "none"; box.innerHTML = ""; }
+  _dupTargetId = null;
+}
+
+function saveNoteAnyway() {
+  _dupAck = true;
+  hideDuplicateWarning();
+  addNote();
+}
+
+function openDuplicateNote() {
+  if (_dupTargetId != null) {
+    const id = _dupTargetId;
+    hideDuplicateWarning();
+    openNoteModal(id);
+  }
+}
+
+// ─── SMART TITLE GENERATOR (0 KB, offline, finance-tuned heuristic) ───
+// Generates a short, human-readable title from a note body — no ML, no downloads.
+const TITLE_STOPWORDS = new Set([
+  "the","a","an","is","are","was","were","be","been","being","and","or","but","if","then","so",
+  "in","on","at","to","for","with","of","by","from","as","into","onto","about","than","that","this",
+  "these","those","there","here","i","you","he","she","it","we","they","me","him","her","us","them",
+  "my","your","his","its","our","their","mine","yours","im","ive","id","ill","dont","cant","wont",
+  "do","does","did","done","have","has","had","will","would","should","could","can","may","might","must",
+  "just","really","very","also","too","get","got","make","made","want","need","needed","like","want",
+  "now","today","tomorrow","yesterday","week","day","month","year","time","thing","things","stuff",
+  "going","gonna","wanna","lets","let","okay","ok","yeah","hey","hi","hello","please","thanks",
+  "some","any","all","more","most","much","many","few","each","every","other","another","up","down",
+  "out","off","over","under","again","still","because","while","when","where","what","which","who","how",
+  "note","self","stop","think","thinking","thought","maybe","actually","probably","kinda","sorta",
+  "haven","hasnt","havent","watched","watch","been","being","about","around","before","after","avoid"
+]);
+
+// Domain words that should be prioritized in a money-tracker title
+const TITLE_BOOST = new Set([
+  "budget","savings","save","saving","spend","spending","expense","expenses","income","debt","loan",
+  "rent","grocery","groceries","subscription","subscriptions","bill","bills","emergency","fund","goal",
+  "invest","investment","insurance","tax","taxes","payment","payoff","credit","card","cash","refund",
+  "salary","paycheck","balance","transfer","cancel","cut","reduce","track","review","plan","monthly",
+  "weekly","fund","retirement","mortgage","utilities","netflix","spotify","fees","fee","interest"
+]);
+
+function suggestTitleFromText(rawText) {
+  if (!rawText || !rawText.trim()) return "";
+  // Use the first sentence-ish chunk for relevance, but scan a bit more for keywords
+  let text = rawText.replace(/\\n/g, "\n");
+  // Strip markdown/markers so they don't pollute words
+  text = text
+    .replace(/^\s*\[(x| )\]\s*/gim, " ")   // checkbox markers
+    .replace(/^\s*[-•]\s*/gm, " ")          // bullets
+    .replace(/\*\*(.*?)\*\*/g, "$1")
+    .replace(/\*(.*?)\*/g, "$1");
+
+  // Tokenize: keep currency-ish tokens but mostly words
+  const rawWords = text.toLowerCase()
+    .replace(/[^\w\s]/g, " ")
+    .split(/\s+/)
+    .filter(Boolean);
+
+  // Keep an ordered list of candidate words (skip stopwords, very short words, and bare numbers)
+  const candidates = rawWords.filter(w =>
+    w.length > 2 && !TITLE_STOPWORDS.has(w) && !/^\d+(st|nd|rd|th)?$/.test(w)
+  );
+  if (candidates.length === 0) {
+    // Fallback: first few non-empty words of the original
+    const fallback = text.trim().split(/\s+/).slice(0, 5).join(" ");
+    return titleCase(fallback).slice(0, 60);
+  }
+
+  // Score = frequency + domain boost + a small bonus for appearing early
+  const freq = {};
+  candidates.forEach(w => { freq[w] = (freq[w] || 0) + 1; });
+  const firstIndex = {};
+  candidates.forEach((w, i) => { if (!(w in firstIndex)) firstIndex[w] = i; });
+
+  const unique = [...new Set(candidates)];
+  unique.sort((a, b) => {
+    const sa = freq[a] + (TITLE_BOOST.has(a) ? 2 : 0) - firstIndex[a] * 0.02;
+    const sb = freq[b] + (TITLE_BOOST.has(b) ? 2 : 0) - firstIndex[b] * 0.02;
+    if (sb !== sa) return sb - sa;
+    return firstIndex[a] - firstIndex[b]; // tie-break: original order
+  });
+
+  // Take the top words, then re-order them by their original position so the
+  // title reads naturally (e.g. "Cancel Netflix Subscription" not "Subscription Netflix Cancel")
+  const top = unique.slice(0, 4).sort((a, b) => firstIndex[a] - firstIndex[b]);
+  const title = top.map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
+  return title.slice(0, 60) || "Untitled note";
+}
+
+function titleCase(str) {
+  return str.replace(/\w\S*/g, t => t.charAt(0).toUpperCase() + t.slice(1).toLowerCase());
+}
+
+// Button handler: fill the title field from the note body
+function suggestNoteTitle() {
+  const titleEl = document.getElementById("noteTitle");
+  const bodyEl = document.getElementById("noteInput");
+  if (!titleEl || !bodyEl) return;
+  const body = bodyEl.value.trim();
+  if (!body) {
+    toast("Write your note first, then tap Suggest");
+    bodyEl.focus();
+    return;
+  }
+  const suggestion = suggestTitleFromText(body);
+  if (!suggestion) { toast("Couldn't find a good title — type one in"); return; }
+  titleEl.value = suggestion;
+  titleEl.style.borderColor = "var(--acc)";
+  setTimeout(() => { titleEl.style.borderColor = ""; }, 1000);
+  const btn = document.getElementById("suggestTitleBtn");
+  if (btn) { btn.classList.add("flash"); setTimeout(() => btn.classList.remove("flash"), 500); }
+}
+
+// Suggest a title inside the journal entry edit modal
+function suggestEditTitle() {
+  const titleEl = document.getElementById("noteEditTitle");
+  const bodyEl = document.getElementById("noteEditText");
+  if (!titleEl || !bodyEl) return;
+  const body = bodyEl.value.trim();
+  if (!body) { toast("Write the note body first"); bodyEl.focus(); return; }
+  const suggestion = suggestTitleFromText(body);
+  if (!suggestion) { toast("Couldn't find a good title"); return; }
+  titleEl.value = suggestion;
+  titleEl.style.borderColor = "var(--acc)";
+  setTimeout(() => { titleEl.style.borderColor = "var(--pri)"; }, 1000);
+}
+
+// Auto-suggest as a placeholder while typing the body, only if title is still empty
+let _suggestDebounce = null;
+function onNoteBodyInput() {
+  const titleEl = document.getElementById("noteTitle");
+  const bodyEl = document.getElementById("noteInput");
+  if (!titleEl || !bodyEl) return;
+  // Only auto-fill the *placeholder* hint — never overwrite what the user typed
+  if (titleEl.value.trim()) { return; }
+  clearTimeout(_suggestDebounce);
+  _suggestDebounce = setTimeout(() => {
+    if (titleEl.value.trim()) return;
+    const s = suggestTitleFromText(bodyEl.value.trim());
+    titleEl.placeholder = s ? "Suggested: " + s + "  (tap Suggest)" : "Title (required) — or tap Suggest";
+  }, 400);
+  // Auto-tag based on what's being written (respects manual override)
+  autoApplyNoteTag();
+}
+
+// Fired when the title field changes — refine the auto-tag
+function onNoteTitleInput() {
+  autoApplyNoteTag();
+}
+
+// ─── AUTO-TAGGING (0 KB, offline) ───
+// Picks the most fitting journal tag from the note's title + body.
+// Signals are scored; the highest wins. Returns a tag string from the dropdown values.
+const NOTE_TAG_SIGNALS = {
+  goal:       ["goal","target","save up","reach","by december","by next","build my","aim for","plan to save","want to save","milestone","net worth","dream","achieve"],
+  reminder:   ["remind","reminder","don't forget","dont forget","remember to","deadline","due","pay by","before the","schedule","appointment","renew","expires","by friday","by monday","every month","monthly on","tomorrow","next week"],
+  idea:       ["idea","what if","maybe i could","i should try","thinking of","could try","brainstorm","strategy","tip","trick","hack","consider","might","opportunity"],
+  reflection: ["i feel","i felt","i realized","realised","looking back","reflect","grateful","proud","regret","learned","lesson","mindset","honestly","i've been","overwhelmed","stressed","relieved"],
+  receipt:    ["receipt","paid","spent","bought","purchase","purchased","cost me","total of","invoice","transaction","charged","bill for"],
+};
+
+// Detect a checklist by structure (two or more checkbox lines)
+function looksLikeChecklist(text) {
+  const matches = (text || "").match(/^\s*\[(x| )\]\s/gim);
+  return matches && matches.length >= 1;
+}
+
+function suggestNoteTag(title, body) {
+  const text = ((title || "") + " \n " + (body || "")).toLowerCase();
+  if (!text.trim()) return null;
+
+  // Structural signal first — checkboxes strongly imply a checklist
+  if (looksLikeChecklist(body)) return "checklist";
+
+  const scores = {};
+  for (const tag in NOTE_TAG_SIGNALS) {
+    let s = 0;
+    for (const phrase of NOTE_TAG_SIGNALS[tag]) {
+      if (text.includes(phrase)) s += phrase.includes(" ") ? 2 : 1; // multi-word phrases weigh more
+    }
+    if (s > 0) scores[tag] = s;
+  }
+
+  let bestTag = null, bestScore = 0;
+  for (const tag in scores) {
+    if (scores[tag] > bestScore) { bestScore = scores[tag]; bestTag = tag; }
+  }
+  // Require a small minimum so we don't tag noise as a confident category
+  return bestScore >= 1 ? bestTag : null;
+}
+
+// Live auto-tag: only changes the dropdown if the user hasn't manually picked a tag
+let _noteTagUserOverride = false;
+function autoApplyNoteTag() {
+  if (_noteTagUserOverride) return;
+  const tagEl = document.getElementById("noteTag");
+  const titleEl = document.getElementById("noteTitle");
+  const bodyEl = document.getElementById("noteInput");
+  const hintEl = document.getElementById("noteTagHint");
+  if (!tagEl) return;
+  const guess = suggestNoteTag(titleEl ? titleEl.value : "", bodyEl ? bodyEl.value : "");
+  if (!guess) { if (hintEl) hintEl.style.display = "none"; return; }
+  tagEl.value = guess;
+  if (hintEl) {
+    const label = (typeof tagLabel === "function") ? tagLabel(guess).replace(/s$/, "") : guess;
+    hintEl.innerHTML = '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px"><path d="M12 3l1.9 4.6L18.5 9l-4.6 1.9L12 15l-1.9-4.1L5.5 9l4.6-1.4z"/></svg> Tagged as <strong>' + label + '</strong>';
+    hintEl.style.display = "inline-flex";
+  }
+}
+
+function markNoteTagManual() {
+  _noteTagUserOverride = true;
+  const hintEl = document.getElementById("noteTagHint");
+  if (hintEl) hintEl.style.display = "none";
+}
+
+// ─── SMART SEARCH & RELATED NOTES (0 KB, offline relevance engine) ───
+// Tokenize text into meaningful lowercase words (drops stopwords + short tokens)
+function tokenizeForSearch(str) {
+  return (str == null ? "" : String(str)).toLowerCase()
+    .replace(/\[(x| )\]/g, " ")            // strip checkbox markers
+    .replace(/[^\w\s]/g, " ")
+    .split(/\s+/)
+    // length 3..40: drops short tokens AND pathological mega-tokens (regex safety)
+    .filter(w => w.length > 2 && w.length <= 40 && !TITLE_STOPWORDS.has(w));
+}
+
+// Build the searchable surface of a note (title weighted heavier by repetition)
+function noteSearchFields(note) {
+  const title = getNoteTitle(note).toLowerCase();
+  const body = (note.text || "").toLowerCase();
+  const tag = (note.tag || "").toLowerCase();
+  return { title, body, tag };
+}
+
+// Relevance score of a note against a raw query string. Higher = better.
+// Returns 0 when there is NO real match (so irrelevant notes never leak into
+// search results); a recency tie-breaker is only added on top of a real match.
+function searchRelevance(note, query) {
+  const q = (query == null ? "" : String(query)).trim().toLowerCase();
+  if (!q) return 0;
+  const f = noteSearchFields(note);
+  const haystack = f.title + " " + f.body + " " + f.tag;
+  let score = 0;
+
+  // 1. Exact phrase matches (strongest signal)
+  if (f.title.includes(q)) score += 100;
+  else if (f.body.includes(q)) score += 40;
+  if (f.tag === q) score += 30;
+
+  // 2. Per-word matching with field weighting
+  const queryWords = tokenizeForSearch(q);
+  if (queryWords.length === 0) {
+    // Query was all stopwords/short — fall back to raw substring presence
+    return haystack.includes(q) ? score + 10 : score;
+  }
+  let matchedWords = 0;
+  for (const w of queryWords) {
+    let hit = false;
+    try {
+      if (new RegExp("\\b" + escapeRegex(w)).test(f.title)) { score += 12; hit = true; }
+      else if (f.title.includes(w)) { score += 7; hit = true; }
+      if (new RegExp("\\b" + escapeRegex(w)).test(f.body)) { score += 5; hit = true; }
+      else if (f.body.includes(w)) { score += 2; hit = true; }
+    } catch (e) {
+      if (f.title.includes(w)) { score += 7; hit = true; }
+      if (f.body.includes(w)) { score += 2; hit = true; }
+    }
+    if (f.tag.includes(w)) { score += 4; hit = true; }
+    if (hit) matchedWords++;
+  }
+
+  // No actual match → not a search result at all.
+  if (score <= 0) return 0;
+
+  // 3. Bonus when ALL query words are found (intent match)
+  if (matchedWords === queryWords.length) score += 15;
+  // 4. Tiny recency tie-breaker (only ever adds <1, applied on a real match)
+  score += Math.min(0.9, (note.id || 0) / Date.now());
+  return score;
+}
+
+function escapeRegex(s) { return String(s == null ? "" : s).replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); }
+
+// Highlight query terms inside an already-escaped HTML string.
+// Hardened: tolerates null/empty queries and skips absurdly long terms so a
+// pasted mega-string can never blow up the regex engine or crash rendering.
+function highlightMatches(escapedText, query) {
+  const text = escapedText == null ? "" : String(escapedText);
+  const q = (query == null ? "" : String(query)).trim();
+  if (!q) return text;
+  const words = [q, ...tokenizeForSearch(q)]
+    .filter(Boolean)
+    .filter(w => w.length <= 80)                  // skip pathological mega-terms
+    .filter((v, i, a) => a.indexOf(v) === i)
+    .sort((a, b) => b.length - a.length);          // longer first so phrases win
+  let html = text;
+  for (const w of words) {
+    if (!w) continue;
+    try {
+      const re = new RegExp("(" + escapeRegex(escHtml(w)) + ")", "gi");
+      html = html.replace(re, '<mark class="search-hl">$1</mark>');
+    } catch (e) { /* never let a bad term break the list */ }
+  }
+  return html;
+}
+
+// Find notes related to a given note by shared significant keywords + same tag
+function findRelatedNotes(note, limit = 3) {
+  const all = JSON.parse(localStorage.getItem("bt_notes") || "[]");
+  const baseTokens = new Set(tokenizeForSearch(getNoteTitle(note) + " " + (note.text || "")));
+  if (baseTokens.size === 0) return [];
+  const scored = [];
+  for (const other of all) {
+    if (other.id === note.id) continue;
+    const otherTokens = tokenizeForSearch(getNoteTitle(other) + " " + (other.text || ""));
+    let shared = 0;
+    const seen = new Set();
+    for (const t of otherTokens) {
+      if (baseTokens.has(t) && !seen.has(t)) { shared++; seen.add(t); }
+    }
+    let score = shared * 4;
+    if (other.tag === note.tag) score += 2; // same tag is a soft signal
+    if (score > 0 && shared > 0) scored.push({ note: other, score });
+  }
+  scored.sort((a, b) => b.score - a.score || b.note.id - a.note.id);
+  return scored.slice(0, limit).map(s => s.note);
+}
+
+// ─── DUPLICATE / NEAR-DUPLICATE DETECTION (0 KB, offline) ───
+// Token-set similarity between a draft (title+body) and an existing note.
+// Blends Jaccard overlap (shared / union) with coverage (how much of the
+// draft's vocabulary already lives in the other note), plus a strong boost
+// for an (almost) identical title. Returns 0..1.
+function noteSimilarity(draftTokens, draftTitle, other) {
+  const otherTitle = getNoteTitle(other).toLowerCase().trim();
+  const otherTokens = new Set(tokenizeForSearch(getNoteTitle(other) + " " + (other.text || "")));
+  if (draftTokens.size === 0 || otherTokens.size === 0) return 0;
+
+  let shared = 0;
+  for (const t of draftTokens) if (otherTokens.has(t)) shared++;
+  const union = draftTokens.size + otherTokens.size - shared;
+  const jaccard = union ? shared / union : 0;
+  const coverage = shared / draftTokens.size; // how much of draft is already covered
+
+  let score = jaccard * 0.55 + coverage * 0.45;
+
+  // Title signal: identical / near-identical titles are a very strong duplicate cue
+  const dt = (draftTitle || "").toLowerCase().trim();
+  if (dt && otherTitle) {
+    if (dt === otherTitle) score = Math.max(score, 0.95);
+    else {
+      const tA = new Set(tokenizeForSearch(dt));
+      const tB = new Set(tokenizeForSearch(otherTitle));
+      if (tA.size) {
+        let ts = 0; for (const t of tA) if (tB.has(t)) ts++;
+        const titleOverlap = ts / Math.max(tA.size, tB.size);
+        if (titleOverlap >= 0.8) score = Math.max(score, 0.82);
+        else score += titleOverlap * 0.15;
+      }
+    }
+  }
+  return Math.min(1, score);
+}
+
+// Find the most-similar existing note to a draft, if it crosses the duplicate
+// threshold. Returns {note, score} or null.
+function findDuplicateNote(draftTitle, draftBody, threshold) {
+  threshold = threshold == null ? 0.55 : threshold;
+  const all = JSON.parse(localStorage.getItem("bt_notes") || "[]");
+  if (!all.length) return null;
+  const draftTokens = new Set(tokenizeForSearch((draftTitle || "") + " " + (draftBody || "")));
+  if (draftTokens.size < 2) return null; // too little signal to judge
+  let best = null;
+  for (const other of all) {
+    const score = noteSimilarity(draftTokens, draftTitle, other);
+    if (score >= threshold && (!best || score > best.score)) best = { note: other, score };
+  }
+  return best;
+}
+
+// ─── AUTO-SUMMARY (0 KB extractive TL;DR, offline) ───
+// Strip markdown/checkbox/bullet noise so we summarize the actual prose.
+function summaryStripText(raw) {
+  return (raw || "")
+    .replace(/\[(x| )\]/gi, " ")          // checkbox markers
+    .replace(/^[\s>]*[-•*]\s+/gm, "")        // leading bullets
+    .replace(/\*\*(.*?)\*\*/g, "$1")          // bold
+    .replace(/\*(.*?)\*/g, "$1")              // italic
+    .replace(/`+/g, " ")
+    .replace(/https?:\/\/\S+/g, " ");        // urls
+}
+
+// Split text into sentence-like units (also treats line breaks as boundaries).
+function splitSentences(text) {
+  return (text || "")
+    .replace(/\n+/g, " . ")                  // newlines act as soft boundaries
+    .match(/[^.!?]+[.!?]*/g) || [];
+}
+
+// Produce a one-line extractive TL;DR for long notes/text. Returns "" if too short.
+// Scores each sentence by frequency of its significant words (classic NLP), with a
+// small early-position bonus, then returns the single best sentence trimmed to length.
+function summarizeText(raw, opts) {
+  opts = opts || {};
+  const minWords = opts.minWords || 45;       // don't summarize short notes
+  const maxLen = opts.maxLen || 160;          // cap the TL;DR length
+  const clean = summaryStripText(raw);
+  const allWords = (clean.toLowerCase().match(/[a-z0-9']+/g) || []);
+  if (allWords.length < minWords) return "";  // too short to bother
+
+  // Word-frequency table over significant (non-stopword) terms
+  const freq = {};
+  for (const w of allWords) {
+    if (w.length <= 2 || TITLE_STOPWORDS.has(w)) continue;
+    freq[w] = (freq[w] || 0) + 1;
+  }
+  const maxFreq = Math.max(1, ...Object.values(freq));
+
+  const sentences = splitSentences(clean)
+    .map(s => s.trim())
+    .filter(s => (s.match(/[a-z0-9']+/gi) || []).length >= 4); // ignore fragments
+  if (sentences.length < 2) return "";
+
+  let best = "", bestScore = -1;
+  sentences.forEach((sent, i) => {
+    const words = sent.toLowerCase().match(/[a-z0-9']+/g) || [];
+    let score = 0;
+    for (const w of words) if (freq[w]) score += freq[w] / maxFreq;
+    score = score / Math.sqrt(words.length);   // normalize for length
+    score += Math.max(0, (sentences.length - i) / sentences.length) * 0.15; // early bonus
+    if (score > bestScore) { bestScore = score; best = sent; }
+  });
+
+  best = best.replace(/\s+/g, " ").trim();
+  if (best.length > maxLen) best = best.slice(0, maxLen - 1).replace(/\s+\S*$/, "") + "…";
+  return best;
+}
+
+// ─── SENTIMENT HINT (0 KB finance-stress detector, offline) ───
+// A tiny domain lexicon. We deliberately focus on *money stress* (not generic
+// sentiment) so we only nudge when someone seems financially worried/anxious.
+const STRESS_LEXICON = {
+  // strong stress signals (weight 2)
+  strong: [
+    "stressed","stress","stressful","anxious","anxiety","panic","panicking","scared","afraid",
+    "terrified","overwhelmed","overwhelming","drowning","desperate","hopeless","helpless","crisis",
+    "broke","bankrupt","can't afford","cant afford","can't pay","cant pay","cannot pay","cannot afford",
+    "no money","out of money","ran out","drowning in debt","crushing","suffocating","dread","dreading",
+    "losing sleep","sleepless","crying","breakdown","spiraling","spiralling","paycheck to paycheck"
+  ],
+  // moderate stress / worry signals (weight 1)
+  moderate: [
+    "worried","worry","worrying","nervous","frustrated","frustrating","frustration","struggling","struggle",
+    "tight","tightening","stretched","behind","falling behind","overspent","overspending","overdraft",
+    "maxed","maxed out","unexpected","emergency","late fee","late fees","overdue","penalty","interest piling",
+    "regret","guilty","guilt","ashamed","embarrassed","exhausted","tired of","fed up","sick of","can barely",
+    "barely making","barely afford","don't know how","dont know how","not enough","never enough","pressure",
+    "scary","fear","fearful","uncertain","uncertainty","trouble","drained","tapped out","short on cash"
+  ]
+};
+
+// Lightweight negation guard so "not stressed" / "no longer worried" don't false-trigger.
+const STRESS_NEGATORS = ["not ", "no longer ", "never ", "wasn't ", "wasnt ", "isn't ", "isnt ", "don't feel ", "dont feel ", "less "];
+
+// Returns { stressed:Boolean, score:Number, hits:[...] }. stressed=true when the
+// note reads as financially worried/anxious enough to offer a supportive nudge.
+function analyzeSentiment(rawText) {
+  const text = (rawText || "").toLowerCase();
+  if (!text.trim()) return { stressed: false, score: 0, hits: [] };
+  let score = 0;
+  const hits = [];
+
+  function scan(phrases, weight) {
+    for (const p of phrases) {
+      let idx = text.indexOf(p);
+      while (idx !== -1) {
+        // Skip if immediately preceded by a negator (within ~14 chars)
+        const before = text.slice(Math.max(0, idx - 14), idx);
+        const negated = STRESS_NEGATORS.some(n => before.endsWith(n));
+        if (!negated) { score += weight; if (hits.length < 3) hits.push(p); }
+        idx = text.indexOf(p, idx + p.length);
+      }
+    }
+  }
+  scan(STRESS_LEXICON.strong, 2);
+  scan(STRESS_LEXICON.moderate, 1);
+
+  // Exclamation-heavy + worry punctuation nudges things slightly
+  if (/[!]{2,}|\?{2,}/.test(text) && score > 0) score += 1;
+
+  return { stressed: score >= 2, score, hits };
 }
 
 // Derive a display title: explicit title field, else first non-empty line of text
@@ -4575,13 +5307,22 @@ function renderNoteModal() {
     bodyEl.removeAttribute("data-note-id");
     bodyEl.innerHTML =
       '<div class="note-modal-edit">' +
-        '<input type="text" id="noteEditTitle" placeholder="Title (optional)" value="' + escHtml(note.title || "") + '" style="width:100%;padding:11px 14px;margin-bottom:10px;border:1.5px solid var(--pri);border-radius:12px;font-size:15px;font-weight:700;font-family:inherit;outline:none;background:var(--input-bg);color:var(--txt);box-sizing:border-box">' +
+        '<div class="title-row" style="margin-bottom:10px">' +
+          '<input type="text" id="noteEditTitle" placeholder="Title (required)" maxlength="80" value="' + escHtml(getNoteTitle(note)) + '" style="flex:1;min-width:0;padding:11px 14px;border:1.5px solid var(--pri);border-radius:12px;font-size:15px;font-weight:700;font-family:inherit;outline:none;background:var(--input-bg);color:var(--txt);box-sizing:border-box">' +
+          '<button type="button" class="suggest-btn" onclick="suggestEditTitle()" title="Suggest a title"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 4.6L18.5 9l-4.6 1.9L12 15l-1.9-4.1L5.5 9l4.6-1.4z"/><path d="M19 14l.8 2 2 .8-2 .8-.8 2-.8-2-2-.8 2-.8z"/></svg><span>Suggest</span></button>' +
+        '</div>' +
         '<textarea id="noteEditText">' + escHtml(note.text || "") + '</textarea>' +
         '<p class="note-modal-hint" style="padding:6px 0 0">Use <code>- item</code> for bullets, <code>[ ] task</code> for checkboxes, <code>**bold**</code></p>' +
       '</div>';
     footEl.innerHTML =
       '<button class="nmf-edit" onclick="saveNoteModalEdit()" style="background:var(--pri);color:var(--on-pri);border-color:var(--pri)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Save changes</button>' +
       '<button class="nmf-pin" onclick="cancelNoteModalEdit()">Cancel</button>';
+    const relEditEl = document.getElementById("noteModalRelated");
+    if (relEditEl) relEditEl.style.display = "none";
+    const tldrEditEl = document.getElementById("noteModalTldr");
+    if (tldrEditEl) tldrEditEl.style.display = "none";
+    const moodEditEl = document.getElementById("noteModalMood");
+    if (moodEditEl) moodEditEl.style.display = "none";
     const ta = document.getElementById("noteEditText");
     if (ta) { ta.focus(); ta.setSelectionRange(ta.value.length, ta.value.length); }
     return;
@@ -4611,12 +5352,99 @@ function renderNoteModal() {
     ? formatNoteBody(bodyText, note.id)
     : '<span style="color:var(--txt2);font-style:italic">No additional details.</span>';
 
+  // Auto-summary TL;DR (only when the entry is long enough to benefit)
+  const tldrEl = document.getElementById("noteModalTldr");
+  if (tldrEl) {
+    const summary = summarizeText(getNoteTitle(note) + ". " + bodyText);
+    const tldrIcon = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="14" y2="12"/><line x1="4" y1="18" x2="10" y2="18"/></svg>';
+    if (summary) {
+      tldrEl.innerHTML = '<span class="tldr-label">' + tldrIcon + 'TL;DR</span>' +
+        '<span class="tldr-text">' + escHtml(summary) + '</span>';
+      tldrEl.style.display = "flex";
+    } else {
+      tldrEl.style.display = "none";
+      tldrEl.innerHTML = "";
+    }
+  }
+
+  // Supportive sentiment nudge (only when the note reads as money-stressed)
+  renderMoodNudge(note);
+
+  // Related notes
+  renderRelatedNotes(note);
+
   const pinIcon = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 3l-1.5 1.5L16 6l-4 4-3-1-3 3 4 4-5 5 1 1 5-5 4 4 3-3-1-3 4-4 1.5 1.5L21 8z"/></svg>';
   footEl.innerHTML =
     '<button class="nmf-pin' + (note.pinned ? ' active' : '') + '" onclick="togglePinNote(' + note.id + ')">' + pinIcon + (note.pinned ? "Unpin" : "Pin") + '</button>' +
     '<button class="nmf-edit" onclick="startNoteModalEdit()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 013 3L12 15l-4 1 1-4z"/></svg>Edit</button>' +
     '<span class="nmf-spacer"></span>' +
     '<button class="nmf-del" onclick="deleteNote(' + note.id + ')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>Delete</button>';
+}
+
+function renderRelatedNotes(note) {
+  const wrap = document.getElementById("noteModalRelated");
+  if (!wrap) return;
+  const related = findRelatedNotes(note, 3);
+  if (!related.length) { wrap.style.display = "none"; wrap.innerHTML = ""; return; }
+  const chev = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>';
+  const linkIcon = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>';
+  wrap.innerHTML =
+    '<div class="note-related-label">' + linkIcon + 'Related notes</div>' +
+    related.map(r =>
+      '<div class="note-related-item" onclick="openNoteModal(' + r.id + ')">' +
+        '<span class="nri-title">' + escHtml(getNoteTitle(r)) + '</span>' +
+        '<span class="nri-tag ' + r.tag + '">' + r.tag + '</span>' +
+        '<span class="nri-chev">' + chev + '</span>' +
+      '</div>'
+    ).join("");
+  wrap.style.display = "block";
+}
+
+// Supportive nudge shown when a journal note reads as financially stressed.
+// Rotating gentle messages keep it from feeling robotic.
+const MOOD_NUDGE_MESSAGES = [
+  "Money worries are heavy — but writing it down is a real first step. Want to talk it through?",
+  "This sounds stressful. You're not alone in it, and a plan can make it feel smaller.",
+  "Tough money moments happen to everyone. Want some calm, practical next steps?",
+  "Take a breath — you're already facing this head-on by journaling it. Let's make a plan together."
+];
+
+function renderMoodNudge(note) {
+  const wrap = document.getElementById("noteModalMood");
+  if (!wrap) return;
+  const mood = analyzeSentiment(getNoteTitle(note) + ". " + (note.text || ""));
+  if (!mood.stressed) { wrap.style.display = "none"; wrap.innerHTML = ""; return; }
+
+  // Pick a stable message per note so it doesn't change on every re-render
+  const msg = MOOD_NUDGE_MESSAGES[Math.abs(note.id || 0) % MOOD_NUDGE_MESSAGES.length];
+  const heartIcon = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>';
+  const chatIcon = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>';
+  wrap.innerHTML =
+    '<div class="mood-head">' + heartIcon + 'A gentle note' + '</div>' +
+    '<div class="mood-body">' + escHtml(msg) + '</div>' +
+    '<button class="mood-btn" onclick="nudgeAiAboutNote(' + note.id + ')">' + chatIcon + 'Talk it through with your AI advisor</button>';
+  wrap.style.display = "block";
+}
+
+// Opens the AI advisor pre-loaded with a supportive, context-aware prompt
+// built from the stressed note. Stays fully local — only the chat call (if the
+// user has configured AI) leaves the device.
+function nudgeAiAboutNote(noteId) {
+  const note = getNoteById(noteId);
+  if (!note) return;
+  closeNoteModal();
+  const aiTab = document.querySelector('[data-tab=ai]');
+  showTab('ai', aiTab);
+  const input = document.getElementById("chatInput");
+  if (input) {
+    const title = getNoteTitle(note);
+    const snippet = (note.text || "").replace(/\s+/g, " ").trim().slice(0, 240);
+    input.value = 'I journaled this and I\'m feeling stressed about money: "' + title +
+      (snippet ? ' — ' + snippet : '') +
+      '". Can you give me some calm, supportive, and practical next steps?';
+    input.focus();
+  }
+  toast("Opened your AI advisor — review the message and hit send");
 }
 
 function startNoteModalEdit() {
@@ -4636,9 +5464,14 @@ function saveNoteModalEdit() {
   const titleInput = document.getElementById("noteEditTitle");
   const ta = document.getElementById("noteEditText");
   if (!ta) return;
+  const newTitle = titleInput ? titleInput.value.trim() : "";
+  if (!newTitle) {
+    toast("Title can't be empty");
+    if (titleInput) { titleInput.focus(); titleInput.style.borderColor = "var(--dan)"; }
+    return;
+  }
   const newText = ta.value.trim();
-  if (!newText) { toast("Note can't be empty"); return; }
-  note.title = titleInput ? titleInput.value.trim() : (note.title || "");
+  note.title = newTitle;
   note.text = newText;
   note.edited = new Date().toISOString();
   localStorage.setItem("bt_notes", JSON.stringify(notes));
@@ -4678,11 +5511,134 @@ function filterNotes(tag, el) {
   renderNotes();
 }
 
+// Pretty plural labels for known tags; unknown tags get a capitalized fallback
+const TAG_LABELS = {
+  note: "Notes", goal: "Goals", reminder: "Reminders", reflection: "Reflections",
+  idea: "Ideas", receipt: "Receipts", checklist: "Checklists", tip: "Tips"
+};
+function tagLabel(tag) {
+  if (TAG_LABELS[tag]) return TAG_LABELS[tag];
+  const cap = tag.charAt(0).toUpperCase() + tag.slice(1);
+  return /s$/.test(cap) ? cap : cap + "s";
+}
+
+// Build the filter chips dynamically from the tags actually used in the journal
+function renderTagFilters() {
+  const wrap = document.getElementById("tagFilters");
+  if (!wrap) return;
+  const notes = JSON.parse(localStorage.getItem("bt_notes") || "[]");
+
+  // Count notes per tag, preserving a sensible default order then extras alphabetically
+  const counts = {};
+  notes.forEach(n => { const t = (n.tag || "note"); counts[t] = (counts[t] || 0) + 1; });
+
+  const preferredOrder = ["note", "goal", "reminder", "reflection", "idea", "receipt", "checklist", "tip"];
+  const present = Object.keys(counts);
+  const ordered = [
+    ...preferredOrder.filter(t => present.includes(t)),
+    ...present.filter(t => !preferredOrder.includes(t)).sort()
+  ];
+
+  // If the active filter's tag no longer exists, fall back to "all"
+  if (noteFilter !== "all" && !counts[noteFilter]) noteFilter = "all";
+
+  let html = '<button class="tag-filter' + (noteFilter === "all" ? " active" : "") +
+    '" onclick="filterNotes(\'all\',this)">All</button>';
+  ordered.forEach(t => {
+    html += '<button class="tag-filter' + (noteFilter === t ? " active" : "") +
+      '" onclick="filterNotes(\'' + t + '\',this)">' + escHtml(tagLabel(t)) +
+      ' <span style="opacity:.55;font-weight:700">' + counts[t] + '</span></button>';
+  });
+  wrap.innerHTML = html;
+}
+
 function clearAllNotes() {
   if (!confirm("Delete ALL notes? This cannot be undone.")) return;
   localStorage.setItem("bt_notes", "[]");
   renderNotes();
   toast("All notes cleared");
+}
+
+// ─── KEYWORD CLOUD / TRENDING TOPICS (0 KB, offline) ───
+// Surfaces the most significant recurring topics across all journal notes.
+// Each keyword is weighted by frequency AND recency (recent notes count for
+// more), so the cloud reflects what you've been thinking about lately.
+function buildKeywordCloud(maxChips) {
+  maxChips = maxChips || 18;
+  const notes = JSON.parse(localStorage.getItem("bt_notes") || "[]");
+  if (notes.length < 2) return [];
+
+  const now = Date.now();
+  const HALF_LIFE = 1000 * 60 * 60 * 24 * 30; // ~30 days: older notes fade
+  const scores = {};   // word -> weighted score
+  const docCount = {}; // word -> # of notes it appears in (breadth)
+
+  notes.forEach(note => {
+    const age = Math.max(0, now - new Date(note.date || now).getTime());
+    const recency = Math.pow(0.5, age / HALF_LIFE);   // 1.0 now → 0.5 at 30d → 0.25 at 60d
+    const text = getNoteTitle(note) + " " + (note.text || "");
+    const titleTokens = new Set(tokenizeForSearch(getNoteTitle(note)));
+    const seen = new Set();
+    for (const w of tokenizeForSearch(text)) {
+      // Title words and finance-domain words carry extra weight
+      let weight = recency;
+      if (titleTokens.has(w)) weight *= 1.6;
+      if (TITLE_BOOST.has(w)) weight *= 1.4;
+      scores[w] = (scores[w] || 0) + weight;
+      if (!seen.has(w)) { docCount[w] = (docCount[w] || 0) + 1; seen.add(w); }
+    }
+  });
+
+  // Only keep words that recur across at least 2 notes (real trending topics)
+  const words = Object.keys(scores).filter(w => docCount[w] >= 2);
+  if (!words.length) return [];
+
+  words.sort((a, b) => scores[b] - scores[a] || docCount[b] - docCount[a]);
+  const top = words.slice(0, maxChips);
+  const max = scores[top[0]] || 1;
+  const min = scores[top[top.length - 1]] || 0;
+  const range = Math.max(0.0001, max - min);
+
+  return top.map(w => ({
+    word: w,
+    label: titleCase(w),
+    count: docCount[w],
+    weight: (scores[w] - min) / range   // 0..1 → drives chip size
+  }));
+}
+
+function renderKeywordCloud() {
+  const wrap = document.getElementById("keywordCloud");
+  const card = document.getElementById("keywordCloudCard");
+  if (!wrap || !card) return;
+  const chips = buildKeywordCloud(18);
+  if (chips.length < 3) { card.style.display = "none"; wrap.innerHTML = ""; return; }
+  card.style.display = "";
+
+  const activeSearch = (document.getElementById("noteSearchInput")?.value || "").trim().toLowerCase();
+  wrap.innerHTML = chips.map(c => {
+    // Map weight 0..1 → font-size 11.5..18px and emphasis tiers
+    const size = (11.5 + c.weight * 6.5).toFixed(1);
+    const tier = c.weight > 0.66 ? " kw-hot" : (c.weight > 0.33 ? " kw-warm" : "");
+    const isActive = activeSearch === c.word ? " active" : "";
+    return '<button class="kw-chip' + tier + isActive + '" style="font-size:' + size + 'px" ' +
+      'onclick="keywordChipClick(\'' + c.word.replace(/'/g, "\\'") + '\')" ' +
+      'title="' + c.count + ' note' + (c.count !== 1 ? 's' : '') + '">' +
+      escHtml(c.label) +
+      '<span class="kw-count">' + c.count + '</span>' +
+    '</button>';
+  }).join("");
+}
+
+function keywordChipClick(word) {
+  const input = document.getElementById("noteSearchInput");
+  if (!input) return;
+  // Toggle: clicking the already-active keyword clears the search
+  if (input.value.trim().toLowerCase() === word.toLowerCase()) input.value = "";
+  else input.value = word;
+  renderNotes();
+  const list = document.getElementById("notesList");
+  if (list) list.scrollIntoView({ behavior: "smooth", block: "nearest" });
 }
 
 function formatNoteBody(text, noteId) {
@@ -4747,19 +5703,28 @@ function renderNotes() {
   const countEl = document.getElementById("noteCount");
   if (!el) return;
 
+  // Keep the filter chips + trending keyword cloud in sync with current notes
+  renderTagFilters();
+  renderKeywordCloud();
+
   let filtered = notes;
   if (noteFilter !== "all") filtered = filtered.filter(n => n.tag === noteFilter);
-  if (search) filtered = filtered.filter(n =>
-    n.text.toLowerCase().includes(search) ||
-    (n.title || "").toLowerCase().includes(search) ||
-    (n.tag || "").includes(search)
-  );
 
-  filtered.sort((a, b) => {
-    if (a.pinned && !b.pinned) return -1;
-    if (!a.pinned && b.pinned) return 1;
-    return b.id - a.id;
-  });
+  if (search) {
+    // Smart relevance search: score every note, keep those with any relevance, rank by score
+    filtered = filtered
+      .map(n => ({ n, score: searchRelevance(n, search) }))
+      .filter(x => x.score > 0)
+      .sort((a, b) => b.score - a.score)
+      .map(x => x.n);
+  } else {
+    // Default view: pinned first, then newest
+    filtered.sort((a, b) => {
+      if (a.pinned && !b.pinned) return -1;
+      if (!a.pinned && b.pinned) return 1;
+      return b.id - a.id;
+    });
+  }
 
   if (countEl) countEl.textContent = filtered.length + " note" + (filtered.length !== 1 ? "s" : "") + (noteFilter !== "all" ? " (" + noteFilter + ")" : "");
 
@@ -4782,17 +5747,23 @@ function renderNotes() {
     const checkBadge = stats.total > 0
       ? '<span class="nr-checkbadge">' + checkIcon + stats.done + '/' + stats.total + '</span>'
       : '';
+    // Highlight matched terms when searching
+    const titleHtml = search ? highlightMatches(escHtml(title), search) : escHtml(title);
+    const previewHtml = preview ? (search ? highlightMatches(escHtml(preview), search) : escHtml(preview)) : "";
 
     return '<div class="note-row' + (n.pinned ? " pinned" : "") + '" data-note-id="' + n.id + '" onclick="openNoteModal(' + n.id + ')">' +
       (n.pinned ? '<span class="nr-pin" title="Pinned">' + pinIcon + '</span>' : '') +
       '<div class="nr-main">' +
         '<div class="nr-top">' +
-          '<span class="nr-title">' + escHtml(title) + '</span>' +
-          '<span class="nr-tag ' + n.tag + '">' + n.tag + '</span>' +
+          '<span class="nr-title">' + titleHtml + '</span>' +
         '</div>' +
-        (preview ? '<div class="nr-preview">' + escHtml(preview) + '</div>' : '') +
+        (previewHtml ? '<div class="nr-preview">' + previewHtml + '</div>' : '') +
       '</div>' +
-      '<div class="nr-meta">' + checkBadge + '<span class="nr-date">' + dateStr + '</span></div>' +
+      '<div class="nr-meta">' +
+        '<span class="nr-tag ' + n.tag + '">' + n.tag + '</span>' +
+        checkBadge +
+        '<span class="nr-date">' + dateStr + '</span>' +
+      '</div>' +
       '<span class="nr-chevron">' + chevron + '</span>' +
     '</div>';
   }).join("");
@@ -5368,24 +6339,37 @@ RULES:
 ACTION SUGGESTIONS:
 When the user asks you to do something or your advice leads to an action, add the matching tag at the END of your response. Only when relevant.
 
-To add an expense: [ACTION:add_expense|description|category|subcategory|amount]
-To add a journal note: [ACTION:add_note|tag|text]
-To create a savings goal: [ACTION:add_goal|name|target|saved]
+To add an expense: [ACTION:add_expense|description|category|subcategory|amount[/ACTION]
+To create a savings goal: [ACTION:add_goal|name|target|saved[/ACTION]
+To add a journal note: [ACTION:add_note|tag|TITLE\nbody...[/ACTION]
+
+CRITICAL — every ACTION tag MUST end with [/ACTION]. Never leave it open. The text between the tag and [/ACTION] becomes the saved content, so it can safely contain brackets, dashes, and line breaks.
 
 SAVE TO JOURNAL — IMPORTANT:
-Whenever your reply contains something the user would want to KEEP or revisit later, ALWAYS append an [ACTION:add_note|tag|text] tag so they can save it to their journal in one tap. This includes:
+Whenever your reply contains something the user would want to KEEP or revisit later, ALWAYS append an add_note action so they can save it to their journal in one tap. This includes:
 - A concrete plan or step-by-step action (e.g. a savings plan, a spending cut, a payoff schedule)
 - A decision the user made or you recommended (e.g. "cancel Netflix", "move $300 to savings")
 - A reminder or deadline (e.g. "pay insurance by the 15th")
 - A reflection or key takeaway worth remembering
 Do NOT add a save-to-journal tag for small talk, simple factual answers, or pure clarifying questions — only when there's something genuinely journalable.
 
-Format the note text so it's useful later: start with a short Title line, then the details. Use - for bullet points and [ ] for checklist tasks so the user gets an actionable checklist. Example:
-[ACTION:add_note|goal|Cut monthly subscriptions\n[ ] Cancel Netflix — saves $15.99/mo\n[ ] Downgrade Spotify to free\n- Review again next month]
+JOURNAL NOTE FORMAT — follow this EXACTLY so it renders correctly:
+- The tag (first field) must be ONE of: note, goal, reminder, reflection, idea, receipt, checklist.
+- The TEXT must start with a short, plain TITLE on its own line (this becomes the entry's bold title). NO markdown on the title line — no **, no -, no [ ].
+- After the title line, put a real line break (\\n), then the body.
+- In the body, use these formats, each on ITS OWN line:
+  - "- something" for a bullet point
+  - "[ ] task" for an unchecked checkbox, "[x] task" for a checked one (a single space inside the brackets)
+  - "**bold**" for emphasis inside a line
+- Keep checkbox/bullet lines short and actionable.
 
-Categories: Needs, Wants, or Savings
-Note tags: note, goal, reminder, reflection, idea, receipt
-Always explain what you're suggesting in plain text BEFORE the action tag — the tag itself is invisible to the user and becomes a button.`;
+CORRECT EXAMPLE (note how it starts with a clean title line, then \\n, then checkboxes):
+[ACTION:add_note|checklist|Weekly Budget Checklist\n[ ] Transfer ${getCurrency()} 1,000 to savings\n[ ] Meal plan — aim for ${getCurrency()} 750 on groceries\n[ ] Log every expense the same day\n[ ] Wait 24 hours before any 'Want' over ${getCurrency()} 25[/ACTION]
+
+WRONG (do NOT do this): putting the whole checklist on one line, repeating the title inside the body, or forgetting [/ACTION].
+
+Categories (for expenses): Needs, Wants, or Savings.
+Always explain what you're suggesting in plain text BEFORE the action tag — the tag itself is invisible to the user and becomes a tappable button.`;
 
 // ─── AI Model Catalog ───
 const AI_MODELS = {
@@ -5919,10 +6903,13 @@ function addChatMessage(type, text) {
 
   // Extract action tags before formatting
   const actions = [];
-  let cleanText = text.replace(/\[ACTION:(add_expense|add_note|add_goal)\|([^\]]+)\]/g, function(match, actionType, rawParams) {
+  let cleanText = text;
+
+  // Parse one ACTION occurrence given its inner string (everything after "ACTION:")
+  function pushAction(actionType, rawParams) {
     let params;
     if (actionType === "add_note") {
-      // For notes: first param is tag, rest is the full text (may contain pipes)
+      // For notes: first param is tag, the rest is the full text (may contain pipes/brackets)
       const firstPipe = rawParams.indexOf("|");
       if (firstPipe > -1) {
         params = [rawParams.substring(0, firstPipe), rawParams.substring(firstPipe + 1)];
@@ -5933,8 +6920,34 @@ function addChatMessage(type, text) {
       params = rawParams.split("|");
     }
     actions.push({ type: actionType, params, id: "action_" + Date.now() + "_" + actions.length });
-    return "";
-  });
+  }
+
+  // Pass 1 — explicit terminated form: [ACTION:type|...anything including [ ] ...[/ACTION]
+  cleanText = cleanText.replace(/\[ACTION:(add_expense|add_note|add_goal)\|([\s\S]*?)\[\/ACTION\]/g,
+    function(match, actionType, rawParams) {
+      pushAction(actionType, rawParams.trim());
+      return "";
+    });
+
+  // Pass 2 — legacy single-bracket form. For notes we must allow inner "]" (checkboxes),
+  // so we greedily capture up to the LAST "]" before a newline boundary or end of the tag.
+  cleanText = cleanText.replace(/\[ACTION:(add_expense|add_goal)\|([^\]]+)\]/g,
+    function(match, actionType, rawParams) {
+      pushAction(actionType, rawParams);
+      return "";
+    });
+  // Legacy notes without a terminator: capture greedily to the LAST "]" in the message,
+  // since the note body itself may contain "[ ]"/"[x]" checkboxes. Process one at a time.
+  let safety = 0;
+  while (/\[ACTION:add_note\|/.test(cleanText) && safety++ < 20) {
+    const start = cleanText.indexOf("[ACTION:add_note|");
+    const end = cleanText.lastIndexOf("]");
+    if (end <= start) break;
+    const rawParams = cleanText.substring(start + "[ACTION:add_note|".length, end);
+    pushAction("add_note", rawParams);
+    cleanText = cleanText.substring(0, start) + cleanText.substring(end + 1);
+  }
+
 
   // Markdown formatting with table support
   let formatted = formatChatMarkdown(cleanText.trim());
@@ -5990,6 +7003,22 @@ function runAiAction(actionId) {
   executeAiAction(btn, action.type, action.params);
 }
 
+// Normalize AI-supplied note text into clean, line-broken markdown so checkboxes/bullets render
+function normalizeAiNoteText(text) {
+  let t = String(text).replace(/\\n/g, "\n").trim();
+  // If the model crammed everything onto one line, break before each checkbox/bullet token
+  if (!t.includes("\n")) {
+    t = t
+      .replace(/\s*(\[(?:x| )\]\s)/gi, "\n$1")   // start each checkbox on a new line
+      .replace(/\s+-\s+/g, "\n- ")                  // start each "- bullet" on a new line
+      .replace(/\n{2,}/g, "\n")
+      .trim();
+  }
+  // Tidy checkbox markers: ensure exactly "[ ]" / "[x]" with a single trailing space
+  t = t.split("\n").map(ln => ln.replace(/^\[\s*\]\s*/, "[ ] ").replace(/^\[x\]\s*/i, "[x] ")).join("\n");
+  return t;
+}
+
 function executeAiAction(btn, type, params) {
   if (btn.classList.contains("done")) return;
 
@@ -6014,14 +7043,17 @@ function executeAiAction(btn, type, params) {
   } else if (type === "add_note") {
     let [tag, text] = params;
     if (!text) { toast("Invalid note data"); return; }
-    // Models sometimes emit literal "\n" — turn those into real line breaks
-    text = String(text).replace(/\\n/g, "\n").trim();
+    text = normalizeAiNoteText(text);
     // Promote the first line to a Title if the note has multiple lines
     let title = "";
     const lines = text.split("\n");
     if (lines.length > 1 && lines[0].trim()) {
       title = lines[0].trim().replace(/\*\*(.*?)\*\*/g, "$1").replace(/^[-•]\s*/, "");
       text = lines.slice(1).join("\n").trim();
+    } else {
+      // Single line — use the whole thing as the title so the entry isn't blank
+      title = lines[0].trim().replace(/\*\*(.*?)\*\*/g, "$1").replace(/^[-•]\s*/, "");
+      text = "";
     }
     const notes = JSON.parse(localStorage.getItem("bt_notes") || "[]");
     notes.push({
@@ -6413,5 +7445,5 @@ window.addEventListener('appinstalled', () => {
   toast("App installed successfully!");
 });
 </script>
-</body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a13da5a0481508e5',t:'MTc4MjgyNzQ5OQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
