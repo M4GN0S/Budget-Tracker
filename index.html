@@ -852,6 +852,61 @@ tbody tr:hover td{background:var(--pri-l)}
 .note-actions{display:flex;gap:4px;align-items:center}
 .note-actions button{background:none;border:none;cursor:pointer;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;padding:2px 4px;opacity:.45;transition:.2s;color:var(--txt2)}
 .note-actions button:hover{opacity:1}
+/* ─── Compact Journal List (Gmail-style rows) ─── */
+.note-row{display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--card);border:1px solid var(--brd);border-radius:12px;margin-bottom:8px;cursor:pointer;transition:.16s;position:relative}
+.note-row:hover{box-shadow:var(--sh);border-color:var(--pri)}
+.note-row.pinned{border-left:4px solid var(--acc);background:linear-gradient(135deg,var(--card),var(--acc-l))}
+.note-row .nr-pin{flex-shrink:0;color:var(--acc);display:flex;align-items:center;opacity:.85}
+.note-row .nr-main{flex:1;min-width:0}
+.note-row .nr-top{display:flex;align-items:center;gap:8px;margin-bottom:2px}
+.note-row .nr-title{font-size:13.5px;font-weight:700;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;min-width:0}
+.note-row .nr-preview{font-size:12px;color:var(--txt2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.4}
+.note-row .nr-tag{flex-shrink:0;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;padding:2px 7px;border-radius:10px;background:var(--pri-l);color:var(--pri-d)}
+.note-row .nr-tag.goal{background:var(--suc-l);color:var(--suc)}
+.note-row .nr-tag.reminder{background:var(--acc-l);color:var(--acc)}
+.note-row .nr-tag.reflection{background:var(--pri-l);color:var(--pri-d)}
+.note-row .nr-tag.idea{background:#F0ECF5;color:#7A6899}
+.note-row .nr-tag.receipt{background:var(--dan-l);color:var(--dan)}
+.note-row .nr-meta{flex-shrink:0;display:flex;align-items:center;gap:8px}
+.note-row .nr-date{font-size:10.5px;color:var(--txt2);white-space:nowrap}
+.note-row .nr-checkbadge{font-size:10px;font-weight:700;color:var(--txt2);display:inline-flex;align-items:center;gap:3px;background:var(--bg);border:1px solid var(--brd);border-radius:8px;padding:1px 6px}
+.note-row .nr-checkbadge svg{width:11px;height:11px}
+.note-row .nr-chevron{flex-shrink:0;color:var(--txt2);opacity:.5;display:flex;align-items:center}
+@media(max-width:520px){
+  .note-row .nr-preview{display:none}
+  .note-row .nr-date{display:none}
+}
+/* ─── Journal Entry Modal ─── */
+.note-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);backdrop-filter:blur(4px);z-index:1000;display:none;align-items:flex-start;justify-content:center;padding:24px 16px;overflow-y:auto}
+.note-overlay.show{display:flex}
+.note-modal{background:var(--card);border-radius:20px;max-width:560px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.25);animation:modalIn .3s cubic-bezier(.4,0,.2,1);margin:auto}
+.note-modal-head{padding:22px 24px 0;display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.note-modal-head .nm-meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.note-modal-head .close-modal{flex-shrink:0;background:var(--bg);color:var(--txt2);width:32px;height:32px;border-radius:8px;font-size:16px;display:flex;align-items:center;justify-content:center;transition:.2s;cursor:pointer;border:none}
+.note-modal-head .close-modal:hover{background:var(--dan-l);color:var(--dan)}
+.note-modal-title{font-size:21px;font-weight:900;line-height:1.3;padding:10px 24px 4px;color:var(--txt);letter-spacing:-.3px}
+.note-modal-date{font-size:11px;color:var(--txt2);padding:0 24px 8px}
+.note-modal-body{padding:8px 24px 8px;font-size:14px;color:var(--txt);line-height:1.7;white-space:pre-wrap;word-wrap:break-word}
+.note-modal-body .note-check{display:flex;align-items:center;gap:8px;cursor:pointer;padding:4px 0}
+.note-modal-body .note-check input[type="checkbox"]{width:18px;height:18px;accent-color:var(--pri);cursor:pointer;margin:0;flex-shrink:0}
+.note-modal-body .note-check.checked span{text-decoration:line-through;opacity:.5}
+.note-modal-body strong{font-weight:700}
+.note-modal-body em{font-style:italic}
+.note-modal-foot{padding:14px 24px 22px;display:flex;gap:8px;flex-wrap:wrap;border-top:1px solid var(--brd);margin-top:8px}
+.note-modal-foot .nmf-spacer{flex:1}
+.note-modal-foot button{display:inline-flex;align-items:center;gap:6px;padding:9px 16px;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;border:1.5px solid var(--brd);background:var(--bg);color:var(--txt2);transition:.18s}
+.note-modal-foot button svg{width:14px;height:14px}
+.note-modal-foot .nmf-pin:hover,.note-modal-foot .nmf-edit:hover{background:var(--pri-l);border-color:var(--pri);color:var(--pri-d)}
+.note-modal-foot .nmf-pin.active{background:var(--acc-l);border-color:var(--acc);color:var(--acc)}
+.note-modal-foot .nmf-del:hover{background:var(--dan-l);border-color:var(--dan);color:var(--dan)}
+.note-modal-edit textarea{width:100%;padding:12px 14px;border:1.5px solid var(--pri);border-radius:12px;font-size:14px;font-family:inherit;outline:none;background:var(--input-bg);color:var(--txt);resize:vertical;min-height:160px;box-sizing:border-box;line-height:1.7}
+.note-modal-hint{padding:4px 24px 0;font-size:11px;color:var(--txt2)}
+@media(max-width:600px){
+  .note-modal-title{font-size:18px;padding:8px 18px 4px}
+  .note-modal-head{padding:18px 18px 0}
+  .note-modal-date,.note-modal-body{padding-left:18px;padding-right:18px}
+  .note-modal-foot{padding:14px 18px 18px}
+}
 .note-search{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
 .note-search input{flex:1;min-width:150px}
 .tag-filters{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:12px}
@@ -898,6 +953,9 @@ tbody tr:hover td{background:var(--pri-l)}
 .ai-action .action-detail{font-weight:400;opacity:.8;font-size:11px}
 .ai-action.done{background:var(--suc-l);border-color:var(--suc);color:var(--suc);pointer-events:none;opacity:.7}
 .ai-action.done::after{content:" Done";font-weight:700}
+.ai-action-save{background:var(--acc-l);border-color:var(--acc);color:var(--acc)}
+.ai-action-save:hover{background:var(--acc);color:#fff;box-shadow:0 4px 12px rgba(185,146,107,.3)}
+.ai-action-save.done::after{content:" Saved";font-weight:700}
 /* Failover chain */
 .failover-item{display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--bg);border-radius:8px;border:1px solid var(--brd);font-size:12px}
 .failover-item .fo-num{width:20px;height:20px;border-radius:50%;background:var(--pri-l);color:var(--pri-d);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;flex-shrink:0}
@@ -1691,7 +1749,9 @@ footer .footer-links a:hover{color:var(--pri-d)}
       <h3><span class="icon-wrap"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg></span> Financial Journal</h3>
       <p style="font-size:12px;color:var(--txt2);margin-bottom:14px">Jot down financial thoughts, reminders, and plans. Your AI advisor can reference these notes too.</p>
       <div style="display:flex;flex-direction:column;gap:10px">
-        <textarea id="noteInput" rows="3" placeholder="e.g. Cancel Netflix — haven't watched in 2 months. Saves $15.99/month..." style="padding:10px 14px;border:1.5px solid var(--brd);border-radius:10px;font-size:13px;font-family:inherit;outline:none;background:var(--bg);color:var(--txt);resize:vertical;min-height:70px;width:100%;box-sizing:border-box"></textarea>
+        <input type="text" id="noteTitle" placeholder="Title (optional) — e.g. Cancel subscriptions" style="padding:10px 14px;border:1.5px solid var(--brd);border-radius:10px;font-size:13px;font-weight:700;font-family:inherit;outline:none;background:var(--bg);color:var(--txt);width:100%;box-sizing:border-box">
+        <textarea id="noteInput" rows="3" placeholder="Write your note... Tip: use - for bullets, [ ] for a checklist, **bold**" style="padding:10px 14px;border:1.5px solid var(--brd);border-radius:10px;font-size:13px;font-family:inherit;outline:none;background:var(--bg);color:var(--txt);resize:vertical;min-height:70px;width:100%;box-sizing:border-box"></textarea>
+        <p style="font-size:11px;color:var(--txt2);margin:-2px 2px 0">Formatting: <code>- item</code> = bullet · <code>[ ] task</code> = checkbox · <code>**bold**</code> · <code>*italic*</code></p>
         <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
           <select id="noteTag" style="padding:8px 12px;border:1.5px solid var(--brd);border-radius:10px;font-size:12px;font-family:inherit;background:var(--bg);color:var(--txt);outline:none">
             <option value="note">Note</option>
@@ -2235,6 +2295,20 @@ footer .footer-links a:hover{color:var(--pri-d)}
 </div>
 
 <!-- ─── ARTICLE MODAL ─── -->
+<!-- Journal Entry Modal -->
+<div class="note-overlay" id="noteOverlay" onclick="if(event.target===this)closeNoteModal()">
+  <div class="note-modal" role="dialog" aria-modal="true" aria-labelledby="noteModalTitle">
+    <div class="note-modal-head">
+      <div class="nm-meta" id="noteModalMeta"></div>
+      <button class="close-modal" onclick="closeNoteModal()" aria-label="Close"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+    </div>
+    <div class="note-modal-title" id="noteModalTitle"></div>
+    <div class="note-modal-date" id="noteModalDate"></div>
+    <div class="note-modal-body" id="noteModalBody"></div>
+    <div class="note-modal-foot" id="noteModalFoot"></div>
+  </div>
+</div>
+
 <div class="article-overlay" id="articleOverlay" onclick="if(event.target===this)closeArticle()">
   <div class="article">
     <div class="article-head">
@@ -4020,6 +4094,17 @@ function closeArticle() {
   document.body.style.overflow = "";
 }
 
+// Close the journal modal with the Escape key
+document.addEventListener("keydown", function(e) {
+  if (e.key === "Escape") {
+    const noteOv = document.getElementById("noteOverlay");
+    if (noteOv && noteOv.classList.contains("show")) {
+      if (typeof _noteModalEditing !== "undefined" && _noteModalEditing) { cancelNoteModalEdit(); }
+      else { closeNoteModal(); }
+    }
+  }
+});
+
 // Track which article is currently open
 let currentArticleId = null;
 
@@ -4361,6 +4446,7 @@ function closeBriefView() {
 let noteFilter = "all";
 
 function addNote() {
+  const title = document.getElementById("noteTitle").value.trim();
   const text = document.getElementById("noteInput").value.trim();
   const tag = document.getElementById("noteTag").value;
   const pinned = document.getElementById("notePin").checked;
@@ -4369,6 +4455,7 @@ function addNote() {
   const notes = JSON.parse(localStorage.getItem("bt_notes") || "[]");
   notes.push({
     id: Date.now(),
+    title: title || "",
     text,
     tag,
     pinned,
@@ -4376,10 +4463,189 @@ function addNote() {
     edited: null
   });
   localStorage.setItem("bt_notes", JSON.stringify(notes));
+  document.getElementById("noteTitle").value = "";
   document.getElementById("noteInput").value = "";
   document.getElementById("notePin").checked = false;
   renderNotes();
   toast("Note saved!");
+}
+
+// Derive a display title: explicit title field, else first non-empty line of text
+function getNoteTitle(note) {
+  if (note.title && note.title.trim()) return note.title.trim();
+  const lines = (note.text || "").split("\n");
+  for (const ln of lines) {
+    const clean = ln.trim()
+      .replace(/^\[(x| )\]\s*/i, "")   // strip checkbox marker
+      .replace(/^[-•]\s*/, "")          // strip bullet
+      .replace(/\*\*(.*?)\*\*/g, "$1")   // strip bold markers
+      .replace(/\*(.*?)\*/g, "$1");      // strip italic markers
+    if (clean) return clean.length > 70 ? clean.slice(0, 70) + "…" : clean;
+  }
+  return "Untitled note";
+}
+
+// Short preview: body content excluding the line used as the title
+function getNotePreview(note) {
+  let text = note.text || "";
+  // If no explicit title, drop the first non-empty line (it's the title)
+  if (!(note.title && note.title.trim())) {
+    const lines = text.split("\n");
+    let removed = false;
+    const kept = [];
+    for (const ln of lines) {
+      if (!removed && ln.trim()) { removed = true; continue; }
+      kept.push(ln);
+    }
+    text = kept.join("\n");
+  }
+  const clean = text
+    .replace(/^\[(x| )\]\s*/gim, "")
+    .replace(/^[-•]\s*/gm, "")
+    .replace(/\*\*(.*?)\*\*/g, "$1")
+    .replace(/\*(.*?)\*/g, "$1")
+    .replace(/\s+/g, " ")
+    .trim();
+  return clean.length > 90 ? clean.slice(0, 90) + "…" : clean;
+}
+
+// Count checklist items in a note: returns {done, total}
+function getNoteCheckStats(note) {
+  const text = note.text || "";
+  let done = 0, total = 0;
+  text.split("\n").forEach(ln => {
+    const m = ln.match(/^\[(x| )\]\s/i);
+    if (m) { total++; if (m[1].toLowerCase() === "x") done++; }
+  });
+  return { done, total };
+}
+
+// ─── JOURNAL ENTRY MODAL ───────────────────────────────────
+let _openNoteId = null;
+let _noteModalEditing = false;
+
+function getNoteById(id) {
+  const notes = JSON.parse(localStorage.getItem("bt_notes") || "[]");
+  return notes.find(n => n.id === id) || null;
+}
+
+function openNoteModal(id) {
+  const note = getNoteById(id);
+  if (!note) return;
+  _openNoteId = id;
+  _noteModalEditing = false;
+  renderNoteModal();
+  const ov = document.getElementById("noteOverlay");
+  if (ov) {
+    ov.classList.add("show");
+    document.body.style.overflow = "hidden";
+  }
+}
+
+function closeNoteModal() {
+  const ov = document.getElementById("noteOverlay");
+  if (ov) ov.classList.remove("show");
+  document.body.style.overflow = "";
+  _openNoteId = null;
+  _noteModalEditing = false;
+}
+
+function renderNoteModal() {
+  const note = getNoteById(_openNoteId);
+  if (!note) { closeNoteModal(); return; }
+
+  const meta = document.getElementById("noteModalMeta");
+  const titleEl = document.getElementById("noteModalTitle");
+  const dateEl = document.getElementById("noteModalDate");
+  const bodyEl = document.getElementById("noteModalBody");
+  const footEl = document.getElementById("noteModalFoot");
+  if (!bodyEl) return;
+
+  const d = new Date(note.date);
+  const dateStr = d.toLocaleDateString("en-US", { weekday:"short", month:"short", day:"numeric", year:"numeric" });
+  const timeStr = d.toLocaleTimeString("en-US", { hour:"numeric", minute:"2-digit" });
+
+  meta.innerHTML = '<span class="note-tag ' + note.tag + '">' + note.tag + '</span>' +
+    (note.pinned ? '<span class="note-tag" style="background:var(--acc-l);color:var(--acc)">Pinned</span>' : '');
+
+  if (_noteModalEditing) {
+    // Edit mode
+    titleEl.style.display = "none";
+    dateEl.style.display = "none";
+    bodyEl.removeAttribute("data-note-id");
+    bodyEl.innerHTML =
+      '<div class="note-modal-edit">' +
+        '<input type="text" id="noteEditTitle" placeholder="Title (optional)" value="' + escHtml(note.title || "") + '" style="width:100%;padding:11px 14px;margin-bottom:10px;border:1.5px solid var(--pri);border-radius:12px;font-size:15px;font-weight:700;font-family:inherit;outline:none;background:var(--input-bg);color:var(--txt);box-sizing:border-box">' +
+        '<textarea id="noteEditText">' + escHtml(note.text || "") + '</textarea>' +
+        '<p class="note-modal-hint" style="padding:6px 0 0">Use <code>- item</code> for bullets, <code>[ ] task</code> for checkboxes, <code>**bold**</code></p>' +
+      '</div>';
+    footEl.innerHTML =
+      '<button class="nmf-edit" onclick="saveNoteModalEdit()" style="background:var(--pri);color:var(--on-pri);border-color:var(--pri)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Save changes</button>' +
+      '<button class="nmf-pin" onclick="cancelNoteModalEdit()">Cancel</button>';
+    const ta = document.getElementById("noteEditText");
+    if (ta) { ta.focus(); ta.setSelectionRange(ta.value.length, ta.value.length); }
+    return;
+  }
+
+  // View mode
+  titleEl.style.display = "";
+  dateEl.style.display = "";
+  titleEl.textContent = getNoteTitle(note);
+  dateEl.textContent = dateStr + " · " + timeStr + (note.edited ? " (edited)" : "");
+
+  // Body: if no explicit title, the first line became the title — render the remainder.
+  // If explicit title exists, render the full text.
+  let bodyText = note.text || "";
+  if (!(note.title && note.title.trim())) {
+    const lines = bodyText.split("\n");
+    let removed = false;
+    const kept = [];
+    for (const ln of lines) {
+      if (!removed && ln.trim()) { removed = true; continue; }
+      kept.push(ln);
+    }
+    bodyText = kept.join("\n").replace(/^\n+/, "");
+  }
+  bodyEl.setAttribute("data-note-id", note.id);
+  bodyEl.innerHTML = bodyText.trim()
+    ? formatNoteBody(bodyText, note.id)
+    : '<span style="color:var(--txt2);font-style:italic">No additional details.</span>';
+
+  const pinIcon = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 3l-1.5 1.5L16 6l-4 4-3-1-3 3 4 4-5 5 1 1 5-5 4 4 3-3-1-3 4-4 1.5 1.5L21 8z"/></svg>';
+  footEl.innerHTML =
+    '<button class="nmf-pin' + (note.pinned ? ' active' : '') + '" onclick="togglePinNote(' + note.id + ')">' + pinIcon + (note.pinned ? "Unpin" : "Pin") + '</button>' +
+    '<button class="nmf-edit" onclick="startNoteModalEdit()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 013 3L12 15l-4 1 1-4z"/></svg>Edit</button>' +
+    '<span class="nmf-spacer"></span>' +
+    '<button class="nmf-del" onclick="deleteNote(' + note.id + ')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>Delete</button>';
+}
+
+function startNoteModalEdit() {
+  _noteModalEditing = true;
+  renderNoteModal();
+}
+
+function cancelNoteModalEdit() {
+  _noteModalEditing = false;
+  renderNoteModal();
+}
+
+function saveNoteModalEdit() {
+  const notes = JSON.parse(localStorage.getItem("bt_notes") || "[]");
+  const note = notes.find(n => n.id === _openNoteId);
+  if (!note) return;
+  const titleInput = document.getElementById("noteEditTitle");
+  const ta = document.getElementById("noteEditText");
+  if (!ta) return;
+  const newText = ta.value.trim();
+  if (!newText) { toast("Note can't be empty"); return; }
+  note.title = titleInput ? titleInput.value.trim() : (note.title || "");
+  note.text = newText;
+  note.edited = new Date().toISOString();
+  localStorage.setItem("bt_notes", JSON.stringify(notes));
+  _noteModalEditing = false;
+  renderNoteModal();
+  renderNotes();
+  toast("Note updated!");
 }
 
 function deleteNote(id) {
@@ -4389,6 +4655,7 @@ function deleteNote(id) {
   if (!confirm("Delete this note?")) return;
   notes.splice(idx, 1);
   localStorage.setItem("bt_notes", JSON.stringify(notes));
+  if (_openNoteId === id) closeNoteModal();
   renderNotes();
   toast("Note deleted");
 }
@@ -4396,52 +4663,12 @@ function deleteNote(id) {
 function togglePinNote(id) {
   const notes = JSON.parse(localStorage.getItem("bt_notes") || "[]");
   const note = notes.find(n => n.id === id);
-  if (note) { note.pinned = !note.pinned; localStorage.setItem("bt_notes", JSON.stringify(notes)); renderNotes(); }
-}
-
-function editNote(id) {
-  const notes = JSON.parse(localStorage.getItem("bt_notes") || "[]");
-  const note = notes.find(n => n.id === id);
-  if (!note) return;
-
-  // Find the note element and replace body with textarea
-  const noteEl = document.querySelector('[data-note-id="' + id + '"]');
-  if (!noteEl) return;
-  const bodyEl = noteEl.querySelector(".note-body");
-  const actionsEl = noteEl.querySelector(".note-actions");
-  if (!bodyEl) return;
-
-  // Replace body with edit textarea
-  const textarea = document.createElement("textarea");
-  textarea.value = note.text;
-  textarea.className = "note-edit-area";
-  textarea.style.cssText = "width:100%;padding:10px 12px;border:1.5px solid var(--pri);border-radius:10px;font-size:13px;font-family:inherit;outline:none;background:var(--input-bg);color:var(--txt);resize:vertical;min-height:100px;box-sizing:border-box;line-height:1.6";
-  textarea.rows = Math.max(3, note.text.split("\n").length);
-
-  const btnRow = document.createElement("div");
-  btnRow.style.cssText = "display:flex;gap:8px;margin-top:8px";
-  btnRow.innerHTML = '<button class="btn btn-pri btn-sm" onclick="saveNoteEdit(' + id + ')">Save</button><button class="btn btn-sec btn-sm" onclick="renderNotes()">Cancel</button>';
-
-  bodyEl.replaceWith(textarea);
-  if (actionsEl) actionsEl.style.display = "none";
-  textarea.parentNode.insertBefore(btnRow, textarea.nextSibling);
-  textarea.focus();
-  textarea.setSelectionRange(textarea.value.length, textarea.value.length);
-}
-
-function saveNoteEdit(id) {
-  const notes = JSON.parse(localStorage.getItem("bt_notes") || "[]");
-  const note = notes.find(n => n.id === id);
-  if (!note) return;
-  const textarea = document.querySelector('[data-note-id="' + id + '"] .note-edit-area');
-  if (!textarea) return;
-  const newText = textarea.value.trim();
-  if (!newText) { toast("Note can't be empty"); return; }
-  note.text = newText;
-  note.edited = new Date().toISOString();
-  localStorage.setItem("bt_notes", JSON.stringify(notes));
-  renderNotes();
-  toast("Note updated!");
+  if (note) {
+    note.pinned = !note.pinned;
+    localStorage.setItem("bt_notes", JSON.stringify(notes));
+    renderNotes();
+    if (_openNoteId === id) renderNoteModal();
+  }
 }
 
 function filterNotes(tag, el) {
@@ -4508,6 +4735,9 @@ function toggleNoteCheck(noteId, checkbox) {
   // Update the label style without full re-render
   const label = checkbox.closest('.note-check');
   if (label) label.classList.toggle('checked', checkbox.checked);
+
+  // Refresh the compact list so the checklist progress badge stays accurate
+  renderNotes();
 }
 
 function renderNotes() {
@@ -4519,7 +4749,11 @@ function renderNotes() {
 
   let filtered = notes;
   if (noteFilter !== "all") filtered = filtered.filter(n => n.tag === noteFilter);
-  if (search) filtered = filtered.filter(n => n.text.toLowerCase().includes(search) || (n.tag||"").includes(search));
+  if (search) filtered = filtered.filter(n =>
+    n.text.toLowerCase().includes(search) ||
+    (n.title || "").toLowerCase().includes(search) ||
+    (n.tag || "").includes(search)
+  );
 
   filtered.sort((a, b) => {
     if (a.pinned && !b.pinned) return -1;
@@ -4534,24 +4768,38 @@ function renderNotes() {
     return;
   }
 
-  // List view
+  // Compact Gmail-style row list — title + preview, full content opens in modal
+  const checkIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+  const pinIcon = '<svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M16 3l-1.5 1.5L16 6l-4 4-3-1-3 3 4 4-5 5 1 1 5-5 4 4 3-3-1-3 4-4 1.5 1.5L21 8z"/></svg>';
+  const chevron = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>';
+
   el.innerHTML = filtered.map(n => {
     const d = new Date(n.date);
-    const dateStr = d.toLocaleDateString("en-US", { month:"short", day:"numeric", year:"numeric" });
-    const timeStr = d.toLocaleTimeString("en-US", { hour:"numeric", minute:"2-digit" });
-    const body = formatNoteBody(n.text, n.id);
+    const dateStr = d.toLocaleDateString("en-US", { month:"short", day:"numeric" });
+    const title = getNoteTitle(n);
+    const preview = getNotePreview(n);
+    const stats = getNoteCheckStats(n);
+    const checkBadge = stats.total > 0
+      ? '<span class="nr-checkbadge">' + checkIcon + stats.done + '/' + stats.total + '</span>'
+      : '';
 
-    return '<div class="note-card' + (n.pinned ? " pinned" : "") + '" data-note-id="' + n.id + '">' +
-      '<div class="note-header"><div style="display:flex;align-items:center;gap:6px">' +
-        '<span class="note-tag ' + n.tag + '">' + n.tag + '</span>' +
-        '<span class="note-date">' + dateStr + ' ' + timeStr + (n.edited ? " (edited)" : "") + '</span>' +
-      '</div><div class="note-actions">' +
-        '<button onclick="togglePinNote(' + n.id + ')" title="' + (n.pinned ? "Unpin" : "Pin") + '">' + (n.pinned ? "Unpin" : "Pin") + '</button>' +
-        '<button onclick="editNote(' + n.id + ')" title="Edit">Edit</button>' +
-        '<button onclick="deleteNote(' + n.id + ')" title="Delete">Delete</button>' +
-      '</div></div>' +
-      '<div class="note-body">' + body + '</div></div>';
+    return '<div class="note-row' + (n.pinned ? " pinned" : "") + '" data-note-id="' + n.id + '" onclick="openNoteModal(' + n.id + ')">' +
+      (n.pinned ? '<span class="nr-pin" title="Pinned">' + pinIcon + '</span>' : '') +
+      '<div class="nr-main">' +
+        '<div class="nr-top">' +
+          '<span class="nr-title">' + escHtml(title) + '</span>' +
+          '<span class="nr-tag ' + n.tag + '">' + n.tag + '</span>' +
+        '</div>' +
+        (preview ? '<div class="nr-preview">' + escHtml(preview) + '</div>' : '') +
+      '</div>' +
+      '<div class="nr-meta">' + checkBadge + '<span class="nr-date">' + dateStr + '</span></div>' +
+      '<span class="nr-chevron">' + chevron + '</span>' +
+    '</div>';
   }).join("");
+}
+
+function escHtml(s) {
+  return (s || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 }
 
 // ─── AI ADVISOR ────────────────────────────────────────────
@@ -5118,15 +5366,26 @@ RULES:
 11. NEVER be dismissive or sycophantic. No "I already told you", no "You're absolutely right", no "My apologies." Just answer naturally.
 
 ACTION SUGGESTIONS:
-When the user asks you to do something or your advice leads to an action, add this at the END of your response. Only when relevant.
+When the user asks you to do something or your advice leads to an action, add the matching tag at the END of your response. Only when relevant.
 
 To add an expense: [ACTION:add_expense|description|category|subcategory|amount]
 To add a journal note: [ACTION:add_note|tag|text]
 To create a savings goal: [ACTION:add_goal|name|target|saved]
 
+SAVE TO JOURNAL — IMPORTANT:
+Whenever your reply contains something the user would want to KEEP or revisit later, ALWAYS append an [ACTION:add_note|tag|text] tag so they can save it to their journal in one tap. This includes:
+- A concrete plan or step-by-step action (e.g. a savings plan, a spending cut, a payoff schedule)
+- A decision the user made or you recommended (e.g. "cancel Netflix", "move $300 to savings")
+- A reminder or deadline (e.g. "pay insurance by the 15th")
+- A reflection or key takeaway worth remembering
+Do NOT add a save-to-journal tag for small talk, simple factual answers, or pure clarifying questions — only when there's something genuinely journalable.
+
+Format the note text so it's useful later: start with a short Title line, then the details. Use - for bullet points and [ ] for checklist tasks so the user gets an actionable checklist. Example:
+[ACTION:add_note|goal|Cut monthly subscriptions\n[ ] Cancel Netflix — saves $15.99/mo\n[ ] Downgrade Spotify to free\n- Review again next month]
+
 Categories: Needs, Wants, or Savings
 Note tags: note, goal, reminder, reflection, idea, receipt
-Always explain what you're suggesting before the action tag.`;
+Always explain what you're suggesting in plain text BEFORE the action tag — the tag itself is invisible to the user and becomes a button.`;
 
 // ─── AI Model Catalog ───
 const AI_MODELS = {
@@ -5699,8 +5958,13 @@ function addChatMessage(type, text) {
           iconExpense + '<div class="action-text">Add expense: <strong>' + (desc||"") + '</strong> — ' + currency + parseFloat(amt || 0).toFixed(2) + '<div class="action-detail">' + (cat||"") + ' → ' + (sub||"") + '</div></div></div>';
       } else if (a.type === "add_note") {
         const [tag, noteText] = a.params;
-        return '<div class="ai-action" data-action-id="' + a.id + '" onclick="runAiAction(&quot;' + a.id + '&quot;)">' +
-          iconNote + '<div class="action-text">Add to Journal: <strong>' + ((noteText||"").substring(0, 60)) + ((noteText||"").length > 60 ? "..." : "") + '</strong><div class="action-detail">Tag: ' + (tag||"note") + '</div></div></div>';
+        const iconSave = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>';
+        // Preview = first line of the note (the title), with markdown/markers stripped
+        const firstLine = String(noteText || "").replace(/\\n/g, "\n").split("\n")[0]
+          .replace(/\*\*(.*?)\*\*/g, "$1").replace(/^[-•]\s*/, "").replace(/^\[(x| )\]\s*/i, "").trim();
+        const previewTitle = firstLine.length > 56 ? firstLine.slice(0, 56) + "…" : firstLine;
+        return '<div class="ai-action ai-action-save" data-action-id="' + a.id + '" onclick="runAiAction(&quot;' + a.id + '&quot;)">' +
+          iconSave + '<div class="action-text">Save to Journal: <strong>' + escHtml(previewTitle) + '</strong><div class="action-detail">Tag: ' + (tag||"note") + '</div></div></div>';
       } else if (a.type === "add_goal") {
         const [name, target, saved] = a.params;
         return '<div class="ai-action" data-action-id="' + a.id + '" onclick="runAiAction(&quot;' + a.id + '&quot;)">' +
@@ -5748,11 +6012,21 @@ function executeAiAction(btn, type, params) {
     renderRecent();
     toast("Added: " + desc + " — " + fmt(amount));
   } else if (type === "add_note") {
-    const [tag, text] = params;
+    let [tag, text] = params;
     if (!text) { toast("Invalid note data"); return; }
+    // Models sometimes emit literal "\n" — turn those into real line breaks
+    text = String(text).replace(/\\n/g, "\n").trim();
+    // Promote the first line to a Title if the note has multiple lines
+    let title = "";
+    const lines = text.split("\n");
+    if (lines.length > 1 && lines[0].trim()) {
+      title = lines[0].trim().replace(/\*\*(.*?)\*\*/g, "$1").replace(/^[-•]\s*/, "");
+      text = lines.slice(1).join("\n").trim();
+    }
     const notes = JSON.parse(localStorage.getItem("bt_notes") || "[]");
     notes.push({
       id: Date.now(),
+      title: title,
       text: text,
       tag: tag || "note",
       pinned: false,
@@ -5761,7 +6035,7 @@ function executeAiAction(btn, type, params) {
     });
     localStorage.setItem("bt_notes", JSON.stringify(notes));
     renderNotes();
-    toast("Added to Journal!");
+    toast("Saved to Journal!");
   } else if (type === "add_goal") {
     const [name, target, saved] = params;
     if (!name || !target) { toast("Invalid goal data"); return; }
