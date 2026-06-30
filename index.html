@@ -963,9 +963,20 @@ tbody tr:hover td{background:var(--pri-l)}
 .streak-bar.inactive .streak-count{color:var(--txt2)}
 
 /* ─── Smart Insights ─── */
-.insight{display:flex;gap:12px;align-items:flex-start;padding:12px;background:var(--bg);border-radius:10px;border:1px solid var(--brd);margin-bottom:8px}
+.insights-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
+.insights-head h3{margin:0}
+.insights-actions{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.insights-count{font-size:10px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;color:var(--txt2);background:var(--bg);border:1px solid var(--brd);border-radius:999px;padding:3px 8px}
+.insights-toggle{width:30px;height:30px;border-radius:999px;background:var(--bg);border:1px solid var(--brd);color:var(--txt2);display:flex;align-items:center;justify-content:center;transition:.2s}
+.insights-toggle:hover{background:var(--pri-l);color:var(--pri-d);border-color:var(--pri)}
+.insights-toggle svg{transition:transform .2s ease}
+#insightsCard.collapsed .insights-toggle svg{transform:rotate(-90deg)}
+#insightsCard.collapsed #insightsList{display:none}
+#insightsCard.collapsed{padding-bottom:18px}
+.insight{display:flex;gap:14px;align-items:flex-start;padding:15px 16px;background:var(--bg);border-radius:12px;border:1px solid var(--brd);margin-bottom:10px}
 .insight:last-child{margin-bottom:0}
-.insight-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.insight-icon{width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;padding:9px;box-sizing:border-box}
+.insight-icon svg{width:18px;height:18px;display:block}
 .insight-icon.up{background:var(--suc-l);color:var(--suc)}
 .insight-icon.down{background:var(--dan-l);color:var(--dan)}
 .insight-icon.goal{background:var(--pri-l);color:var(--pri-d)}
@@ -1315,7 +1326,15 @@ footer .footer-links a:hover{color:var(--pri-d)}
 
     <!-- Smart Insights -->
     <div id="insightsCard" class="card" style="display:none">
-      <h3><span class="icon-wrap"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></span> Insights</h3>
+      <div class="insights-head">
+        <h3><span class="icon-wrap"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></span> Insights</h3>
+        <div class="insights-actions">
+          <span class="insights-count" id="insightsCount">0 insights</span>
+          <button class="insights-toggle" onclick="toggleInsights()" aria-label="Collapse insights" id="insightsToggleBtn">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+        </div>
+      </div>
       <div id="insightsList"></div>
     </div>
 
@@ -3740,6 +3759,25 @@ function openShopLink(event) {
   }
 }
 
+function toggleInsights() {
+  const card = document.getElementById("insightsCard");
+  if (!card) return;
+  const collapsed = !card.classList.contains("collapsed");
+  card.classList.toggle("collapsed", collapsed);
+  localStorage.setItem("bt_insights_collapsed", collapsed ? "1" : "0");
+  const btn = document.getElementById("insightsToggleBtn");
+  if (btn) btn.setAttribute("aria-label", collapsed ? "Expand insights" : "Collapse insights");
+}
+
+function applyInsightsCollapsedState() {
+  const card = document.getElementById("insightsCard");
+  if (!card) return;
+  const collapsed = localStorage.getItem("bt_insights_collapsed") === "1";
+  card.classList.toggle("collapsed", collapsed);
+  const btn = document.getElementById("insightsToggleBtn");
+  if (btn) btn.setAttribute("aria-label", collapsed ? "Expand insights" : "Collapse insights");
+}
+
 // ─── SMART INSIGHTS ────────────────────────────────────────
 function renderInsights() {
   const data = getData();
@@ -3804,6 +3842,9 @@ function renderInsights() {
   if (show.length === 0) { card.style.display = "none"; return; }
 
   card.style.display = "block";
+  const countEl = document.getElementById("insightsCount");
+  if (countEl) countEl.textContent = show.length + " insight" + (show.length !== 1 ? "s" : "");
+  applyInsightsCollapsedState();
   list.innerHTML = show.map(i => `
     <div class="insight">
       <div class="insight-icon ${i.cls}">${i.icon}</div>
@@ -6065,5 +6106,5 @@ window.addEventListener('appinstalled', () => {
   toast("App installed successfully!");
 });
 </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a13b2a8a694edd8b',t:'MTc4MjgwMTQ4Ng=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a13b441f59d406a5',t:'MTc4MjgwMjUzNA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
