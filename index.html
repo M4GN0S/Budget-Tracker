@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>50/30/20 Budget Tracker — Free Tool</title>
+<title>50/30/20 Budget Tracker — Free Offline App</title>
 <!-- PWA -->
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-192.png">
@@ -12,25 +12,24 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="BudgetTracker">
 <meta name="description" content="Free 50/30/20 budget tracker. Works offline. No sign-up. Your data stays on your device.">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 :root{
-  --pri:#6C9A8B;--pri-l:#E8F0ED;--pri-d:#4A7A6B;
-  --acc:#E8985E;--acc-l:#FDF0E6;
-  --suc:#5CB85C;--suc-l:#EAF7EA;
-  --dan:#D9534F;--dan-l:#FDEAEA;
-  --bg:#F0F4F3;--card:#fff;
-  --txt:#1A2421;--txt2:#5A6B66;--brd:#DFE6E9;
-  --rad:16px;--sh:0 4px 20px rgba(0,0,0,.06);--sh2:0 8px 32px rgba(0,0,0,.10);
-  --on-pri:#fff;--input-bg:#fff;
+  --pri:#7E9A8E;--pri-l:#EEF3EF;--pri-d:#4E6F62;
+  --acc:#B9926B;--acc-l:#F6EFE6;
+  --suc:#6E9B72;--suc-l:#EDF5ED;
+  --dan:#B86A62;--dan-l:#F7EDEA;
+  --bg:#F7F4EE;--card:#FFFDF8;
+  --txt:#20231F;--txt2:#6F746D;--brd:#E7E0D6;
+  --rad:14px;--sh:0 2px 14px rgba(43,38,31,.045);--sh2:0 10px 28px rgba(43,38,31,.085);
+  --on-pri:#fff;--input-bg:#fff;--brand-filter:none;--texture:rgba(78,111,98,.045);
 }
 
 body{
-  font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;
-  background:var(--bg);
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Inter,Roboto,Helvetica,Arial,sans-serif;
+  background-color:var(--bg);
+  background-image:radial-gradient(circle at 1px 1px,var(--texture) 1px,transparent 0);
+  background-size:26px 26px;
   color:var(--txt);
   line-height:1.5;
   min-height:100vh;
@@ -57,41 +56,103 @@ button{cursor:pointer;border:none;font-family:inherit}
 header{
   position:relative;
   text-align:center;
-  padding:40px 24px 36px;
-  background:linear-gradient(135deg,var(--pri-d) 0%,var(--pri) 50%,var(--pri) 100%);
-  border-radius:24px;
-  color:var(--on-pri);
+  padding:38px 24px 34px;
+  background:
+    radial-gradient(ellipse at 12% 0%, rgba(185,146,107,.28), transparent 36%),
+    radial-gradient(ellipse at 92% 16%, rgba(126,154,142,.34), transparent 38%),
+    linear-gradient(135deg,var(--pri-l) 0%,var(--card) 46%,var(--acc-l) 100%);
+  border:1px solid var(--brd);
+  border-radius:22px;
+  color:var(--txt);
   margin-bottom:24px;
   overflow:hidden;
-  box-shadow:0 8px 32px rgba(74,122,107,.35);
+  box-shadow:var(--sh);
 }
 header::before{
   content:'';
   position:absolute;inset:0;
-  background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Ccircle cx='30' cy='30' r='20'/%3E%3Ccircle cx='0' cy='0' r='20'/%3E%3Ccircle cx='60' cy='60' r='20'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  background:
+    radial-gradient(120% 70% at 50% 128%, rgba(78,111,98,.16) 0 42%, transparent 43%),
+    radial-gradient(70% 46% at 80% 120%, rgba(185,146,107,.14) 0 39%, transparent 40%),
+    linear-gradient(115deg, transparent 0 61%, rgba(255,255,255,.20) 61% 61.35%, transparent 61.35% 100%);
   pointer-events:none;
 }
 header::after{
   content:'';
   position:absolute;top:-60px;right:-60px;
   width:200px;height:200px;
-  background:rgba(255,255,255,.06);
+  background:rgba(78,111,98,.09);
   border-radius:50%;
   pointer-events:none;
 }
 .header-inner{position:relative;z-index:1}
-header .emoji-big{font-size:48px;line-height:1;margin-bottom:10px;display:block;filter:drop-shadow(0 4px 8px rgba(0,0,0,.2))}
-header h1{font-size:clamp(22px,4vw,32px);font-weight:900;margin-bottom:6px;letter-spacing:-0.5px;text-shadow:0 2px 8px rgba(0,0,0,.15)}
-header p{font-size:14px;opacity:.88;font-weight:400;max-width:420px;margin:0 auto}
-.badge-row{display:flex;gap:8px;justify-content:center;margin-top:14px;flex-wrap:wrap}
-.badge{
-  display:inline-flex;align-items:center;gap:5px;
-  background:rgba(255,255,255,.18);
-  backdrop-filter:blur(8px);
-  padding:5px 14px;border-radius:20px;font-size:11px;font-weight:600;
-  border:1px solid rgba(255,255,255,.25);
-  letter-spacing:.3px;
+/* App mark + brand logo — SVG/text mark, no image background, link-ready */
+header .app-mark{width:48px;height:48px;margin:0 auto 14px;display:flex;align-items:center;justify-content:center;color:var(--pri-d);background:linear-gradient(180deg,var(--card),var(--pri-l));border:1px solid var(--brd);border-radius:50%;box-shadow:0 8px 22px rgba(43,38,31,.07);filter:none}
+.brand-logo-link{
+  display:inline-flex;align-items:center;justify-content:center;
+  color:inherit;text-decoration:none;line-height:1;
+  transition:transform .2s ease, opacity .2s ease, filter .2s ease;
 }
+.brand-logo-link:hover{transform:translateY(-1px);opacity:.92}
+.brand-logo-img{display:block;width:clamp(150px,26vw,220px);height:auto;object-fit:contain;filter:var(--brand-filter);transition:filter .2s ease, opacity .2s ease}
+.settings-brand .brand-logo-img{width:clamp(160px,34vw,250px);margin:0 auto}
+footer .brand-logo-img{width:clamp(96px,16vw,132px)}
+.settings-brand{color:var(--pri-d)}
+.brand-studio-card{
+  padding:18px 16px 16px;
+  background:linear-gradient(180deg,var(--card),var(--bg));
+  border-radius:14px;
+  border:1px solid var(--brd);
+  margin-bottom:18px;
+  text-align:center;
+  box-shadow:0 6px 18px rgba(0,0,0,.035);
+}
+.brand-kicker{
+  font-size:10px;
+  line-height:1;
+  color:var(--txt2);
+  text-transform:uppercase;
+  letter-spacing:1.8px;
+  font-weight:800;
+  margin-bottom:10px;
+}
+.brand-studio-card .brand-logo-link{padding:2px 8px 4px;margin:0 auto 6px}
+.brand-studio-card .brand-logo-img{width:clamp(118px,24vw,165px)}
+.brand-note{font-size:10.5px;color:var(--txt2);max-width:320px;margin:6px auto 0;line-height:1.5}
+.footer-brand-block{
+  margin:24px auto 0;
+  padding-top:18px;
+  border-top:1px solid var(--brd);
+  max-width:560px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+}
+.footer-brand-block .brand-kicker{margin-bottom:6px;letter-spacing:1.8px;font-size:9px}
+.footer-brand-block .brand-logo-link{color:var(--pri-d);margin-bottom:8px;padding:2px 8px}
+header h1{font-size:clamp(24px,4vw,34px);font-weight:800;margin-bottom:8px;letter-spacing:-0.7px;text-shadow:none}
+header p{font-size:14px;color:var(--txt2);font-weight:400;max-width:460px;margin:0 auto}
+.header-kicker{font-size:10px;font-weight:800;letter-spacing:2.4px;text-transform:uppercase;color:var(--acc);margin-bottom:8px}
+.badge-row{display:flex;gap:10px;justify-content:center;margin-top:16px;flex-wrap:wrap;color:var(--txt2);font-size:10px;font-weight:800;letter-spacing:1.7px;text-transform:uppercase}
+.badge{display:inline-flex;align-items:center;gap:8px;letter-spacing:inherit}
+.badge:not(:last-child)::after{content:"•";opacity:.45;margin-left:10px}
+
+/* ─── App Loading Screen ─── */
+.app-loading{
+  position:fixed;inset:0;z-index:99999;
+  display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(180deg,var(--bg),var(--card));
+  color:var(--txt);
+  transition:opacity .35s ease, visibility .35s ease;
+}
+.app-loading.hide{opacity:0;visibility:hidden;pointer-events:none}
+.loader-card{display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center;padding:28px 32px;border:1px solid var(--brd);border-radius:20px;background:var(--card);box-shadow:var(--sh);}
+.loader-mark{width:44px;height:44px;border-radius:50%;border:1px solid var(--brd);display:flex;align-items:center;justify-content:center;color:var(--pri-d);background:var(--card);position:relative}
+.loader-mark::after{content:'';position:absolute;inset:-5px;border-radius:50%;border:1px solid transparent;border-top-color:var(--acc);border-right-color:rgba(185,146,107,.35);animation:loaderSpin .9s linear infinite}
+.loader-title{font-size:11px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--txt2)}
+.loader-sub{font-size:12px;color:var(--txt2);margin-top:-8px}
+@keyframes loaderSpin{to{transform:rotate(360deg)}}
+@media(max-width:520px){.loader-card{border:none;box-shadow:none;background:transparent}.loader-title{font-size:10px}.loader-sub{font-size:11px}}
 
 /* ─── Install Banner ─── */
 .install-banner{
@@ -320,11 +381,11 @@ header p{font-size:14px;opacity:.88;font-weight:400;max-width:420px;margin:0 aut
   padding:22px;
   box-shadow:var(--sh);
   margin-bottom:18px;
-  border:1px solid rgba(0,0,0,.04);
+  border:1px solid var(--brd);
   transition:box-shadow .2s;
   overflow:hidden;
 }
-.card:hover{box-shadow:var(--sh2)}
+.card:hover{box-shadow:var(--sh)}
 .card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:8px}
 .card h3{
   font-size:14px;font-weight:700;
@@ -402,12 +463,12 @@ input[type="number"]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0
   background:var(--card);border-radius:var(--rad);
   padding:20px 18px;box-shadow:var(--sh);
   position:relative;overflow:hidden;
-  border:1px solid rgba(0,0,0,.04);
+  border:1px solid var(--brd);
   transition:transform .2s,box-shadow .2s;
 }
-.stat:hover{transform:translateY(-2px);box-shadow:var(--sh2)}
+.stat:hover{transform:translateY(-1px);box-shadow:var(--sh)}
 .stat::before{
-  content:'';position:absolute;top:0;left:0;right:0;height:4px;border-radius:var(--rad) var(--rad) 0 0;
+  content:'';position:absolute;top:0;left:18px;right:18px;height:2px;border-radius:2px;
 }
 .stat.needs::before{background:linear-gradient(90deg,var(--pri-d),var(--pri))}
 .stat.wants::before{background:linear-gradient(90deg,var(--acc),var(--acc))}
@@ -421,7 +482,7 @@ input[type="number"]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0
 .stat.wants .stat-icon{background:var(--acc-l);color:var(--acc)}
 .stat.savings .stat-icon{background:var(--suc-l);color:var(--suc)}
 .stat .lbl{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--txt2);font-weight:700}
-.stat .amt{font-size:28px;font-weight:900;margin:6px 0 4px;letter-spacing:-1px}
+.stat .amt{font-size:27px;font-weight:800;margin:8px 0 4px;letter-spacing:-1px}
 .stat.needs .amt{color:var(--pri-d)}
 .stat.wants .amt{color:var(--acc)}
 .stat.savings .amt{color:var(--suc)}
@@ -453,7 +514,7 @@ input[type="number"]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0
 .summary-card{
   background:var(--card);border-radius:var(--rad);padding:20px;
   box-shadow:var(--sh);text-align:center;
-  border:1px solid rgba(0,0,0,.04);
+  border:1px solid var(--brd);
   position:relative;overflow:hidden;
 }
 .summary-card::after{
@@ -465,8 +526,8 @@ input[type="number"]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0
 .summary-card.remaining::after{background:var(--suc)}
 .summary-card .sc-label{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--txt2);font-weight:700;margin-bottom:6px}
 .summary-card .sc-val{font-size:26px;font-weight:900;letter-spacing:-1px}
-.summary-card.spent{border-top:4px solid var(--pri)}
-.summary-card.remaining{border-top:4px solid var(--suc)}
+.summary-card.spent{border-top:2px solid var(--pri)}
+.summary-card.remaining{border-top:2px solid var(--suc)}
 
 /* ─── Table ─── */
 .table-wrap{overflow-x:auto;border-radius:12px;border:1px solid var(--brd)}
@@ -586,11 +647,12 @@ tbody tr:hover td{background:var(--pri-l)}
 
 /* ─── CTA Banner ─── */
 .cta{
-  background:linear-gradient(135deg,var(--pri-d) 0%,var(--pri) 60%,var(--acc) 100%);
-  border-radius:var(--rad);padding:28px 24px;
-  text-align:center;color:var(--on-pri);margin:0 0 18px;
+  background:linear-gradient(180deg,var(--card),var(--acc-l));
+  border:1px solid var(--brd);
+  border-radius:var(--rad);padding:26px 24px;
+  text-align:center;color:var(--txt);margin:0 0 18px;
   position:relative;overflow:hidden;
-  box-shadow:0 8px 24px rgba(74,122,107,.3);
+  box-shadow:var(--sh);
 }
 .cta::before{
   content:'';position:absolute;top:-30px;right:-30px;
@@ -598,9 +660,10 @@ tbody tr:hover td{background:var(--pri-l)}
   pointer-events:none;
 }
 .cta h3{font-size:20px;margin-bottom:6px;font-weight:800}
-.cta p{font-size:13px;opacity:.9;margin-bottom:16px;max-width:460px;margin-left:auto;margin-right:auto;margin-bottom:16px}
+.cta p{font-size:13px;opacity:.9;margin-bottom:16px;max-width:520px;margin-left:auto;margin-right:auto;margin-bottom:16px}
+.cta .cta-note{font-size:11px;opacity:.78;margin-top:10px}
 .cta .btn-cta{
-  background:var(--card);color:var(--pri-d);
+  background:var(--txt);color:var(--bg);
   font-size:14px;font-weight:800;
   padding:12px 32px;border-radius:25px;
   display:inline-flex;align-items:center;gap:8px;
@@ -785,7 +848,7 @@ tbody tr:hover td{background:var(--pri-l)}
 .note-body strong{font-weight:700}
 .note-body em{font-style:italic}
 .note-actions{display:flex;gap:4px;align-items:center}
-.note-actions button{background:none;border:none;cursor:pointer;font-size:14px;padding:2px 4px;opacity:.4;transition:.2s}
+.note-actions button{background:none;border:none;cursor:pointer;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;padding:2px 4px;opacity:.45;transition:.2s;color:var(--txt2)}
 .note-actions button:hover{opacity:1}
 .note-search{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
 .note-search input{flex:1;min-width:150px}
@@ -807,7 +870,7 @@ tbody tr:hover td{background:var(--pri-l)}
 .chat-messages{max-height:400px;overflow-y:auto;display:flex;flex-direction:column;gap:10px;padding:4px 0}
 .chat-msg{display:flex;gap:10px;animation:fadeUp .3s ease}
 .chat-msg.user{flex-direction:row-reverse}
-.chat-avatar{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.chat-avatar{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;color:var(--pri-d)}
 .chat-msg.bot .chat-avatar{background:var(--pri-l)}
 .chat-msg.user .chat-avatar{background:var(--acc-l)}
 .chat-bubble{max-width:80%;padding:12px 16px;border-radius:14px;font-size:13px;line-height:1.6}
@@ -832,7 +895,7 @@ tbody tr:hover td{background:var(--pri-l)}
 .ai-action .action-text{flex:1}
 .ai-action .action-detail{font-weight:400;opacity:.8;font-size:11px}
 .ai-action.done{background:var(--suc-l);border-color:var(--suc);color:var(--suc);pointer-events:none;opacity:.7}
-.ai-action.done::after{content:" ✓ Done";font-weight:700}
+.ai-action.done::after{content:" Done";font-weight:700}
 /* Failover chain */
 .failover-item{display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--bg);border-radius:8px;border:1px solid var(--brd);font-size:12px}
 .failover-item .fo-num{width:20px;height:20px;border-radius:50%;background:var(--pri-l);color:var(--pri-d);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;flex-shrink:0}
@@ -1051,7 +1114,7 @@ footer{
   footer{padding-bottom:100px}
   .toast{bottom:90px;right:16px;left:16px;max-width:none}
 }
-footer .brand{
+footer .brand-name{
   font-weight:800;color:var(--pri-d);font-size:15px;
   display:inline-flex;align-items:center;gap:6px;
   margin-bottom:6px;
@@ -1106,19 +1169,27 @@ footer .footer-links a:hover{color:var(--pri-d)}
 </head>
 <body>
 
+<div class="app-loading" id="appLoading" role="status" aria-live="polite">
+  <div class="loader-card">
+    <div class="loader-mark" aria-hidden="true"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21.21 15.89A10 10 0 118 2.83"/><path d="M22 12A10 10 0 0012 2v10z"/></svg></div>
+    <div class="loader-title">Preparing your budget studio</div>
+    <div class="loader-sub">Loading your private tracker...</div>
+  </div>
+</div>
+
 <div class="wrap">
 
   <!-- ─── HEADER ─── -->
   <header>
     <div class="header-inner">
-      <span class="emoji-big"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21.21 15.89A10 10 0 118 2.83"/><path d="M22 12A10 10 0 0012 2v10z"/></svg></span>
+      <span class="app-mark" aria-hidden="true"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21.21 15.89A10 10 0 118 2.83"/><path d="M22 12A10 10 0 0012 2v10z"/></svg></span>
+      <div class="header-kicker">Daily Money System</div>
       <h1>50/30/20 Budget Tracker</h1>
       <p>The simplest way to manage your money using the proven 50/30/20 rule</p>
       <div class="badge-row">
-        <span class="badge">Free</span>
-        <span class="badge">No Sign-up</span>
-        <span class="badge">Works Offline</span>
-        <span class="badge">Private by Design</span>
+        <span class="badge">Private</span>
+        <span class="badge">Offline</span>
+        <span class="badge">Exportable</span>
       </div>
     </div>
   </header>
@@ -1234,7 +1305,7 @@ footer .footer-links a:hover{color:var(--pri-d)}
 
     <!-- Streak Counter -->
     <div class="streak-bar" id="streakBar" style="display:none">
-      <div class="streak-fire" id="streakIcon">🔥</div>
+      <div class="streak-fire" id="streakIcon" aria-hidden="true"></div>
       <div class="streak-info">
         <div class="streak-count" id="streakCount">0-day streak</div>
         <div class="streak-label" id="streakLabel">Keep tracking daily!</div>
@@ -1375,11 +1446,12 @@ footer .footer-links a:hover{color:var(--pri-d)}
 
     <!-- CTA -->
     <div class="cta">
-      <h3>Want the Full Spreadsheet Version?</h3>
-      <p>Get the complete 50/30/20 Budget Tracker with 12-month tracking, annual overview, savings goals, and more!</p>
-      <a href="#" class="btn-cta" target="_blank">
-        Get the Full Template — $6.99
+      <h3>Want to See Your Full Year?</h3>
+      <p>This free app is for daily tracking. Export your data into the premium Annual Analysis Kit for 12-month trends, tax-ready summaries, net worth tracking, and printable reports.</p>
+      <a href="#annual-analysis-kit" class="btn-cta" onclick="openAnnualKitInfo(event)">
+        Get the Annual Analysis Kit — $9.99
       </a>
+      <div class="cta-note">Coming soon: Google Sheets + Excel versions. Your exported app data imports directly.</div>
     </div>
 
   </div><!-- /dashMain -->
@@ -1620,7 +1692,7 @@ footer .footer-links a:hover{color:var(--pri-d)}
     <!-- Search & Filter -->
     <div class="card">
       <div class="note-search">
-        <input type="text" id="noteSearchInput" placeholder="🔍 Search notes..." oninput="renderNotes()" style="padding:9px 14px;border:1.5px solid var(--brd);border-radius:10px;font-size:13px;font-family:inherit;outline:none;background:var(--bg);color:var(--txt);box-sizing:border-box">
+        <input type="text" id="noteSearchInput" placeholder="Search notes..." oninput="renderNotes()" style="padding:9px 14px;border:1.5px solid var(--brd);border-radius:10px;font-size:13px;font-family:inherit;outline:none;background:var(--bg);color:var(--txt);box-sizing:border-box">
       </div>
       <div class="tag-filters">
         <button class="tag-filter active" onclick="filterNotes('all',this)">All</button>
@@ -1716,9 +1788,9 @@ footer .footer-links a:hover{color:var(--pri-d)}
           </div>
         </div>
         <div class="ai-premium-banner">
-          <div style="font-size:13px;font-weight:800;margin-bottom:4px">Option 2: We Do It For You — $2.99/month</div>
-          <div style="font-size:12px;opacity:.9;margin-bottom:10px">No setup needed. AI works instantly. Unlimited messages. Cancel anytime.</div>
-          <a href="#" class="btn-cta" style="font-size:12px;padding:8px 24px;border-radius:20px;display:inline-block">Get Premium AI →</a>
+          <div style="font-size:13px;font-weight:800;margin-bottom:4px">Managed AI — Coming Soon</div>
+          <div style="font-size:12px;opacity:.9;margin-bottom:10px">No setup, no API key, AI works instantly. For now, BYOK keeps this app free and private.</div>
+          <button class="btn-cta" onclick="submitDashNewsletter()" style="font-size:12px;padding:8px 24px;border-radius:20px;display:inline-block">Notify Me →</button>
         </div>
       </div>
     </div>
@@ -1753,9 +1825,9 @@ footer .footer-links a:hover{color:var(--pri-d)}
         </div>
         <!-- Premium nudge (hidden by default) -->
         <div class="ai-premium-nudge" id="premiumNudge" style="display:none">
-          <div class="nudge-title">You've hit today's free limit</div>
-          <div class="nudge-sub">Upgrade to Managed AI — unlimited messages, no key needed, just chat.</div>
-          <button class="btn-upgrade" onclick="window.open('#premium','_blank')">Upgrade — $1.99/month</button>
+          <div class="nudge-title">Your provider may be rate-limiting requests</div>
+          <div class="nudge-sub">Try again later, switch models/providers, or add a backup provider in Settings.</div>
+          <button class="btn-upgrade" onclick="showTab('data',document.querySelector('[data-tab=data]'))">Open AI Settings</button>
         </div>
         <!-- Quick Actions -->
         <div class="quick-actions">
@@ -1770,7 +1842,7 @@ footer .footer-links a:hover{color:var(--pri-d)}
         <!-- Input -->
         <div class="chat-input-row">
           <input type="text" class="chat-input" id="chatInput" placeholder="Ask about your budget..." onkeydown="if(event.key==='Enter')sendChat()">
-          <button class="chat-send" id="chatSendBtn" onclick="sendChat()">➤</button>
+          <button class="chat-send" id="chatSendBtn" onclick="sendChat()" aria-label="Send message"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg></button>
         </div>
       </div>
 
@@ -1859,11 +1931,20 @@ footer .footer-links a:hover{color:var(--pri-d)}
           <button class="btn btn-pri btn-sm" id="saveNameBtn" onclick="event.stopPropagation();saveSettingsName()">Save</button>
           <span id="nameSavedMsg" style="display:none;font-size:12px;font-weight:700;color:var(--suc);white-space:nowrap">Saved!</span>
         </div>
+        <!-- Brand -->
+        <div class="brand-studio-card">
+          <div class="brand-kicker">Created by</div>
+          <a class="brand-logo-link settings-brand" href="#shop" onclick="openShopLink(event)" aria-label="Visit L’Atelier de Luz shop">
+            <img class="brand-logo-img" src="data:image/png;base64,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" alt="L’Atelier de Luz">
+          </a>
+          <div class="brand-note">Digital tools, templates, and systems for everyday life.</div>
+        </div>
+
         <!-- Version info -->
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:12px;margin-bottom:16px">
           <div style="padding:10px;background:var(--bg);border-radius:8px;border:1px solid var(--brd)">
             <div style="color:var(--txt2);font-weight:600">Version</div>
-            <div style="font-weight:800;color:var(--txt);margin-top:2px">1.0.0</div>
+            <div style="font-weight:800;color:var(--txt);margin-top:2px" id="appVersionLabel">1.0.1</div>
           </div>
           <div style="padding:10px;background:var(--bg);border-radius:8px;border:1px solid var(--brd)">
             <div style="color:var(--txt2);font-weight:600">Status</div>
@@ -2030,11 +2111,12 @@ footer .footer-links a:hover{color:var(--pri-d)}
 
     <!-- CTA -->
     <div class="cta">
-      <h3>Want Deeper Analysis?</h3>
-      <p>Export your data → Open in our premium Google Sheets template → Get 12-month tracking, charts, annual overview, and savings goals!</p>
-      <a href="#" class="btn-cta" target="_blank">
-        Get the Full Spreadsheet Template — $6.99
+      <h3>Ready for Deeper Analysis?</h3>
+      <p>Use Export CSV/Excel above, then import it into the Annual Analysis Kit to see 12-month trends, custom categories, tax-ready summaries, net worth, and printable monthly reports.</p>
+      <a href="#annual-analysis-kit" class="btn-cta" onclick="openAnnualKitInfo(event)">
+        Learn About the Annual Analysis Kit — $9.99
       </a>
+      <div class="cta-note">Positioning note: app = daily tracker, spreadsheet = analysis/reporting.</div>
     </div>
 
   </div>
@@ -2046,11 +2128,16 @@ footer .footer-links a:hover{color:var(--pri-d)}
 
   <!-- ─── FOOTER ─── -->
   <footer>
-    <div class="brand">YOUR SHOP NAME</div>
-    <p>Free 50/30/20 Budget Tracker &nbsp;•&nbsp; Your data is stored locally in your browser &nbsp;•&nbsp; © 2026</p>
-    <div class="footer-links">
-      <a href="#" onclick="showTab('data',document.querySelector('[data-tab=data]'));return false">How to Install this App</a>
-      <a href="#">Get the full spreadsheet version →</a>
+    <div class="footer-brand-block">
+      <div class="brand-kicker">By</div>
+      <a class="brand-logo-link footer-brand" href="#shop" onclick="openShopLink(event)" aria-label="Visit L’Atelier de Luz shop">
+        <img class="brand-logo-img" src="data:image/png;base64,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" alt="L’Atelier de Luz">
+      </a>
+      <p>Free 50/30/20 Budget Tracker &nbsp;•&nbsp; Your data is stored locally in your browser &nbsp;•&nbsp; © 2026</p>
+      <div class="footer-links">
+        <a href="#" onclick="showTab('data',document.querySelector('[data-tab=data]'));return false">How to Install this App</a>
+        <a href="#annual-analysis-kit" onclick="openAnnualKitInfo(event)">Annual Analysis Kit →</a>
+      </div>
     </div>
   </footer>
 
@@ -2059,7 +2146,7 @@ footer .footer-links a:hover{color:var(--pri-d)}
 <!-- ─── NEWSLETTER POPUP (first visit only) ─── -->
 <div class="modal-overlay" id="nlPopup">
   <div class="modal" style="max-width:420px;text-align:center">
-    <button class="close-modal" onclick="closeNlPopup()" style="position:absolute;right:16px;top:16px">✕</button>
+    <button class="close-modal" onclick="closeNlPopup()" style="position:absolute;right:16px;top:16px" aria-label="Close"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
     <div style="margin-bottom:12px"><svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="var(--pri)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></div>
     <h3 style="font-size:20px;margin-bottom:8px">Want to Save More Money?</h3>
     <p style="font-size:13px;color:var(--txt2);margin-bottom:18px">Get free budget tips, savings strategies, and exclusive templates delivered to your inbox. No spam — ever.</p>
@@ -2087,7 +2174,7 @@ footer .footer-links a:hover{color:var(--pri-d)}
   <div class="modal">
     <div class="modal-head">
       <h3>How to Install This App</h3>
-      <button class="close-modal" onclick="closeInstallGuide()">✕</button>
+      <button class="close-modal" onclick="closeInstallGuide()" aria-label="Close"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
     </div>
     <p class="modal-sub">Install the Budget Tracker on your device — it works offline, just like a native app. No app store needed!</p>
 
@@ -2131,7 +2218,7 @@ footer .footer-links a:hover{color:var(--pri-d)}
   <div class="article">
     <div class="article-head">
       <div></div>
-      <button class="close-modal" onclick="closeArticle()">✕</button>
+      <button class="close-modal" onclick="closeArticle()" aria-label="Close"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
     </div>
     <div class="article-meta" id="articleMeta"></div>
     <div class="article-title" id="articleTitle"></div>
@@ -2148,9 +2235,9 @@ footer .footer-links a:hover{color:var(--pri-d)}
       <!-- Reactions -->
       <div class="article-reactions">
         <span class="react-label">Was this helpful?</span>
-        <button class="react-btn" data-reaction="helpful" onclick="reactToArticle('helpful',this)">👍 Helpful</button>
-        <button class="react-btn" data-reaction="learned" onclick="reactToArticle('learned',this)">💡 Learned</button>
-        <button class="react-btn" data-reaction="love" onclick="reactToArticle('love',this)">🔥 Love</button>
+        <button class="react-btn" data-reaction="helpful" onclick="reactToArticle('helpful',this)">Helpful</button>
+        <button class="react-btn" data-reaction="learned" onclick="reactToArticle('learned',this)">Learned</button>
+        <button class="react-btn" data-reaction="love" onclick="reactToArticle('love',this)">Love</button>
       </div>
 
       <!-- Comment -->
@@ -2187,6 +2274,8 @@ footer .footer-links a:hover{color:var(--pri-d)}
 <div class="toast" id="toast"></div>
 
 <script>
+const APP_VERSION = "1.0.1";
+const PRODUCT_LINKS = { annualKit: "#annual-analysis-kit", managedAi: "#managed-ai", shop: "#shop" };
 // ─── DATA STORE + AUTO-BACKUP SYSTEM ───────────────────────
 const STORAGE_KEY = "budget_tracker_503020";
 const BACKUP_PREFIX = "bt_backup_";
@@ -2294,7 +2383,7 @@ function recoverFromBackup() {
     try {
       const backup = JSON.parse(localStorage.getItem(key));
       if (backup && backup.data && backup.data.expenses) {
-        console.log("✅ Recovered from backup:", key, "(" + backup.data.expenses.length + " expenses)");
+        console.log("Recovered from backup:", key, "(" + backup.data.expenses.length + " expenses)");
         // Restore to primary
         localStorage.setItem(STORAGE_KEY, JSON.stringify(backup.data));
         return backup.data;
@@ -2307,9 +2396,9 @@ function recoverFromBackup() {
   // Instead, we trigger async recovery and reload
   getFromIndexedDB().then(data => {
     if (data && data.expenses && data.expenses.length > 0) {
-      console.log("✅ Recovered from IndexedDB (" + data.expenses.length + " expenses)");
+      console.log("Recovered from IndexedDB (" + data.expenses.length + " expenses)");
       localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-      toast("🔄 Data recovered from backup! Reloading...");
+      toast("Data recovered from backup! Reloading...");
       setTimeout(() => window.location.reload(), 1500);
     }
   });
@@ -2322,7 +2411,7 @@ function copyBackupToClipboard() {
   const data = getData();
   const backup = {
     _app: "50/30/20 Budget Tracker",
-    _version: "1.0",
+    _version: APP_VERSION,
     _exported: new Date().toISOString(),
     _expenseCount: data.expenses.length,
     _goalCount: data.goals.length,
@@ -2332,7 +2421,7 @@ function copyBackupToClipboard() {
   };
   const json = JSON.stringify(backup, null, 2);
   navigator.clipboard.writeText(json).then(() => {
-    toast("📋 Backup copied to clipboard! Paste into a note to save.");
+    toast("Backup copied to clipboard! Paste into a note to save.");
   }).catch(() => {
     // Fallback for older browsers
     const ta = document.createElement("textarea");
@@ -2341,7 +2430,7 @@ function copyBackupToClipboard() {
     ta.select();
     document.execCommand("copy");
     document.body.removeChild(ta);
-    toast("📋 Backup copied to clipboard!");
+    toast("Backup copied to clipboard!");
   });
 }
 
@@ -2350,20 +2439,20 @@ function restoreFromClipboard() {
     try {
       const backup = JSON.parse(text);
       if (!backup.expenses || !Array.isArray(backup.expenses)) {
-        toast("⚠️ Clipboard doesn't contain valid backup data");
+        toast("Clipboard doesn't contain valid backup data");
         return;
       }
-      if (!confirm("Restore from clipboard?\n\n📊 " + backup.expenses.length + " expenses\n🎯 " + (backup.goals||[]).length + " goals\n💰 Income: " + getCurrency() + " " + Number(backup.income||0).toLocaleString() + "\n\n⚠️ This will REPLACE all current data.")) return;
+      if (!confirm("Restore from clipboard?\n\n" + backup.expenses.length + " expenses\n" + (backup.goals||[]).length + " goals\nIncome: " + getCurrency() + " " + Number(backup.income||0).toLocaleString() + "\n\nThis will REPLACE all current data.")) return;
       const data = { income: backup.income||0, expenses: backup.expenses, goals: backup.goals||[] };
       saveData(data);
       setIncomeDisplay(data.income);
       updateDashboard(); renderHistory(); renderGoals();
-      toast("✅ Restored " + data.expenses.length + " expenses from clipboard!");
+      toast("Restored " + data.expenses.length + " expenses from clipboard!");
     } catch(e) {
-      toast("⚠️ Couldn't parse clipboard content — make sure you copied a backup");
+      toast("Couldn't parse clipboard content — make sure you copied a backup");
     }
   }).catch(() => {
-    toast("⚠️ Clipboard access denied — try the JSON import instead");
+    toast("Clipboard access denied — try the JSON import instead");
   });
 }
 
@@ -2400,7 +2489,7 @@ function checkBackupReminder() {
   if (hitMilestone) {
     setTimeout(() => {
       showBackupReminder(
-        "🎉 " + count + " expenses tracked!",
+        "" + count + " expenses tracked!",
         "Great progress! Consider exporting a backup to keep your data safe."
       );
     }, 3000); // Delay so it doesn't compete with other toasts
@@ -2415,7 +2504,7 @@ function checkBackupReminder() {
   if (count > 5 && (now - lastBackupExport) > oneWeek) {
     setTimeout(() => {
       showBackupReminder(
-        "📋 Weekly backup reminder",
+        "Weekly backup reminder",
         "It's been a while since your last backup. One tap keeps your data safe!"
       );
     }, 5000);
@@ -2453,7 +2542,7 @@ function showBackupReminder(title, message) {
     </div>
     <div style="display:flex;gap:6px;align-items:center">
       <button onclick="quickBackup()" style="background:var(--card);color:var(--pri-d);padding:7px 16px;border-radius:8px;font-weight:700;font-size:12px;border:none;cursor:pointer">Quick Backup</button>
-      <button onclick="this.parentElement.parentElement.remove()" style="background:none;border:none;color:var(--on-pri);opacity:.6;font-size:14px;cursor:pointer;padding:4px">✕</button>
+      <button onclick="this.parentElement.parentElement.remove()" style="background:none;border:none;color:var(--on-pri);opacity:.6;font-size:14px;cursor:pointer;padding:4px" aria-label="Dismiss"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
     </div>
   `;
 
@@ -2469,8 +2558,7 @@ function quickBackup() {
   if (banner) {
     banner.innerHTML = `
       <div style="display:flex;align-items:center;gap:10px;width:100%;justify-content:center;padding:4px 0">
-        <span style="font-size:18px">✅</span>
-        <span style="font-weight:700;font-size:13px">Backup copied to clipboard! Paste it somewhere safe.</span>
+        <span style="font-weight:700;font-size:13px">Backup copied to clipboard. Paste it somewhere safe.</span>
       </div>
     `;
     setTimeout(() => banner.remove(), 4000);
@@ -2487,6 +2575,8 @@ document.addEventListener("DOMContentLoaded", () => {
   } catch(e) {}
   loadTheme();
   loadCurrency();
+  const vLabel = document.getElementById("appVersionLabel");
+  if (vLabel) vLabel.textContent = APP_VERSION;
   const data = getData();
   setIncomeDisplay(data.income);
   document.getElementById("expDate").valueAsDate = new Date();
@@ -2502,6 +2592,7 @@ document.addEventListener("DOMContentLoaded", () => {
   initAiChat();
   renderNotes();
   renderInsights();
+  renderDataStats();
   loadFeed();
   // Enter key on inline add input
   document.getElementById("inlineAddName").addEventListener("keydown", e => {
@@ -2516,14 +2607,18 @@ document.addEventListener("DOMContentLoaded", () => {
   if (localStorage.getItem("bt_nl_subscribed")) {
     showDashNewsletter();
   }
+  setTimeout(hideAppLoading, 250);
 });
 
 // ─── TABS ──────────────────────────────────────────────────
 function showTab(id, el) {
+  const panel = document.getElementById("tab-" + id);
+  if (!panel) return;
   document.querySelectorAll(".panel").forEach(p => p.classList.remove("active"));
   document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
-  document.getElementById("tab-" + id).classList.add("active");
-  el.classList.add("active");
+  panel.classList.add("active");
+  const tabEl = el || document.querySelector('[data-tab="' + id + '"]');
+  if (tabEl) tabEl.classList.add("active");
   if (id === "history") renderHistory();
   if (id === "dashboard") updateDashboard();
   if (id === "expenses") renderRecent();
@@ -2551,6 +2646,15 @@ function toast(msg) {
   t._timer = setTimeout(() => t.classList.remove("show"), 2800);
 }
 
+function hideAppLoading() {
+  const loader = document.getElementById("appLoading");
+  if (!loader) return;
+  loader.classList.add("hide");
+  setTimeout(() => loader.remove(), 450);
+}
+window.addEventListener("load", () => setTimeout(hideAppLoading, 150));
+setTimeout(hideAppLoading, 3500);
+
 // ─── FORMAT ────────────────────────────────────────────────
 // ─── CURRENCY ──────────────────────────────────────────────
 function getCurrency() { return localStorage.getItem("bt_currency") || "$"; }
@@ -2576,6 +2680,13 @@ function loadCurrency() {
 const fmt = n => getCurrency() + " " + Math.abs(n).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 const fmtShort = n => getCurrency() + " " + Math.abs(n).toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 
+const UI_ICONS = {
+  streakIdle: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M8 12h8"/></svg>',
+  streakChart: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19V5"/><path d="M4 19h16"/><rect x="7" y="11" width="2.8" height="5"/><rect x="12" y="8" width="2.8" height="8"/><rect x="17" y="5" width="2.8" height="11"/></svg>',
+  streakStar: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15 8.5 22 9.3 16.7 14 18.2 21 12 17.4 5.8 21 7.3 14 2 9.3 9 8.5 12 2"/></svg>',
+  streakAward: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="5"/><path d="M8.5 12.5L7 22l5-3 5 3-1.5-9.5"/></svg>'
+};
+
 // ─── ADD EXPENSE ───────────────────────────────────────────
 function addExpense() {
   const date = document.getElementById("expDate").value;
@@ -2585,7 +2696,7 @@ function addExpense() {
   const amt  = parseFloat(document.getElementById("expAmt").value);
 
   if (!date || !desc || !amt || amt <= 0) {
-    toast("⚠️ Please fill in all fields");
+    toast("Please fill in all fields");
     return;
   }
 
@@ -2596,7 +2707,7 @@ function addExpense() {
   document.getElementById("expDesc").value = "";
   document.getElementById("expAmt").value = "";
 
-  toast("✅ " + desc + " — " + fmt(amt) + " added!");
+  toast("" + desc + " — " + fmt(amt) + " added!");
   updateDashboard();
   renderRecent();
 }
@@ -2606,7 +2717,7 @@ function quickAdd(sub, cat) {
   updateSubcategories(sub);
   document.getElementById("expDesc").value = sub;
   document.getElementById("expAmt").focus();
-  toast("📝 Fill in the amount for " + sub);
+  toast("Fill in the amount for " + sub);
 }
 
 function updateSubcategories(selectVal) {
@@ -2631,7 +2742,7 @@ function showInlineAdd(cat) {
   const row = document.getElementById("inlineAddRow");
   const label = document.getElementById("inlineAddLabel");
   const input = document.getElementById("inlineAddName");
-  const catIcon = cat === "Needs" ? "🏠" : cat === "Wants" ? "🎮" : "💰";
+  const catIcon = cat;
   label.textContent = catIcon + " Adding to: " + cat;
   row.style.display = "block";
   input.value = "";
@@ -2645,18 +2756,18 @@ function hideInlineAdd() {
 
 function confirmInlineAdd() {
   const name = document.getElementById("inlineAddName").value.trim();
-  if (!name) { toast("⚠️ Enter a name"); return; }
+  if (!name) { toast("Enter a name"); return; }
   if (!inlineAddCat) return;
 
   const customs = JSON.parse(localStorage.getItem("bt_custom_qa") || "[]");
   if (customs.find(c => c.name.toLowerCase() === name.toLowerCase() && c.cat === inlineAddCat)) {
-    toast("⚠️ '" + name + "' already exists in " + inlineAddCat); return;
+    toast("'" + name + "' already exists in " + inlineAddCat); return;
   }
   customs.push({ name, cat: inlineAddCat });
   localStorage.setItem("bt_custom_qa", JSON.stringify(customs));
   renderCustomQuickAdds();
   hideInlineAdd();
-  toast("✅ '" + name + "' added to " + inlineAddCat + "!");
+  toast("'" + name + "' added to " + inlineAddCat + "!");
 }
 
 function removeCustomQuickAdd(idx) {
@@ -2665,7 +2776,7 @@ function removeCustomQuickAdd(idx) {
   customs.splice(idx, 1);
   localStorage.setItem("bt_custom_qa", JSON.stringify(customs));
   renderCustomQuickAdds();
-  toast("🗑️ '" + (removed ? removed.name : "Item") + "' removed");
+  toast("'" + (removed ? removed.name : "Item") + "' removed");
 }
 
 function renderCustomQuickAdds() {
@@ -2684,9 +2795,9 @@ function renderCustomQuickAdds() {
       const pill = document.createElement("button");
       pill.className = "quick-pill qa-custom";
       pill.onclick = () => quickAdd(c.name, c.cat);
-      const catIcon = cat === "Needs" ? "🏠" : cat === "Wants" ? "🎮" : "💰";
+      const catIcon = cat;
       pill.innerHTML = catIcon + " " + c.name +
-        '<span class="qa-remove" onclick="event.stopPropagation();removeCustomQuickAdd(' + origIdx + ')">✕</span>';
+        '<span class="qa-remove" onclick="event.stopPropagation();removeCustomQuickAdd(' + origIdx + ')" aria-label="Remove"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M18 6L6 18M6 6l12 12"/></svg></span>';
       if (addBtn) container.insertBefore(pill, addBtn);
       else container.appendChild(pill);
     });
@@ -2698,7 +2809,7 @@ function deleteExpense(id) {
   const data = getData();
   data.expenses = data.expenses.filter(e => e.id !== id);
   saveData(data);
-  toast("🗑️ Expense deleted");
+  toast("Expense deleted");
   updateDashboard();
   renderHistory();
   renderRecent();
@@ -2709,7 +2820,7 @@ function clearAll() {
   const data = getData();
   data.expenses = [];
   saveData(data);
-  toast("🗑️ All expenses cleared");
+  toast("All expenses cleared");
   updateDashboard();
   renderHistory();
   renderRecent();
@@ -2811,9 +2922,9 @@ function updateGreeting() {
   else if (hour < 17) timeGreet = "Good afternoon";
 
   if (name) {
-    el.innerHTML = '<span class="wave">👋</span> ' + timeGreet + ", " + name + "!";
+    el.textContent = timeGreet + ", " + name + "!";
   } else {
-    el.innerHTML = '<span class="wave">👋</span> ' + timeGreet + "!";
+    el.textContent = timeGreet + "!";
   }
 
   // Smart subtitle based on data
@@ -2921,12 +3032,12 @@ function renderStreak() {
 
   if (current === 0) {
     bar.className = "streak-bar inactive";
-    icon.textContent = "💤";
+    icon.innerHTML = UI_ICONS.streakIdle;
     count.textContent = "Streak paused";
     label.textContent = "Add an expense today to restart!";
   } else {
     bar.className = "streak-bar";
-    icon.textContent = current >= 30 ? "🏆" : current >= 14 ? "⭐" : current >= 7 ? "🔥" : "📊";
+    icon.innerHTML = current >= 30 ? UI_ICONS.streakAward : current >= 14 ? UI_ICONS.streakStar : UI_ICONS.streakChart;
     count.textContent = current + "-day streak";
     if (!activeToday) {
       label.textContent = "Log today to keep it alive!";
@@ -3008,15 +3119,15 @@ function updateDashboard() {
   // Stat cards
   document.getElementById("needsAmt").textContent = fmt(needsSpent);
   document.getElementById("needsSub").innerHTML =
-    `Budget: ${fmtShort(needsBudget)} &nbsp;•&nbsp; <span style="color:${needsSpent <= needsBudget ? 'var(--suc)' : 'var(--dan)'}">${needsSpent <= needsBudget ? '✓ Under' : '⚠️ Over'} by ${fmtShort(Math.abs(needsBudget - needsSpent))}</span>`;
+    `Budget: ${fmtShort(needsBudget)} &nbsp;•&nbsp; <span style="color:${needsSpent <= needsBudget ? 'var(--suc)' : 'var(--dan)'}">${needsSpent <= needsBudget ? 'Under' : 'Over'} by ${fmtShort(Math.abs(needsBudget - needsSpent))}</span>`;
 
   document.getElementById("wantsAmt").textContent = fmt(wantsSpent);
   document.getElementById("wantsSub").innerHTML =
-    `Budget: ${fmtShort(wantsBudget)} &nbsp;•&nbsp; <span style="color:${wantsSpent <= wantsBudget ? 'var(--suc)' : 'var(--dan)'}">${wantsSpent <= wantsBudget ? '✓ Under' : '⚠️ Over'} by ${fmtShort(Math.abs(wantsBudget - wantsSpent))}</span>`;
+    `Budget: ${fmtShort(wantsBudget)} &nbsp;•&nbsp; <span style="color:${wantsSpent <= wantsBudget ? 'var(--suc)' : 'var(--dan)'}">${wantsSpent <= wantsBudget ? 'Under' : 'Over'} by ${fmtShort(Math.abs(wantsBudget - wantsSpent))}</span>`;
 
   document.getElementById("savingsAmt").textContent = fmt(savingsSpent);
   document.getElementById("savingsSub").innerHTML =
-    `Budget: ${fmtShort(savingsBudget)} &nbsp;•&nbsp; <span style="color:${savingsSpent >= savingsBudget ? 'var(--suc)' : 'var(--acc)'}">${savingsSpent >= savingsBudget ? '✓ Goal met!' : '💪 ' + fmtShort(savingsBudget - savingsSpent) + ' to go'}</span>`;
+    `Budget: ${fmtShort(savingsBudget)} &nbsp;•&nbsp; <span style="color:${savingsSpent >= savingsBudget ? 'var(--suc)' : 'var(--acc)'}">${savingsSpent >= savingsBudget ? 'Goal met' : fmtShort(savingsBudget - savingsSpent) + ' to go'}</span>`;
 
   // Progress bars
   updateProgress("needs",   needsSpent,   needsBudget,   "n");
@@ -3116,7 +3227,7 @@ function renderHistory() {
       <td><span class="cat-pill ${catClass}">${e.cat}</span></td>
       <td style="color:var(--txt2);font-size:12px">${e.sub}</td>
       <td class="mono">${fmt(e.amt)}</td>
-      <td><button class="btn-dan" onclick="deleteExpense(${e.id})">✕</button></td>
+      <td><button class="btn-dan" onclick="deleteExpense(${e.id})" aria-label="Delete expense"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button></td>
     </tr>`;
   }).join("");
 
@@ -3130,7 +3241,7 @@ function addGoal() {
   const name   = document.getElementById("goalName").value.trim();
   const target = parseFloat(document.getElementById("goalTarget").value);
   const saved  = parseFloat(document.getElementById("goalSaved").value) || 0;
-  if (!name || !target) { toast("⚠️ Enter goal name and target amount"); return; }
+  if (!name || !target) { toast("Enter goal name and target amount"); return; }
 
   const data = getData();
   data.goals.push({ id: Date.now(), name, target, saved });
@@ -3138,7 +3249,7 @@ function addGoal() {
   document.getElementById("goalName").value = "";
   document.getElementById("goalTarget").value = "";
   document.getElementById("goalSaved").value = "";
-  toast("🎯 Goal '" + name + "' added!");
+  toast("Goal '" + name + "' added!");
   renderGoals();
 }
 
@@ -3152,7 +3263,7 @@ function deleteGoal(id) {
   const data = getData();
   data.goals = data.goals.filter(g => g.id !== id);
   saveData(data);
-  toast("🗑️ Goal deleted");
+  toast("Goal deleted");
   renderGoals();
 }
 
@@ -3167,18 +3278,18 @@ function renderGoals() {
   el.innerHTML = data.goals.map(g => {
     const pct = g.target > 0 ? Math.min((g.saved / g.target) * 100, 100) : 0;
     let statusClass, statusLabel;
-    if (pct >= 100)      { statusClass = "complete"; statusLabel = "🎉 Complete!"; }
-    else if (pct >= 75)  { statusClass = "almost";   statusLabel = "✅ Almost there!"; }
-    else if (pct >= 50)  { statusClass = "halfway";  statusLabel = "💪 Halfway!"; }
-    else if (pct >= 25)  { statusClass = "started";  statusLabel = "🚀 Good start!"; }
-    else                 { statusClass = "started";  statusLabel = "🌱 Starting!"; }
+    if (pct >= 100)      { statusClass = "complete"; statusLabel = "Complete"; }
+    else if (pct >= 75)  { statusClass = "almost";   statusLabel = "Almost there"; }
+    else if (pct >= 50)  { statusClass = "halfway";  statusLabel = "Halfway"; }
+    else if (pct >= 25)  { statusClass = "started";  statusLabel = "Good start"; }
+    else                 { statusClass = "started";  statusLabel = "Starting"; }
 
     return `<div class="goal-card">
       <div class="goal-header">
         <div class="goal-name">${g.name}</div>
         <div style="display:flex;align-items:center;gap:8px">
           <span class="goal-status ${statusClass}">${statusLabel}</span>
-          <button class="btn-dan" onclick="deleteGoal(${g.id})">✕</button>
+          <button class="btn-dan" onclick="deleteGoal(${g.id})" aria-label="Delete goal"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
         </div>
       </div>
       <div class="prog-bar" style="margin-bottom:10px">
@@ -3202,7 +3313,7 @@ function renderGoals() {
 // ─── EXPORT: CSV ───────────────────────────────────────────
 function exportCSV() {
   const data = getData();
-  if (!data.expenses.length) { toast("⚠️ No expenses to export"); return; }
+  if (!data.expenses.length) { toast("No expenses to export"); return; }
   const headers = ["Date","Description","Category","Sub-Category","Amount"];
   const rows = data.expenses.map(e => [e.date, '"'+e.desc.replace(/"/g,'""')+'"', e.cat, e.sub, e.amt.toFixed(2)]);
   let csv = "Monthly Income," + (data.income||0) + "\n";
@@ -3214,13 +3325,13 @@ function exportCSV() {
   csv += "\n\nTotal Expenses," + data.expenses.reduce((s,e)=>s+e.amt,0).toFixed(2) + "\n";
   downloadFile(csv, "budget-tracker-" + dateStamp() + ".csv", "text/csv");
   markBackupDone();
-  toast("📊 CSV exported successfully!");
+  toast("CSV exported successfully!");
 }
 
 // ─── EXPORT: EXCEL ─────────────────────────────────────────
 function exportExcel() {
   const data = getData();
-  if (!data.expenses.length) { toast("⚠️ No expenses to export"); return; }
+  if (!data.expenses.length) { toast("No expenses to export"); return; }
 
   function cell(val, type, styleId) {
     let s = styleId ? ' ss:StyleID="'+styleId+'"' : '';
@@ -3269,16 +3380,16 @@ function exportExcel() {
   xml += '</Workbook>';
   downloadFile(xml, "budget-tracker-" + dateStamp() + ".xls", "application/vnd.ms-excel");
   markBackupDone();
-  toast("📗 Excel file exported!");
+  toast("Excel file exported!");
 }
 
 // ─── EXPORT: JSON ──────────────────────────────────────────
 function exportJSON() {
   const data = getData();
-  const backup = { _app:"50/30/20 Budget Tracker", _version:"1.0", _exported:new Date().toISOString(), income:data.income, expenses:data.expenses, goals:data.goals };
+  const backup = { _app:"50/30/20 Budget Tracker", _version:APP_VERSION, _exported:new Date().toISOString(), income:data.income, expenses:data.expenses, goals:data.goals };
   downloadFile(JSON.stringify(backup, null, 2), "budget-backup-" + dateStamp() + ".json", "application/json");
   markBackupDone();
-  toast("💾 Full backup saved!");
+  toast("Full backup saved!");
 }
 
 // ─── IMPORT: CSV ───────────────────────────────────────────
@@ -3296,7 +3407,7 @@ function importCSV(event) {
         const lower = lines[i].toLowerCase();
         if (lower.includes("date") && lower.includes("description") && lower.includes("amount")) { headerIdx=i; break; }
       }
-      if (headerIdx === -1) { toast("⚠️ CSV format not recognized"); return; }
+      if (headerIdx === -1) { toast("CSV format not recognized"); return; }
       for (let i=headerIdx+1; i<lines.length; i++) {
         const cols = parseCSVLine(lines[i]);
         if (cols.length >= 5 && !isNaN(parseFloat(cols[4]))) {
@@ -3311,8 +3422,8 @@ function importCSV(event) {
           if (!isNaN(val) && val>0) { data.income=val; setIncomeDisplay(val); }
         }
       }
-      saveData(data); updateDashboard(); renderHistory(); toast("✅ Imported " + imported + " expenses!");
-    } catch(err) { toast("❌ Error reading CSV: " + err.message); }
+      saveData(data); updateDashboard(); renderHistory(); toast("Imported " + imported + " expenses!");
+    } catch(err) { toast("Error reading CSV: " + err.message); }
   };
   reader.readAsText(file);
   event.target.value = "";
@@ -3338,14 +3449,14 @@ function importJSON(event) {
   reader.onload = function(e) {
     try {
       const backup = JSON.parse(e.target.result);
-      if (!backup.expenses || !Array.isArray(backup.expenses)) { toast("⚠️ Invalid backup file"); return; }
-      if (!confirm("Restore this backup?\n\n📊 " + backup.expenses.length + " expenses\n🎯 " + (backup.goals||[]).length + " goals\n💰 Income: " + getCurrency() + " " + Number(backup.income||0).toLocaleString() + "\n\n⚠️ This will REPLACE all current data.")) return;
+      if (!backup.expenses || !Array.isArray(backup.expenses)) { toast("Invalid backup file"); return; }
+      if (!confirm("Restore this backup?\n\n" + backup.expenses.length + " expenses\n" + (backup.goals||[]).length + " goals\nIncome: " + getCurrency() + " " + Number(backup.income||0).toLocaleString() + "\n\nThis will REPLACE all current data.")) return;
       const data = { income:backup.income||0, expenses:backup.expenses||[], goals:backup.goals||[] };
       saveData(data);
       setIncomeDisplay(data.income);
       updateDashboard(); renderHistory(); renderGoals();
-      toast("✅ Backup restored! " + data.expenses.length + " expenses loaded");
-    } catch(err) { toast("❌ Error reading backup: " + err.message); }
+      toast("Backup restored! " + data.expenses.length + " expenses loaded");
+    } catch(err) { toast("Error reading backup: " + err.message); }
   };
   reader.readAsText(file);
   event.target.value = "";
@@ -3356,8 +3467,17 @@ function renderDataStats() {
   // Load saved name into settings field
   const nameInput = document.getElementById("settingsUserName");
   if (nameInput) nameInput.value = getUserName();
-  // Render failover chain
+  // Render failover chain and settings status
   renderFailoverList();
+  initAiChat();
+  const versionLabel = document.getElementById("appVersionLabel");
+  if (versionLabel) versionLabel.textContent = APP_VERSION;
+  const cfg = getAiConfig();
+  const aiStatus2 = document.getElementById("settingsAiStatus2");
+  if (aiStatus2) {
+    aiStatus2.textContent = cfg && cfg.key ? "Configured" : "Not set";
+    aiStatus2.style.color = cfg && cfg.key ? "var(--suc)" : "var(--dan)";
+  }
   const data = getData();
   const el = document.getElementById("dataStats");
   if (!el) return;
@@ -3387,18 +3507,18 @@ const TELEMETRY_URL = "YOUR_GOOGLE_APPS_SCRIPT_URL_HERE";  // ← Replace this (
 function submitNewsletter() {
   // Settings newsletter removed — redirect to dashboard version
   submitDashNewsletter();
-  toast("🎉 Subscribed! Welcome aboard!");
+  toast("Subscribed! Welcome aboard!");
 }
 
 // ─── DASHBOARD NEWSLETTER ──────────────────────────────────
 function submitDashNewsletter() {
   const email = document.getElementById("dashNlEmail").value.trim();
-  if (!email || !email.includes("@") || !email.includes(".")) { toast("⚠️ Please enter a valid email"); return; }
+  if (!email || !email.includes("@") || !email.includes(".")) { toast("Please enter a valid email"); return; }
   saveNewsletterEmail(email);
   document.getElementById("dashNlForm").style.display = "none";
   document.getElementById("dashNlDone").style.display = "block";
   localStorage.setItem("bt_nl_subscribed", "1");
-  toast("🎉 Subscribed! Welcome aboard!");
+  toast("Subscribed! Welcome aboard!");
 }
 
 // Show dashboard newsletter card — always visible, but swap form for "subscribed" message
@@ -3416,7 +3536,7 @@ function showDashNewsletter() {
 // ─── POPUP NEWSLETTER (first visit) ────────────────────────
 function submitPopupNl() {
   const email = document.getElementById("popupNlEmail").value.trim();
-  if (!email || !email.includes("@") || !email.includes(".")) { toast("⚠️ Please enter a valid email"); return; }
+  if (!email || !email.includes("@") || !email.includes(".")) { toast("Please enter a valid email"); return; }
   saveNewsletterEmail(email);
   document.getElementById("popupNlForm").style.display = "none";
   document.getElementById("popupSkip").style.display = "none";
@@ -3492,7 +3612,7 @@ function submitContact() {
   const message = document.getElementById("cfMessage").value.trim();
 
   if (!message) {
-    toast("⚠️ Please enter a message");
+    toast("Please enter a message");
     return;
   }
 
@@ -3513,7 +3633,7 @@ function submitContact() {
   // Show success
   document.getElementById("contactForm").style.display = "none";
   document.getElementById("contactSuccess").style.display = "block";
-  toast("✅ Message sent! Thanks for the feedback!");
+  toast("Message sent! Thanks for the feedback!");
 }
 
 function resetContact() {
@@ -3528,7 +3648,8 @@ function resetContact() {
 // ─── CHECK FOR UPDATES ─────────────────────────────────────
 function checkForUpdates() {
   const statusEl = document.getElementById("appStatus");
-  statusEl.textContent = "🔄 Checking...";
+  if (!statusEl) { toast("Checking for updates..."); return; }
+  statusEl.textContent = "Checking...";
   statusEl.style.color = "var(--acc)";
 
   if (!('serviceWorker' in navigator)) {
@@ -3542,7 +3663,7 @@ function checkForUpdates() {
 
   navigator.serviceWorker.getRegistration().then(reg => {
     if (!reg) {
-      statusEl.textContent = "⚠️ Not installed";
+      statusEl.textContent = "Not installed";
       statusEl.style.color = "var(--acc)";
       toast("ℹ️ App is not installed as PWA yet");
       return;
@@ -3562,15 +3683,15 @@ function checkForUpdates() {
         } else if (reg.active) {
           // Step 3: No new SW, but force-refresh all cached assets
           reg.active.postMessage({ type: "FORCE_UPDATE" });
-          statusEl.textContent = "🔄 Refreshing cache...";
+          statusEl.textContent = "Refreshing cache...";
 
           // Listen for completion
           const onMessage = (event) => {
             if (event.data && event.data.type === "UPDATED") {
               navigator.serviceWorker.removeEventListener("message", onMessage);
-              statusEl.textContent = "✅ Updated!";
+              statusEl.textContent = "Updated";
               statusEl.style.color = "var(--suc)";
-              toast("✅ Cache refreshed! Reloading...");
+              toast("Cache refreshed! Reloading...");
               setTimeout(() => window.location.reload(), 1000);
             }
           };
@@ -3579,21 +3700,44 @@ function checkForUpdates() {
           // Timeout fallback — if message doesn't come in 5s, reload anyway
           setTimeout(() => {
             navigator.serviceWorker.removeEventListener("message", onMessage);
-            if (statusEl.textContent === "🔄 Refreshing cache...") {
+            if (statusEl.textContent === "Refreshing cache...") {
               statusEl.textContent = "Up to date";
               statusEl.style.color = "var(--suc)";
-              toast("✅ App is up to date!");
+              toast("App is up to date!");
             }
           }, 5000);
         }
       }, 2000);
     }).catch(err => {
       console.error("Update check failed:", err);
-      statusEl.textContent = "⚠️ Check failed";
+      statusEl.textContent = "Check failed";
       statusEl.style.color = "var(--dan)";
-      toast("⚠️ Couldn't check for updates — are you online?");
+      toast("Couldn't check for updates — are you online?");
     });
   });
+}
+
+function openAnnualKitInfo(event) {
+  if (event) event.preventDefault();
+  toast("Annual Analysis Kit is the next paid add-on — we’ll build/finalize it next.");
+  const card = document.getElementById("dashNewsletter");
+  if (card) {
+    showTab("dashboard", document.querySelector('[data-tab=dashboard]'));
+    setTimeout(() => card.scrollIntoView({ behavior: "smooth", block: "center" }), 100);
+  }
+}
+
+function openShopLink(event) {
+  const url = PRODUCT_LINKS.shop;
+  if (!url || url === "#shop") {
+    if (event) event.preventDefault();
+    toast("Shop link is ready — replace PRODUCT_LINKS.shop with your Etsy/Gumroad URL when available.");
+    return;
+  }
+  if (event) {
+    event.preventDefault();
+    window.open(url, "_blank", "noopener");
+  }
 }
 
 // ─── SMART INSIGHTS ────────────────────────────────────────
@@ -3679,7 +3823,7 @@ const FEED_URL = "posts.json"; // ← Change to your GitHub raw URL when deploye
 const EMBEDDED_POSTS = [
   {"id":1,"type":"announcement","title":"Welcome to The Budget Brief","body":"This is your personal finance feed \u2014 tips, challenges, and updates delivered right inside your budget tracker.","content":"Welcome to <strong>The Budget Brief</strong> \u2014 your personal finance newsletter built right into your budget tracker.\n\nEvery week, we publish actionable money tips, savings challenges, and product updates directly in this feed. No email required. No sign-up needed. Just open your app and check what\u2019s new.\n\n<strong>What you\u2019ll find here:</strong>\n\n\u2022 <strong>Money Tips</strong> \u2014 Practical strategies to save more and spend smarter\n\u2022 <strong>Challenges</strong> \u2014 Fun weekly/monthly savings challenges to keep you motivated\n\u2022 <strong>Product Updates</strong> \u2014 New tools and templates to level up your finances\n\u2022 <strong>Seasonal Reminders</strong> \u2014 Tax prep, holiday budgeting, year-end reviews\n\n<strong>How it works:</strong>\n\nNew posts appear automatically when you open the app. Unread posts have a green dot \u2014 click to read. That\u2019s it.\n\nWelcome aboard. Let\u2019s make your money work harder. \ud83d\udcaa","date":"2026-06-20","link":null,"linkText":null,"pinned":true,"readTime":"1 min"},
   {"id":2,"type":"tip","title":"The 24-Hour Rule for Impulse Purchases","body":"Before buying anything over $25 in your \u2018Wants\u2019 category, wait 24 hours. This single habit can save you $200-400/month.","content":"<strong>The 24-Hour Rule</strong> is the simplest money-saving habit you can build.\n\nHere\u2019s how it works: Before buying anything over $25 that falls into your <strong>\u2018Wants\u2019</strong> category, wait 24 hours. That\u2019s it. Don\u2019t say no \u2014 just say \"not yet.\"\n\n<strong>Why it works:</strong>\n\n\u2022 70% of impulse purchases are regretted within a week\n\u2022 The dopamine hit of \"I want this\" fades within hours\n\u2022 After 24 hours, you evaluate with logic instead of emotion\n\n<strong>How to implement it:</strong>\n\n1. See something you want to buy (over $25)\n2. Add it to your phone\u2019s notes app instead of your cart\n3. Set a reminder for 24 hours later\n4. If you still want it tomorrow \u2014 buy it guilt-free\n5. If you forgot about it \u2014 you just saved money\n\n<strong>Expected savings: $2,880/year</strong>\n\nTry it this week. Start with just one purchase. \ud83c\udfaf","date":"2026-06-18","link":null,"linkText":null,"pinned":false,"readTime":"3 min"},
-  {"id":3,"type":"product","title":"New: Annual Analysis Spreadsheet","body":"See your full-year spending trends, tax-ready reports, and net worth tracking. Import your app data with one click.","content":"Introducing the <strong>Annual Analysis Spreadsheet</strong> \u2014 the perfect companion to your Budget Tracker app.\n\n<strong>What\u2019s included:</strong>\n\n\u2022 <strong>12-Month Dashboard</strong> \u2014 See all your spending at a glance\n\u2022 <strong>Category Trends</strong> \u2014 Watch how your ratios change over time\n\u2022 <strong>Tax-Ready Reports</strong> \u2014 Categorized expense summaries\n\u2022 <strong>Net Worth Tracker</strong> \u2014 Track assets, liabilities, and growth\n\u2022 <strong>Year-over-Year Comparison</strong> \u2014 Compare spending patterns\n\nAvailable for Google Sheets and Microsoft Excel.","date":"2026-06-15","link":"#","linkText":"Get it \u2014 $9.99","pinned":false,"readTime":"2 min"},
+  {"id":3,"type":"product","title":"New: Annual Analysis Spreadsheet","body":"See your full-year spending trends, tax-ready reports, and net worth tracking. Import your app data with one click.","content":"Introducing the <strong>Annual Analysis Spreadsheet</strong> \u2014 the perfect companion to your Budget Tracker app.\n\n<strong>What\u2019s included:</strong>\n\n\u2022 <strong>12-Month Dashboard</strong> \u2014 See all your spending at a glance\n\u2022 <strong>Category Trends</strong> \u2014 Watch how your ratios change over time\n\u2022 <strong>Tax-Ready Reports</strong> \u2014 Categorized expense summaries\n\u2022 <strong>Net Worth Tracker</strong> \u2014 Track assets, liabilities, and growth\n\u2022 <strong>Year-over-Year Comparison</strong> \u2014 Compare spending patterns\n\nAvailable for Google Sheets and Microsoft Excel.","date":"2026-06-15","link":"#annual-analysis-kit","linkText":"Get it \u2014 $9.99","pinned":false,"readTime":"2 min"},
   {"id":4,"type":"challenge","title":"7-Day No-Dining-Out Challenge","body":"The average person spends $300+/month eating out. Challenge yourself: cook every meal for 7 days and track how much you save.","content":"<strong>The 7-Day No-Dining-Out Challenge</strong>\n\nThe average American spends $314/month on food outside the home. That\u2019s $3,768/year \u2014 enough for a nice vacation.\n\n<strong>The challenge:</strong> Cook every meal for 7 consecutive days. No restaurants, no takeout, no delivery apps.\n\n<strong>Rules:</strong>\n\n1. All meals cooked at home for 7 days\n2. Track grocery spending in the app under \"Needs \u2192 Groceries\"\n3. At the end of 7 days, compare your food spending to last week\n\n<strong>Expected savings: ~$43 in just one week</strong>\n\nWho\u2019s in? Start this Monday. \ud83c\udf73","date":"2026-06-13","link":null,"linkText":null,"pinned":false,"readTime":"3 min"},
   {"id":5,"type":"tip","title":"Your First Month: Don\u2019t Aim for Perfect","body":"Don\u2019t stress about hitting exactly 50/30/20. The real power is in awareness \u2014 just seeing where your money goes changes everything.","content":"<strong>Your first month with the 50/30/20 rule doesn\u2019t need to be perfect.</strong>\n\nMost people have no idea where their money goes. The simple act of logging expenses changes your behavior without you even trying.\n\n<strong>What to expect:</strong>\n\n\u2022 <strong>Week 1:</strong> \"I had no idea I spent that much on coffee\"\n\u2022 <strong>Week 2:</strong> You start naturally thinking before buying\n\u2022 <strong>Week 3:</strong> You notice patterns\n\u2022 <strong>Week 4:</strong> Your ratios are already closer to 50/30/20\n\nBy month 3, most people are within 5% of their target ratios. The system works \u2014 you just have to give it time.\n\nYou\u2019re already ahead of 80% of people just by tracking. Keep going. \ud83d\udcca","date":"2026-06-10","link":null,"linkText":null,"pinned":false,"readTime":"3 min"},
   {"id":6,"type":"product","title":"Coming Soon: Debt Payoff Calculator","body":"Snowball or avalanche? Our new calculator will show you exactly when you\u2019ll be debt-free and how much interest you\u2019ll save.","content":"<strong>The Debt Payoff Calculator is coming soon.</strong>\n\nIf you\u2019re carrying debt \u2014 credit cards, student loans, car payments \u2014 this tool will show you the fastest path to freedom.\n\n<strong>What it\u2019ll do:</strong>\n\n\u2022 Compare <strong>Snowball</strong> vs <strong>Avalanche</strong> methods\n\u2022 See your exact payoff date\n\u2022 Calculate how much interest you\u2019ll save\n\u2022 Month-by-month payment schedule\n\nSign up for our newsletter to be notified when it launches.","date":"2026-06-08","link":null,"linkText":null,"pinned":false,"readTime":"2 min"},
@@ -4146,7 +4290,7 @@ function addNote() {
   const text = document.getElementById("noteInput").value.trim();
   const tag = document.getElementById("noteTag").value;
   const pinned = document.getElementById("notePin").checked;
-  if (!text) { toast("⚠️ Write something first!"); return; }
+  if (!text) { toast("Write something first!"); return; }
 
   const notes = JSON.parse(localStorage.getItem("bt_notes") || "[]");
   notes.push({
@@ -4161,7 +4305,7 @@ function addNote() {
   document.getElementById("noteInput").value = "";
   document.getElementById("notePin").checked = false;
   renderNotes();
-  toast("📓 Note saved!");
+  toast("Note saved!");
 }
 
 function deleteNote(id) {
@@ -4172,7 +4316,7 @@ function deleteNote(id) {
   notes.splice(idx, 1);
   localStorage.setItem("bt_notes", JSON.stringify(notes));
   renderNotes();
-  toast("🗑️ Note deleted");
+  toast("Note deleted");
 }
 
 function togglePinNote(id) {
@@ -4237,7 +4381,7 @@ function clearAllNotes() {
   if (!confirm("Delete ALL notes? This cannot be undone.")) return;
   localStorage.setItem("bt_notes", "[]");
   renderNotes();
-  toast("🗑️ All notes cleared");
+  toast("All notes cleared");
 }
 
 function formatNoteBody(text, noteId) {
@@ -4312,28 +4456,25 @@ function renderNotes() {
   if (countEl) countEl.textContent = filtered.length + " note" + (filtered.length !== 1 ? "s" : "") + (noteFilter !== "all" ? " (" + noteFilter + ")" : "");
 
   if (filtered.length === 0) {
-    el.innerHTML = '<div class="empty-state"><div class="empty-icon">📓</div><p>' + (search ? "No notes matching '" + search + "'" : "No notes yet") + '</p><span>' + (search ? "Try a different search" : "Start journaling your financial thoughts above!") + '</span></div>';
+    el.innerHTML = '<div class="empty-state"><div class="empty-icon"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg></div><p>' + (search ? "No notes matching '" + search + "'" : "No notes yet") + '</p><span>' + (search ? "Try a different search" : "Start journaling your financial thoughts above!") + '</span></div>';
     return;
   }
-
-  const tagIcons = { note:"📝", goal:"🎯", reminder:"⏰", reflection:"💭", idea:"💡", receipt:"🧾" };
 
   // List view
   el.innerHTML = filtered.map(n => {
     const d = new Date(n.date);
     const dateStr = d.toLocaleDateString("en-US", { month:"short", day:"numeric", year:"numeric" });
     const timeStr = d.toLocaleTimeString("en-US", { hour:"numeric", minute:"2-digit" });
-    const icon = tagIcons[n.tag] || "📝";
     const body = formatNoteBody(n.text, n.id);
 
     return '<div class="note-card' + (n.pinned ? " pinned" : "") + '" data-note-id="' + n.id + '">' +
       '<div class="note-header"><div style="display:flex;align-items:center;gap:6px">' +
-        '<span class="note-tag ' + n.tag + '">' + icon + ' ' + n.tag + '</span>' +
+        '<span class="note-tag ' + n.tag + '">' + n.tag + '</span>' +
         '<span class="note-date">' + dateStr + ' ' + timeStr + (n.edited ? " (edited)" : "") + '</span>' +
       '</div><div class="note-actions">' +
-        '<button onclick="togglePinNote(' + n.id + ')" title="' + (n.pinned ? "Unpin" : "Pin") + '">' + (n.pinned ? "📌" : "📍") + '</button>' +
-        '<button onclick="editNote(' + n.id + ')" title="Edit">✏️</button>' +
-        '<button onclick="deleteNote(' + n.id + ')" title="Delete">🗑️</button>' +
+        '<button onclick="togglePinNote(' + n.id + ')" title="' + (n.pinned ? "Unpin" : "Pin") + '">' + (n.pinned ? "Unpin" : "Pin") + '</button>' +
+        '<button onclick="editNote(' + n.id + ')" title="Edit">Edit</button>' +
+        '<button onclick="deleteNote(' + n.id + ')" title="Delete">Delete</button>' +
       '</div></div>' +
       '<div class="note-body">' + body + '</div></div>';
   }).join("");
@@ -4356,8 +4497,8 @@ function deobfuscate(str) {
 function saveAiKey() {
   const provider = document.getElementById("aiProvider").value;
   const key = document.getElementById("aiKeyInput").value.trim();
-  if (!key) { toast("⚠️ Please enter an API key"); return; }
-  if (key.length < 10) { toast("⚠️ That doesn't look like a valid API key"); return; }
+  if (!key) { toast("Please enter an API key"); return; }
+  if (key.length < 10) { toast("That doesn't look like a valid API key"); return; }
 
   const selectedModel = document.getElementById("aiModel")?.value || "";
   const config = { provider, key: obfuscate(key), model: selectedModel, ts: Date.now() };
@@ -4366,7 +4507,7 @@ function saveAiKey() {
   if (provider === "custom") {
     const customUrl = document.getElementById("customApiUrl").value.trim();
     const customModel = document.getElementById("customModelName").value.trim();
-    if (!customUrl) { toast("⚠️ Enter your custom API URL"); return; }
+    if (!customUrl) { toast("Enter your custom API URL"); return; }
     config.customUrl = customUrl;
     config.customModel = customModel || "default";
   }
@@ -4384,7 +4525,7 @@ function saveAiKey() {
   else localStorage.removeItem("bt_custom_prompt");
 
   document.getElementById("aiKeyInput").value = "";
-  toast("✅ " + (botName || "AI Advisor") + " is ready!");
+  toast("" + (botName || "AI Advisor") + " is ready!");
   initAiChat();
 }
 
@@ -4526,7 +4667,7 @@ function renderFailoverList() {
       '<span class="fo-num">' + (i + 1) + '</span>' +
       '<span class="fo-provider">' + (providerNames[f.provider] || f.provider) + '</span>' +
       '<span class="fo-status">Ready</span>' +
-      '<button class="fo-remove" onclick="event.stopPropagation();removeFailover(' + i + ')" title="Remove">✕</button>' +
+      '<button class="fo-remove" onclick="event.stopPropagation();removeFailover(' + i + ')" title="Remove"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button>' +
     '</div>';
   }).join("");
 }
@@ -4647,7 +4788,7 @@ function renderUsageBar() {
   // Milestone alerts (based on local session, not spammy)
   if (pct >= 90 && !window._usageWarned90) {
     window._usageWarned90 = true;
-    toast("⚠️ 90% of your AI limit used (" + used + "/" + limit + ")");
+    toast("90% of your AI limit used (" + used + "/" + limit + ")");
   } else if (pct >= 70 && pct < 90 && !window._usageWarned70) {
     window._usageWarned70 = true;
     toast("You've used 70% of your AI requests (" + used + "/" + limit + ")");
@@ -4729,7 +4870,7 @@ async function callWithFailover(context, chatHistory) {
 function removeAiKey() {
   if (!confirm("Remove your API key? You'll need to re-enter it to use AI.")) return;
   localStorage.removeItem(AI_KEY_STORAGE);
-  toast("🗑️ API key removed");
+  toast("API key removed");
   initAiChat();
 }
 
@@ -4786,13 +4927,13 @@ function initAiChat() {
         addChatMessage("bot", `Hey! I can see your spending data — ask me anything about your budget, or tap a quick action above.`);
       }
     }
-    if (settingsKey) { settingsKey.textContent = "✅ Configured"; settingsKey.style.color = "var(--suc)"; }
+    if (settingsKey) { settingsKey.textContent = "Configured"; settingsKey.style.color = "var(--suc)"; }
     if (removeBtn) removeBtn.style.display = "inline-flex";
   } else {
     if (setup) setup.style.display = "block";
     if (chat) chat.style.display = "none";
     if (settingsProvider) settingsProvider.textContent = "Not set";
-    if (settingsKey) { settingsKey.textContent = "❌ Not configured"; settingsKey.style.color = "var(--dan)"; }
+    if (settingsKey) { settingsKey.textContent = "Not configured"; settingsKey.style.color = "var(--dan)"; }
     if (removeBtn) removeBtn.style.display = "none";
   }
 
@@ -4899,7 +5040,7 @@ RULES:
 7. For tax, investment, insurance, and legal topics: give helpful guidance with a brief caveat.
 8. End with ONE short practical sentence — not a motivational paragraph.
 9. If no expenses yet, explain the 50/30/20 rule simply.
-10. Only on your FIRST response, end with: "💡 General guidance only — consult a professional for big financial decisions."
+10. Only on your FIRST response, end with: "General guidance only — consult a professional for big financial decisions."
 11. NEVER be dismissive or sycophantic. No "I already told you", no "You're absolutely right", no "My apologies." Just answer naturally.
 
 ACTION SUGGESTIONS:
@@ -5178,7 +5319,7 @@ async function sendChat() {
   if (!msg) return;
 
   const config = getAiConfig();
-  if (!config) { toast("⚠️ Set up your API key first"); return; }
+  if (!config) { toast("Set up your API key first"); return; }
 
   // Check usage limit
   const usage = getUsageData();
@@ -5572,7 +5713,7 @@ function showTyping() {
   div.className = "chat-msg bot";
   div.id = "typing-" + Date.now();
   div.innerHTML = `
-    <div class="chat-avatar">🤖</div>
+    <div class="chat-avatar"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/><path d="M14 8l-1 3h2l-1 3"/><circle cx="9" cy="10" r="0.5" fill="currentColor"/></svg></div>
     <div class="chat-bubble"><div class="typing-dots"><span></span><span></span><span></span></div></div>
   `;
   container.appendChild(div);
@@ -5647,12 +5788,12 @@ function showApiGuide() {
   };
 
   const guide = guides[provider];
-  let html = `<div class="modal-head"><h3>📖 Get a Free ${guide.name} API Key</h3><button class="close-modal" onclick="closeApiGuide()">✕</button></div>`;
+  let html = `<div class="modal-head"><h3>Get a Free ${guide.name} API Key</h3><button class="close-modal" onclick="closeApiGuide()" aria-label="Close"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>`;
   html += `<p class="modal-sub">Follow these steps — takes about 2 minutes:</p>`;
   guide.steps.forEach((step, i) => {
     html += `<div class="step"><div class="step-num">${i+1}</div><div class="step-text"><strong>${step[0]}</strong>${step[1]}</div></div>`;
   });
-  html += `<div class="info-box info" style="margin-top:12px">💡 ${guide.note}</div>`;
+  html += `<div class="info-box info" style="margin-top:12px">${guide.note}</div>`;
   html += `<div class="modal-actions"><button class="btn btn-pri" onclick="closeApiGuide()">Got it!</button></div>`;
 
   // Reuse install modal structure
@@ -5688,11 +5829,11 @@ function dateStamp() {
 
 // ─── THEMES ────────────────────────────────────────────────
 const THEMES = {
-  sage:     { pri:"#6C9A8B", priL:"#E8F0ED", priD:"#4A7A6B", acc:"#E8985E", accL:"#FDF0E6", suc:"#5CB85C", sucL:"#EAF7EA", dan:"#D9534F", danL:"#FDEAEA", bg:"#F0F4F3", card:"#fff", txt:"#1A2421", txt2:"#5A6B66", brd:"#DFE6E9", onPri:"#fff", inputBg:"#fff" },
-  blush:    { pri:"#D4A0A0", priL:"#F7EDED", priD:"#B07878", acc:"#C9956B", accL:"#FBF0E5", suc:"#7EC8A0", sucL:"#E5F5EC", dan:"#D9534F", danL:"#FDEAEA", bg:"#FDF6F6", card:"#fff", txt:"#2D3436", txt2:"#636E72", brd:"#F0DEDE", onPri:"#fff", inputBg:"#fff" },
-  dark:     { pri:"#89B4FA", priL:"#1E293B", priD:"#74C7EC", acc:"#FAB387", accL:"#2D2D44", suc:"#A6E3A1", sucL:"#1A2E1A", dan:"#F38BA8", danL:"#3D1F28", bg:"#0F172A", card:"#1E293B", txt:"#E2E8F0", txt2:"#94A3B8", brd:"#334155", onPri:"#0F172A", inputBg:"#0F172A" },
-  ocean:    { pri:"#5B8FB9", priL:"#E5EFF7", priD:"#3A6D94", acc:"#E8985E", accL:"#FDF0E6", suc:"#5CB85C", sucL:"#EAF7EA", dan:"#D9534F", danL:"#FDEAEA", bg:"#F0F5FA", card:"#fff", txt:"#2D3436", txt2:"#636E72", brd:"#D0DEE9", onPri:"#fff", inputBg:"#fff" },
-  lavender: { pri:"#9B89B3", priL:"#F0ECF5", priD:"#7A6899", acc:"#D4956B", accL:"#FBF0E5", suc:"#7EC8A0", sucL:"#E5F5EC", dan:"#D9534F", danL:"#FDEAEA", bg:"#F7F5FA", card:"#fff", txt:"#2D3436", txt2:"#636E72", brd:"#E0D8EA", onPri:"#fff", inputBg:"#fff" }
+  sage:     { pri:"#7E9A8E", priL:"#EEF3EF", priD:"#4E6F62", acc:"#B9926B", accL:"#F6EFE6", suc:"#6E9B72", sucL:"#EDF5ED", dan:"#B86A62", danL:"#F7EDEA", bg:"#F7F4EE", card:"#FFFDF8", txt:"#20231F", txt2:"#6F746D", brd:"#E7E0D6", onPri:"#fff", inputBg:"#FFFDF8", brandFilter:"none", texture:"rgba(78,111,98,.045)" },
+  blush:    { pri:"#D4A0A0", priL:"#F7EDED", priD:"#B07878", acc:"#C9956B", accL:"#FBF0E5", suc:"#7EC8A0", sucL:"#E5F5EC", dan:"#D9534F", danL:"#FDEAEA", bg:"#FDF6F6", card:"#fff", txt:"#2D3436", txt2:"#636E72", brd:"#F0DEDE", onPri:"#fff", inputBg:"#fff", brandFilter:"none", texture:"rgba(78,111,98,.045)" },
+  dark:     { pri:"#9DB5AA", priL:"#1E2A2F", priD:"#D8E2DD", acc:"#C4A47D", accL:"#2C2721", suc:"#94B79A", sucL:"#1F2B22", dan:"#D08A82", danL:"#341F1D", bg:"#111C27", card:"#172332", txt:"#F4EFE6", txt2:"#AEB7B1", brd:"#2A3945", onPri:"#111C27", inputBg:"#111C27", brandFilter:"invert(1) brightness(1.25) contrast(.95)", texture:"rgba(255,255,255,.035)" },
+  ocean:    { pri:"#5B8FB9", priL:"#E5EFF7", priD:"#3A6D94", acc:"#E8985E", accL:"#FDF0E6", suc:"#5CB85C", sucL:"#EAF7EA", dan:"#D9534F", danL:"#FDEAEA", bg:"#F0F5FA", card:"#fff", txt:"#2D3436", txt2:"#636E72", brd:"#D0DEE9", onPri:"#fff", inputBg:"#fff", brandFilter:"none", texture:"rgba(78,111,98,.045)" },
+  lavender: { pri:"#9B89B3", priL:"#F0ECF5", priD:"#7A6899", acc:"#D4956B", accL:"#FBF0E5", suc:"#7EC8A0", sucL:"#E5F5EC", dan:"#D9534F", danL:"#FDEAEA", bg:"#F7F5FA", card:"#fff", txt:"#2D3436", txt2:"#636E72", brd:"#E0D8EA", onPri:"#fff", inputBg:"#fff", brandFilter:"none", texture:"rgba(78,111,98,.045)" }
 };
 
 function applyTheme(t) {
@@ -5705,6 +5846,8 @@ function applyTheme(t) {
   r.setProperty("--txt",   t.txt);   r.setProperty("--txt2",  t.txt2);  r.setProperty("--brd", t.brd);
   r.setProperty("--on-pri", t.onPri || "#fff");
   r.setProperty("--input-bg", t.inputBg || "#fff");
+  r.setProperty("--brand-filter", t.brandFilter || "none");
+  r.setProperty("--texture", t.texture || "rgba(78,111,98,.045)");
 }
 
 function setTheme(name, dotEl) {
@@ -5714,7 +5857,7 @@ function setTheme(name, dotEl) {
   document.querySelectorAll(".theme-dot").forEach(d => d.classList.remove("active"));
   if (dotEl) dotEl.classList.add("active");
   localStorage.setItem("budget_theme", name);
-  toast("🎨 Theme updated!");
+  toast("Theme updated!");
 }
 
 function loadTheme() {
@@ -5882,7 +6025,7 @@ document.addEventListener("click", e => {
 // ─── PWA: Register Service Worker ──────────────────────────
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('./sw.js').then(reg => {
-    console.log('✅ SW registered:', reg.scope);
+    console.log('SW registered:', reg.scope);
   }).catch(err => console.log('SW failed:', err));
 }
 
@@ -5899,7 +6042,7 @@ function installPWA() {
     // Browser supports auto-install — use it
     deferredPrompt.prompt();
     deferredPrompt.userChoice.then(result => {
-      if (result.outcome === 'accepted') toast("App installed! Find it on your home screen.");
+      if (result.outcome === 'accepted') toast("App installed. Find it on your home screen.");
       deferredPrompt = null;
       document.getElementById('installBanner').classList.remove('show');
     });
@@ -5919,8 +6062,8 @@ function dismissInstall() {
 
 window.addEventListener('appinstalled', () => {
   document.getElementById('installBanner').classList.remove('show');
-  toast("🎉 App installed successfully!");
+  toast("App installed successfully!");
 });
 </script>
-</body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a13b10d89df1dd8b',t:'MTc4MjgwMDQzNA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
