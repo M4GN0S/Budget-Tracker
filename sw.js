@@ -1,4 +1,4 @@
-// ─── SERVICE WORKER v2 — Smart caching + auto-update ───────
+// ─── SERVICE WORKER v4 — Smart caching + auto-update ───────
 // 
 // STRATEGY:
 //   HTML files → Network first, fall back to cache (always gets latest)
@@ -9,15 +9,19 @@
 //   The browser detects the SW file changed → downloads new version → updates cache.
 //   You don't need to manually bump version numbers anymore.
 //
-// Last updated: 2026-06-20
+// Last updated: 2026-06-29
 
-const CACHE_NAME = 'budget-tracker-v2';
+const CACHE_NAME = 'budget-tracker-v6';
 const ASSETS = [
   './',
   './index.html',
   './manifest.json',
   './icon-192.png',
-  './icon-512.png'
+  './icon-512.png',
+  './favicon-32.png',
+  './favicon-16.png',
+  './apple-touch-icon.png',
+  './posts.json'
 ];
 
 // ─── INSTALL: Cache all assets ─────────────────────────────
