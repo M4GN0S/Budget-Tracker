@@ -1066,6 +1066,19 @@ tbody tr:hover td{background:var(--pri-l)}
   .tb-btn svg{width:15px;height:15px}
   .tb-btn.tb-wide{padding:0 7px;font-size:11px}
 }
+/* Floating "Add item" chip that appears under priced checklists */
+.add-item-row{display:flex;justify-content:center;padding:4px 0 2px}
+.add-item-chip{display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:20px;border:1.5px dashed var(--pri);background:var(--pri-l);color:var(--pri-d);font-size:11px;font-weight:700;font-family:inherit;cursor:pointer;transition:all .15s}
+.add-item-chip:hover{background:var(--pri);color:var(--on-pri);border-style:solid;transform:translateY(-1px)}
+.add-item-chip svg{width:13px;height:13px}
+/* Visually style placeholders (item N / 0.00) so they read as tappable */
+.placeholder-hint{background:linear-gradient(transparent 60%,rgba(126,154,142,.22) 60%);color:var(--txt2);border-radius:2px;padding:0 1px}
+/* Count prompt modal */
+.count-prompt-wrap{display:flex;align-items:center;gap:10px;margin:12px 0 6px;justify-content:center}
+.count-prompt-wrap button{width:36px;height:36px;border-radius:10px;border:1.5px solid var(--brd);background:var(--bg);color:var(--txt);font-size:18px;font-weight:800;cursor:pointer}
+.count-prompt-wrap button:hover{border-color:var(--pri);color:var(--pri-d);background:var(--pri-l)}
+.count-prompt-val{min-width:40px;text-align:center;font-size:22px;font-weight:900;color:var(--txt)}
+.count-prompt-sub{font-size:11px;color:var(--txt2);text-align:center;margin-bottom:14px}
 /* Related notes (inside journal modal) */
 .note-related{padding:14px 24px 4px;border-top:1px solid var(--brd);margin-top:6px}
 .note-related-label{font-size:10px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;color:var(--txt2);margin-bottom:10px;display:flex;align-items:center;gap:6px}
@@ -1949,16 +1962,22 @@ footer .footer-links a:hover{color:var(--pri-d)}
           <span class="tb-sep"></span>
           <button type="button" class="tb-btn" onclick="tbInsertLine('noteInput','- ')" title="Bullet list"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="9" y1="6" x2="21" y2="6"/><line x1="9" y1="12" x2="21" y2="12"/><line x1="9" y1="18" x2="21" y2="18"/><circle cx="4.5" cy="6" r="1.3" fill="currentColor"/><circle cx="4.5" cy="12" r="1.3" fill="currentColor"/><circle cx="4.5" cy="18" r="1.3" fill="currentColor"/></svg></button>
           <button type="button" class="tb-btn" onclick="tbInsertLine('noteInput','[ ] ')" title="Checkbox / to-do"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="3"/></svg></button>
-          <button type="button" class="tb-btn tb-wide" onclick="tbInsertPriceList('noteInput')" title="Insert shopping list with prices">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
-            Grocery ₱
-          </button>
-          <span class="tb-sep"></span>
           <button type="button" class="tb-btn" onclick="tbInsertLine('noteInput','1. ')" title="Numbered list"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><text x="2" y="10" font-size="7" font-weight="800" fill="currentColor" stroke="none">1</text><text x="2" y="17" font-size="7" font-weight="800" fill="currentColor" stroke="none">2</text><text x="2" y="23" font-size="7" font-weight="800" fill="currentColor" stroke="none">3</text><line x1="9" y1="7" x2="21" y2="7"/><line x1="9" y1="14" x2="21" y2="14"/><line x1="9" y1="21" x2="21" y2="21"/></svg></button>
           <button type="button" class="tb-btn" onclick="tbInsertHeading('noteInput')" title="Heading" style="font-weight:900;font-size:14px">H</button>
+          <span class="tb-sep"></span>
+          <button type="button" class="tb-btn tb-wide" onclick="tbInsertPriceList('noteInput')" title="Insert a priced checklist (shopping, car parts, etc.)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3 7-7"/><path d="M20 12v7a2 2 0 01-2 2H6a2 2 0 01-2-2V5a2 2 0 012-2h8"/><line x1="3.5" y1="10" x2="8.5" y2="10"/><line x1="3.5" y1="15" x2="8.5" y2="15"/></svg>
+            ₱ List
+          </button>
         </div>
-        <textarea id="noteInput" rows="3" oninput="onNoteBodyInput()" placeholder="Write your note... Tap a toolbar button above to format — or just type naturally" style="padding:10px 14px;border:1.5px solid var(--brd);border-radius:10px 10px 0 0;border-bottom:none;font-size:13px;line-height:1.55;font-family:inherit;outline:none;background:var(--bg);color:var(--txt);resize:none;overflow:hidden;min-height:70px;max-height:520px;width:100%;box-sizing:border-box"></textarea>
-        <p style="font-size:11px;color:var(--txt2);margin:0 2px 0;padding:6px 10px;background:var(--bg);border:1.5px solid var(--brd);border-top:none;border-radius:0 0 10px 10px;line-height:1.4">Tip: tap <b>B</b>/<i>I</i> to wrap selected text, use the ₱ button for a grocery list that can auto-add to expenses when checked.</p>
+        <div id="addItemRow_noteInput" class="add-item-row" style="display:none" aria-hidden="true">
+          <button type="button" class="add-item-chip" onclick="tbAddPriceRow('noteInput')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Add item
+          </button>
+        </div>
+        <textarea id="noteInput" rows="3" oninput="onNoteBodyInput()" onclick="onTextareaClick(event)" onkeydown="onTextareaKeydown(event,'noteInput')" placeholder="Write your note... Tap a toolbar button above to format — or just type naturally" style="padding:10px 14px;border:1.5px solid var(--brd);border-radius:10px 10px 0 0;border-bottom:none;font-size:13px;line-height:1.55;font-family:inherit;outline:none;background:var(--bg);color:var(--txt);resize:none;overflow:hidden;min-height:70px;max-height:520px;width:100%;box-sizing:border-box"></textarea>
+        <p style="font-size:11px;color:var(--txt2);margin:0 2px 0;padding:6px 10px;background:var(--bg);border:1.5px solid var(--brd);border-top:none;border-radius:0 0 10px 10px;line-height:1.4">Tip: tap <b>B</b>/<i>I</i> to wrap selected text. The <b>₱ List</b> button inserts a priced checklist — check every box to auto-add items to Expenses.</p>
         <div class="note-privacy-note" id="notePrivacyNote">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
           <span><strong>Keep it safe:</strong> please don't write passwords, full card or bank account numbers, OTPs, or other sensitive details here. If you use the AI advisor, your message is sent to your chosen AI provider.</span>
@@ -5061,6 +5080,8 @@ function autoGrowTextarea(el) {
   const max = parseInt(getComputedStyle(el).maxHeight, 10) || 99999;
   el.style.height = Math.min(el.scrollHeight, max) + "px";
   el.style.overflowY = el.scrollHeight > max ? "auto" : "hidden";
+  // Keep the "+ Add item" chip in sync for ₱ lists
+  if (el.id === "noteInput" || el.id === "noteEditText") _showAddItemChip(el.id);
 }
 
 // ─── TOOLBAR HELPERS (insert-at-cursor, wrap, etc.) ───────
@@ -5106,30 +5127,206 @@ function tbInsertLine(textareaId, prefix) {
 // Insert a heading (### ) on a new line
 function tbInsertHeading(textareaId) { tbInsertLine(textareaId, "### "); }
 
-// Insert a starter "shopping/grocery list with prices" template — a set of
-// checkbox items with ₱0.00 placeholders the user fills in. When every item
-// is checked, the app will offer to add them to Expenses.
+// Insert a "priced checklist" (₱ List) — works for groceries, car parts, supplies,
+// anything with items + prices. Prompts for item count, generates template rows
+// with click-once-to-edit placeholders, and shows a floating "+ Add item" chip.
+const _PLACEHOLDER_ITEM_RE = /^Item\s+(\d+)$/i; // matches "Item 1", "Item 3", ...
+const _PLACEHOLDER_PRICE_RE = /^0(?:\.00?)?$/;   // matches "0", "0.0", "0.00"
+
 function tbInsertPriceList(textareaId) {
   const ta = _tbEl(textareaId); if (!ta) return;
-  ta.focus();
+  // Prompt the user for how many rows (with a tiny in-page modal, no native prompt)
+  _showCountPrompt(count => {
+    const sym = getCurrency();
+    ta.focus();
+    const start = ta.selectionStart;
+    const val = ta.value;
+    let before = val.substring(0, start);
+    const after  = val.substring(start);
+    const nl = (before.length === 0 || before.endsWith("\n")) ? "" : "\n";
+    let rows = "";
+    for (let i = 1; i <= count; i++) {
+      rows += "[ ] Item " + i + " — " + sym + " 0.00\n";
+    }
+    ta.value = before + nl + rows + after;
+    // Select "Item 1" so the user can immediately type to replace it
+    const firstItemStart = (before + nl).length + "[ ] ".length;
+    ta.setSelectionRange(firstItemStart, firstItemStart + "Item 1".length);
+    ta.dispatchEvent(new Event("input", { bubbles: true }));
+    _showAddItemChip(textareaId, true);
+    // Auto-set tag to Checklist (composer only)
+    const tagSel = document.getElementById("noteTag");
+    if (tagSel) { tagSel.value = "checklist"; markNoteTagManual(); }
+    toast("₱ List added — tap a placeholder to edit. Check all items off to log them as expenses.");
+  });
+}
+
+// Append a new blank priced-checklist row at the end of the current list
+function tbAddPriceRow(textareaId) {
+  const ta = _tbEl(textareaId); if (!ta) return;
   const sym = getCurrency();
-  const start = ta.selectionStart;
   const val = ta.value;
-  let before = val.substring(0, start);
-  const after  = val.substring(start);
-  const nl = (before.length === 0 || before.endsWith("\n")) ? "" : "\n";
-  const template = nl +
-    "[ ] Item 1 — " + sym + " 0.00\n" +
-    "[ ] Item 2 — " + sym + " 0.00\n" +
-    "[ ] Item 3 — " + sym + " 0.00\n";
-  ta.value = before + template + after;
-  const pos = before.length + ("[ ] ".length);
-  ta.setSelectionRange(pos, pos + "Item 1".length);
+  const lines = val.split("\n");
+  // Determine the next item number by scanning existing "[ ] Item N — ..." lines
+  let maxN = 0;
+  for (const ln of lines) {
+    const m = ln.match(/^\s*\[[ xX]\]\s*Item\s+(\d+)/i);
+    if (m) maxN = Math.max(maxN, parseInt(m[1], 10));
+  }
+  const nextN = maxN + 1;
+  // Ensure the document ends with a newline before adding
+  const prefix = val.length === 0 || val.endsWith("\n") ? "" : "\n";
+  const newRow = prefix + "[ ] Item " + nextN + " — " + sym + " 0.00\n";
+  ta.value = val + newRow;
+  // Move cursor to select "Item N" on the new row
+  const start = (val + prefix + "[ ] ").length;
+  ta.focus();
+  ta.setSelectionRange(start, start + ("Item " + nextN).length);
   ta.dispatchEvent(new Event("input", { bubbles: true }));
-  // Auto-set tag to Checklist for the composer
-  const tagSel = document.getElementById("noteTag");
-  if (tagSel) { tagSel.value = "checklist"; markNoteTagManual(); }
-  toast("Grocery list added — fill in items & prices. Check them all to log expenses automatically.");
+}
+
+// Show or hide the "+ Add item" chip depending on whether the textarea currently
+// contains a priced checklist.
+function _showAddItemChip(textareaId, show) {
+  const chipRow = document.getElementById("addItemRow_" + textareaId);
+  if (!chipRow) return;
+  const ta = _tbEl(textareaId);
+  const sym = getCurrency().replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const priceLineRe = new RegExp("^\\s*\\[[ x]\\]\\s*.+?\\s*(?:[-–—]+\\s*)?(?:" + sym + "\\s*)?\\d", "im");
+  const hasPriceList = ta && priceLineRe.test(ta.value);
+  chipRow.style.display = (show || hasPriceList) ? "flex" : "none";
+}
+
+// Tiny in-page "How many items?" prompt. Returns count via callback.
+function _showCountPrompt(cb) {
+  const overlay = document.createElement("div");
+  overlay.className = "modal-overlay show";
+  overlay.style.zIndex = "2001";
+  let count = 3;
+  function render() {
+    overlay.innerHTML = '<div class="modal" style="max-width:340px">' +
+      '<div class="modal-head"><h3>New ₱ List</h3>' +
+        '<button class="close-modal" aria-label="Close" onclick="this.closest(\'.modal-overlay\').remove()">' +
+          '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>' +
+        '</button></div>' +
+      '<p class="modal-sub">How many items do you want to start with? You can add or remove rows anytime.</p>' +
+      '<div class="count-prompt-wrap">' +
+        '<button type="button" id="_cpMinus" aria-label="Decrease">−</button>' +
+        '<div class="count-prompt-val" id="_cpVal">' + count + '</div>' +
+        '<button type="button" id="_cpPlus" aria-label="Increase">+</button>' +
+      '</div>' +
+      '<div class="count-prompt-sub">Tip: you can also start with 1 and tap <b>+ Add item</b> later.</div>' +
+      '<div class="modal-actions" style="gap:8px;display:flex;justify-content:flex-end">' +
+        '<button class="btn btn-sec" id="_cpCancel">Cancel</button>' +
+        '<button class="btn btn-pri" id="_cpOk">Add ' + count + ' item' + (count === 1 ? '' : 's') + '</button>' +
+      '</div>' +
+    '</div>';
+    document.body.appendChild(overlay);
+    overlay.onclick = e => { if (e.target === overlay) overlay.remove(); };
+    const valEl = overlay.querySelector('#_cpVal');
+    const minus = overlay.querySelector('#_cpMinus');
+    const plus  = overlay.querySelector('#_cpPlus');
+    const ok    = overlay.querySelector('#_cpOk');
+    const cancel= overlay.querySelector('#_cpCancel');
+    function redraw() {
+      valEl.textContent = count;
+      ok.textContent = 'Add ' + count + ' item' + (count === 1 ? '' : 's');
+    }
+    minus.onclick = () => { count = Math.max(1, count - 1); redraw(); };
+    plus.onclick  = () => { count = Math.min(30, count + 1); redraw(); };
+    cancel.onclick = () => overlay.remove();
+    ok.onclick = () => { overlay.remove(); cb(count); };
+  }
+  render();
+}
+
+// Click handler on journal textareas — if the user clicks on a placeholder token
+// ("Item N" or "0.00"), select it so one keystroke replaces it.
+function onTextareaClick(e) {
+  const ta = e.target;
+  if (!ta || ta.tagName !== "TEXTAREA") return;
+  // Defer so selection is settled
+  setTimeout(() => _maybeSelectPlaceholder(ta), 0);
+}
+
+function _maybeSelectPlaceholder(ta) {
+  const pos = ta.selectionStart;
+  if (pos !== ta.selectionEnd) return; // user is dragging to select — don't fight
+  const { line, lineStart } = _currentLine(ta, pos);
+  // Match priced-checklist line: "[ ] Item N — ₱ 0.00" (or [x], any currency symbol, with/without decimals)
+  const m = line.match(/^(\s*\[[ xX]\]\s*)(Item\s+\d+)(\s*[-–—]+\s*[^\d\s]?\s*)(0(?:\.0+)?|\d[\d,]*\.00|\d+)(\s*)$/i);
+  if (!m) return;
+  const itemStart = lineStart + m[1].length;
+  const itemEnd   = itemStart + m[2].length;
+  const priceStart= lineStart + (m[1].length + m[2].length + m[3].length);
+  const priceEnd  = priceStart + m[4].length;
+  if (pos >= itemStart && pos <= itemEnd) {
+    ta.setSelectionRange(itemStart, itemEnd);
+  } else if (pos >= priceStart && pos <= priceEnd) {
+    ta.setSelectionRange(priceStart, priceEnd);
+  }
+}
+
+function _currentLine(ta, pos) {
+  const val = ta.value;
+  let start = pos;
+  while (start > 0 && val.charAt(start - 1) !== "\n") start--;
+  let end = pos;
+  while (end < val.length && val.charAt(end) !== "\n") end++;
+  return { line: val.substring(start, end), lineStart: start, lineEnd: end };
+}
+
+// Keydown handler on journal textareas — Tab moves between placeholders, Enter on
+// a price-list line adds a new row at the end of the same list.
+function onTextareaKeydown(e, textareaId) {
+  const ta = e.target;
+  if (!ta) return;
+  // Bold/italic shortcuts handled by the document listener already
+  if (e.key === "Tab") {
+    if (_tabToNextPlaceholder(ta, e.shiftKey ? -1 : 1)) e.preventDefault();
+    return;
+  }
+  if (e.key === "Enter" && !e.shiftKey) {
+    // If cursor is on a priced-checklist line, append a new item row instead of
+    // a blank line. (Shift+Enter for regular newline.)
+    const { line } = _currentLine(ta, ta.selectionStart);
+    if (/^\s*\[[ xX]\]\s*.+?\s*[-–—]+\s*[^\d\s]?\s*\d/.test(line)) {
+      e.preventDefault();
+      tbAddPriceRow(textareaId);
+    }
+  }
+}
+
+function _tabToNextPlaceholder(ta, dir) {
+  // Find all placeholder positions in the textarea
+  const val = ta.value;
+  const re = /(^|\n)(\s*\[[ xX]\]\s*)(Item\s+\d+)(\s*[-–—]+\s*[^\d\s]?\s*)(0(?:\.0+)?|\d[\d,]*\.00)(?=\s*(?:\n|$))/gim;
+  const ranges = [];
+  let m;
+  while ((m = re.exec(val)) !== null) {
+    const itemStart = m.index + m[1].length + m[2].length;
+    const itemEnd   = itemStart + m[3].length;
+    const priceStart= itemEnd + m[4].length;
+    const priceEnd  = priceStart + m[5].length;
+    ranges.push({ start: itemStart, end: itemEnd, kind: "item" });
+    ranges.push({ start: priceStart, end: priceEnd, kind: "price" });
+  }
+  if (ranges.length === 0) return false;
+  const cur = ta.selectionStart;
+  // Find the next placeholder in `dir` direction
+  let target = null;
+  if (dir > 0) {
+    target = ranges.find(r => r.start > cur) || ranges[0];
+  } else {
+    const backwards = ranges.slice().reverse();
+    target = backwards.find(r => r.end < cur) || backwards[0];
+  }
+  if (target) {
+    ta.focus();
+    ta.setSelectionRange(target.start, target.end);
+    return true;
+  }
+  return false;
 }
 
 // ─── PRICE-CHECKLIST → EXPENSE AUTO-DETECTION ──────────────
@@ -5138,22 +5335,24 @@ function tbInsertPriceList(textareaId) {
 function _parseChecklistItems(text) {
   const lines = text.split(/\r?\n/);
   const items = [];
-  // Build regex once using the user's currency symbol (escaped)
+  // Accept "[x] desc — ₱123", "[x] desc ₱123", "[ ] Item 1" (no amt), etc.
   const sym = getCurrency().replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   const re = new RegExp(
-    "^\\s*\\[\\s*([ xX])\\s*\\]\\s*(.+?)\\s*(?:[-–—]+\\s*(?:" + sym + "\\s*)?([0-9]{1,3}(?:,[0-9]{3})*(?:\\.[0-9]{1,2})?|[0-9]+(?:\\.[0-9]{1,2})?))?\\s*$"
+    "^\\s*\\[\\s*([ xX])\\s*\\]\\s*(.+?)\\s*(?:[-–—]+\\s*)?(?:" + sym + "\\s*)?([0-9]{1,3}(?:,[0-9]{3})*(?:\\.[0-9]{1,2})?|[0-9]+(?:\\.[0-9]{1,2})?)?\\s*$"
   );
   for (let i = 0; i < lines.length; i++) {
     const m = lines[i].match(re);
     if (!m) continue;
     const checked = m[1].toLowerCase() === "x";
     const desc = (m[2] || "").trim();
+    // Skip "Item N" placeholders — they're not real entries yet
+    if (/^Item\s+\d+$/i.test(desc)) continue;
     const amtRaw = m[3];
     let amt = null;
     if (amtRaw) {
       const cleaned = amtRaw.replace(/,/g, "");
       const n = parseFloat(cleaned);
-      if (!isNaN(n) && n >= 0) amt = n;
+      if (!isNaN(n) && n > 0) amt = n;
     }
     items.push({ line: i, checked, desc, amt });
   }
@@ -5268,6 +5467,8 @@ function onNoteBodyInput() {
   scheduleComposeMoodNudge();
   // If the user just completed a priced checklist, offer to add to Expenses
   checkPriceListAfterToggle("noteInput");
+  // Show/hide the "+ Add item" chip based on whether there's a ₱ list in the text
+  _showAddItemChip("noteInput");
 }
 
 // Fired when the title field changes — refine the auto-tag
@@ -5777,12 +5978,17 @@ function renderNoteModal() {
           '<span class="tb-sep"></span>' +
           '<button type="button" class="tb-btn" onclick="tbInsertLine(\'noteEditText\',\'- \')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="9" y1="6" x2="21" y2="6"/><line x1="9" y1="12" x2="21" y2="12"/><line x1="9" y1="18" x2="21" y2="18"/><circle cx="4.5" cy="6" r="1.3" fill="currentColor"/><circle cx="4.5" cy="12" r="1.3" fill="currentColor"/><circle cx="4.5" cy="18" r="1.3" fill="currentColor"/></svg></button>' +
           '<button type="button" class="tb-btn" onclick="tbInsertLine(\'noteEditText\',\'[ ] \')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="3"/></svg></button>' +
-          '<button type="button" class="tb-btn tb-wide" onclick="tbInsertPriceList(\'noteEditText\')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>Grocery ₱</button>' +
-          '<span class="tb-sep"></span>' +
           '<button type="button" class="tb-btn" onclick="tbInsertLine(\'noteEditText\',\'1. \')" title="Numbered list"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><text x="2" y="10" font-size="7" font-weight="800" fill="currentColor" stroke="none">1</text><text x="2" y="17" font-size="7" font-weight="800" fill="currentColor" stroke="none">2</text><text x="2" y="23" font-size="7" font-weight="800" fill="currentColor" stroke="none">3</text><line x1="9" y1="7" x2="21" y2="7"/><line x1="9" y1="14" x2="21" y2="14"/><line x1="9" y1="21" x2="21" y2="21"/></svg></button>' +
           '<button type="button" class="tb-btn" onclick="tbInsertHeading(\'noteEditText\')" style="font-weight:900;font-size:14px">H</button>' +
+          '<span class="tb-sep"></span>' +
+          '<button type="button" class="tb-btn tb-wide" onclick="tbInsertPriceList(\'noteEditText\')" title="Insert a priced checklist"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3 7-7"/><path d="M20 12v7a2 2 0 01-2 2H6a2 2 0 01-2-2V5a2 2 0 012-2h8"/><line x1="3.5" y1="10" x2="8.5" y2="10"/><line x1="3.5" y1="15" x2="8.5" y2="15"/></svg>₱ List</button>' +
         '</div>' +
-        '<textarea id="noteEditText" oninput="autoGrowTextarea(this)" style="border-top:none;border-radius:0 0 12px 12px">' + escHtml(note.text || "") + '</textarea>' +
+        '<div id="addItemRow_noteEditText" class="add-item-row" style="display:none" aria-hidden="true">' +
+          '<button type="button" class="add-item-chip" onclick="tbAddPriceRow(\'noteEditText\')">' +
+            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Add item' +
+          '</button>' +
+        '</div>' +
+        '<textarea id="noteEditText" oninput="autoGrowTextarea(this)" onclick="onTextareaClick(event)" onkeydown="onTextareaKeydown(event,\'noteEditText\')" style="border-top:none;border-radius:0 0 12px 12px">' + escHtml(note.text || "") + '</textarea>' +
       '</div>';
     footEl.innerHTML =
       '<button class="nmf-edit" onclick="saveNoteModalEdit()" style="background:var(--pri);color:var(--on-pri);border-color:var(--pri)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Save changes</button>' +
@@ -8009,5 +8215,5 @@ window.addEventListener('appinstalled', () => {
   toast("App installed successfully!");
 });
 </script>
-</body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a17eb12d2d280491',t:'MTc4MzUwOTU0Nw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
