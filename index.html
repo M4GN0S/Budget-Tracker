@@ -892,15 +892,15 @@ tbody tr:hover td{background:var(--pri-l)}
 .note-actions button{background:none;border:none;cursor:pointer;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;padding:2px 4px;opacity:.45;transition:.2s;color:var(--txt2)}
 .note-actions button:hover{opacity:1}
 /* ─── Compact Journal List (Gmail-style rows) ─── */
-.note-row{display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--card);border:1px solid var(--brd);border-radius:12px;margin-bottom:8px;cursor:pointer;transition:.16s;position:relative}
+.note-row{display:flex;align-items:flex-start;gap:12px;padding:13px 14px;background:var(--card);border:1px solid var(--brd);border-radius:12px;margin-bottom:8px;cursor:pointer;transition:.16s;position:relative}
 .note-row:hover{box-shadow:var(--sh);border-color:var(--pri)}
 .note-row.pinned{border-left:4px solid var(--acc);background:linear-gradient(135deg,var(--card),var(--acc-l))}
-.note-row .nr-pin{flex-shrink:0;color:var(--acc);display:flex;align-items:center;opacity:.85}
+.note-row .nr-pin{flex-shrink:0;color:var(--acc);display:flex;align-items:center;opacity:.85;padding-top:1px}
 .note-row .nr-main{flex:1;min-width:0}
-.note-row .nr-top{display:flex;align-items:center;gap:8px;margin-bottom:2px}
-.note-row .nr-title{font-size:13.5px;font-weight:700;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;min-width:0}
-.note-row .nr-preview{font-size:12px;color:var(--txt2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.4}
-.note-row .nr-tag{flex-shrink:0;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;padding:2px 7px;border-radius:10px;background:var(--pri-l);color:var(--pri-d)}
+.note-row .nr-top{display:flex;align-items:flex-start;gap:8px;margin-bottom:3px}
+.note-row .nr-title{font-size:13.5px;font-weight:700;color:var(--txt);line-height:1.35;word-break:break-word;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;flex:1;min-width:0}
+.note-row .nr-preview{font-size:12px;color:var(--txt2);line-height:1.5;display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden;word-break:break-word}
+.note-row .nr-tag{flex-shrink:0;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;padding:2px 8px;border-radius:10px;background:var(--pri-l);color:var(--pri-d);margin-top:1px}
 .note-row .nr-tag.goal{background:var(--suc-l);color:var(--suc)}
 .note-row .nr-tag.reminder{background:var(--acc-l);color:var(--acc)}
 .note-row .nr-tag.reflection{background:var(--pri-l);color:var(--pri-d)}
@@ -908,14 +908,15 @@ tbody tr:hover td{background:var(--pri-l)}
 .note-row .nr-tag.receipt{background:var(--dan-l);color:var(--dan)}
 .note-row .nr-tag.checklist{background:var(--suc-l);color:var(--suc)}
 .note-row .nr-tag.tip{background:var(--acc-l);color:var(--acc)}
-.note-row .nr-meta{flex-shrink:0;display:flex;align-items:center;gap:8px;justify-content:flex-end}
+.note-row .nr-meta{flex-shrink:0;display:flex;flex-direction:column;align-items:flex-end;gap:4px;padding-top:1px}
 .note-row .nr-date{font-size:10.5px;color:var(--txt2);white-space:nowrap}
-.note-row .nr-checkbadge{font-size:10px;font-weight:700;color:var(--txt2);display:inline-flex;align-items:center;gap:3px;background:var(--bg);border:1px solid var(--brd);border-radius:8px;padding:1px 6px}
+.note-row .nr-checkbadge{font-size:10px;font-weight:700;color:var(--txt2);display:inline-flex;align-items:center;gap:3px;background:var(--bg);border:1px solid var(--brd);border-radius:8px;padding:1px 6px;white-space:nowrap}
 .note-row .nr-checkbadge svg{width:11px;height:11px}
-.note-row .nr-chevron{flex-shrink:0;color:var(--txt2);opacity:.5;display:flex;align-items:center}
+.note-row .nr-chevron{flex-shrink:0;color:var(--txt2);opacity:.45;display:flex;align-items:center;padding-top:2px}
 @media(max-width:520px){
-  .note-row .nr-preview{display:none}
-  .note-row .nr-date{display:none}
+  .note-row{padding:12px 12px;gap:10px}
+  .note-row .nr-title{font-size:13.5px;-webkit-line-clamp:3}
+  .note-row .nr-chevron{display:none}
 }
 /* ─── Journal Entry Modal ─── */
 .note-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);backdrop-filter:blur(4px);z-index:1000;display:none;align-items:flex-start;justify-content:center;padding:24px 16px;overflow-y:auto}
@@ -955,12 +956,24 @@ tbody tr:hover td{background:var(--pri-l)}
 .note-modal-foot .nmf-del:hover{background:var(--dan-l);border-color:var(--dan);color:var(--dan)}
 .note-modal-edit textarea{width:100%;padding:12px 14px;border:1.5px solid var(--pri);border-radius:12px;font-size:14px;font-family:inherit;outline:none;background:var(--input-bg);color:var(--txt);resize:none;overflow:hidden;min-height:160px;max-height:60vh;box-sizing:border-box;line-height:1.7}
 .note-modal-hint{padding:4px 24px 0;font-size:11px;color:var(--txt2)}
-@media(max-width:600px){
-  .note-modal-title{font-size:18px;padding:8px 18px 4px}
-  .note-modal-head{padding:18px 18px 0}
-  .note-modal-date,.note-modal-body{padding-left:18px;padding-right:18px}
-  .note-modal-foot{padding:14px 18px 18px}
+/* Full-screen modals on mobile for a uniform, native feel */
+@media(max-width:640px){
+  .note-overlay,.article-overlay{padding:0;align-items:stretch}
+  .note-modal,.article{border-radius:0;margin:0;width:100%;max-width:100%;min-height:100dvh;max-height:100dvh;display:flex;flex-direction:column;box-shadow:none;background:var(--card)}
+  .note-modal-head,.article-head{padding:calc(14px + env(safe-area-inset-top,0px)) 18px 0}
+  .note-modal-title{font-size:18px;padding:10px 18px 4px}
+  .note-modal-date{padding:0 18px 6px}
+  .note-modal-hint{padding:4px 18px 0}
+  .note-modal-body{padding:10px 18px 12px;flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
+  .note-modal-foot{padding:14px 18px calc(18px + env(safe-area-inset-bottom,0px))}
+  .article-meta,.article-title{padding-left:18px;padding-right:18px}
+  .article-engage{padding-left:18px;padding-right:18px;padding-bottom:calc(18px + env(safe-area-inset-bottom,0px))}
+  .article-body{padding:8px 18px 16px;flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
+  /* Install + newsletter popups also become bottom sheets */
+  .modal-overlay{align-items:flex-end !important;padding:0 !important}
+  .modal-overlay .modal{border-radius:18px 18px 0 0;margin:0;width:100%;max-width:100%;max-height:92dvh;overflow-y:auto;padding:22px 20px calc(22px + env(safe-area-inset-bottom,0px));animation:sheetUp .3s cubic-bezier(.4,0,.2,1)}
 }
+@keyframes sheetUp{from{transform:translateY(100%);opacity:1}to{transform:translateY(0);opacity:1}}
 .note-search{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
 .note-search input{flex:1;min-width:150px}
 /* Smart title suggest */
@@ -1034,6 +1047,25 @@ tbody tr:hover td{background:var(--pri-l)}
 .compose-mood-nudge .cmn-close:hover{background:var(--bg);color:var(--txt)}
 .compose-mood-nudge .cmn-btn{display:inline-flex;align-items:center;gap:7px;font-family:inherit;font-size:12px;font-weight:700;color:var(--on-pri,#fff);background:var(--pri);border:1.5px solid var(--pri);border-radius:9px;padding:8px 13px;cursor:pointer;transition:.15s}
 .compose-mood-nudge .cmn-btn:hover{filter:brightness(1.07);transform:translateY(-1px)}
+
+/* ─── Journal Formatting Toolbar ─── */
+.editor-toolbar{display:flex;align-items:center;gap:2px;padding:6px;background:var(--bg);border:1.5px solid var(--brd);border-radius:10px;margin:-2px 0 0;flex-wrap:wrap}
+.editor-toolbar.compact{padding:4px;gap:1px}
+.tb-btn{display:inline-flex;align-items:center;justify-content:center;gap:3px;background:transparent;border:none;color:var(--txt2);width:32px;height:32px;border-radius:8px;cursor:pointer;font-weight:700;font-size:13px;transition:all .15s;font-family:inherit;padding:0;flex-shrink:0}
+.tb-btn:hover{background:var(--pri-l);color:var(--pri-d)}
+.tb-btn.on{background:var(--pri);color:var(--on-pri)}
+.tb-sep{width:1px;height:18px;background:var(--brd);margin:0 3px;flex-shrink:0}
+.tb-btn.tb-wide{width:auto;padding:0 9px;font-size:12px;gap:5px}
+.tb-btn.tb-wide svg{width:14px;height:14px}
+.tb-btn svg{width:16px;height:16px}
+.tb-btn.tb-b{font-weight:900;font-family:'Helvetica Neue',Arial,sans-serif}
+.tb-btn.tb-i{font-style:italic}
+.tb-btn.tb-u{text-decoration:underline}
+@media(max-width:520px){
+  .tb-btn{width:30px;height:30px;font-size:12px}
+  .tb-btn svg{width:15px;height:15px}
+  .tb-btn.tb-wide{padding:0 7px;font-size:11px}
+}
 /* Related notes (inside journal modal) */
 .note-related{padding:14px 24px 4px;border-top:1px solid var(--brd);margin-top:6px}
 .note-related-label{font-size:10px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;color:var(--txt2);margin-bottom:10px;display:flex;align-items:center;gap:6px}
@@ -1374,7 +1406,18 @@ footer .footer-links a:hover{color:var(--pri-d)}
   .badge{font-size:10px;padding:4px 10px}
   .goals-form{grid-template-columns:1fr !important}
   .goal-header{flex-direction:column;align-items:flex-start;gap:6px}
-  .donut-wrap{flex-direction:column}
+  /* Donut + legend stay side-by-side on phones; only stack on tiny screens <380px */
+  .donut-wrap{flex-direction:row;gap:18px;align-items:center;justify-content:flex-start}
+  .donut-svg{width:150px;height:150px;flex-shrink:0}
+  .donut-legend{min-width:0;gap:8px;flex:1}
+  .leg-item{padding:4px 6px;gap:8px}
+  .leg-dot{width:11px;height:11px}
+  .leg-label strong{font-size:12.5px}
+  .leg-label span{font-size:11px}
+}
+@media(max-width:380px){
+  .donut-wrap{flex-direction:column;align-items:center}
+  .donut-svg{width:170px;height:170px}
 }
 </style>
 </head>
@@ -1900,8 +1943,22 @@ footer .footer-links a:hover{color:var(--pri-d)}
             <span>Suggest</span>
           </button>
         </div>
-        <textarea id="noteInput" rows="3" oninput="onNoteBodyInput()" placeholder="Write your note... Tip: use - for bullets, [ ] for a checklist, **bold**" style="padding:10px 14px;border:1.5px solid var(--brd);border-radius:10px;font-size:13px;line-height:1.55;font-family:inherit;outline:none;background:var(--bg);color:var(--txt);resize:none;overflow:hidden;min-height:70px;max-height:520px;width:100%;box-sizing:border-box"></textarea>
-        <p style="font-size:11px;color:var(--txt2);margin:-2px 2px 0">Formatting: <code>- item</code> = bullet · <code>[ ] task</code> = checkbox · <code>**bold**</code> · <code>*italic*</code></p>
+        <div class="editor-toolbar" id="composerToolbar" role="toolbar" aria-label="Formatting">
+          <button type="button" class="tb-btn tb-b" onclick="tbWrap('noteInput','**','**')" title="Bold (Ctrl/Cmd+B)"><b>B</b></button>
+          <button type="button" class="tb-btn tb-i" onclick="tbWrap('noteInput','*','*')" title="Italic"><i>I</i></button>
+          <span class="tb-sep"></span>
+          <button type="button" class="tb-btn" onclick="tbInsertLine('noteInput','- ')" title="Bullet list"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="9" y1="6" x2="21" y2="6"/><line x1="9" y1="12" x2="21" y2="12"/><line x1="9" y1="18" x2="21" y2="18"/><circle cx="4.5" cy="6" r="1.3" fill="currentColor"/><circle cx="4.5" cy="12" r="1.3" fill="currentColor"/><circle cx="4.5" cy="18" r="1.3" fill="currentColor"/></svg></button>
+          <button type="button" class="tb-btn" onclick="tbInsertLine('noteInput','[ ] ')" title="Checkbox / to-do"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="3"/></svg></button>
+          <button type="button" class="tb-btn tb-wide" onclick="tbInsertPriceList('noteInput')" title="Insert shopping list with prices">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+            Grocery ₱
+          </button>
+          <span class="tb-sep"></span>
+          <button type="button" class="tb-btn" onclick="tbInsertLine('noteInput','1. ')" title="Numbered list"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><text x="2" y="10" font-size="7" font-weight="800" fill="currentColor" stroke="none">1</text><text x="2" y="17" font-size="7" font-weight="800" fill="currentColor" stroke="none">2</text><text x="2" y="23" font-size="7" font-weight="800" fill="currentColor" stroke="none">3</text><line x1="9" y1="7" x2="21" y2="7"/><line x1="9" y1="14" x2="21" y2="14"/><line x1="9" y1="21" x2="21" y2="21"/></svg></button>
+          <button type="button" class="tb-btn" onclick="tbInsertHeading('noteInput')" title="Heading" style="font-weight:900;font-size:14px">H</button>
+        </div>
+        <textarea id="noteInput" rows="3" oninput="onNoteBodyInput()" placeholder="Write your note... Tap a toolbar button above to format — or just type naturally" style="padding:10px 14px;border:1.5px solid var(--brd);border-radius:10px 10px 0 0;border-bottom:none;font-size:13px;line-height:1.55;font-family:inherit;outline:none;background:var(--bg);color:var(--txt);resize:none;overflow:hidden;min-height:70px;max-height:520px;width:100%;box-sizing:border-box"></textarea>
+        <p style="font-size:11px;color:var(--txt2);margin:0 2px 0;padding:6px 10px;background:var(--bg);border:1.5px solid var(--brd);border-top:none;border-radius:0 0 10px 10px;line-height:1.4">Tip: tap <b>B</b>/<i>I</i> to wrap selected text, use the ₱ button for a grocery list that can auto-add to expenses when checked.</p>
         <div class="note-privacy-note" id="notePrivacyNote">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
           <span><strong>Keep it safe:</strong> please don't write passwords, full card or bank account numbers, OTPs, or other sensitive details here. If you use the AI advisor, your message is sent to your chosen AI provider.</span>
@@ -4415,11 +4472,28 @@ function closeArticle() {
 
 // Close the journal modal with the Escape key
 document.addEventListener("keydown", function(e) {
+  // Escape closes topmost overlay
   if (e.key === "Escape") {
+    const apiGuide = document.getElementById("apiGuideModal");
+    if (apiGuide) { apiGuide.remove(); return; }
     const noteOv = document.getElementById("noteOverlay");
     if (noteOv && noteOv.classList.contains("show")) {
       if (typeof _noteModalEditing !== "undefined" && _noteModalEditing) { cancelNoteModalEdit(); }
       else { closeNoteModal(); }
+      return;
+    }
+    const artOv = document.getElementById("articleOverlay");
+    if (artOv && artOv.classList.contains("show")) { closeArticle(); return; }
+    const installM = document.getElementById("installModal");
+    if (installM && installM.classList.contains("show")) { closeInstallGuide(); return; }
+  }
+  // Keyboard shortcuts on journal textareas: Ctrl/Cmd+B = bold, Ctrl/Cmd+I = italic
+  if ((e.ctrlKey || e.metaKey) && (e.key === "b" || e.key === "B" || e.key === "i" || e.key === "I")) {
+    const ta = document.activeElement;
+    if (ta && ta.tagName === "TEXTAREA" && (ta.id === "noteInput" || ta.id === "noteEditText")) {
+      e.preventDefault();
+      if (e.key.toLowerCase() === "b") tbWrap(ta, "**", "**", "bold text");
+      else tbWrap(ta, "*", "*", "italic text");
     }
   }
 });
@@ -4989,6 +5063,192 @@ function autoGrowTextarea(el) {
   el.style.overflowY = el.scrollHeight > max ? "auto" : "hidden";
 }
 
+// ─── TOOLBAR HELPERS (insert-at-cursor, wrap, etc.) ───────
+function _tbEl(id) { return typeof id === "string" ? document.getElementById(id) : id; }
+
+// Wrap the current selection with before/after tokens (bold/italic). If nothing
+// selected, inserts sample text so the user has something to type over.
+function tbWrap(textareaId, before, after, placeholder) {
+  const ta = _tbEl(textareaId); if (!ta) return;
+  ta.focus();
+  const start = ta.selectionStart, end = ta.selectionEnd;
+  const val = ta.value;
+  const sel = val.substring(start, end);
+  const insert = before + (sel || (placeholder || "text")) + after;
+  ta.value = val.substring(0, start) + insert + val.substring(end);
+  const newStart = start + before.length;
+  const newEnd = newStart + (sel || (placeholder || "text")).length;
+  ta.setSelectionRange(newStart, newEnd);
+  ta.dispatchEvent(new Event("input", { bubbles: true }));
+}
+
+// Insert a new line with the given prefix (bullet, checkbox, numbered).
+// If cursor is in the middle of a line, moves to a new line first.
+function tbInsertLine(textareaId, prefix) {
+  const ta = _tbEl(textareaId); if (!ta) return;
+  ta.focus();
+  const start = ta.selectionStart;
+  const val = ta.value;
+  let before = val.substring(0, start);
+  const after  = val.substring(start);
+  // If we're at start or the previous char is a newline, just prepend prefix.
+  if (before.length === 0 || before.endsWith("\n")) {
+    before = before + prefix;
+  } else {
+    before = before + "\n" + prefix;
+  }
+  ta.value = before + after;
+  const pos = before.length;
+  ta.setSelectionRange(pos, pos);
+  ta.dispatchEvent(new Event("input", { bubbles: true }));
+}
+
+// Insert a heading (### ) on a new line
+function tbInsertHeading(textareaId) { tbInsertLine(textareaId, "### "); }
+
+// Insert a starter "shopping/grocery list with prices" template — a set of
+// checkbox items with ₱0.00 placeholders the user fills in. When every item
+// is checked, the app will offer to add them to Expenses.
+function tbInsertPriceList(textareaId) {
+  const ta = _tbEl(textareaId); if (!ta) return;
+  ta.focus();
+  const sym = getCurrency();
+  const start = ta.selectionStart;
+  const val = ta.value;
+  let before = val.substring(0, start);
+  const after  = val.substring(start);
+  const nl = (before.length === 0 || before.endsWith("\n")) ? "" : "\n";
+  const template = nl +
+    "[ ] Item 1 — " + sym + " 0.00\n" +
+    "[ ] Item 2 — " + sym + " 0.00\n" +
+    "[ ] Item 3 — " + sym + " 0.00\n";
+  ta.value = before + template + after;
+  const pos = before.length + ("[ ] ".length);
+  ta.setSelectionRange(pos, pos + "Item 1".length);
+  ta.dispatchEvent(new Event("input", { bubbles: true }));
+  // Auto-set tag to Checklist for the composer
+  const tagSel = document.getElementById("noteTag");
+  if (tagSel) { tagSel.value = "checklist"; markNoteTagManual(); }
+  toast("Grocery list added — fill in items & prices. Check them all to log expenses automatically.");
+}
+
+// ─── PRICE-CHECKLIST → EXPENSE AUTO-DETECTION ──────────────
+// Regex: matches "[x] item — ₱123.00" or "[ ] rice — ₱50"
+// We accept currency symbol (optional) and amounts with/without decimals/comma thousands.
+function _parseChecklistItems(text) {
+  const lines = text.split(/\r?\n/);
+  const items = [];
+  // Build regex once using the user's currency symbol (escaped)
+  const sym = getCurrency().replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const re = new RegExp(
+    "^\\s*\\[\\s*([ xX])\\s*\\]\\s*(.+?)\\s*(?:[-–—]+\\s*(?:" + sym + "\\s*)?([0-9]{1,3}(?:,[0-9]{3})*(?:\\.[0-9]{1,2})?|[0-9]+(?:\\.[0-9]{1,2})?))?\\s*$"
+  );
+  for (let i = 0; i < lines.length; i++) {
+    const m = lines[i].match(re);
+    if (!m) continue;
+    const checked = m[1].toLowerCase() === "x";
+    const desc = (m[2] || "").trim();
+    const amtRaw = m[3];
+    let amt = null;
+    if (amtRaw) {
+      const cleaned = amtRaw.replace(/,/g, "");
+      const n = parseFloat(cleaned);
+      if (!isNaN(n) && n >= 0) amt = n;
+    }
+    items.push({ line: i, checked, desc, amt });
+  }
+  return items;
+}
+
+function _checkPriceListComplete(textareaId) {
+  const ta = _tbEl(textareaId); if (!ta) return null;
+  const items = _parseChecklistItems(ta.value);
+  if (items.length === 0) return null;
+  const priceItems = items.filter(it => it.amt !== null && it.amt > 0);
+  if (priceItems.length === 0) return null;
+  const allChecked = priceItems.every(it => it.checked);
+  if (!allChecked) return null;
+  // Avoid nagging repeatedly per note — use sessionStorage keyed by a hash of content
+  const key = "bt_plist_nagged_" + hashString(ta.value);
+  if (sessionStorage.getItem(key)) return null;
+  return { items: priceItems, dismissKey: key };
+}
+
+function hashString(s) {
+  let h = 0;
+  for (let i = 0; i < s.length; i++) { h = ((h << 5) - h + s.charCodeAt(i)) | 0; }
+  return Math.abs(h).toString(36);
+}
+
+function _promptAddChecklistToExpenses(items, dismissKey) {
+  const total = items.reduce((s, it) => s + it.amt, 0);
+  const count = items.length;
+  // Build a small modal prompt
+  const overlay = document.createElement("div");
+  overlay.className = "modal-overlay show";
+  overlay.style.zIndex = "2000";
+  const html =
+    '<div class="modal" style="max-width:420px">' +
+      '<div class="modal-head"><h3>Add list to expenses?</h3>' +
+        '<button class="close-modal" aria-label="Close" onclick="this.closest(\'.modal-overlay\').remove()">' +
+          '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>' +
+        '</button></div>' +
+      '<p class="modal-sub">You checked off <strong>' + count + ' item' + (count === 1 ? "" : "s") + '</strong> totalling <strong>' + fmt(total) + '</strong>. Add them to your expense tracker now? They\'ll be logged as today\'s spending under the category you pick.</p>' +
+      '<div style="background:var(--bg);border:1px solid var(--brd);border-radius:10px;padding:10px 12px;max-height:180px;overflow-y:auto;font-size:12px;margin-bottom:14px;line-height:1.7">' +
+        items.map(it => '<div style="display:flex;justify-content:space-between;gap:8px"><span style="color:var(--txt)">' + escHtml(it.desc) + '</span><span style="color:var(--txt2);font-family:SF Mono,Consolas,monospace;font-weight:700;white-space:nowrap">' + fmt(it.amt) + '</span></div>').join("") +
+      '</div>' +
+      '<div style="margin-bottom:12px"><label style="font-size:11px;color:var(--txt2);font-weight:700;display:block;margin-bottom:4px">CATEGORY</label>' +
+        '<select id="_plistCat" style="width:100%;padding:9px 12px;border:1.5px solid var(--brd);border-radius:10px;font-size:13px;background:var(--input-bg);color:var(--txt);font-family:inherit;outline:none">' +
+          '<option value="Needs">Needs (e.g. Groceries)</option>' +
+          '<option value="Wants">Wants</option>' +
+          '<option value="Savings">Savings</option>' +
+        '</select></div>' +
+      '<div style="margin-bottom:12px"><label style="font-size:11px;color:var(--txt2);font-weight:700;display:block;margin-bottom:4px">SUB-CATEGORY</label>' +
+        '<select id="_plistSub" style="width:100%;padding:9px 12px;border:1.5px solid var(--brd);border-radius:10px;font-size:13px;background:var(--input-bg);color:var(--txt);font-family:inherit;outline:none">' +
+          '<option>Groceries</option><option>Dining Out</option><option>Utilities</option><option>Transportation</option><option>Healthcare</option><option>Shopping</option><option>Entertainment</option><option>Rent/Mortgage</option><option>Phone</option><option>Insurance</option><option>Investments</option>' +
+        '</select></div>' +
+      '<div class="modal-actions" style="gap:8px;justify-content:flex-end;display:flex">' +
+        '<button class="btn btn-sec" onclick="this.closest(\'.modal-overlay\').remove()">Not now</button>' +
+        '<button class="btn btn-pri" id="_plistAddBtn">' +
+          'Add ' + count + ' item' + (count === 1 ? "" : "s") + ' (' + fmt(total) + ')' +
+        '</button>' +
+      '</div>' +
+    '</div>';
+  overlay.innerHTML = html;
+  overlay.onclick = e => { if (e.target === overlay) overlay.remove(); };
+  document.body.appendChild(overlay);
+  if (dismissKey) sessionStorage.setItem(dismissKey, "1");
+
+  const addBtn = document.getElementById("_plistAddBtn");
+  addBtn.onclick = () => {
+    const cat = document.getElementById("_plistCat").value;
+    const sub = document.getElementById("_plistSub").value;
+    const today = new Date().toISOString().slice(0,10);
+    const data = getData();
+    let added = 0;
+    items.forEach(it => {
+      if (!it.desc || !it.amt) return;
+      data.expenses.push({ id: Date.now() + added, date: today, desc: it.desc, cat, sub, amt: it.amt });
+      added++;
+    });
+    saveData(data);
+    overlay.remove();
+    updateDashboard();
+    renderHistory();
+    renderRecent();
+    renderInsights();
+    toast("Added " + added + " item" + (added === 1 ? "" : "s") + " totalling " + fmt(total) + " to " + cat + " → " + sub);
+  };
+}
+
+// Called after every input on a textarea that might contain a priced checklist
+function checkPriceListAfterToggle(textareaId) {
+  setTimeout(() => {
+    const info = _checkPriceListComplete(textareaId);
+    if (info) _promptAddChecklistToExpenses(info.items, info.dismissKey);
+  }, 350);
+}
+
 function onNoteBodyInput() {
   const titleEl = document.getElementById("noteTitle");
   const bodyEl = document.getElementById("noteInput");
@@ -5006,6 +5266,8 @@ function onNoteBodyInput() {
   autoApplyNoteTag();
   // Compose-time supportive nudge (AI users only), debounced
   scheduleComposeMoodNudge();
+  // If the user just completed a priced checklist, offer to add to Expenses
+  checkPriceListAfterToggle("noteInput");
 }
 
 // Fired when the title field changes — refine the auto-tag
@@ -5509,8 +5771,18 @@ function renderNoteModal() {
           '<input type="text" id="noteEditTitle" placeholder="Title (required)" maxlength="80" value="' + escHtml(getNoteTitle(note)) + '" style="flex:1;min-width:0;padding:11px 14px;border:1.5px solid var(--pri);border-radius:12px;font-size:15px;font-weight:700;font-family:inherit;outline:none;background:var(--input-bg);color:var(--txt);box-sizing:border-box">' +
           '<button type="button" class="suggest-btn" onclick="suggestEditTitle()" title="Suggest a title"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 4.6L18.5 9l-4.6 1.9L12 15l-1.9-4.1L5.5 9l4.6-1.4z"/><path d="M19 14l.8 2 2 .8-2 .8-.8 2-.8-2-2-.8 2-.8z"/></svg><span>Suggest</span></button>' +
         '</div>' +
-        '<textarea id="noteEditText" oninput="autoGrowTextarea(this)">' + escHtml(note.text || "") + '</textarea>' +
-        '<p class="note-modal-hint" style="padding:6px 0 0">Use <code>- item</code> for bullets, <code>[ ] task</code> for checkboxes, <code>**bold**</code></p>' +
+        '<div class="editor-toolbar compact">' +
+          '<button type="button" class="tb-btn tb-b" onclick="tbWrap(\'noteEditText\',\'**\',\'**\')"><b>B</b></button>' +
+          '<button type="button" class="tb-btn tb-i" onclick="tbWrap(\'noteEditText\',\'*\',\'*\')"><i>I</i></button>' +
+          '<span class="tb-sep"></span>' +
+          '<button type="button" class="tb-btn" onclick="tbInsertLine(\'noteEditText\',\'- \')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="9" y1="6" x2="21" y2="6"/><line x1="9" y1="12" x2="21" y2="12"/><line x1="9" y1="18" x2="21" y2="18"/><circle cx="4.5" cy="6" r="1.3" fill="currentColor"/><circle cx="4.5" cy="12" r="1.3" fill="currentColor"/><circle cx="4.5" cy="18" r="1.3" fill="currentColor"/></svg></button>' +
+          '<button type="button" class="tb-btn" onclick="tbInsertLine(\'noteEditText\',\'[ ] \')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="3"/></svg></button>' +
+          '<button type="button" class="tb-btn tb-wide" onclick="tbInsertPriceList(\'noteEditText\')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>Grocery ₱</button>' +
+          '<span class="tb-sep"></span>' +
+          '<button type="button" class="tb-btn" onclick="tbInsertLine(\'noteEditText\',\'1. \')" title="Numbered list"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><text x="2" y="10" font-size="7" font-weight="800" fill="currentColor" stroke="none">1</text><text x="2" y="17" font-size="7" font-weight="800" fill="currentColor" stroke="none">2</text><text x="2" y="23" font-size="7" font-weight="800" fill="currentColor" stroke="none">3</text><line x1="9" y1="7" x2="21" y2="7"/><line x1="9" y1="14" x2="21" y2="14"/><line x1="9" y1="21" x2="21" y2="21"/></svg></button>' +
+          '<button type="button" class="tb-btn" onclick="tbInsertHeading(\'noteEditText\')" style="font-weight:900;font-size:14px">H</button>' +
+        '</div>' +
+        '<textarea id="noteEditText" oninput="autoGrowTextarea(this)" style="border-top:none;border-radius:0 0 12px 12px">' + escHtml(note.text || "") + '</textarea>' +
       '</div>';
     footEl.innerHTML =
       '<button class="nmf-edit" onclick="saveNoteModalEdit()" style="background:var(--pri);color:var(--on-pri);border-color:var(--pri)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Save changes</button>' +
@@ -5972,6 +6244,17 @@ function toggleNoteCheck(noteId, checkbox) {
 
   // Refresh the compact list so the checklist progress badge stays accurate
   renderNotes();
+
+  // If this note has priced checklist items and the last unchecked one was just ticked,
+  // offer to add them all to expenses.
+  const priceItems = _parseChecklistItems(note.text).filter(it => it.amt !== null && it.amt > 0);
+  if (priceItems.length > 0 && priceItems.every(it => it.checked)) {
+    const key = "bt_plist_nagged_view_" + note.id + "_" + hashString(note.text);
+    if (!sessionStorage.getItem(key)) {
+      sessionStorage.setItem(key, "1");
+      setTimeout(() => _promptAddChecklistToExpenses(priceItems, null), 250);
+    }
+  }
 }
 
 function renderNotes() {
