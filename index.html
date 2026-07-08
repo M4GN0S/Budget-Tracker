@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>50/30/20 Budget Tracker — Free Offline App</title>
 <!-- PWA -->
 <link rel="manifest" href="manifest.json">
@@ -35,6 +35,8 @@ body{
   color:var(--txt);
   line-height:1.5;
   min-height:100vh;
+  /* Safe-area padding for iOS notches / status bar so carrier/time/battery aren't clipped */
+  padding-top:env(safe-area-inset-top, 0px);
 }
 
 /* Scrollbar */
@@ -368,7 +370,7 @@ header p{font-size:14px;color:var(--txt2);font-weight:400;max-width:460px;margin
     flex:unset;
     max-width:unset;
   }
-  .wrap{padding-bottom:90px}
+  .wrap{padding-bottom:calc(96px + env(safe-area-inset-bottom, 0px))}
 }
 
 /* ─── Panels ─── */
@@ -540,8 +542,27 @@ td{padding:11px 14px;border-bottom:1px solid rgba(0,0,0,.04)}
 tbody tr:last-child td{border-bottom:none}
 tbody tr{transition:background .15s}
 tbody tr:hover td{background:var(--pri-l)}
-.mono{font-family:'SF Mono',Consolas,monospace;font-weight:700}
+.mono{font-family:'SF Mono',Consolas,monospace;font-weight:700;white-space:nowrap}
 .pos{color:var(--suc)}.neg{color:var(--dan)}
+
+/* ─── Expense History: mobile card list ─── */
+.hist-cards-view{display:flex;flex-direction:column;gap:10px}
+.hist-card{
+  background:var(--card);
+  border:1px solid var(--brd);
+  border-radius:14px;
+  padding:14px 14px 12px;
+  box-shadow:0 1px 4px rgba(0,0,0,.03);
+}
+.hist-card-top{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}
+.hist-date{font-size:11px;color:var(--txt2);font-weight:600;letter-spacing:.2px}
+.hist-card-body{margin-bottom:10px}
+.hist-desc{font-size:14px;font-weight:600;color:var(--txt);line-height:1.35;margin-bottom:2px;word-break:break-word}
+.hist-sub{font-size:12px;color:var(--txt2);font-weight:500}
+.hist-card-foot{display:flex;align-items:center;justify-content:space-between;gap:10px;padding-top:10px;border-top:1px solid var(--brd)}
+.hist-amt{font-family:'SF Mono',Consolas,monospace;font-weight:800;font-size:16px;letter-spacing:-.3px;white-space:nowrap}
+@media(min-width:641px){.hist-cards-view{display:none !important}}
+@media(max-width:640px){.hist-table-view{display:none !important}}
 .cat-pill{
   display:inline-flex;align-items:center;gap:4px;
   padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;
@@ -675,13 +696,14 @@ tbody tr:hover td{background:var(--pri-l)}
 .cta .btn-cta:hover{transform:scale(1.04) translateY(-1px);box-shadow:0 8px 24px rgba(0,0,0,.2)}
 
 /* ─── Donut Chart ─── */
-.donut-wrap{display:flex;justify-content:center;align-items:center;gap:32px;flex-wrap:wrap}
-.donut-svg{width:180px;height:180px;filter:drop-shadow(0 4px 12px rgba(0,0,0,.1))}
-.donut-legend{display:flex;flex-direction:column;gap:12px}
-.leg-item{display:flex;align-items:center;gap:10px;font-size:13px}
-.leg-dot{width:10px;height:10px;border-radius:3px;flex-shrink:0}
-.leg-label strong{display:block;font-size:13px;font-weight:700;color:var(--txt)}
-.leg-label span{font-size:11px;color:var(--txt2)}
+.donut-wrap{display:flex;justify-content:center;align-items:center;gap:28px;flex-wrap:wrap}
+.donut-svg{width:200px;height:200px;filter:drop-shadow(0 6px 18px rgba(0,0,0,.08))}
+.donut-legend{display:flex;flex-direction:column;gap:14px;min-width:160px}
+.leg-item{display:flex;align-items:center;gap:12px;font-size:13px;padding:8px 12px;border-radius:10px;transition:background .15s}
+.leg-item:hover{background:var(--pri-l)}
+.leg-dot{width:14px;height:14px;border-radius:5px;flex-shrink:0;box-shadow:inset 0 0 0 1px rgba(0,0,0,.06)}
+.leg-label strong{display:block;font-size:14px;font-weight:700;color:var(--txt);letter-spacing:-.2px}
+.leg-label span{font-size:12px;color:var(--txt2);font-weight:600}
 
 /* ─── Export Buttons ─── */
 .export-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
@@ -1565,13 +1587,13 @@ footer .footer-links a:hover{color:var(--pri-d)}
     <div class="card">
       <h3><span class="icon-wrap"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.21 15.89A10 10 0 118 2.83"/><path d="M22 12A10 10 0 0012 2v10z"/></svg></span> Spending Breakdown</h3>
       <div class="donut-wrap">
-        <svg class="donut-svg" viewBox="0 0 42 42" id="donutChart">
-          <circle cx="21" cy="21" r="15.9" fill="none" stroke="var(--bg)" stroke-width="6"/>
-          <circle id="donutNeeds" cx="21" cy="21" r="15.9" fill="none" stroke="var(--pri)" stroke-width="5.5" stroke-dasharray="0 100" stroke-dashoffset="25" stroke-linecap="round"/>
-          <circle id="donutWants" cx="21" cy="21" r="15.9" fill="none" stroke="var(--acc)" stroke-width="5.5" stroke-dasharray="0 100" stroke-dashoffset="25" stroke-linecap="round"/>
-          <circle id="donutSavings" cx="21" cy="21" r="15.9" fill="none" stroke="var(--suc)" stroke-width="5.5" stroke-dasharray="0 100" stroke-dashoffset="25" stroke-linecap="round"/>
+        <svg class="donut-svg" viewBox="0 0 42 42" id="donutChart" role="img" aria-label="Spending breakdown donut chart">
+          <circle cx="21" cy="21" r="15.9" fill="none" stroke="var(--brd)" stroke-width="5.8" opacity=".65"/>
+          <circle id="donutNeeds" cx="21" cy="21" r="15.9" fill="none" stroke="var(--pri)" stroke-width="5.8" stroke-dasharray="0 100" stroke-dashoffset="25" stroke-linecap="butt"/>
+          <circle id="donutWants" cx="21" cy="21" r="15.9" fill="none" stroke="var(--acc)" stroke-width="5.8" stroke-dasharray="0 100" stroke-dashoffset="25" stroke-linecap="butt"/>
+          <circle id="donutSavings" cx="21" cy="21" r="15.9" fill="none" stroke="var(--suc)" stroke-width="5.8" stroke-dasharray="0 100" stroke-dashoffset="25" stroke-linecap="butt"/>
           <text x="21" y="19.5" text-anchor="middle" font-size="4.2" font-weight="900" fill="var(--txt)" id="donutTotal">$0</text>
-          <text x="21" y="23.5" text-anchor="middle" font-size="2.5" fill="var(--txt2)">Total Spent</text>
+          <text x="21" y="23.5" text-anchor="middle" font-size="2.2" fill="var(--txt2)" font-weight="600" letter-spacing=".8">TOTAL SPENT</text>
         </svg>
         <div class="donut-legend">
           <div class="leg-item">
@@ -1791,7 +1813,8 @@ footer .footer-links a:hover{color:var(--pri-d)}
           <button class="btn btn-dan btn-sm" onclick="clearAll()">Clear All</button>
         </div>
       </div>
-      <div class="table-wrap">
+      <!-- Desktop/tablet table view -->
+      <div class="table-wrap hist-table-view">
         <table>
           <thead>
             <tr>
@@ -1810,6 +1833,8 @@ footer .footer-links a:hover{color:var(--pri-d)}
           </tbody>
         </table>
       </div>
+      <!-- Mobile card list view -->
+      <div class="hist-cards-view" id="historyCards" style="display:none"></div>
       <div style="text-align:right;margin-top:12px;font-size:14px;font-weight:800;color:var(--txt)" id="historyTotal"></div>
     </div>
   </div>
@@ -2897,8 +2922,9 @@ function loadCurrency() {
   const sel = document.getElementById("currencySelect");
   if (sel) sel.value = sym;
 }
-const fmt = n => getCurrency() + " " + Math.abs(n).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-const fmtShort = n => getCurrency() + " " + Math.abs(n).toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+// Non-breaking space between symbol and number so the ₱ never orphans onto its own line
+const fmt = n => getCurrency() + "\u00A0" + Math.abs(n).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+const fmtShort = n => getCurrency() + "\u00A0" + Math.abs(n).toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 
 const UI_ICONS = {
   streakIdle: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M8 12h8"/></svg>',
@@ -3511,36 +3537,89 @@ function renderRecent() {
 }
 
 // ─── HISTORY ───────────────────────────────────────────────
+function isMobileView() { return window.innerWidth <= 640; }
+
+function renderHistoryEmpty(container, colspanForTable) {
+  const emptyHtml = `<div style="text-align:center;color:var(--txt2);padding:36px">
+      <div style="margin-bottom:10px;opacity:.4"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="20" height="18" rx="2"/><line x1="8" y1="9" x2="16" y2="9"/><line x1="8" y1="13" x2="12" y2="13"/></svg></div>No expenses found</div>`;
+  if (colspanForTable) {
+    container.innerHTML = `<tr><td colspan="${colspanForTable}">${emptyHtml}</td></tr>`;
+  } else {
+    container.innerHTML = emptyHtml;
+  }
+}
+
 function renderHistory() {
   const data = getData();
-  const filter = document.getElementById("filterCat").value;
+  const filterEl = document.getElementById("filterCat");
+  const filter = filterEl ? filterEl.value : "All";
   let expenses = data.expenses;
   if (filter !== "All") expenses = expenses.filter(e => e.cat === filter);
   expenses = expenses.slice().reverse();
 
   const tbody = document.getElementById("historyBody");
+  const cards = document.getElementById("historyCards");
+  const totalEl = document.getElementById("historyTotal");
+  const isMobile = isMobileView();
+
+  // Toggle views
+  const tblWrap = document.querySelector(".hist-table-view");
+  if (tblWrap) tblWrap.style.display = isMobile ? "none" : "";
+  if (cards)   cards.style.display   = isMobile ? "" : "none";
+
   if (expenses.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:var(--txt2);padding:36px">
-      <div style="margin-bottom:10px;opacity:.4"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="20" height="18" rx="2"/><line x1="8" y1="9" x2="16" y2="9"/><line x1="8" y1="13" x2="12" y2="13"/></svg></div>No expenses found</td></tr>`;
-    document.getElementById("historyTotal").textContent = "";
+    if (tbody) renderHistoryEmpty(tbody, 6);
+    if (cards) renderHistoryEmpty(cards, 0);
+    if (totalEl) totalEl.textContent = "";
     return;
   }
 
-  tbody.innerHTML = expenses.map(e => {
-    const catClass = e.cat === "Needs" ? "needs" : e.cat === "Wants" ? "wants" : "savings";
-    return `<tr>
-      <td style="color:var(--txt2);font-size:12px">${new Date(e.date + "T00:00:00").toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}</td>
-      <td style="font-weight:500">${e.desc}</td>
-      <td><span class="cat-pill ${catClass}">${e.cat}</span></td>
-      <td style="color:var(--txt2);font-size:12px">${e.sub}</td>
-      <td class="mono">${fmt(e.amt)}</td>
-      <td><button class="btn-dan" onclick="deleteExpense(${e.id})" aria-label="Delete expense"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button></td>
-    </tr>`;
-  }).join("");
+  // Table rows (desktop/tablet)
+  if (tbody) {
+    tbody.innerHTML = expenses.map(e => {
+      const catClass = e.cat === "Needs" ? "needs" : e.cat === "Wants" ? "wants" : "savings";
+      const dateStr = new Date(e.date + "T00:00:00").toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+      return `<tr>
+        <td style="color:var(--txt2);font-size:12px;white-space:nowrap">${dateStr}</td>
+        <td style="font-weight:500">${escHtml(e.desc)}</td>
+        <td><span class="cat-pill ${catClass}">${e.cat}</span></td>
+        <td style="color:var(--txt2);font-size:12px">${escHtml(e.sub)}</td>
+        <td class="mono" style="white-space:nowrap">${fmt(e.amt)}</td>
+        <td><button class="btn-dan" onclick="deleteExpense(${e.id})" aria-label="Delete expense"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button></td>
+      </tr>`;
+    }).join("");
+  }
+
+  // Card list (mobile)
+  if (cards) {
+    cards.innerHTML = expenses.map(e => {
+      const catClass = e.cat === "Needs" ? "needs" : e.cat === "Wants" ? "wants" : "savings";
+      const catColor = e.cat === "Needs" ? "var(--pri)" : e.cat === "Wants" ? "var(--acc)" : "var(--suc)";
+      const dateStr = new Date(e.date + "T00:00:00").toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+      return `<div class="hist-card">
+        <div class="hist-card-top">
+          <span class="cat-pill ${catClass}">${e.cat}</span>
+          <span class="hist-date">${dateStr}</span>
+        </div>
+        <div class="hist-card-body">
+          <div class="hist-desc">${escHtml(e.desc)}</div>
+          <div class="hist-sub">${escHtml(e.sub)}</div>
+        </div>
+        <div class="hist-card-foot">
+          <div class="hist-amt" style="color:${catColor}">${fmt(e.amt)}</div>
+          <button class="btn-dan btn-sm" onclick="deleteExpense(${e.id})" aria-label="Delete expense">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-2 14a2 2 0 01-2 2H9a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a2 2 0 012-2h2a2 2 0 012 2v2"/></svg>
+            Delete
+          </button>
+        </div>
+      </div>`;
+    }).join("");
+  }
 
   const total = expenses.reduce((s, e) => s + e.amt, 0);
-  document.getElementById("historyTotal").innerHTML =
-    `<span style="color:var(--txt2);font-size:12px;font-weight:500">Total: </span> ${fmt(total)}`;
+  if (totalEl) {
+    totalEl.innerHTML = `<span style="color:var(--txt2);font-size:12px;font-weight:500">Total: </span><span style="white-space:nowrap">${fmt(total)}</span>`;
+  }
 }
 
 // ─── SAVINGS GOALS ─────────────────────────────────────────
@@ -4160,28 +4239,41 @@ const EMBEDDED_POSTS = [
   {"id":8,"type":"seasonal","title":"Mid-Year Financial Check-In","body":"We\u2019re halfway through 2026. Time to review your spending patterns and adjust your goals for the second half.","content":"<strong>It\u2019s June \u2014 the perfect time for a mid-year financial review.</strong>\n\n<strong>The 15-minute mid-year review:</strong>\n\n<strong>Step 1:</strong> Export your data (Settings \u2192 Export CSV)\n<strong>Step 2:</strong> Check your Needs/Wants/Savings ratios\n<strong>Step 3:</strong> Review your goals \u2014 on track, behind, or complete?\n<strong>Step 4:</strong> Identify your biggest financial win this year\n<strong>Step 5:</strong> Set ONE focus for the next 6 months\n\nYou\u2019ve got 6 months left to make 2026 your best financial year yet. \ud83d\ude80","date":"2026-06-01","link":null,"linkText":null,"pinned":false,"readTime":"4 min"}
 ];
 
-function loadFeed() {
+function loadFeed(options) {
   const card = document.getElementById("feedCard");
   if (!card) return;
+  const forceNet = !!(options && options.forceNetwork);
 
-  fetch(FEED_URL, { cache: "no-cache" })
+  function renderFromCacheOrEmbedded() {
+    const cached = localStorage.getItem("bt_feed_cache");
+    if (cached) {
+      try { renderFeed(JSON.parse(cached)); return; } catch(e) {}
+    }
+    localStorage.setItem("bt_feed_cache", JSON.stringify(EMBEDDED_POSTS));
+    renderFeed(EMBEDDED_POSTS);
+  }
+
+  // Only hit the network if (a) user explicitly requested it, or
+  // (b) we're online AND haven't cached posts yet. This avoids the
+  // iOS "Cellular Data is Turned Off" popup on app open.
+  const hasCache = !!localStorage.getItem("bt_feed_cache");
+  const shouldFetch = forceNet || (!hasCache && typeof navigator !== "undefined" && navigator.onLine !== false);
+
+  if (!shouldFetch) { renderFromCacheOrEmbedded(); return; }
+
+  // Fail fast (1.5s timeout) — don't hang the loader if network is wonky
+  const ctrl = typeof AbortController !== "undefined" ? new AbortController() : null;
+  const to = setTimeout(() => ctrl && ctrl.abort(), 1500);
+  fetch(FEED_URL, { cache: "no-cache", signal: ctrl ? ctrl.signal : undefined })
     .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
     .then(posts => {
+      clearTimeout(to);
       localStorage.setItem("bt_feed_cache", JSON.stringify(posts));
       renderFeed(posts);
     })
-    .catch(() => {
-      // Try cache first, then fall back to embedded posts
-      const cached = localStorage.getItem("bt_feed_cache");
-      if (cached) {
-        renderFeed(JSON.parse(cached));
-      } else {
-        // Use embedded posts as last resort (works on file:// protocol)
-        localStorage.setItem("bt_feed_cache", JSON.stringify(EMBEDDED_POSTS));
-        renderFeed(EMBEDDED_POSTS);
-      }
-    });
+    .catch(() => { clearTimeout(to); renderFromCacheOrEmbedded(); });
 }
+function refreshFeed() { loadFeed({ forceNetwork: true }); toast("Checking for new posts..."); }
 
 function getReadPosts() {
   return JSON.parse(localStorage.getItem("bt_feed_read") || "[]");
@@ -7382,7 +7474,7 @@ function dateStamp() {
 const THEMES = {
   sage:     { pri:"#7E9A8E", priL:"#EEF3EF", priD:"#4E6F62", acc:"#B9926B", accL:"#F6EFE6", suc:"#6E9B72", sucL:"#EDF5ED", dan:"#B86A62", danL:"#F7EDEA", bg:"#F7F4EE", card:"#FFFDF8", txt:"#20231F", txt2:"#6F746D", brd:"#E7E0D6", onPri:"#fff", inputBg:"#FFFDF8", brandFilter:"none", texture:"rgba(78,111,98,.045)" },
   blush:    { pri:"#D4A0A0", priL:"#F7EDED", priD:"#B07878", acc:"#C9956B", accL:"#FBF0E5", suc:"#7EC8A0", sucL:"#E5F5EC", dan:"#D9534F", danL:"#FDEAEA", bg:"#FDF6F6", card:"#fff", txt:"#2D3436", txt2:"#636E72", brd:"#F0DEDE", onPri:"#fff", inputBg:"#fff", brandFilter:"none", texture:"rgba(78,111,98,.045)" },
-  dark:     { pri:"#9DB5AA", priL:"#1E2A2F", priD:"#D8E2DD", acc:"#C4A47D", accL:"#2C2721", suc:"#94B79A", sucL:"#1F2B22", dan:"#D08A82", danL:"#341F1D", bg:"#111C27", card:"#172332", txt:"#F4EFE6", txt2:"#AEB7B1", brd:"#2A3945", onPri:"#111C27", inputBg:"#111C27", brandFilter:"invert(1) brightness(1.25) contrast(.95)", texture:"rgba(255,255,255,.035)" },
+  dark:     { pri:"#B3CCC1", priL:"#1E2A2F", priD:"#D8E2DD", acc:"#D9B78A", accL:"#2C2721", suc:"#8ACB96", sucL:"#1F2B22", dan:"#E0988F", danL:"#341F1D", bg:"#111C27", card:"#172332", txt:"#F4EFE6", txt2:"#C6CEC9", brd:"#2A3945", onPri:"#111C27", inputBg:"#111C27", brandFilter:"invert(1) brightness(1.25) contrast(.95)", texture:"rgba(255,255,255,.035)" },
   ocean:    { pri:"#5B8FB9", priL:"#E5EFF7", priD:"#3A6D94", acc:"#E8985E", accL:"#FDF0E6", suc:"#5CB85C", sucL:"#EAF7EA", dan:"#D9534F", danL:"#FDEAEA", bg:"#F0F5FA", card:"#fff", txt:"#2D3436", txt2:"#636E72", brd:"#D0DEE9", onPri:"#fff", inputBg:"#fff", brandFilter:"none", texture:"rgba(78,111,98,.045)" },
   lavender: { pri:"#9B89B3", priL:"#F0ECF5", priD:"#7A6899", acc:"#D4956B", accL:"#FBF0E5", suc:"#7EC8A0", sucL:"#E5F5EC", dan:"#D9534F", danL:"#FDEAEA", bg:"#F7F5FA", card:"#fff", txt:"#2D3436", txt2:"#636E72", brd:"#E0D8EA", onPri:"#fff", inputBg:"#fff", brandFilter:"none", texture:"rgba(78,111,98,.045)" }
 };
@@ -7437,26 +7529,28 @@ function handleTabOverflow() {
   const isMobile = window.innerWidth <= 700;
   const allTabs = main.querySelectorAll(".tab");
 
+  // Always start clean — clear dropdown and reset any leftover hidden/inline styles
+  dropdown.innerHTML = "";
+  dropdown.classList.remove("show");
+  moreTrigger.classList.remove("has-active");
+  allTabs.forEach(t => {
+    t.classList.remove("overflow-hidden");
+    t.style.position = "";
+    t.style.visibility = "";
+  });
+
   // Desktop sidebar mode — all tabs visible, no overflow logic needed
   if (isSidebar) {
-    allTabs.forEach(t => t.classList.remove("overflow-hidden"));
     moreTrigger.style.display = "none";
-    dropdown.innerHTML = "";
-    dropdown.classList.remove("show");
     return;
   }
 
-  // Reset
-  allTabs.forEach(t => t.classList.remove("overflow-hidden"));
-  dropdown.innerHTML = "";
-
   if (isMobile) {
-    // Mobile: core tabs visible in bar, secondary in More dropdown
+    // Mobile: core tabs visible in bottom bar, secondary → More dropdown
     moreTrigger.style.display = "flex";
 
     allTabs.forEach(t => {
       if (t.dataset.priority === "secondary") {
-        // Build dropdown item
         const item = document.createElement("div");
         item.className = "tab" + (t.classList.contains("active") ? " active" : "");
         item.setAttribute("data-tab", t.dataset.tab);
@@ -7469,51 +7563,46 @@ function handleTabOverflow() {
       }
     });
 
-    // Active indicator on More button
     const hasSecondaryActive = Array.from(allTabs).some(t => t.dataset.priority === "secondary" && t.classList.contains("active"));
     moreTrigger.classList.toggle("has-active", hasSecondaryActive);
     return;
   }
 
-  // Desktop: measure what fits
-  // Temporarily show all tabs to measure
-  allTabs.forEach(t => {
-    t.style.position = "absolute";
-    t.style.visibility = "hidden";
-    t.classList.remove("overflow-hidden");
-  });
+  // Tablet (701-900px): measure tabs in the top bar; move those that don't fit into More
+  // Use getBoundingClientRect for accuracy (offsetWidth doesn't account for flex shrink surprises)
+  moreTrigger.style.display = "none"; // hide first so it doesn't eat space during measurement
+  // Force a reflow so widths are current
+  void wrapper.offsetWidth;
 
+  const wrapperWidth = wrapper.clientWidth - 8; // leave room for padding
+  const moreWidth = 78;
+
+  // Measure each tab's natural width
   const tabWidths = [];
-  allTabs.forEach(t => {
-    t.style.position = "";
-    t.style.visibility = "";
-    tabWidths.push(t.offsetWidth + 4);
-  });
+  allTabs.forEach(t => { tabWidths.push(t.getBoundingClientRect().width + 8); }); // +8 for gap
 
-  const wrapperWidth = wrapper.clientWidth - 16;
-  const moreWidth = 90;
-  let totalWidth = tabWidths.reduce((s, w) => s + w, 0);
+  const totalWidth = tabWidths.reduce((s, w) => s + w, 0);
 
-  if (totalWidth <= wrapperWidth) {
-    // Everything fits
+  if (totalWidth <= wrapperWidth + 1) {
+    // Everything fits — no More button needed
     moreTrigger.style.display = "none";
     return;
   }
 
-  // Find cutoff point
+  // Not everything fits → show More and find cutoff
   moreTrigger.style.display = "flex";
+  // Account for More button now taking space
+  const available = wrapperWidth - moreWidth;
   let used = 0;
   let cutoff = allTabs.length;
 
   for (let i = 0; i < tabWidths.length; i++) {
-    if (used + tabWidths[i] + moreWidth > wrapperWidth) {
-      cutoff = i;
-      break;
-    }
+    if (used + tabWidths[i] > available + 1) { cutoff = i; break; }
     used += tabWidths[i];
   }
+  // Always keep at least 2 visible + More
+  if (cutoff < 2) cutoff = 2;
 
-  // Hide overflowing tabs and clone into dropdown
   allTabs.forEach((t, i) => {
     if (i >= cutoff) {
       t.classList.add("overflow-hidden");
@@ -7549,8 +7638,16 @@ document.addEventListener("click", e => {
   if (dd && !wrapper.contains(e.target)) dd.classList.remove("show");
 });
 
-// Run on load and resize
-window.addEventListener("resize", handleTabOverflow);
+// Run on load and resize (debounced)
+let _resizeT;
+window.addEventListener("resize", () => {
+  clearTimeout(_resizeT);
+  _resizeT = setTimeout(() => {
+    handleTabOverflow();
+    // Switch history view between table and card list
+    if (typeof renderHistory === "function") renderHistory();
+  }, 120);
+});
 window.addEventListener("DOMContentLoaded", () => setTimeout(handleTabOverflow, 100));
 
 // ─── MODAL ─────────────────────────────────────────────────
@@ -7616,5 +7713,5 @@ window.addEventListener('appinstalled', () => {
   toast("App installed successfully!");
 });
 </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a13e337339e80721',t:'MTc4MjgzMzMwOA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</body>
 </html>
