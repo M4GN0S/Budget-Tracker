@@ -1066,11 +1066,22 @@ tbody tr:hover td{background:var(--pri-l)}
   .tb-btn svg{width:15px;height:15px}
   .tb-btn.tb-wide{padding:0 7px;font-size:11px}
 }
-/* Floating "Add item" chip that appears under priced checklists */
-.add-item-row{display:flex;justify-content:center;padding:4px 0 2px}
-.add-item-chip{display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:20px;border:1.5px dashed var(--pri);background:var(--pri-l);color:var(--pri-d);font-size:11px;font-weight:700;font-family:inherit;cursor:pointer;transition:all .15s}
-.add-item-chip:hover{background:var(--pri);color:var(--on-pri);border-style:solid;transform:translateY(-1px)}
-.add-item-chip svg{width:13px;height:13px}
+/* Editor wrap = positioned container for the floating Add-item FAB */
+.editor-wrap{position:relative}
+/* Floating "+ Add item" FAB — sits in the bottom-right inside the textarea */
+.add-item-fab{
+  position:absolute;right:10px;bottom:8px;
+  display:inline-flex;align-items:center;gap:4px;
+  padding:4px 10px;border-radius:14px;
+  border:1.5px dashed var(--pri);background:var(--pri-l);color:var(--pri-d);
+  font-size:10.5px;font-weight:700;font-family:inherit;cursor:pointer;
+  transition:all .15s;z-index:2;line-height:1;
+  backdrop-filter:blur(4px);
+  -webkit-backdrop-filter:blur(4px);
+}
+.add-item-fab:hover{background:var(--pri);color:var(--on-pri);border-style:solid;transform:translateY(-1px)}
+.add-item-fab svg{width:12px;height:12px}
+@media(max-width:520px){.add-item-fab{font-size:10px;padding:4px 8px}}
 /* Visually style placeholders (item N / 0.00) so they read as tappable */
 .placeholder-hint{background:linear-gradient(transparent 60%,rgba(126,154,142,.22) 60%);color:var(--txt2);border-radius:2px;padding:0 1px}
 /* Count prompt modal */
@@ -1970,13 +1981,13 @@ footer .footer-links a:hover{color:var(--pri-d)}
             ₱ List
           </button>
         </div>
-        <div id="addItemRow_noteInput" class="add-item-row" style="display:none" aria-hidden="true">
-          <button type="button" class="add-item-chip" onclick="tbAddPriceRow('noteInput')">
+        <div class="editor-wrap" id="editorWrap_noteInput">
+          <textarea id="noteInput" rows="3" oninput="onNoteBodyInput()" onclick="onTextareaClick(event)" onkeydown="onTextareaKeydown(event,'noteInput')" onkeyup="onTextareaKeyup(event,'noteInput')" placeholder="Write your note... Tap a toolbar button above to format — or just type naturally" inputmode="text" style="padding:10px 14px 32px 14px;border:1.5px solid var(--brd);border-radius:10px 10px 0 0;border-bottom:none;font-size:13px;line-height:1.6;font-family:inherit;outline:none;background:var(--bg);color:var(--txt);resize:none;overflow:hidden;min-height:70px;max-height:520px;width:100%;box-sizing:border-box"></textarea>
+          <button type="button" class="add-item-fab" id="addItemFab_noteInput" onclick="tbAddPriceRow('noteInput')" style="display:none" title="Add another item to this ₱ list">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
             Add item
           </button>
         </div>
-        <textarea id="noteInput" rows="3" oninput="onNoteBodyInput()" onclick="onTextareaClick(event)" onkeydown="onTextareaKeydown(event,'noteInput')" placeholder="Write your note... Tap a toolbar button above to format — or just type naturally" style="padding:10px 14px;border:1.5px solid var(--brd);border-radius:10px 10px 0 0;border-bottom:none;font-size:13px;line-height:1.55;font-family:inherit;outline:none;background:var(--bg);color:var(--txt);resize:none;overflow:hidden;min-height:70px;max-height:520px;width:100%;box-sizing:border-box"></textarea>
         <p style="font-size:11px;color:var(--txt2);margin:0 2px 0;padding:6px 10px;background:var(--bg);border:1.5px solid var(--brd);border-top:none;border-radius:0 0 10px 10px;line-height:1.4">Tip: tap <b>B</b>/<i>I</i> to wrap selected text. The <b>₱ List</b> button inserts a priced checklist — check every box to auto-add items to Expenses.</p>
         <div class="note-privacy-note" id="notePrivacyNote">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
@@ -5127,143 +5138,176 @@ function tbInsertLine(textareaId, prefix) {
 // Insert a heading (### ) on a new line
 function tbInsertHeading(textareaId) { tbInsertLine(textareaId, "### "); }
 
-// Insert a "priced checklist" (₱ List) — works for groceries, car parts, supplies,
-// anything with items + prices. Prompts for item count, generates template rows
-// with click-once-to-edit placeholders, and shows a floating "+ Add item" chip.
-const _PLACEHOLDER_ITEM_RE = /^Item\s+(\d+)$/i; // matches "Item 1", "Item 3", ...
-const _PLACEHOLDER_PRICE_RE = /^0(?:\.00?)?$/;   // matches "0", "0.0", "0.00"
+// ─── PRICE CHECKLIST (₱ LIST) — core logic ─────────────────
+// Cached currency-symbol regex
+let _symReCache = { sym:null, src:null };
+function _symRe() {
+  const sym = getCurrency();
+  if (_symReCache.sym === sym) return _symReCache.src;
+  const esc = sym.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  // One regex that matches a priced-checklist line.
+  // Groups: 1=leading "[ ] ", 2=item desc, 3=" — " separator (optional), 4=amount
+  _symReCache = {
+    sym,
+    src: new RegExp("^(\\s*\\[[ xX]\\]\\s*)(.+?)(\\s*[-–—]+\\s*)?(?:" + esc + "\\s*|PHP\\s*)?(\\d{1,3}(?:,\\d{3})*(?:\\.\\d{1,2})?|\\d+(?:\\.\\d{1,2})?)\\s*$", "i")
+  };
+  return _symReCache.src;
+}
+// Looser "is this a checklist line at all?" regex for detecting lists
+const _CHECKLIST_RE = /^\s*\[[ xX]\]\s+/;
+const _PLACEHOLDER_NAME_RE = /^Item\s+\d+$/i;
+const _PLACEHOLDER_PRICE_RE = /^0(?:\.0+)?$/;
 
 function tbInsertPriceList(textareaId) {
   const ta = _tbEl(textareaId); if (!ta) return;
-  // Prompt the user for how many rows (with a tiny in-page modal, no native prompt)
   _showCountPrompt(count => {
     const sym = getCurrency();
     ta.focus();
-    const start = ta.selectionStart;
+    // Insert at cursor — but if cursor is mid-plain-text, prefer inserting at the
+    // next blank line so we don't break existing paragraphs.
+    const curPos = ta.selectionStart;
+    let insertAt = curPos;
     const val = ta.value;
-    let before = val.substring(0, start);
-    const after  = val.substring(start);
+    // If cursor in middle of a non-checklist line, move to start of the next line
+    const { line, lineStart } = _currentLine(ta, curPos);
+    const inChecklist = _CHECKLIST_RE.test(line);
+    if (!inChecklist && line.trim() !== "") {
+      insertAt = _nextBlankLinePos(val, lineStart + line.length);
+    }
+    let before = val.substring(0, insertAt);
+    const after  = val.substring(insertAt);
     const nl = (before.length === 0 || before.endsWith("\n")) ? "" : "\n";
     let rows = "";
-    for (let i = 1; i <= count; i++) {
-      rows += "[ ] Item " + i + " — " + sym + " 0.00\n";
+    // Pick the next unused item number so inserting multiple lists doesn't clash
+    const nextN = _nextItemNumber(val);
+    for (let i = 0; i < count; i++) {
+      rows += "[ ] Item " + (nextN + i) + " \u2014 " + sym + " 0.00\n";
     }
     ta.value = before + nl + rows + after;
-    // Select "Item 1" so the user can immediately type to replace it
+    // Select "Item N" of the first new row
     const firstItemStart = (before + nl).length + "[ ] ".length;
-    ta.setSelectionRange(firstItemStart, firstItemStart + "Item 1".length);
+    ta.setSelectionRange(firstItemStart, firstItemStart + ("Item " + nextN).length);
     ta.dispatchEvent(new Event("input", { bubbles: true }));
-    _showAddItemChip(textareaId, true);
-    // Auto-set tag to Checklist (composer only)
+    _setInputMode(ta, "text");
+    _showAddItemChip(textareaId);
     const tagSel = document.getElementById("noteTag");
     if (tagSel) { tagSel.value = "checklist"; markNoteTagManual(); }
-    toast("₱ List added — tap a placeholder to edit. Check all items off to log them as expenses.");
+    toast("\u20B1 List added \u2014 tap a placeholder to edit, Enter to add rows, Tab to jump between fields.");
   });
 }
 
-// Append a new blank priced-checklist row at the end of the current list
+// Append a new priced-checklist row directly after the current list cluster
 function tbAddPriceRow(textareaId) {
   const ta = _tbEl(textareaId); if (!ta) return;
   const sym = getCurrency();
   const val = ta.value;
+  const curPos = ta.selectionStart;
+  const curLine = _currentLine(ta, curPos);
   const lines = val.split("\n");
-  // Determine the next item number by scanning existing "[ ] Item N — ..." lines
-  let maxN = 0;
-  for (const ln of lines) {
-    const m = ln.match(/^\s*\[[ xX]\]\s*Item\s+(\d+)/i);
-    if (m) maxN = Math.max(maxN, parseInt(m[1], 10));
-  }
-  const nextN = maxN + 1;
-  // Ensure the document ends with a newline before adding
-  const prefix = val.length === 0 || val.endsWith("\n") ? "" : "\n";
-  const newRow = prefix + "[ ] Item " + nextN + " — " + sym + " 0.00\n";
-  ta.value = val + newRow;
-  // Move cursor to select "Item N" on the new row
-  const start = (val + prefix + "[ ] ").length;
+  // Find the contiguous block of checklist lines surrounding the cursor so we
+  // insert at the end of THAT block, not after unrelated text below.
+  const insertLineIdx = _endOfChecklistCluster(lines, curLine.index);
+  const nextN = _nextItemNumber(val);
+  const newRow = "[ ] Item " + nextN + " \u2014 " + sym + " 0.00\n";
+  // Build new content: slice lines, splice in newRow after the cluster
+  const before = lines.slice(0, insertLineIdx + 1).join("\n");
+  const afterLines = lines.slice(insertLineIdx + 1);
+  const afterText = afterLines.length ? "\n" + afterLines.join("\n") : "";
+  // Ensure we end the prior line with a newline
+  const prefix = (before.length === 0 || before.endsWith("\n")) ? "" : "\n";
+  ta.value = before + prefix + newRow + afterText;
+  // Position cursor on the new "Item N" placeholder
+  const start = (before + prefix + "[ ] ").length;
   ta.focus();
   ta.setSelectionRange(start, start + ("Item " + nextN).length);
+  _setInputMode(ta, "text");
   ta.dispatchEvent(new Event("input", { bubbles: true }));
 }
 
-// Show or hide the "+ Add item" chip depending on whether the textarea currently
-// contains a priced checklist.
-function _showAddItemChip(textareaId, show) {
-  const chipRow = document.getElementById("addItemRow_" + textareaId);
-  if (!chipRow) return;
-  const ta = _tbEl(textareaId);
-  const sym = getCurrency().replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-  const priceLineRe = new RegExp("^\\s*\\[[ x]\\]\\s*.+?\\s*(?:[-–—]+\\s*)?(?:" + sym + "\\s*)?\\d", "im");
-  const hasPriceList = ta && priceLineRe.test(ta.value);
-  chipRow.style.display = (show || hasPriceList) ? "flex" : "none";
+function _nextItemNumber(val) {
+  let maxN = 0;
+  const re = /^\s*\[[ xX]\]\s*Item\s+(\d+)/gim;
+  let m;
+  while ((m = re.exec(val)) !== null) maxN = Math.max(maxN, parseInt(m[1], 10));
+  // Also count untitled checklist rows with prices so numbers stay sane
+  return maxN + 1;
 }
 
-// Tiny in-page "How many items?" prompt. Returns count via callback.
-function _showCountPrompt(cb) {
-  const overlay = document.createElement("div");
-  overlay.className = "modal-overlay show";
-  overlay.style.zIndex = "2001";
-  let count = 3;
-  function render() {
-    overlay.innerHTML = '<div class="modal" style="max-width:340px">' +
-      '<div class="modal-head"><h3>New ₱ List</h3>' +
-        '<button class="close-modal" aria-label="Close" onclick="this.closest(\'.modal-overlay\').remove()">' +
-          '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>' +
-        '</button></div>' +
-      '<p class="modal-sub">How many items do you want to start with? You can add or remove rows anytime.</p>' +
-      '<div class="count-prompt-wrap">' +
-        '<button type="button" id="_cpMinus" aria-label="Decrease">−</button>' +
-        '<div class="count-prompt-val" id="_cpVal">' + count + '</div>' +
-        '<button type="button" id="_cpPlus" aria-label="Increase">+</button>' +
-      '</div>' +
-      '<div class="count-prompt-sub">Tip: you can also start with 1 and tap <b>+ Add item</b> later.</div>' +
-      '<div class="modal-actions" style="gap:8px;display:flex;justify-content:flex-end">' +
-        '<button class="btn btn-sec" id="_cpCancel">Cancel</button>' +
-        '<button class="btn btn-pri" id="_cpOk">Add ' + count + ' item' + (count === 1 ? '' : 's') + '</button>' +
-      '</div>' +
-    '</div>';
-    document.body.appendChild(overlay);
-    overlay.onclick = e => { if (e.target === overlay) overlay.remove(); };
-    const valEl = overlay.querySelector('#_cpVal');
-    const minus = overlay.querySelector('#_cpMinus');
-    const plus  = overlay.querySelector('#_cpPlus');
-    const ok    = overlay.querySelector('#_cpOk');
-    const cancel= overlay.querySelector('#_cpCancel');
-    function redraw() {
-      valEl.textContent = count;
-      ok.textContent = 'Add ' + count + ' item' + (count === 1 ? '' : 's');
+function _endOfChecklistCluster(lines, cursorIdx) {
+  // Walk forward/backward to find the extent of the contiguous checklist block
+  // that contains (or is adjacent to) the cursor. Returns the line index AFTER
+  // the last checklist line in the cluster — where a new row should be inserted.
+  let i;
+  // If cursor is on a checklist line, start there; else scan back up to 2 lines
+  if (_CHECKLIST_RE.test(lines[cursorIdx] || "")) {
+    i = cursorIdx;
+  } else {
+    i = cursorIdx;
+    while (i > 0 && !_CHECKLIST_RE.test(lines[i] || "") && (cursorIdx - i) < 2) i--;
+    if (!_CHECKLIST_RE.test(lines[i] || "")) {
+      // No adjacent checklist — append at end of document
+      return lines.length - 1;
     }
-    minus.onclick = () => { count = Math.max(1, count - 1); redraw(); };
-    plus.onclick  = () => { count = Math.min(30, count + 1); redraw(); };
-    cancel.onclick = () => overlay.remove();
-    ok.onclick = () => { overlay.remove(); cb(count); };
   }
-  render();
+  while (i + 1 < lines.length && _CHECKLIST_RE.test(lines[i + 1])) i++;
+  return i;
 }
 
-// Click handler on journal textareas — if the user clicks on a placeholder token
-// ("Item N" or "0.00"), select it so one keystroke replaces it.
+function _nextBlankLinePos(val, fromPos) {
+  // Find position after next blank line starting at fromPos; fall back to end
+  const rest = val.substring(fromPos);
+  const m = rest.match(/\n\s*\n/);
+  if (m) return fromPos + m.index + m[0].length;
+  return val.length;
+}
+
+// Show/hide the "+ Add item" FAB
+function _showAddItemChip(textareaId, forceShow) {
+  const fab = document.getElementById("addItemFab_" + textareaId);
+  if (!fab) return;
+  const ta = _tbEl(textareaId);
+  const hasChecklist = ta && /^\s*\[[ xX]\]\s+/m.test(ta.value);
+  // Only show the FAB if there's any checklist line AND there's room
+  fab.style.display = (forceShow || hasChecklist) ? "inline-flex" : "none";
+}
+
+function _setInputMode(ta, mode) {
+  // Set inputmode to "decimal" when the cursor is in a price so mobile keyboards
+  // switch to the numeric pad; otherwise "text". Set via attribute so iOS respects it.
+  ta.setAttribute("inputmode", mode || "text");
+}
+
+// Click handler — auto-select placeholders
 function onTextareaClick(e) {
   const ta = e.target;
   if (!ta || ta.tagName !== "TEXTAREA") return;
-  // Defer so selection is settled
-  setTimeout(() => _maybeSelectPlaceholder(ta), 0);
+  setTimeout(() => _selectPlaceholderAtCursor(ta), 0);
 }
 
-function _maybeSelectPlaceholder(ta) {
+function _selectPlaceholderAtCursor(ta) {
   const pos = ta.selectionStart;
-  if (pos !== ta.selectionEnd) return; // user is dragging to select — don't fight
-  const { line, lineStart } = _currentLine(ta, pos);
-  // Match priced-checklist line: "[ ] Item N — ₱ 0.00" (or [x], any currency symbol, with/without decimals)
-  const m = line.match(/^(\s*\[[ xX]\]\s*)(Item\s+\d+)(\s*[-–—]+\s*[^\d\s]?\s*)(0(?:\.0+)?|\d[\d,]*\.00|\d+)(\s*)$/i);
-  if (!m) return;
+  if (pos !== ta.selectionEnd) { _setInputMode(ta, "text"); return; }
+  const { line, lineStart, index: lineIdx } = _currentLine(ta, pos);
+  const re = _symRe();
+  const m = line.match(re);
+  if (!m) { _setInputMode(ta, "text"); return; }
   const itemStart = lineStart + m[1].length;
   const itemEnd   = itemStart + m[2].length;
-  const priceStart= lineStart + (m[1].length + m[2].length + m[3].length);
+  const priceStart= lineStart + m[1].length + m[2].length + (m[3]?m[3].length:0);
   const priceEnd  = priceStart + m[4].length;
-  if (pos >= itemStart && pos <= itemEnd) {
+  // Decide which token the click is in — but ONLY auto-select if that token
+  // is still an unedited placeholder (so we don't clobber user typing)
+  const itemText = m[2];
+  const priceText = m[4];
+  if (pos >= itemStart && pos <= itemEnd && _PLACEHOLDER_NAME_RE.test(itemText.trim())) {
     ta.setSelectionRange(itemStart, itemEnd);
+    _setInputMode(ta, "text");
   } else if (pos >= priceStart && pos <= priceEnd) {
+    // Always select the price when clicked — even after edit it's nice to select-all
     ta.setSelectionRange(priceStart, priceEnd);
+    _setInputMode(ta, "decimal");
+  } else {
+    _setInputMode(ta, "text");
   }
 }
 
@@ -5273,50 +5317,64 @@ function _currentLine(ta, pos) {
   while (start > 0 && val.charAt(start - 1) !== "\n") start--;
   let end = pos;
   while (end < val.length && val.charAt(end) !== "\n") end++;
-  return { line: val.substring(start, end), lineStart: start, lineEnd: end };
+  const lineStartIdx = val.substring(0, start).split("\n").length - 1;
+  return { line: val.substring(start, end), lineStart: start, lineEnd: end, index: lineStartIdx };
 }
 
-// Keydown handler on journal textareas — Tab moves between placeholders, Enter on
-// a price-list line adds a new row at the end of the same list.
+// Keydown handler
 function onTextareaKeydown(e, textareaId) {
   const ta = e.target;
   if (!ta) return;
-  // Bold/italic shortcuts handled by the document listener already
   if (e.key === "Tab") {
     if (_tabToNextPlaceholder(ta, e.shiftKey ? -1 : 1)) e.preventDefault();
     return;
   }
   if (e.key === "Enter" && !e.shiftKey) {
-    // If cursor is on a priced-checklist line, append a new item row instead of
-    // a blank line. (Shift+Enter for regular newline.)
     const { line } = _currentLine(ta, ta.selectionStart);
-    if (/^\s*\[[ xX]\]\s*.+?\s*[-–—]+\s*[^\d\s]?\s*\d/.test(line)) {
+    if (_symRe().test(line) || _CHECKLIST_RE.test(line)) {
       e.preventDefault();
       tbAddPriceRow(textareaId);
+      return;
     }
+  }
+  // After cursor moves, refresh inputmode
+  setTimeout(() => _selectPlaceholderAtCursor(ta), 0);
+}
+
+function onTextareaKeyup(e, textareaId) {
+  const ta = e.target;
+  if (!ta) return;
+  // Arrow keys and navigation: re-evaluate placeholder selection + inputmode
+  if (["ArrowLeft","ArrowRight","ArrowUp","ArrowDown","Home","End"].includes(e.key)) {
+    setTimeout(() => _selectPlaceholderAtCursor(ta), 0);
   }
 }
 
 function _tabToNextPlaceholder(ta, dir) {
-  // Find all placeholder positions in the textarea
   const val = ta.value;
-  const re = /(^|\n)(\s*\[[ xX]\]\s*)(Item\s+\d+)(\s*[-–—]+\s*[^\d\s]?\s*)(0(?:\.0+)?|\d[\d,]*\.00)(?=\s*(?:\n|$))/gim;
+  const re = _symRe();
+  // Scan all lines; collect (itemStart,itemEnd) and (priceStart,priceEnd) ranges
+  // but ONLY for item-name placeholders; price ranges are always navigable
   const ranges = [];
+  const lineRe = new RegExp(re.source, re.flags + "g");
   let m;
-  while ((m = re.exec(val)) !== null) {
-    const itemStart = m.index + m[1].length + m[2].length;
-    const itemEnd   = itemStart + m[3].length;
-    const priceStart= itemEnd + m[4].length;
-    const priceEnd  = priceStart + m[5].length;
-    ranges.push({ start: itemStart, end: itemEnd, kind: "item" });
+  while ((m = lineRe.exec(val)) !== null) {
+    const lineStart = m.index;
+    const itemStart = lineStart + m[1].length;
+    const itemEnd   = itemStart + m[2].length;
+    const priceStart= lineStart + m[1].length + m[2].length + (m[3]?m[3].length:0);
+    const priceEnd  = priceStart + m[4].length;
+    if (_PLACEHOLDER_NAME_RE.test(m[2].trim())) {
+      ranges.push({ start: itemStart, end: itemEnd, kind: "item" });
+    }
     ranges.push({ start: priceStart, end: priceEnd, kind: "price" });
   }
   if (ranges.length === 0) return false;
+  ranges.sort((a,b)=>a.start-b.start);
   const cur = ta.selectionStart;
-  // Find the next placeholder in `dir` direction
   let target = null;
   if (dir > 0) {
-    target = ranges.find(r => r.start > cur) || ranges[0];
+    target = ranges.find(r => r.start > cur + 0) || ranges[0];
   } else {
     const backwards = ranges.slice().reverse();
     target = backwards.find(r => r.end < cur) || backwards[0];
@@ -5324,123 +5382,38 @@ function _tabToNextPlaceholder(ta, dir) {
   if (target) {
     ta.focus();
     ta.setSelectionRange(target.start, target.end);
+    _setInputMode(ta, target.kind === "price" ? "decimal" : "text");
     return true;
   }
   return false;
 }
 
-// ─── PRICE-CHECKLIST → EXPENSE AUTO-DETECTION ──────────────
-// Regex: matches "[x] item — ₱123.00" or "[ ] rice — ₱50"
-// We accept currency symbol (optional) and amounts with/without decimals/comma thousands.
+// Parse completed checklist items for the "add to expenses" prompt
 function _parseChecklistItems(text) {
   const lines = text.split(/\r?\n/);
   const items = [];
-  // Accept "[x] desc — ₱123", "[x] desc ₱123", "[ ] Item 1" (no amt), etc.
-  const sym = getCurrency().replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-  const re = new RegExp(
-    "^\\s*\\[\\s*([ xX])\\s*\\]\\s*(.+?)\\s*(?:[-–—]+\\s*)?(?:" + sym + "\\s*)?([0-9]{1,3}(?:,[0-9]{3})*(?:\\.[0-9]{1,2})?|[0-9]+(?:\\.[0-9]{1,2})?)?\\s*$"
-  );
+  const re = _symRe();
   for (let i = 0; i < lines.length; i++) {
     const m = lines[i].match(re);
     if (!m) continue;
     const checked = m[1].toLowerCase() === "x";
-    const desc = (m[2] || "").trim();
-    // Skip "Item N" placeholders — they're not real entries yet
-    if (/^Item\s+\d+$/i.test(desc)) continue;
-    const amtRaw = m[3];
+    let desc = (m[2] || "").trim();
+    const amtRaw = m[4];
     let amt = null;
     if (amtRaw) {
-      const cleaned = amtRaw.replace(/,/g, "");
-      const n = parseFloat(cleaned);
+      const n = parseFloat(amtRaw.replace(/,/g, ""));
       if (!isNaN(n) && n > 0) amt = n;
     }
+    // Skip only if name is still the "Item N" placeholder AND price is 0/missing
+    // (i.e., a totally unfilled row). If user gave it a price or renamed it, include.
+    if (_PLACEHOLDER_NAME_RE.test(desc) && amt === null) continue;
+    // If name is still "Item N" but they gave it a price, use a generic label
+    if (_PLACEHOLDER_NAME_RE.test(desc)) desc = "Item";
     items.push({ line: i, checked, desc, amt });
   }
   return items;
 }
 
-function _checkPriceListComplete(textareaId) {
-  const ta = _tbEl(textareaId); if (!ta) return null;
-  const items = _parseChecklistItems(ta.value);
-  if (items.length === 0) return null;
-  const priceItems = items.filter(it => it.amt !== null && it.amt > 0);
-  if (priceItems.length === 0) return null;
-  const allChecked = priceItems.every(it => it.checked);
-  if (!allChecked) return null;
-  // Avoid nagging repeatedly per note — use sessionStorage keyed by a hash of content
-  const key = "bt_plist_nagged_" + hashString(ta.value);
-  if (sessionStorage.getItem(key)) return null;
-  return { items: priceItems, dismissKey: key };
-}
-
-function hashString(s) {
-  let h = 0;
-  for (let i = 0; i < s.length; i++) { h = ((h << 5) - h + s.charCodeAt(i)) | 0; }
-  return Math.abs(h).toString(36);
-}
-
-function _promptAddChecklistToExpenses(items, dismissKey) {
-  const total = items.reduce((s, it) => s + it.amt, 0);
-  const count = items.length;
-  // Build a small modal prompt
-  const overlay = document.createElement("div");
-  overlay.className = "modal-overlay show";
-  overlay.style.zIndex = "2000";
-  const html =
-    '<div class="modal" style="max-width:420px">' +
-      '<div class="modal-head"><h3>Add list to expenses?</h3>' +
-        '<button class="close-modal" aria-label="Close" onclick="this.closest(\'.modal-overlay\').remove()">' +
-          '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>' +
-        '</button></div>' +
-      '<p class="modal-sub">You checked off <strong>' + count + ' item' + (count === 1 ? "" : "s") + '</strong> totalling <strong>' + fmt(total) + '</strong>. Add them to your expense tracker now? They\'ll be logged as today\'s spending under the category you pick.</p>' +
-      '<div style="background:var(--bg);border:1px solid var(--brd);border-radius:10px;padding:10px 12px;max-height:180px;overflow-y:auto;font-size:12px;margin-bottom:14px;line-height:1.7">' +
-        items.map(it => '<div style="display:flex;justify-content:space-between;gap:8px"><span style="color:var(--txt)">' + escHtml(it.desc) + '</span><span style="color:var(--txt2);font-family:SF Mono,Consolas,monospace;font-weight:700;white-space:nowrap">' + fmt(it.amt) + '</span></div>').join("") +
-      '</div>' +
-      '<div style="margin-bottom:12px"><label style="font-size:11px;color:var(--txt2);font-weight:700;display:block;margin-bottom:4px">CATEGORY</label>' +
-        '<select id="_plistCat" style="width:100%;padding:9px 12px;border:1.5px solid var(--brd);border-radius:10px;font-size:13px;background:var(--input-bg);color:var(--txt);font-family:inherit;outline:none">' +
-          '<option value="Needs">Needs (e.g. Groceries)</option>' +
-          '<option value="Wants">Wants</option>' +
-          '<option value="Savings">Savings</option>' +
-        '</select></div>' +
-      '<div style="margin-bottom:12px"><label style="font-size:11px;color:var(--txt2);font-weight:700;display:block;margin-bottom:4px">SUB-CATEGORY</label>' +
-        '<select id="_plistSub" style="width:100%;padding:9px 12px;border:1.5px solid var(--brd);border-radius:10px;font-size:13px;background:var(--input-bg);color:var(--txt);font-family:inherit;outline:none">' +
-          '<option>Groceries</option><option>Dining Out</option><option>Utilities</option><option>Transportation</option><option>Healthcare</option><option>Shopping</option><option>Entertainment</option><option>Rent/Mortgage</option><option>Phone</option><option>Insurance</option><option>Investments</option>' +
-        '</select></div>' +
-      '<div class="modal-actions" style="gap:8px;justify-content:flex-end;display:flex">' +
-        '<button class="btn btn-sec" onclick="this.closest(\'.modal-overlay\').remove()">Not now</button>' +
-        '<button class="btn btn-pri" id="_plistAddBtn">' +
-          'Add ' + count + ' item' + (count === 1 ? "" : "s") + ' (' + fmt(total) + ')' +
-        '</button>' +
-      '</div>' +
-    '</div>';
-  overlay.innerHTML = html;
-  overlay.onclick = e => { if (e.target === overlay) overlay.remove(); };
-  document.body.appendChild(overlay);
-  if (dismissKey) sessionStorage.setItem(dismissKey, "1");
-
-  const addBtn = document.getElementById("_plistAddBtn");
-  addBtn.onclick = () => {
-    const cat = document.getElementById("_plistCat").value;
-    const sub = document.getElementById("_plistSub").value;
-    const today = new Date().toISOString().slice(0,10);
-    const data = getData();
-    let added = 0;
-    items.forEach(it => {
-      if (!it.desc || !it.amt) return;
-      data.expenses.push({ id: Date.now() + added, date: today, desc: it.desc, cat, sub, amt: it.amt });
-      added++;
-    });
-    saveData(data);
-    overlay.remove();
-    updateDashboard();
-    renderHistory();
-    renderRecent();
-    renderInsights();
-    toast("Added " + added + " item" + (added === 1 ? "" : "s") + " totalling " + fmt(total) + " to " + cat + " → " + sub);
-  };
-}
-
-// Called after every input on a textarea that might contain a priced checklist
 function checkPriceListAfterToggle(textareaId) {
   setTimeout(() => {
     const info = _checkPriceListComplete(textareaId);
@@ -5983,12 +5956,12 @@ function renderNoteModal() {
           '<span class="tb-sep"></span>' +
           '<button type="button" class="tb-btn tb-wide" onclick="tbInsertPriceList(\'noteEditText\')" title="Insert a priced checklist"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3 7-7"/><path d="M20 12v7a2 2 0 01-2 2H6a2 2 0 01-2-2V5a2 2 0 012-2h8"/><line x1="3.5" y1="10" x2="8.5" y2="10"/><line x1="3.5" y1="15" x2="8.5" y2="15"/></svg>₱ List</button>' +
         '</div>' +
-        '<div id="addItemRow_noteEditText" class="add-item-row" style="display:none" aria-hidden="true">' +
-          '<button type="button" class="add-item-chip" onclick="tbAddPriceRow(\'noteEditText\')">' +
+        '<div class="editor-wrap" id="editorWrap_noteEditText">' +
+          '<textarea id="noteEditText" oninput="autoGrowTextarea(this)" onclick="onTextareaClick(event)" onkeydown="onTextareaKeydown(event,\'noteEditText\')" onkeyup="onTextareaKeyup(event,\'noteEditText\')" inputmode="text" style="border-top:none;border-radius:0 0 12px 12px;padding-bottom:32px">' + escHtml(note.text || "") + '</textarea>' +
+          '<button type="button" class="add-item-fab" id="addItemFab_noteEditText" onclick="tbAddPriceRow(\'noteEditText\')" style="display:none" title="Add another item to this ₱ list">' +
             '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Add item' +
           '</button>' +
         '</div>' +
-        '<textarea id="noteEditText" oninput="autoGrowTextarea(this)" onclick="onTextareaClick(event)" onkeydown="onTextareaKeydown(event,\'noteEditText\')" style="border-top:none;border-radius:0 0 12px 12px">' + escHtml(note.text || "") + '</textarea>' +
       '</div>';
     footEl.innerHTML =
       '<button class="nmf-edit" onclick="saveNoteModalEdit()" style="background:var(--pri);color:var(--on-pri);border-color:var(--pri)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Save changes</button>' +
@@ -8215,5 +8188,5 @@ window.addEventListener('appinstalled', () => {
   toast("App installed successfully!");
 });
 </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a17eb12d2d280491',t:'MTc4MzUwOTU0Nw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</body>
 </html>
