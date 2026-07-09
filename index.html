@@ -1352,16 +1352,17 @@ tbody tr:hover td{background:var(--pri-l)}
 .react-btn:hover{border-color:var(--pri);color:var(--pri-d);background:var(--pri-l)}
 .react-btn.active{background:var(--pri);color:var(--on-pri);border-color:var(--pri)}
 
-/* Save — inline pill, same row as reactions */
+/* Save to Journal — end-of-article CTA, prominent but not loud */
 .article-save-btn{
-  display:inline-flex;align-items:center;gap:6px;
-  padding:4px 11px;border-radius:20px;
-  font-size:11.5px;font-weight:600;
-  background:var(--bg);color:var(--txt2);
-  border:1.5px solid var(--brd);cursor:pointer;transition:.15s;font-family:inherit;white-space:nowrap;
+  display:inline-flex;align-items:center;gap:8px;
+  padding:9px 20px;border-radius:12px;
+  font-size:13px;font-weight:700;
+  background:var(--pri-l);color:var(--pri-d);
+  border:1.5px solid var(--pri);cursor:pointer;transition:.18s;font-family:inherit;
+  margin-top:28px;
 }
-.article-save-btn:hover{background:var(--pri-l);border-color:var(--pri);color:var(--pri-d)}
-.article-save-btn.saved{background:var(--suc-l);color:var(--suc);border-color:var(--suc)}
+.article-save-btn:hover{background:var(--pri);color:var(--on-pri)}
+.article-save-btn.saved{background:var(--suc-l);color:var(--suc);border-color:var(--suc);cursor:default}
 .article-save-btn svg{flex-shrink:0}
 
 /* Comment section — compact, 1-liner input with inline send */
@@ -2697,25 +2698,24 @@ footer .footer-links a:hover{color:var(--pri-d)}
           <div class="article-meta" id="articleMeta"></div>
           <div class="article-title" id="articleTitle"></div>
           <div class="article-body" id="articleBody"></div>
+          <!-- Save to Journal — end of article CTA -->
+          <button class="article-save-btn" id="articleSaveBtn" onclick="saveArticleToJournal()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+            <span id="saveBtnText">Save to Journal</span>
+          </button>
           <div class="article-footer" id="articleFooter" style="display:none"></div>
         </div>
       </div>
 
-      <!-- Engage: reactions + save -->
+      <!-- Engage: reactions only -->
       <div class="article-engage">
         <div class="article-engage-inner">
-          <!-- Reactions -->
           <div class="react-row">
-            <span class="react-row-label">Helpful?</span>
+            <span class="react-row-label">Rate this article</span>
             <button class="react-btn" data-reaction="helpful" onclick="reactToArticle('helpful',this)">Helpful</button>
             <button class="react-btn" data-reaction="learned" onclick="reactToArticle('learned',this)">Learned</button>
             <button class="react-btn" data-reaction="love" onclick="reactToArticle('love',this)">Love it</button>
           </div>
-          <!-- Save to Journal -->
-          <button class="article-save-btn" id="articleSaveBtn" onclick="saveArticleToJournal()">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
-            <span id="saveBtnText">Save to Journal</span>
-          </button>
         </div>
       </div>
 
