@@ -1330,10 +1330,24 @@ tbody tr:hover td{background:var(--pri-l)}
 .article-meta .feed-tag{font-size:10px}
 .article-read-time{font-size:11px;color:var(--txt2);font-weight:500}
 .article-title{font-size:28px;font-weight:900;line-height:1.22;color:var(--txt);letter-spacing:-.6px;margin-bottom:24px}
-.article-body{font-size:15.5px;color:var(--txt);line-height:1.9;word-wrap:break-word}
-.article-body p{margin:0 0 20px}
+.article-body{font-size:15px;color:var(--txt);line-height:1.85;word-wrap:break-word;font-weight:400}
+.article-body p{margin:0 0 18px;font-weight:400}
 .article-body p:last-child{margin-bottom:0}
-.article-body strong{font-weight:700}
+/* Inline bold — only bolds the word, not the whole paragraph */
+.article-body strong{font-weight:700;color:var(--txt)}
+/* Section headings — rendered from standalone <strong> lines */
+.article-body h3{font-size:15px;font-weight:800;color:var(--txt);margin:24px 0 10px;letter-spacing:-.1px}
+.article-body h3:first-child{margin-top:0}
+/* Bullet lists */
+.article-body ul{list-style:none;margin:0 0 18px;padding:0}
+.article-body ul li{position:relative;padding-left:18px;margin-bottom:8px;line-height:1.7;font-weight:400}
+.article-body ul li::before{content:"";position:absolute;left:4px;top:.72em;width:5px;height:5px;border-radius:50%;background:var(--pri);flex-shrink:0}
+/* Numbered lists */
+.article-body ol{list-style:none;margin:0 0 18px;padding:0;counter-reset:art-ol}
+.article-body ol li{position:relative;padding-left:24px;margin-bottom:8px;line-height:1.7;font-weight:400;counter-increment:art-ol}
+.article-body ol li::before{content:counter(art-ol)".";position:absolute;left:0;top:0;font-size:13px;font-weight:700;color:var(--pri);line-height:1.7}
+/* Em-dash separator lines (e.g. "• Item — Description") */
+.article-body ul li strong,.article-body ol li strong{font-weight:700}
 .article-footer{margin-top:32px;padding-top:20px;border-top:1px solid var(--brd);display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 /* ── Engage section — compact, proportional ── */
 .article-engage{flex-shrink:0;border-top:1px solid var(--brd);background:var(--card);padding:10px 32px}
@@ -2679,9 +2693,6 @@ footer .footer-links a:hover{color:var(--pri-d)}
     <aside class="article-sidebar">
       <div class="article-sidebar-head">
         <span>Articles &amp; Updates</span>
-        <button onclick="closeArticle()" aria-label="Close" title="Close" style="background:var(--bg);border:1px solid var(--brd);color:var(--txt2);width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;transition:.15s" onmouseenter="this.style.background='var(--dan-l)';this.style.color='var(--dan)'" onmouseleave="this.style.background='var(--bg)';this.style.color='var(--txt2)'">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M18 6L6 18M6 6l12 12"/></svg>
-        </button>
       </div>
       <div class="article-sidebar-list" id="articleSidebarList"></div>
     </aside>
@@ -4633,6 +4644,84 @@ function openArticle(id) {
   if (scroll) scroll.scrollTop = 0;
 }
 
+// ── Article body renderer ─────────────────────────────────────────────────
+// Converts the mixed HTML+plain content format used in EMBEDDED_POSTS into
+// properly structured HTML: headings, bullet lists, numbered lists, paragraphs.
+function _renderArticleBody(raw) {
+  // Split on blank lines — each chunk is a paragraph/heading/list block
+  const blocks = raw.split(/\n{2,}/);
+  const out = [];
+
+  for (let b = 0; b < blocks.length; b++) {
+    const block = blocks[b].trim();
+    if (!block) continue;
+
+    const lines = block.split(/\n/);
+
+    // ── Heading: a block that is ONLY a <strong>…</strong> (the whole block)
+    // Matches things like "<strong>Why it works:</strong>"
+    const headingRe = /^\s*<strong>(.+?)<\/strong>\s*:?\s*$/i;
+    if (lines.length === 1 && headingRe.test(lines[0])) {
+      const text = lines[0].replace(headingRe, '$1').replace(/:$/, '');
+      out.push(`<h3>${text}</h3>`);
+      continue;
+    }
+
+    // ── Bullet list: every line starts with • or - or *
+    const bulletRe = /^\s*[•\-\*]\s+/;
+    if (lines.every(l => bulletRe.test(l))) {
+      const items = lines.map(l => {
+        const text = l.replace(bulletRe, '').trim();
+        return `<li>${text}</li>`;
+      }).join('');
+      out.push(`<ul>${items}</ul>`);
+      continue;
+    }
+
+    // ── Numbered list: every line starts with a number + dot/paren
+    const numberedRe = /^\s*\d+[\.\)]\s+/;
+    if (lines.every(l => numberedRe.test(l))) {
+      const items = lines.map(l => {
+        const text = l.replace(numberedRe, '').trim();
+        return `<li>${text}</li>`;
+      }).join('');
+      out.push(`<ol>${items}</ol>`);
+      continue;
+    }
+
+    // ── Mixed block: some lines are bullets/numbered, some plain
+    // Handle line-by-line within a block (e.g. "Step N:" style)
+    let html = '';
+    let inUl = false, inOl = false;
+    for (const line of lines) {
+      if (bulletRe.test(line)) {
+        if (inOl) { html += '</ol>'; inOl = false; }
+        if (!inUl) { html += '<ul>'; inUl = true; }
+        html += `<li>${line.replace(bulletRe,'').trim()}</li>`;
+      } else if (numberedRe.test(line)) {
+        if (inUl) { html += '</ul>'; inUl = false; }
+        if (!inOl) { html += '<ol>'; inOl = true; }
+        html += `<li>${line.replace(numberedRe,'').trim()}</li>`;
+      } else {
+        if (inUl) { html += '</ul>'; inUl = false; }
+        if (inOl) { html += '</ol>'; inOl = false; }
+        // Plain line inside a block — treat as paragraph text
+        const trimmed = line.trim();
+        if (trimmed) html += `<p>${trimmed}</p>`;
+      }
+    }
+    if (inUl) html += '</ul>';
+    if (inOl) html += '</ol>';
+    if (html) { out.push(html); continue; }
+
+    // ── Default: plain paragraph (preserve inline HTML like <strong>)
+    const paraText = lines.join(' ').trim();
+    if (paraText) out.push(`<p>${paraText}</p>`);
+  }
+
+  return out.join('\n');
+}
+
 function _loadArticleContent(post) {
   const d = new Date(post.date + "T00:00:00");
   const dateStr = d.toLocaleDateString("en-US", { month:"long", day:"numeric", year:"numeric" });
@@ -4647,12 +4736,9 @@ function _loadArticleContent(post) {
 
   document.getElementById("articleTitle").textContent = post.title;
 
-  // Body — render paragraphs properly
+  // Body — smart renderer: headings, bullets, numbered lists, paragraphs
   const content = (post.content || post.body || "").trim();
-  const paras = content.split(/\n\n+/);
-  document.getElementById("articleBody").innerHTML = paras
-    .map(p => `<p>${p.replace(/\n/g, "<br>")}</p>`)
-    .join("");
+  document.getElementById("articleBody").innerHTML = _renderArticleBody(content);
 
   // Footer link
   const footer = document.getElementById("articleFooter");
@@ -8641,5 +8727,5 @@ window.addEventListener('appinstalled', () => {
   toast("App installed successfully!");
 });
 </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a18841039806dd48',t:'MTc4MzYwOTgxMA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</body>
 </html>
