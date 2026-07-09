@@ -1982,7 +1982,7 @@ footer .footer-links a:hover{color:var(--pri-d)}
           </button>
         </div>
         <div class="editor-wrap" id="editorWrap_noteInput">
-          <textarea id="noteInput" rows="3" oninput="onNoteBodyInput()" onclick="onTextareaClick(event)" onkeydown="onTextareaKeydown(event,'noteInput')" onkeyup="onTextareaKeyup(event,'noteInput')" placeholder="Write your note... Tap a toolbar button above to format — or just type naturally" inputmode="text" style="padding:10px 14px 32px 14px;border:1.5px solid var(--brd);border-radius:10px 10px 0 0;border-bottom:none;font-size:13px;line-height:1.6;font-family:inherit;outline:none;background:var(--bg);color:var(--txt);resize:none;overflow:hidden;min-height:70px;max-height:520px;width:100%;box-sizing:border-box"></textarea>
+          <textarea id="noteInput" rows="3" oninput="onNoteInput(this)" onclick="onTextareaClick(event)" onkeydown="onTextareaKeydown(event,'noteInput')" onkeyup="onTextareaKeyup(event,'noteInput')" placeholder="Write your note... Tap a toolbar button above to format — or just type naturally" inputmode="text" style="padding:10px 14px 32px 14px;border:1.5px solid var(--brd);border-radius:10px 10px 0 0;border-bottom:none;font-size:13px;line-height:1.6;font-family:inherit;outline:none;background:var(--bg);color:var(--txt);resize:none;overflow:hidden;min-height:70px;max-height:520px;width:100%;box-sizing:border-box"></textarea>
           <button type="button" class="add-item-fab" id="addItemFab_noteInput" onclick="tbAddPriceRow('noteInput')" style="display:none" title="Add another item to this ₱ list">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
             Add item
@@ -5091,8 +5091,30 @@ function autoGrowTextarea(el) {
   const max = parseInt(getComputedStyle(el).maxHeight, 10) || 99999;
   el.style.height = Math.min(el.scrollHeight, max) + "px";
   el.style.overflowY = el.scrollHeight > max ? "auto" : "hidden";
-  // Keep the "+ Add item" chip in sync for ₱ lists
-  if (el.id === "noteInput" || el.id === "noteEditText") _showAddItemChip(el.id);
+}
+
+function onNoteInput(el) {
+  autoGrowTextarea(el);
+  if (el.id === "noteInput") {
+    // Composer — run all the composer side-effects
+    const titleEl = document.getElementById("noteTitle");
+    if (titleEl && !titleEl.value.trim()) {
+      clearTimeout(_suggestDebounce);
+      _suggestDebounce = setTimeout(() => {
+        if (titleEl.value.trim()) return;
+        const s = suggestTitleFromText(el.value.trim());
+        titleEl.placeholder = s ? "Suggested: " + s + "  (tap Suggest)" : "Title (required) — or tap Suggest";
+      }, 400);
+    }
+    autoApplyNoteTag();
+    scheduleComposeMoodNudge();
+    checkPriceListAfterToggle("noteInput");
+    _showAddItemChip("noteInput");
+  } else if (el.id === "noteEditText") {
+    // Modal edit — just the checklist/chip logic
+    _showAddItemChip("noteEditText");
+    checkPriceListAfterToggle("noteEditText");
+  }
 }
 
 // ─── TOOLBAR HELPERS (insert-at-cursor, wrap, etc.) ───────
@@ -5419,29 +5441,6 @@ function checkPriceListAfterToggle(textareaId) {
     const info = _checkPriceListComplete(textareaId);
     if (info) _promptAddChecklistToExpenses(info.items, info.dismissKey);
   }, 350);
-}
-
-function onNoteBodyInput() {
-  const titleEl = document.getElementById("noteTitle");
-  const bodyEl = document.getElementById("noteInput");
-  if (!titleEl || !bodyEl) return;
-  autoGrowTextarea(bodyEl);   // grow the body field as the user types
-  // Only auto-fill the *placeholder* hint — never overwrite what the user typed
-  if (titleEl.value.trim()) { return; }
-  clearTimeout(_suggestDebounce);
-  _suggestDebounce = setTimeout(() => {
-    if (titleEl.value.trim()) return;
-    const s = suggestTitleFromText(bodyEl.value.trim());
-    titleEl.placeholder = s ? "Suggested: " + s + "  (tap Suggest)" : "Title (required) — or tap Suggest";
-  }, 400);
-  // Auto-tag based on what's being written (respects manual override)
-  autoApplyNoteTag();
-  // Compose-time supportive nudge (AI users only), debounced
-  scheduleComposeMoodNudge();
-  // If the user just completed a priced checklist, offer to add to Expenses
-  checkPriceListAfterToggle("noteInput");
-  // Show/hide the "+ Add item" chip based on whether there's a ₱ list in the text
-  _showAddItemChip("noteInput");
 }
 
 // Fired when the title field changes — refine the auto-tag
@@ -5957,7 +5956,7 @@ function renderNoteModal() {
           '<button type="button" class="tb-btn tb-wide" onclick="tbInsertPriceList(\'noteEditText\')" title="Insert a priced checklist"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3 7-7"/><path d="M20 12v7a2 2 0 01-2 2H6a2 2 0 01-2-2V5a2 2 0 012-2h8"/><line x1="3.5" y1="10" x2="8.5" y2="10"/><line x1="3.5" y1="15" x2="8.5" y2="15"/></svg>₱ List</button>' +
         '</div>' +
         '<div class="editor-wrap" id="editorWrap_noteEditText">' +
-          '<textarea id="noteEditText" oninput="autoGrowTextarea(this)" onclick="onTextareaClick(event)" onkeydown="onTextareaKeydown(event,\'noteEditText\')" onkeyup="onTextareaKeyup(event,\'noteEditText\')" inputmode="text" style="border-top:none;border-radius:0 0 12px 12px;padding-bottom:32px">' + escHtml(note.text || "") + '</textarea>' +
+          '<textarea id="noteEditText" oninput="onNoteInput(this)" onclick="onTextareaClick(event)" onkeydown="onTextareaKeydown(event,\'noteEditText\')" onkeyup="onTextareaKeyup(event,\'noteEditText\')" inputmode="text" style="border-top:none;border-radius:0 0 12px 12px;padding-bottom:32px">' + escHtml(note.text || "") + '</textarea>' +
           '<button type="button" class="add-item-fab" id="addItemFab_noteEditText" onclick="tbAddPriceRow(\'noteEditText\')" style="display:none" title="Add another item to this ₱ list">' +
             '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Add item' +
           '</button>' +
