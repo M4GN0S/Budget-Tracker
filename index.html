@@ -5315,8 +5315,12 @@ function _selectPlaceholderAtCursor(ta) {
   if (!m) { _setInputMode(ta, "text"); return; }
   const itemStart = lineStart + m[1].length;
   const itemEnd   = itemStart + m[2].length;
-  const priceStart= lineStart + m[1].length + m[2].length + (m[3]?m[3].length:0);
-  const priceEnd  = priceStart + m[4].length;
+  // priceStart must be computed from the END of the full match minus group4,
+  // because the currency symbol (₱/$ etc.) is consumed by a non-capturing group
+  // between group3 and group4 — so groups 1+2+3 lengths don't reach group4.
+  const matchEnd  = lineStart + m[0].length;
+  const priceEnd  = matchEnd - (m[0].length - m[0].trimEnd().length); // trim trailing space
+  const priceStart= priceEnd - m[4].length;
   // Decide which token the click is in — but ONLY auto-select if that token
   // is still an unedited placeholder (so we don't clobber user typing)
   const itemText = m[2];
