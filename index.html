@@ -958,17 +958,14 @@ tbody tr:hover td{background:var(--pri-l)}
 .note-modal-hint{padding:4px 24px 0;font-size:11px;color:var(--txt2)}
 /* Full-screen modals on mobile for a uniform, native feel */
 @media(max-width:640px){
-  .note-overlay,.article-overlay{padding:0;align-items:stretch}
-  .note-modal,.article{border-radius:0;margin:0;width:100%;max-width:100%;min-height:100dvh;max-height:100dvh;display:flex;flex-direction:column;box-shadow:none;background:var(--card)}
-  .note-modal-head,.article-head{padding:calc(14px + env(safe-area-inset-top,0px)) 18px 0}
+  .note-overlay{padding:0;align-items:stretch}
+  .note-modal{border-radius:0;margin:0;width:100%;max-width:100%;min-height:100dvh;max-height:100dvh;display:flex;flex-direction:column;box-shadow:none;background:var(--card)}
+  .note-modal-head{padding:calc(14px + env(safe-area-inset-top,0px)) 18px 0}
   .note-modal-title{font-size:18px;padding:10px 18px 4px}
   .note-modal-date{padding:0 18px 6px}
   .note-modal-hint{padding:4px 18px 0}
   .note-modal-body{padding:10px 18px 12px;flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
   .note-modal-foot{padding:14px 18px calc(18px + env(safe-area-inset-bottom,0px))}
-  .article-meta,.article-title{padding-left:18px;padding-right:18px}
-  .article-engage{padding-left:18px;padding-right:18px;padding-bottom:calc(18px + env(safe-area-inset-bottom,0px))}
-  .article-body{padding:8px 18px 16px;flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
   /* Install + newsletter popups also become bottom sheets */
   .modal-overlay{align-items:flex-end !important;padding:0 !important}
   .modal-overlay .modal{border-radius:18px 18px 0 0;margin:0;width:100%;max-width:100%;max-height:92dvh;overflow-y:auto;padding:22px 20px calc(22px + env(safe-area-inset-bottom,0px));animation:sheetUp .3s cubic-bezier(.4,0,.2,1)}
@@ -1301,46 +1298,78 @@ tbody tr:hover td{background:var(--pri-l)}
 .feed-empty{text-align:center;padding:24px 16px;color:var(--txt2);font-size:13px}
 .feed-item{cursor:pointer}
 
-/* ─── Article Modal ─── */
-.article-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);backdrop-filter:blur(4px);z-index:1000;display:none;align-items:flex-start;justify-content:center;padding:24px 16px;overflow-y:auto}
-.article-overlay.show{display:flex}
-.article{background:var(--card);border-radius:20px;max-width:600px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.25);animation:modalIn .3s cubic-bezier(.4,0,.2,1);margin:auto}
-.article-head{padding:24px 24px 0;display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
-.article-head .close-modal{flex-shrink:0;background:var(--bg);color:var(--txt2);width:32px;height:32px;border-radius:8px;font-size:16px;display:flex;align-items:center;justify-content:center;transition:.2s}
+/* ─── Article Reader — full-screen, two-panel on desktop ─── */
+.article-overlay{position:fixed;inset:0;z-index:1000;display:none;background:var(--bg)}
+.article-overlay.show{display:flex;animation:fadeInOv .18s ease}
+@keyframes fadeInOv{from{opacity:0}to{opacity:1}}
+.article-shell{display:flex;width:100%;height:100dvh;overflow:hidden}
+/* Sidebar */
+.article-sidebar{width:300px;flex-shrink:0;background:var(--card);border-right:1px solid var(--brd);display:flex;flex-direction:column;overflow:hidden}
+.article-sidebar-head{padding:calc(16px + env(safe-area-inset-top,0px)) 14px 10px;border-bottom:1px solid var(--brd);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.article-sidebar-head span{font-size:13px;font-weight:800;color:var(--txt)}
+.article-sidebar-list{flex:1;overflow-y:auto;padding:8px}
+.art-list-item{padding:10px 11px;border-radius:10px;cursor:pointer;border:1px solid transparent;margin-bottom:2px;transition:.15s}
+.art-list-item:hover{background:var(--bg);border-color:var(--brd)}
+.art-list-item.active{background:var(--pri-l);border-color:var(--pri)}
+.art-li-meta{display:flex;align-items:center;gap:6px;margin-bottom:3px}
+.art-li-title{font-size:12.5px;font-weight:700;color:var(--txt);line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.art-li-title.unread::before{content:"";display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--pri);margin-right:5px;vertical-align:middle}
+.art-li-date{font-size:10px;color:var(--txt2)}
+/* Reader */
+.article-reader{flex:1;display:flex;flex-direction:column;overflow:hidden;background:var(--bg)}
+.article-head{padding:calc(12px + env(safe-area-inset-top,0px)) 20px 12px;border-bottom:1px solid var(--brd);display:flex;align-items:center;justify-content:space-between;gap:10px;flex-shrink:0;background:var(--card)}
+.article-head .art-head-left{display:flex;align-items:center;gap:8px;min-width:0}
+.article-head .art-back-btn{display:none;background:transparent;border:none;color:var(--txt2);cursor:pointer;padding:4px;border-radius:6px;line-height:0;transition:.15s}
+.article-head .art-back-btn:hover{color:var(--txt)}
+.article-head .close-modal{flex-shrink:0;background:transparent;color:var(--txt2);width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;transition:.15s;border:none;cursor:pointer}
 .article-head .close-modal:hover{background:var(--dan-l);color:var(--dan)}
-.article-meta{display:flex;align-items:center;gap:8px;padding:8px 24px;flex-wrap:wrap}
+.article-scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
+/* Content column — reader-friendly max-width */
+.article-content{max-width:700px;margin:0 auto;padding:36px 32px 52px}
+.article-meta{display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap}
 .article-meta .feed-tag{font-size:10px}
 .article-read-time{font-size:11px;color:var(--txt2);font-weight:500}
-.article-title{font-size:22px;font-weight:900;line-height:1.3;padding:4px 24px 12px;color:var(--txt);letter-spacing:-.3px}
-.article-body{padding:0 24px 24px;font-size:14px;color:var(--txt);line-height:1.8}
-.article-body strong{font-weight:700;color:var(--txt)}
-.article-footer{padding:16px 24px;border-top:1px solid var(--brd);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
-/* Article engagement — reactions, comment, save */
-.article-engage{padding:0 24px 20px;display:flex;flex-direction:column;gap:16px}
-.article-reactions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-.article-reactions .react-label{font-size:12px;font-weight:600;color:var(--txt2);margin-right:4px}
-.react-btn{padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;background:var(--bg);color:var(--txt2);border:1.5px solid var(--brd);cursor:pointer;transition:.2s;display:flex;align-items:center;gap:5px}
+.article-title{font-size:28px;font-weight:900;line-height:1.22;color:var(--txt);letter-spacing:-.6px;margin-bottom:24px}
+.article-body{font-size:15.5px;color:var(--txt);line-height:1.9;word-wrap:break-word}
+.article-body p{margin:0 0 20px}
+.article-body p:last-child{margin-bottom:0}
+.article-body strong{font-weight:700}
+.article-footer{margin-top:32px;padding-top:20px;border-top:1px solid var(--brd);display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+/* Subtle engage bar — pinned to bottom of reader */
+.article-engage{flex-shrink:0;border-top:1px solid var(--brd);background:var(--card);padding:8px 32px calc(8px + env(safe-area-inset-bottom,0px))}
+.article-engage-inner{max-width:700px;margin:0 auto;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.react-row{display:flex;align-items:center;gap:3px}
+.react-row-label{font-size:10px;color:var(--txt2);margin-right:4px;white-space:nowrap}
+.react-btn{padding:3px 9px;border-radius:20px;font-size:11px;font-weight:600;background:transparent;color:var(--txt2);border:1px solid var(--brd);cursor:pointer;transition:.15s;line-height:1.5}
 .react-btn:hover{border-color:var(--pri);color:var(--pri-d);background:var(--pri-l)}
 .react-btn.active{background:var(--pri);color:var(--on-pri);border-color:var(--pri)}
-.article-comment{background:var(--bg);border-radius:12px;padding:14px;border:1px solid var(--brd)}
-.article-comment .comment-label{font-size:12px;font-weight:700;color:var(--txt);margin-bottom:8px;display:flex;align-items:center;gap:6px}
-.article-comment textarea{width:100%;padding:10px 12px;border:1.5px solid var(--brd);border-radius:10px;font-size:13px;font-family:inherit;outline:none;background:var(--input-bg);color:var(--txt);resize:vertical;min-height:60px;box-sizing:border-box;line-height:1.6}
-.article-comment textarea:focus{border-color:var(--pri);box-shadow:0 0 0 3px rgba(108,154,139,.12)}
-.article-comment .comment-actions{display:flex;gap:8px;margin-top:8px;align-items:center}
-.article-comment .comment-saved{font-size:11px;color:var(--suc);font-weight:600;display:none}
-.article-save-btn{display:flex;align-items:center;gap:8px;padding:10px 18px;border-radius:12px;font-size:13px;font-weight:700;background:var(--bg);color:var(--pri-d);border:1.5px solid var(--brd);cursor:pointer;transition:.2s;width:100%}
-.article-save-btn:hover{background:var(--pri-l);border-color:var(--pri)}
+.article-save-btn{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:600;background:transparent;color:var(--txt2);border:1px solid var(--brd);cursor:pointer;transition:.15s;white-space:nowrap;font-family:inherit}
+.article-save-btn:hover{background:var(--pri-l);border-color:var(--pri);color:var(--pri-d)}
 .article-save-btn.saved{background:var(--suc-l);color:var(--suc);border-color:var(--suc)}
 .article-save-btn svg{flex-shrink:0}
-@media(max-width:600px){
-  .article-engage{padding:0 18px 16px}
-}
-@media(max-width:600px){
-  .article-title{font-size:18px;padding:4px 18px 10px}
-  .article-head{padding:18px 18px 0}
-  .article-meta{padding:8px 18px}
-  .article-body{padding:0 18px 18px;font-size:13px}
-  .article-footer{padding:14px 18px}
+.art-comment-toggle{margin-left:auto;display:inline-flex;align-items:center;gap:5px;background:transparent;border:none;color:var(--txt2);font-size:11px;font-weight:600;cursor:pointer;padding:3px 8px;border-radius:20px;border:1px solid var(--brd);transition:.15s;font-family:inherit;white-space:nowrap}
+.art-comment-toggle:hover{color:var(--txt);background:var(--bg);border-color:var(--txt2)}
+.art-comment-toggle.has-comment{color:var(--pri-d);border-color:var(--pri);background:var(--pri-l)}
+/* Comment panel — slides in above engage bar */
+.article-comment-panel{flex-shrink:0;border-top:1px solid var(--brd);background:var(--card);padding:14px 32px;display:none}
+.article-comment-panel.open{display:block}
+.article-comment-panel .comment-inner{max-width:700px;margin:0 auto}
+.article-comment-panel .comment-label{font-size:10px;font-weight:700;color:var(--txt2);text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between}
+.article-comment-panel textarea{width:100%;padding:9px 12px;border:1.5px solid var(--brd);border-radius:10px;font-size:13px;font-family:inherit;outline:none;background:var(--input-bg);color:var(--txt);resize:none;min-height:64px;box-sizing:border-box;line-height:1.6;transition:.2s}
+.article-comment-panel textarea:focus{border-color:var(--pri)}
+.article-comment-panel .comment-actions{display:flex;gap:8px;margin-top:8px;align-items:center}
+.comment-display-text{font-size:13px;color:var(--txt);line-height:1.6;white-space:pre-wrap;word-wrap:break-word;background:var(--bg);border:1px solid var(--brd);border-radius:10px;padding:10px 12px;margin-bottom:6px}
+.comment-display-meta{font-size:10px;color:var(--txt2);display:flex;align-items:center;gap:8px}
+/* Mobile — full screen, no sidebar, back button */
+@media(max-width:900px){
+  .article-sidebar{display:none}
+  .article-reader{height:100dvh}
+  .article-head .art-back-btn{display:flex}
+  .article-content{padding:22px 18px 40px}
+  .article-title{font-size:21px;margin-bottom:16px}
+  .article-body{font-size:14px;line-height:1.82}
+  .article-engage{padding:7px 18px calc(7px + env(safe-area-inset-bottom,0px))}
+  .article-comment-panel{padding:12px 18px}
 }
 
 /* ─── Section Divider ─── */
@@ -2589,60 +2618,96 @@ footer .footer-links a:hover{color:var(--pri-d)}
   </div>
 </div>
 
-<div class="article-overlay" id="articleOverlay" onclick="if(event.target===this)closeArticle()">
-  <div class="article">
-    <div class="article-head">
-      <div></div>
-      <button class="close-modal" onclick="closeArticle()" aria-label="Close"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
-    </div>
-    <div class="article-meta" id="articleMeta"></div>
-    <div class="article-title" id="articleTitle"></div>
-    <div class="article-body" id="articleBody"></div>
+<div class="article-overlay" id="articleOverlay">
+  <div class="article-shell">
 
-    <!-- Engagement: Reactions + Comment + Save -->
-    <div class="article-engage" id="articleEngage">
-      <!-- Save to Journal -->
-      <button class="article-save-btn" id="articleSaveBtn" onclick="saveArticleToJournal()">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
-        <span id="saveBtnText">Save to Journal</span>
-      </button>
+    <!-- ── Left sidebar: article list (desktop only) ── -->
+    <aside class="article-sidebar">
+      <div class="article-sidebar-head">
+        <span>Articles &amp; Updates</span>
+        <button class="close-modal" onclick="closeArticle()" aria-label="Close" title="Close">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div class="article-sidebar-list" id="articleSidebarList"></div>
+    </aside>
 
-      <!-- Reactions -->
-      <div class="article-reactions">
-        <span class="react-label">Was this helpful?</span>
-        <button class="react-btn" data-reaction="helpful" onclick="reactToArticle('helpful',this)">Helpful</button>
-        <button class="react-btn" data-reaction="learned" onclick="reactToArticle('learned',this)">Learned</button>
-        <button class="react-btn" data-reaction="love" onclick="reactToArticle('love',this)">Love</button>
+    <!-- ── Right: reader panel ── -->
+    <div class="article-reader">
+
+      <!-- Topbar -->
+      <div class="article-head">
+        <div class="art-head-left">
+          <!-- Back button (mobile only) -->
+          <button class="art-back-btn" onclick="closeArticle()" aria-label="Back">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+          </button>
+          <div id="articleHeadMeta" style="font-size:12px;color:var(--txt2);font-weight:600"></div>
+        </div>
+        <button class="close-modal" onclick="closeArticle()" aria-label="Close">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+        </button>
       </div>
 
-      <!-- Comment -->
-      <div class="article-comment">
-        <div class="comment-label">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
-          Your Thoughts
+      <!-- Scrollable article content -->
+      <div class="article-scroll">
+        <div class="article-content">
+          <div class="article-meta" id="articleMeta"></div>
+          <div class="article-title" id="articleTitle"></div>
+          <div class="article-body" id="articleBody"></div>
+          <div class="article-footer" id="articleFooter" style="display:none"></div>
         </div>
-        <!-- Saved comment display -->
-        <div id="commentDisplay" style="display:none">
-          <div id="commentDisplayContent" style="font-size:13px;color:var(--txt);line-height:1.6;white-space:pre-wrap;word-wrap:break-word"></div>
-          <div style="display:flex;align-items:center;gap:8px;margin-top:6px">
-            <span id="commentDisplayDate" style="font-size:10px;color:var(--txt2)"></span>
-            <button class="btn btn-sec btn-sm" onclick="editArticleComment()" style="font-size:11px;padding:4px 10px">Edit</button>
+      </div>
+
+      <!-- Comment panel — hidden until toggled -->
+      <div class="article-comment-panel" id="articleCommentPanel">
+        <div class="comment-inner">
+          <div class="comment-label">
+            <span>Your note on this article</span>
+            <button style="background:none;border:none;color:var(--txt2);cursor:pointer;font-size:18px;line-height:1;padding:0" onclick="toggleArticleComment()" aria-label="Close">×</button>
           </div>
-        </div>
-        <!-- Comment input (new or editing) -->
-        <div id="commentInputArea">
-          <textarea id="articleCommentInput" placeholder="What did you think of this article? Any tips you'll try?" rows="3"></textarea>
-          <div class="comment-actions">
-            <button class="btn btn-pri btn-sm" onclick="saveArticleComment()">Post Comment</button>
-            <button class="btn btn-sec btn-sm" id="commentCancelEdit" onclick="cancelCommentEdit()" style="display:none">Cancel</button>
-            <span class="comment-saved" id="commentSavedMsg">Posted!</span>
+          <div id="commentDisplay" style="display:none">
+            <div class="comment-display-text" id="commentDisplayContent"></div>
+            <div class="comment-display-meta">
+              <span id="commentDisplayDate"></span>
+              <button class="btn btn-sec btn-sm" onclick="editArticleComment()" style="font-size:11px;padding:3px 9px">Edit</button>
+            </div>
+          </div>
+          <div id="commentInputArea">
+            <textarea id="articleCommentInput" placeholder="What did you think? Any tips you'll try?" rows="2"></textarea>
+            <div class="comment-actions">
+              <button class="btn btn-pri btn-sm" onclick="saveArticleComment()" style="font-size:12px">Post</button>
+              <button class="btn btn-sec btn-sm" id="commentCancelEdit" onclick="cancelCommentEdit()" style="display:none;font-size:12px">Cancel</button>
+            </div>
           </div>
         </div>
       </div>
-    </div>
 
-    <div class="article-footer" id="articleFooter"></div>
-  </div>
+      <!-- Subtle engage bar -->
+      <div class="article-engage">
+        <div class="article-engage-inner">
+          <!-- Reaction pills -->
+          <div class="react-row">
+            <span class="react-row-label">Helpful?</span>
+            <button class="react-btn" data-reaction="helpful" onclick="reactToArticle('helpful',this)">👍 Helpful</button>
+            <button class="react-btn" data-reaction="learned" onclick="reactToArticle('learned',this)">💡 Learned</button>
+            <button class="react-btn" data-reaction="love" onclick="reactToArticle('love',this)">❤️ Love</button>
+          </div>
+          <!-- Save ghost pill -->
+          <button class="article-save-btn" id="articleSaveBtn" onclick="saveArticleToJournal()">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/></svg>
+            <span id="saveBtnText">Save to Journal</span>
+          </button>
+          <!-- Comment toggle -->
+          <button class="art-comment-toggle" id="commentToggleBtn" onclick="toggleArticleComment()">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+            <span id="commentToggleLabel">Leave a note</span>
+          </button>
+        </div>
+      </div>
+
+    </div><!-- .article-reader -->
+  </div><!-- .article-shell -->
 </div>
 
 <!-- ─── TOAST ─── -->
@@ -4480,38 +4545,23 @@ function openArticle(id) {
   if (!post) return;
 
   markPostRead(id);
-  // Update both the feed card and the bell dropdown
   const cached = localStorage.getItem("bt_feed_cache");
   if (cached) {
-    const cachedPosts = JSON.parse(cached);
-    renderFeed(cachedPosts);
-    renderBellDropdown(cachedPosts);
+    try {
+      const cachedPosts = JSON.parse(cached);
+      renderFeed(cachedPosts);
+      renderBellDropdown(cachedPosts);
+    } catch(e) {}
   }
 
-  const d = new Date(post.date + "T00:00:00");
-  const dateStr = d.toLocaleDateString("en-US", { month:"long", day:"numeric", year:"numeric" });
+  _loadArticleContent(post);
 
-  document.getElementById("articleMeta").innerHTML = `
-    <span class="feed-tag ${post.type}">${post.type}</span>
-    <span class="article-read-time">${dateStr}${post.readTime ? " · " + post.readTime + " read" : ""}</span>
-  `;
-  document.getElementById("articleTitle").textContent = post.title;
+  // Populate sidebar list
+  _renderArticleSidebar(id);
 
-  // Render content with line breaks as HTML
-  const content = post.content || post.body;
-  document.getElementById("articleBody").innerHTML = content.replace(/\n\n/g, '</p><p style="margin-top:14px">').replace(/\n/g, '<br>');
-
-  // Footer with link if available
-  const footer = document.getElementById("articleFooter");
-  if (post.link) {
-    footer.innerHTML = `
-      <span style="font-size:12px;color:var(--txt2)">Interested?</span>
-      <a href="${post.link}" class="feed-link" target="_blank">${post.linkText || "Learn more →"}</a>
-    `;
-    footer.style.display = "flex";
-  } else {
-    footer.style.display = "none";
-  }
+  // Close comment panel when switching articles
+  const cp = document.getElementById("articleCommentPanel");
+  if (cp) cp.classList.remove("open");
 
   // Set current article and render engagement
   currentArticleId = id;
@@ -4521,11 +4571,93 @@ function openArticle(id) {
 
   document.getElementById("articleOverlay").classList.add("show");
   document.body.style.overflow = "hidden";
+  // Scroll reader back to top
+  const scroll = document.querySelector(".article-scroll");
+  if (scroll) scroll.scrollTop = 0;
+}
+
+function _loadArticleContent(post) {
+  const d = new Date(post.date + "T00:00:00");
+  const dateStr = d.toLocaleDateString("en-US", { month:"long", day:"numeric", year:"numeric" });
+
+  // Head meta (topbar)
+  const headMeta = document.getElementById("articleHeadMeta");
+  if (headMeta) headMeta.textContent = post.title.length > 48 ? post.title.substring(0,48) + "…" : post.title;
+
+  document.getElementById("articleMeta").innerHTML =
+    `<span class="feed-tag ${post.type}">${post.type}</span>` +
+    `<span class="article-read-time">${dateStr}${post.readTime ? " · " + post.readTime + " read" : ""}</span>`;
+
+  document.getElementById("articleTitle").textContent = post.title;
+
+  // Body — render paragraphs properly
+  const content = (post.content || post.body || "").trim();
+  const paras = content.split(/\n\n+/);
+  document.getElementById("articleBody").innerHTML = paras
+    .map(p => `<p>${p.replace(/\n/g, "<br>")}</p>`)
+    .join("");
+
+  // Footer link
+  const footer = document.getElementById("articleFooter");
+  if (post.link) {
+    footer.innerHTML =
+      `<span style="font-size:12px;color:var(--txt2)">Read more:</span>` +
+      `<a href="${post.link}" class="feed-link" target="_blank" rel="noopener">${post.linkText || "Learn more →"}</a>`;
+    footer.style.display = "flex";
+  } else {
+    footer.style.display = "none";
+  }
+}
+
+function _renderArticleSidebar(activeId) {
+  const list = document.getElementById("articleSidebarList");
+  if (!list || !feedPostsCache.length) return;
+  const readIds = getReadPosts();
+  const posts = feedPostsCache.slice().sort((a,b) => {
+    if (a.pinned && !b.pinned) return -1;
+    if (!a.pinned && b.pinned) return 1;
+    return new Date(b.date) - new Date(a.date);
+  });
+  list.innerHTML = posts.map(p => {
+    const d = new Date(p.date + "T00:00:00");
+    const dateStr = d.toLocaleDateString("en-US", { month:"short", day:"numeric" });
+    const isUnread = !readIds.includes(p.id);
+    const isActive = p.id === activeId;
+    return `<div class="art-list-item${isActive?" active":""}${isUnread?" unread":""}" onclick="openArticle(${p.id})">
+      <div class="art-li-meta">
+        <span class="feed-tag ${p.type}" style="font-size:9px">${p.type}</span>
+        <span class="art-li-date">${dateStr}</span>
+      </div>
+      <div class="art-li-title${isUnread?" unread":""}">${escHtml(p.title)}</div>
+    </div>`;
+  }).join("");
 }
 
 function closeArticle() {
   document.getElementById("articleOverlay").classList.remove("show");
   document.body.style.overflow = "";
+}
+
+// ── Comment panel toggle ──
+function toggleArticleComment() {
+  const panel = document.getElementById("articleCommentPanel");
+  const toggle = document.getElementById("commentToggleBtn");
+  const label = document.getElementById("commentToggleLabel");
+  if (!panel) return;
+  const isOpen = panel.classList.toggle("open");
+  if (isOpen) {
+    // Check if user already has a comment — if not, focus textarea
+    const comments = getArticleComments();
+    if (!comments[String(currentArticleId)]) {
+      setTimeout(() => {
+        const ta = document.getElementById("articleCommentInput");
+        if (ta) ta.focus();
+      }, 80);
+    }
+    if (label) label.textContent = "Close note";
+  } else {
+    if (label) label.textContent = "Leave a note";
+  }
 }
 
 // Close the journal modal with the Escape key
@@ -4655,27 +4787,31 @@ function renderArticleComment() {
   const display = document.getElementById("commentDisplay");
   const inputArea = document.getElementById("commentInputArea");
   const cancelBtn = document.getElementById("commentCancelEdit");
-  const msg = document.getElementById("commentSavedMsg");
-  msg.style.display = "none";
+  const toggle = document.getElementById("commentToggleBtn");
+  const label = document.getElementById("commentToggleLabel");
 
   if (comment) {
-    // Show the posted comment
     const content = document.getElementById("commentDisplayContent");
     const dateEl = document.getElementById("commentDisplayDate");
     const userName = getUserName() || "You";
     const d = new Date(comment.date);
-    const dateStr = d.toLocaleDateString("en-US", { month: "short", day: "numeric" }) + " at " + d.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
+    const dateStr = d.toLocaleDateString("en-US", { month:"short", day:"numeric" }) + " at " + d.toLocaleTimeString("en-US", { hour:"numeric", minute:"2-digit" });
     content.textContent = comment.text;
     dateEl.textContent = userName + " · " + dateStr + (comment.edited ? " · edited" : "");
     display.style.display = "block";
     inputArea.style.display = "none";
     cancelBtn.style.display = "none";
+    // Mark toggle as "has comment"
+    if (toggle) toggle.classList.add("has-comment");
+    if (label) label.textContent = "Your note ✓";
   } else {
-    // Show empty input
     display.style.display = "none";
     inputArea.style.display = "block";
-    cancelBtn.style.display = "none";
-    document.getElementById("articleCommentInput").value = "";
+    if (cancelBtn) cancelBtn.style.display = "none";
+    const ta = document.getElementById("articleCommentInput");
+    if (ta) ta.value = "";
+    if (toggle) toggle.classList.remove("has-comment");
+    if (label) label.textContent = "Leave a note";
   }
 }
 
@@ -8465,5 +8601,5 @@ window.addEventListener('appinstalled', () => {
   toast("App installed successfully!");
 });
 </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a187899bdaf202be',t:'MTc4MzYwMjI5OA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</body>
 </html>
