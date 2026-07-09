@@ -5300,36 +5300,43 @@ function _setInputMode(ta, mode) {
 }
 
 // Click handler — auto-select placeholders
+// ─── Shared helper: compute item + price ranges for a matched checklist line ──
+// m = result of line.match(_symRe()), lineStart = offset of line in textarea value.
+// Returns { itemStart, itemEnd, priceStart, priceEnd }.
+// priceStart is derived by searching for group4 AFTER group1+group2+group3 in the
+// line string — this correctly skips the non-captured currency symbol (₱/$/PHP).
+function _checklistRanges(m, lineStart) {
+  const itemStart  = lineStart + m[1].length;
+  const itemEnd    = itemStart + m[2].length;
+  // Find where g4 (the digits) actually begin in the line, starting search from
+  // after g1+g2+g3 so we never accidentally match digits in the item name.
+  const searchFrom = m[1].length + m[2].length + (m[3] ? m[3].length : 0);
+  const g4InLine   = m[0].indexOf(m[4], searchFrom);
+  const priceStart = lineStart + g4InLine;
+  const priceEnd   = priceStart + m[4].length;
+  return { itemStart, itemEnd, priceStart, priceEnd };
+}
+
 function onTextareaClick(e) {
   const ta = e.target;
   if (!ta || ta.tagName !== "TEXTAREA") return;
+  // Use setTimeout so the browser has committed the new cursor position first
   setTimeout(() => _selectPlaceholderAtCursor(ta), 0);
 }
 
 function _selectPlaceholderAtCursor(ta) {
   const pos = ta.selectionStart;
   if (pos !== ta.selectionEnd) { _setInputMode(ta, "text"); return; }
-  const { line, lineStart, index: lineIdx } = _currentLine(ta, pos);
+  const { line, lineStart } = _currentLine(ta, pos);
   const re = _symRe();
   const m = line.match(re);
   if (!m) { _setInputMode(ta, "text"); return; }
-  const itemStart = lineStart + m[1].length;
-  const itemEnd   = itemStart + m[2].length;
-  // priceStart must be computed from the END of the full match minus group4,
-  // because the currency symbol (₱/$ etc.) is consumed by a non-capturing group
-  // between group3 and group4 — so groups 1+2+3 lengths don't reach group4.
-  const matchEnd  = lineStart + m[0].length;
-  const priceEnd  = matchEnd - (m[0].length - m[0].trimEnd().length); // trim trailing space
-  const priceStart= priceEnd - m[4].length;
-  // Decide which token the click is in — but ONLY auto-select if that token
-  // is still an unedited placeholder (so we don't clobber user typing)
-  const itemText = m[2];
-  const priceText = m[4];
-  if (pos >= itemStart && pos <= itemEnd && _PLACEHOLDER_NAME_RE.test(itemText.trim())) {
+  const { itemStart, itemEnd, priceStart, priceEnd } = _checklistRanges(m, lineStart);
+  if (pos >= itemStart && pos <= itemEnd && _PLACEHOLDER_NAME_RE.test(m[2].trim())) {
     ta.setSelectionRange(itemStart, itemEnd);
     _setInputMode(ta, "text");
   } else if (pos >= priceStart && pos <= priceEnd) {
-    // Always select the price when clicked — even after edit it's nice to select-all
+    // Always select the full price number when clicked
     ta.setSelectionRange(priceStart, priceEnd);
     _setInputMode(ta, "decimal");
   } else {
@@ -5386,10 +5393,7 @@ function _tabToNextPlaceholder(ta, dir) {
   let m;
   while ((m = lineRe.exec(val)) !== null) {
     const lineStart = m.index;
-    const itemStart = lineStart + m[1].length;
-    const itemEnd   = itemStart + m[2].length;
-    const priceStart= lineStart + m[1].length + m[2].length + (m[3]?m[3].length:0);
-    const priceEnd  = priceStart + m[4].length;
+    const { itemStart, itemEnd, priceStart, priceEnd } = _checklistRanges(m, lineStart);
     if (_PLACEHOLDER_NAME_RE.test(m[2].trim())) {
       ranges.push({ start: itemStart, end: itemEnd, kind: "item" });
     }
