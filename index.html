@@ -1982,7 +1982,7 @@ footer .footer-links a:hover{color:var(--pri-d)}
           </button>
         </div>
         <div class="editor-wrap" id="editorWrap_noteInput">
-          <textarea id="noteInput" rows="3" oninput="onNoteInput(this)" onclick="onTextareaClick(event)" onkeydown="onTextareaKeydown(event,'noteInput')" onkeyup="onTextareaKeyup(event,'noteInput')" placeholder="Write your note... Tap a toolbar button above to format — or just type naturally" inputmode="text" style="padding:10px 14px 32px 14px;border:1.5px solid var(--brd);border-radius:10px 10px 0 0;border-bottom:none;font-size:13px;line-height:1.6;font-family:inherit;outline:none;background:var(--bg);color:var(--txt);resize:none;overflow:hidden;min-height:70px;max-height:520px;width:100%;box-sizing:border-box"></textarea>
+          <textarea id="noteInput" rows="3" oninput="onNoteInput(this)" onblur="onNoteBlur(this)" onclick="onTextareaClick(event)" onkeydown="onTextareaKeydown(event,'noteInput')" onkeyup="onTextareaKeyup(event,'noteInput')" placeholder="Write your note... Tap a toolbar button above to format — or just type naturally" inputmode="text" style="padding:10px 14px 32px 14px;border:1.5px solid var(--brd);border-radius:10px 10px 0 0;border-bottom:none;font-size:13px;line-height:1.6;font-family:inherit;outline:none;background:var(--bg);color:var(--txt);resize:none;overflow:hidden;min-height:70px;max-height:520px;width:100%;box-sizing:border-box"></textarea>
           <button type="button" class="add-item-fab" id="addItemFab_noteInput" onclick="tbAddPriceRow('noteInput')" style="display:none" title="Add another item to this ₱ list">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
             Add item
@@ -5095,6 +5095,8 @@ function autoGrowTextarea(el) {
 
 function onNoteInput(el) {
   autoGrowTextarea(el);
+  // Format price-in-line as the user types (comma-thousands, live)
+  _formatPriceInLine(el);
   if (el.id === "noteInput") {
     // Composer — run all the composer side-effects
     const titleEl = document.getElementById("noteTitle");
@@ -5111,10 +5113,15 @@ function onNoteInput(el) {
     checkPriceListAfterToggle("noteInput");
     _showAddItemChip("noteInput");
   } else if (el.id === "noteEditText") {
-    // Modal edit — just the checklist/chip logic
     _showAddItemChip("noteEditText");
     checkPriceListAfterToggle("noteEditText");
   }
+}
+
+function onNoteBlur(el) {
+  // On leaving the textarea, finalise all prices to X,XXX.00
+  _finalisePricesInTextarea(el);
+  autoGrowTextarea(el);
 }
 
 // ─── TOOLBAR HELPERS (insert-at-cursor, wrap, etc.) ───────
@@ -5294,10 +5301,74 @@ function _showAddItemChip(textareaId, forceShow) {
 }
 
 function _setInputMode(ta, mode) {
-  // Always keep default text keyboard — switching to "decimal" mid-interaction
-  // causes iOS/Android to disrupt the keyboard and fight with setSelectionRange.
-  // The price field is just numbers + a dot, which the default keyboard handles fine.
-  ta.setAttribute("inputmode", "text");
+  // "decimal" gives iOS the number-row keyboard (1-9 top row + dot).
+  // Only switch when we're actually in a price zone; otherwise keep "text".
+  ta.setAttribute("inputmode", mode === "decimal" ? "decimal" : "text");
+}
+
+// ── Price auto-formatter ──────────────────────────────────────────────────────
+// Called from onNoteInput whenever the textarea value changes.
+// Finds the line the cursor is on; if it's a price line, rewrites the raw digits
+// the user just typed as a properly comma-separated "5,000.00" number in-place,
+// keeping the cursor at the right position.
+function _formatPriceInLine(ta) {
+  const pos = ta.selectionStart;
+  if (pos !== ta.selectionEnd) return; // don't touch active selections
+  const { line, lineStart, lineEnd } = _currentLine(ta, pos);
+  const re = _symRe();
+  const m = line.match(re);
+  if (!m || !m[4]) return;
+  const { priceStart, priceEnd } = _checklistRanges(m, lineStart);
+  // Only reformat when cursor is inside the price zone
+  if (pos < priceStart || pos > priceEnd) return;
+  const raw = m[4].replace(/,/g, ""); // strip existing commas
+  if (!/^\d*\.?\d*$/.test(raw)) return; // safety: only digits/dot
+  const num = parseFloat(raw);
+  if (isNaN(num)) return;
+  // Format: whole part gets comma-thousands; always show .00 / .X0 / .XX
+  const parts = raw.split(".");
+  const wholeFormatted = (parts[0] || "0").replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  let formatted;
+  if (parts.length === 1) {
+    // No decimal typed yet — just show the whole number, no forced .00
+    // (we'll add .00 only on blur/when leaving the field)
+    formatted = wholeFormatted;
+  } else {
+    // User typed a dot — show whatever decimal they've entered so far
+    formatted = wholeFormatted + "." + (parts[1] || "");
+  }
+  if (formatted === m[4]) return; // no change needed
+  const val = ta.value;
+  const cursorOffset = pos - priceStart; // where cursor is within the old price text
+  ta.value = val.substring(0, priceStart) + formatted + val.substring(priceEnd);
+  // Restore cursor: account for commas added before the cursor position
+  const oldBefore = m[4].substring(0, cursorOffset);
+  const newBefore = formatted.substring(0, Math.min(cursorOffset + (formatted.length - m[4].length), formatted.length));
+  const newPos = priceStart + newBefore.length;
+  ta.setSelectionRange(newPos, newPos);
+}
+
+// Called on blur (leaving the textarea) — finalise all prices to X,XXX.00 format
+function _finalisePricesInTextarea(ta) {
+  const re = _symRe();
+  const lineRe = new RegExp(re.source, re.flags + "g");  // not anchored per-line, apply globally
+  // We'll process line by line to avoid offset drift
+  const lines = ta.value.split("\n");
+  const updated = lines.map(line => {
+    const m = line.match(re);
+    if (!m || !m[4]) return line;
+    const raw = m[4].replace(/,/g, "");
+    const num = parseFloat(raw);
+    if (isNaN(num)) return line;
+    const wholeFormatted = Math.floor(num).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    const dec = (num % 1).toFixed(2).substring(2); // always 2 decimal places
+    const finalPrice = wholeFormatted + "." + dec;
+    // Replace only the price token in the line
+    const { priceStart: ps, priceEnd: pe } = _checklistRanges(m, 0);
+    return line.substring(0, ps) + finalPrice + line.substring(pe);
+  });
+  const newVal = updated.join("\n");
+  if (newVal !== ta.value) ta.value = newVal;
 }
 
 // Click handler — auto-select placeholders
@@ -5331,19 +5402,26 @@ function _selectPlaceholderAtCursor(ta) {
   const { line, lineStart } = _currentLine(ta, pos);
   const re = _symRe();
   const m = line.match(re);
-  if (!m) return;
+  if (!m) {
+    // Not on a price line — restore text keyboard
+    _setInputMode(ta, "text");
+    return;
+  }
   const { itemStart, itemEnd, priceStart, priceEnd } = _checklistRanges(m, lineStart);
   if (pos >= itemStart && pos <= itemEnd && _PLACEHOLDER_NAME_RE.test(m[2].trim())) {
-    // Item name placeholder — select it so the user can just start typing
+    // Item name placeholder — select it so user can just start typing
+    _setInputMode(ta, "text");
     ta.setSelectionRange(itemStart, itemEnd);
   } else if (pos >= priceStart && pos <= priceEnd) {
-    // Price field — select all digits so typing replaces the placeholder value.
-    // We use a flag to prevent the selection-change from re-triggering this.
+    // Price zone — switch to decimal keyboard, select the number
+    _setInputMode(ta, "decimal");
     if (!ta._selectingPrice) {
       ta._selectingPrice = true;
       ta.setSelectionRange(priceStart, priceEnd);
-      setTimeout(() => { ta._selectingPrice = false; }, 300);
+      setTimeout(() => { ta._selectingPrice = false; }, 400);
     }
+  } else {
+    _setInputMode(ta, "text");
   }
 }
 
@@ -6092,7 +6170,7 @@ function renderNoteModal() {
           '<button type="button" class="tb-btn tb-wide" onclick="tbInsertPriceList(\'noteEditText\')" title="Insert a priced checklist"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3 7-7"/><path d="M20 12v7a2 2 0 01-2 2H6a2 2 0 01-2-2V5a2 2 0 012-2h8"/><line x1="3.5" y1="10" x2="8.5" y2="10"/><line x1="3.5" y1="15" x2="8.5" y2="15"/></svg>₱ List</button>' +
         '</div>' +
         '<div class="editor-wrap" id="editorWrap_noteEditText">' +
-          '<textarea id="noteEditText" oninput="onNoteInput(this)" onclick="onTextareaClick(event)" onkeydown="onTextareaKeydown(event,\'noteEditText\')" onkeyup="onTextareaKeyup(event,\'noteEditText\')" inputmode="text" style="border-top:none;border-radius:0 0 12px 12px;padding-bottom:32px">' + escHtml(note.text || "") + '</textarea>' +
+          '<textarea id="noteEditText" oninput="onNoteInput(this)" onblur="onNoteBlur(this)" onclick="onTextareaClick(event)" onkeydown="onTextareaKeydown(event,\'noteEditText\')" onkeyup="onTextareaKeyup(event,\'noteEditText\')" inputmode="text" style="border-top:none;border-radius:0 0 12px 12px;padding-bottom:32px">' + escHtml(note.text || "") + '</textarea>' +
           '<button type="button" class="add-item-fab" id="addItemFab_noteEditText" onclick="tbAddPriceRow(\'noteEditText\')" style="display:none" title="Add another item to this ₱ list">' +
             '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Add item' +
           '</button>' +
@@ -8323,5 +8401,5 @@ window.addEventListener('appinstalled', () => {
   toast("App installed successfully!");
 });
 </script>
-</body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a186aab0ac030450',t:'MTc4MzU5MzE2Nw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
