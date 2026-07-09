@@ -1364,43 +1364,54 @@ tbody tr:hover td{background:var(--pri-l)}
 .article-save-btn.saved{background:var(--suc-l);color:var(--suc);border-color:var(--suc)}
 .article-save-btn svg{flex-shrink:0}
 
-/* Comment section — compact, always shown */
+/* Comment section — compact, 1-liner input with inline send */
 .article-comment-panel{
   flex-shrink:0;border-top:1px solid var(--brd);background:var(--card);
-  padding:10px 32px calc(10px + env(safe-area-inset-bottom,0px));
+  padding:8px 32px calc(8px + env(safe-area-inset-bottom,0px));
 }
 .article-comment-panel .comment-inner{max-width:700px;margin:0 auto}
 .article-comment-panel .comment-label{
-  font-size:11px;font-weight:700;color:var(--txt2);text-transform:uppercase;
-  letter-spacing:.5px;margin-bottom:7px;display:flex;align-items:center;gap:5px;
+  font-size:10px;font-weight:700;color:var(--txt2);text-transform:uppercase;
+  letter-spacing:.5px;margin-bottom:6px;display:flex;align-items:center;gap:5px;
+}
+/* Input row: textarea + send button side by side */
+.comment-input-row{
+  display:flex;align-items:flex-end;gap:6px;
 }
 .article-comment-panel textarea{
-  width:100%;padding:8px 11px;
-  border:1.5px solid var(--brd);border-radius:10px;
+  flex:1;padding:7px 11px;
+  border:1.5px solid var(--brd);border-radius:20px;
   font-size:12.5px;font-family:inherit;outline:none;
   background:var(--input-bg);color:var(--txt);
-  resize:none;min-height:54px;box-sizing:border-box;line-height:1.55;transition:.2s;
+  resize:none;height:34px;min-height:34px;max-height:160px;
+  box-sizing:border-box;line-height:1.5;transition:border-color .2s;
+  overflow:hidden;
 }
-.article-comment-panel textarea:focus{border-color:var(--pri);box-shadow:0 0 0 3px rgba(108,154,139,.10)}
-.article-comment-panel .comment-actions{display:flex;gap:7px;margin-top:7px;align-items:center}
+.article-comment-panel textarea:focus{border-color:var(--pri)}
+/* Send button — circle arrow, sits at the end of the input */
+.comment-send-btn{
+  flex-shrink:0;width:34px;height:34px;border-radius:50%;
+  background:var(--pri);color:var(--on-pri);
+  border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:.15s;
+}
+.comment-send-btn:hover{filter:brightness(1.1)}
+.comment-send-btn:disabled{background:var(--brd);color:var(--txt2);cursor:default}
+/* Cancel edit link — very subtle, below the input */
+.comment-cancel-link{font-size:10.5px;color:var(--txt2);cursor:pointer;background:none;border:none;padding:3px 0;font-family:inherit;text-decoration:underline;display:none}
+.comment-cancel-link:hover{color:var(--txt)}
 .comment-display-text{
   font-size:12.5px;color:var(--txt);line-height:1.55;
   white-space:pre-wrap;word-wrap:break-word;
   background:var(--bg);border:1.5px solid var(--brd);
-  border-radius:10px;padding:8px 11px;margin-bottom:6px;
+  border-radius:10px;padding:7px 11px;margin-bottom:5px;
 }
 .comment-display-meta{font-size:10.5px;color:var(--txt2);display:flex;align-items:center;gap:7px}
 
 /* Mobile */
 @media(max-width:900px){
-  .article-sidebar{display:none}
-  .article-reader{height:100dvh}
-  .article-head .art-back-btn{display:flex}
-  .article-content{padding:22px 18px 40px}
-  .article-title{font-size:21px;margin-bottom:16px}
-  .article-body{font-size:14px;line-height:1.82}
   .article-engage{padding:9px 18px}
-  .article-comment-panel{padding:9px 18px calc(9px + env(safe-area-inset-bottom,0px))}
+  .article-comment-panel{padding:7px 18px calc(7px + env(safe-area-inset-bottom,0px))}
 }
 
 /* ─── Section Divider ─── */
@@ -2712,7 +2723,7 @@ footer .footer-links a:hover{color:var(--pri-d)}
       <div class="article-comment-panel" id="articleCommentPanel">
         <div class="comment-inner">
           <div class="comment-label">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
             Your Thoughts
           </div>
           <!-- Posted comment display -->
@@ -2720,16 +2731,23 @@ footer .footer-links a:hover{color:var(--pri-d)}
             <div class="comment-display-text" id="commentDisplayContent"></div>
             <div class="comment-display-meta">
               <span id="commentDisplayDate"></span>
-              <button class="btn btn-sec btn-sm" onclick="editArticleComment()" style="font-size:11px;padding:4px 10px">Edit</button>
+              <button class="btn btn-sec btn-sm" onclick="editArticleComment()" style="font-size:10px;padding:3px 8px">Edit</button>
             </div>
           </div>
-          <!-- Comment input -->
+          <!-- Comment input: 1-liner that grows, send arrow inside -->
           <div id="commentInputArea">
-            <textarea id="articleCommentInput" placeholder="What did you think of this article? Any tips you'll try?" rows="3"></textarea>
-            <div class="comment-actions">
-              <button class="btn btn-pri btn-sm" onclick="saveArticleComment()">Post Comment</button>
-              <button class="btn btn-sec btn-sm" id="commentCancelEdit" onclick="cancelCommentEdit()" style="display:none">Cancel</button>
+            <div class="comment-input-row">
+              <textarea id="articleCommentInput"
+                placeholder="Share your thoughts…"
+                rows="1"
+                oninput="autoGrowTextarea(this);_syncCommentSendBtn()"
+                onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();saveArticleComment()}"
+              ></textarea>
+              <button class="comment-send-btn" id="commentSendBtn" onclick="saveArticleComment()" title="Post comment" disabled>
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+              </button>
             </div>
+            <button class="comment-cancel-link" id="commentCancelEdit" onclick="cancelCommentEdit()">Cancel edit</button>
           </div>
         </div>
       </div>
@@ -4778,15 +4796,24 @@ function editArticleComment() {
   const comments = getArticleComments();
   const comment = comments[String(currentArticleId)];
   if (!comment) return;
-  document.getElementById("articleCommentInput").value = comment.text;
+  const ta = document.getElementById("articleCommentInput");
+  ta.value = comment.text;
+  autoGrowTextarea(ta);
   document.getElementById("commentDisplay").style.display = "none";
   document.getElementById("commentInputArea").style.display = "block";
-  document.getElementById("commentCancelEdit").style.display = "inline-flex";
-  document.getElementById("articleCommentInput").focus();
+  document.getElementById("commentCancelEdit").style.display = "inline-block";
+  _syncCommentSendBtn();
+  ta.focus();
 }
 
 function cancelCommentEdit() {
   renderArticleComment();
+}
+
+function _syncCommentSendBtn() {
+  const ta = document.getElementById("articleCommentInput");
+  const btn = document.getElementById("commentSendBtn");
+  if (ta && btn) btn.disabled = !ta.value.trim();
 }
 
 function renderArticleComment() {
@@ -4812,7 +4839,8 @@ function renderArticleComment() {
     inputArea.style.display = "block";
     if (cancelBtn) cancelBtn.style.display = "none";
     const ta = document.getElementById("articleCommentInput");
-    if (ta) ta.value = "";
+    if (ta) { ta.value = ""; autoGrowTextarea(ta); }
+    _syncCommentSendBtn();
   }
 }
 
@@ -8602,5 +8630,5 @@ window.addEventListener('appinstalled', () => {
   toast("App installed successfully!");
 });
 </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a187f052f98fddc9',t:'MTc4MzYwNjUwNQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</body>
 </html>
