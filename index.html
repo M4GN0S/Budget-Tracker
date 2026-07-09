@@ -5294,9 +5294,10 @@ function _showAddItemChip(textareaId, forceShow) {
 }
 
 function _setInputMode(ta, mode) {
-  // Set inputmode to "decimal" when the cursor is in a price so mobile keyboards
-  // switch to the numeric pad; otherwise "text". Set via attribute so iOS respects it.
-  ta.setAttribute("inputmode", mode || "text");
+  // Always keep default text keyboard — switching to "decimal" mid-interaction
+  // causes iOS/Android to disrupt the keyboard and fight with setSelectionRange.
+  // The price field is just numbers + a dot, which the default keyboard handles fine.
+  ta.setAttribute("inputmode", "text");
 }
 
 // Click handler — auto-select placeholders
@@ -5326,21 +5327,23 @@ function onTextareaClick(e) {
 
 function _selectPlaceholderAtCursor(ta) {
   const pos = ta.selectionStart;
-  if (pos !== ta.selectionEnd) { _setInputMode(ta, "text"); return; }
+  if (pos !== ta.selectionEnd) return; // user already has a selection, leave it alone
   const { line, lineStart } = _currentLine(ta, pos);
   const re = _symRe();
   const m = line.match(re);
-  if (!m) { _setInputMode(ta, "text"); return; }
+  if (!m) return;
   const { itemStart, itemEnd, priceStart, priceEnd } = _checklistRanges(m, lineStart);
   if (pos >= itemStart && pos <= itemEnd && _PLACEHOLDER_NAME_RE.test(m[2].trim())) {
+    // Item name placeholder — select it so the user can just start typing
     ta.setSelectionRange(itemStart, itemEnd);
-    _setInputMode(ta, "text");
   } else if (pos >= priceStart && pos <= priceEnd) {
-    // Always select the full price number when clicked
-    ta.setSelectionRange(priceStart, priceEnd);
-    _setInputMode(ta, "decimal");
-  } else {
-    _setInputMode(ta, "text");
+    // Price field — select all digits so typing replaces the placeholder value.
+    // We use a flag to prevent the selection-change from re-triggering this.
+    if (!ta._selectingPrice) {
+      ta._selectingPrice = true;
+      ta.setSelectionRange(priceStart, priceEnd);
+      setTimeout(() => { ta._selectingPrice = false; }, 300);
+    }
   }
 }
 
@@ -5370,17 +5373,11 @@ function onTextareaKeydown(e, textareaId) {
       return;
     }
   }
-  // After cursor moves, refresh inputmode
-  setTimeout(() => _selectPlaceholderAtCursor(ta), 0);
 }
 
 function onTextareaKeyup(e, textareaId) {
-  const ta = e.target;
-  if (!ta) return;
-  // Arrow keys and navigation: re-evaluate placeholder selection + inputmode
-  if (["ArrowLeft","ArrowRight","ArrowUp","ArrowDown","Home","End"].includes(e.key)) {
-    setTimeout(() => _selectPlaceholderAtCursor(ta), 0);
-  }
+  // Intentionally empty — no auto-reselection on keyup.
+  // Auto-select only fires on click (onTextareaClick) and Tab (_tabToNextPlaceholder).
 }
 
 function _tabToNextPlaceholder(ta, dir) {
