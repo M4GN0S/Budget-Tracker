@@ -1411,6 +1411,17 @@ tbody tr:hover td{background:var(--pri-l)}
 
 /* Mobile */
 @media(max-width:900px){
+  /* Hide desktop sidebar — mobile is full-screen reader only */
+  .article-sidebar{display:none}
+  /* Reader fills the whole screen */
+  .article-reader{height:100dvh}
+  /* Show the back-arrow, hide the redundant × close button */
+  .article-head .art-back-btn{display:flex}
+  .article-head .close-modal{display:none}
+  /* Tighten padding */
+  .article-content{padding:22px 18px 40px}
+  .article-title{font-size:21px;margin-bottom:16px}
+  .article-body{font-size:14px;line-height:1.82}
   .article-engage{padding:9px 18px}
   .article-comment-panel{padding:7px 18px calc(7px + env(safe-area-inset-bottom,0px))}
 }
@@ -8630,5 +8641,5 @@ window.addEventListener('appinstalled', () => {
   toast("App installed successfully!");
 });
 </script>
-</body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a18841039806dd48',t:'MTc4MzYwOTgxMA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
