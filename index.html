@@ -5439,6 +5439,19 @@ function _currentLine(ta, pos) {
 function onTextareaKeydown(e, textareaId) {
   const ta = e.target;
   if (!ta) return;
+  // On Enter or Tab while on a price line: finalise the price format first
+  if (e.key === "Enter" || e.key === "Tab") {
+    const { line, lineStart } = _currentLine(ta, ta.selectionStart);
+    const m = line.match(_symRe());
+    if (m) {
+      const { priceStart, priceEnd } = _checklistRanges(m, lineStart);
+      const pos = ta.selectionStart;
+      if (pos >= priceStart && pos <= priceEnd) {
+        // Cursor is in the price zone — finalise this line's price
+        _finalisePricesInTextarea(ta);
+      }
+    }
+  }
   if (e.key === "Tab") {
     if (_tabToNextPlaceholder(ta, e.shiftKey ? -1 : 1)) e.preventDefault();
     return;
@@ -5501,7 +5514,7 @@ function _parseChecklistItems(text) {
   for (let i = 0; i < lines.length; i++) {
     const m = lines[i].match(re);
     if (!m) continue;
-    const checked = m[1].toLowerCase() === "x";
+    const checked = /x/i.test(m[1]);
     let desc = (m[2] || "").trim();
     const amtRaw = m[4];
     let amt = null;
@@ -8401,5 +8414,5 @@ window.addEventListener('appinstalled', () => {
   toast("App installed successfully!");
 });
 </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a186aab0ac030450',t:'MTc4MzU5MzE2Nw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</body>
 </html>
