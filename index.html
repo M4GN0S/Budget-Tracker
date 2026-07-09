@@ -1335,32 +1335,63 @@ tbody tr:hover td{background:var(--pri-l)}
 .article-body p:last-child{margin-bottom:0}
 .article-body strong{font-weight:700}
 .article-footer{margin-top:32px;padding-top:20px;border-top:1px solid var(--brd);display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-/* Subtle engage bar — pinned to bottom of reader */
-.article-engage{flex-shrink:0;border-top:1px solid var(--brd);background:var(--card);padding:8px 32px calc(8px + env(safe-area-inset-bottom,0px))}
-.article-engage-inner{max-width:700px;margin:0 auto;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.react-row{display:flex;align-items:center;gap:3px}
-.react-row-label{font-size:10px;color:var(--txt2);margin-right:4px;white-space:nowrap}
-.react-btn{padding:3px 9px;border-radius:20px;font-size:11px;font-weight:600;background:transparent;color:var(--txt2);border:1px solid var(--brd);cursor:pointer;transition:.15s;line-height:1.5}
+/* ── Engage section — FB-style: structured, comfortable, not huge ── */
+.article-engage{flex-shrink:0;border-top:1px solid var(--brd);background:var(--card);padding:14px 32px}
+.article-engage-inner{max-width:700px;margin:0 auto;display:flex;flex-direction:column;gap:12px}
+
+/* Reactions — FB-style row with label */
+.react-row{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.react-row-label{font-size:12px;color:var(--txt2);font-weight:600;margin-right:2px}
+.react-btn{
+  display:inline-flex;align-items:center;gap:5px;
+  padding:6px 14px;border-radius:20px;
+  font-size:12.5px;font-weight:600;
+  background:var(--bg);color:var(--txt2);
+  border:1.5px solid var(--brd);cursor:pointer;transition:.18s;
+}
 .react-btn:hover{border-color:var(--pri);color:var(--pri-d);background:var(--pri-l)}
 .react-btn.active{background:var(--pri);color:var(--on-pri);border-color:var(--pri)}
-.article-save-btn{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:600;background:transparent;color:var(--txt2);border:1px solid var(--brd);cursor:pointer;transition:.15s;white-space:nowrap;font-family:inherit}
+
+/* Save button — full-width, clear but not loud */
+.article-save-btn{
+  display:flex;align-items:center;gap:8px;
+  padding:9px 16px;border-radius:10px;
+  font-size:13px;font-weight:600;
+  background:var(--bg);color:var(--txt2);
+  border:1.5px solid var(--brd);cursor:pointer;transition:.18s;font-family:inherit;
+}
 .article-save-btn:hover{background:var(--pri-l);border-color:var(--pri);color:var(--pri-d)}
 .article-save-btn.saved{background:var(--suc-l);color:var(--suc);border-color:var(--suc)}
 .article-save-btn svg{flex-shrink:0}
-.art-comment-toggle{margin-left:auto;display:inline-flex;align-items:center;gap:5px;background:transparent;border:none;color:var(--txt2);font-size:11px;font-weight:600;cursor:pointer;padding:3px 8px;border-radius:20px;border:1px solid var(--brd);transition:.15s;font-family:inherit;white-space:nowrap}
-.art-comment-toggle:hover{color:var(--txt);background:var(--bg);border-color:var(--txt2)}
-.art-comment-toggle.has-comment{color:var(--pri-d);border-color:var(--pri);background:var(--pri-l)}
-/* Comment panel — slides in above engage bar */
-.article-comment-panel{flex-shrink:0;border-top:1px solid var(--brd);background:var(--card);padding:14px 32px;display:none}
-.article-comment-panel.open{display:block}
+
+/* Comment section — always shown, like FB post comments */
+.article-comment-panel{
+  flex-shrink:0;border-top:1px solid var(--brd);background:var(--card);
+  padding:16px 32px calc(16px + env(safe-area-inset-bottom,0px));
+}
 .article-comment-panel .comment-inner{max-width:700px;margin:0 auto}
-.article-comment-panel .comment-label{font-size:10px;font-weight:700;color:var(--txt2);text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between}
-.article-comment-panel textarea{width:100%;padding:9px 12px;border:1.5px solid var(--brd);border-radius:10px;font-size:13px;font-family:inherit;outline:none;background:var(--input-bg);color:var(--txt);resize:none;min-height:64px;box-sizing:border-box;line-height:1.6;transition:.2s}
-.article-comment-panel textarea:focus{border-color:var(--pri)}
-.article-comment-panel .comment-actions{display:flex;gap:8px;margin-top:8px;align-items:center}
-.comment-display-text{font-size:13px;color:var(--txt);line-height:1.6;white-space:pre-wrap;word-wrap:break-word;background:var(--bg);border:1px solid var(--brd);border-radius:10px;padding:10px 12px;margin-bottom:6px}
-.comment-display-meta{font-size:10px;color:var(--txt2);display:flex;align-items:center;gap:8px}
-/* Mobile — full screen, no sidebar, back button */
+.article-comment-panel .comment-label{
+  font-size:13px;font-weight:700;color:var(--txt);
+  margin-bottom:10px;display:flex;align-items:center;gap:6px;
+}
+.article-comment-panel textarea{
+  width:100%;padding:10px 14px;
+  border:1.5px solid var(--brd);border-radius:12px;
+  font-size:13px;font-family:inherit;outline:none;
+  background:var(--input-bg);color:var(--txt);
+  resize:none;min-height:72px;box-sizing:border-box;line-height:1.6;transition:.2s;
+}
+.article-comment-panel textarea:focus{border-color:var(--pri);box-shadow:0 0 0 3px rgba(108,154,139,.10)}
+.article-comment-panel .comment-actions{display:flex;gap:8px;margin-top:10px;align-items:center}
+.comment-display-text{
+  font-size:13px;color:var(--txt);line-height:1.6;
+  white-space:pre-wrap;word-wrap:break-word;
+  background:var(--bg);border:1.5px solid var(--brd);
+  border-radius:12px;padding:11px 14px;margin-bottom:8px;
+}
+.comment-display-meta{font-size:11px;color:var(--txt2);display:flex;align-items:center;gap:8px}
+
+/* Mobile — full screen, no sidebar */
 @media(max-width:900px){
   .article-sidebar{display:none}
   .article-reader{height:100dvh}
@@ -1368,8 +1399,9 @@ tbody tr:hover td{background:var(--pri-l)}
   .article-content{padding:22px 18px 40px}
   .article-title{font-size:21px;margin-bottom:16px}
   .article-body{font-size:14px;line-height:1.82}
-  .article-engage{padding:7px 18px calc(7px + env(safe-area-inset-bottom,0px))}
-  .article-comment-panel{padding:12px 18px}
+  .article-engage{padding:12px 18px}
+  .article-comment-panel{padding:14px 18px calc(14px + env(safe-area-inset-bottom,0px))}
+  .react-btn{font-size:12px;padding:5px 12px}
 }
 
 /* ─── Section Divider ─── */
@@ -2659,50 +2691,47 @@ footer .footer-links a:hover{color:var(--pri-d)}
         </div>
       </div>
 
-      <!-- Comment panel — hidden until toggled -->
+      <!-- Engage: reactions + save -->
+      <div class="article-engage">
+        <div class="article-engage-inner">
+          <!-- Reactions — FB-style row -->
+          <div class="react-row">
+            <span class="react-row-label">Was this helpful?</span>
+            <button class="react-btn" data-reaction="helpful" onclick="reactToArticle('helpful',this)">👍 Helpful</button>
+            <button class="react-btn" data-reaction="learned" onclick="reactToArticle('learned',this)">💡 Learned something</button>
+            <button class="react-btn" data-reaction="love" onclick="reactToArticle('love',this)">❤️ Love it</button>
+          </div>
+          <!-- Save to Journal -->
+          <button class="article-save-btn" id="articleSaveBtn" onclick="saveArticleToJournal()">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+            <span id="saveBtnText">Save to Journal</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Comment section — always visible like FB comments -->
       <div class="article-comment-panel" id="articleCommentPanel">
         <div class="comment-inner">
           <div class="comment-label">
-            <span>Your note on this article</span>
-            <button style="background:none;border:none;color:var(--txt2);cursor:pointer;font-size:18px;line-height:1;padding:0" onclick="toggleArticleComment()" aria-label="Close">×</button>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+            Your Thoughts
           </div>
+          <!-- Posted comment display -->
           <div id="commentDisplay" style="display:none">
             <div class="comment-display-text" id="commentDisplayContent"></div>
             <div class="comment-display-meta">
               <span id="commentDisplayDate"></span>
-              <button class="btn btn-sec btn-sm" onclick="editArticleComment()" style="font-size:11px;padding:3px 9px">Edit</button>
+              <button class="btn btn-sec btn-sm" onclick="editArticleComment()" style="font-size:11px;padding:4px 10px">Edit</button>
             </div>
           </div>
+          <!-- Comment input -->
           <div id="commentInputArea">
-            <textarea id="articleCommentInput" placeholder="What did you think? Any tips you'll try?" rows="2"></textarea>
+            <textarea id="articleCommentInput" placeholder="What did you think of this article? Any tips you'll try?" rows="3"></textarea>
             <div class="comment-actions">
-              <button class="btn btn-pri btn-sm" onclick="saveArticleComment()" style="font-size:12px">Post</button>
-              <button class="btn btn-sec btn-sm" id="commentCancelEdit" onclick="cancelCommentEdit()" style="display:none;font-size:12px">Cancel</button>
+              <button class="btn btn-pri btn-sm" onclick="saveArticleComment()">Post Comment</button>
+              <button class="btn btn-sec btn-sm" id="commentCancelEdit" onclick="cancelCommentEdit()" style="display:none">Cancel</button>
             </div>
           </div>
-        </div>
-      </div>
-
-      <!-- Subtle engage bar -->
-      <div class="article-engage">
-        <div class="article-engage-inner">
-          <!-- Reaction pills -->
-          <div class="react-row">
-            <span class="react-row-label">Helpful?</span>
-            <button class="react-btn" data-reaction="helpful" onclick="reactToArticle('helpful',this)">👍 Helpful</button>
-            <button class="react-btn" data-reaction="learned" onclick="reactToArticle('learned',this)">💡 Learned</button>
-            <button class="react-btn" data-reaction="love" onclick="reactToArticle('love',this)">❤️ Love</button>
-          </div>
-          <!-- Save ghost pill -->
-          <button class="article-save-btn" id="articleSaveBtn" onclick="saveArticleToJournal()">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/></svg>
-            <span id="saveBtnText">Save to Journal</span>
-          </button>
-          <!-- Comment toggle -->
-          <button class="art-comment-toggle" id="commentToggleBtn" onclick="toggleArticleComment()">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
-            <span id="commentToggleLabel">Leave a note</span>
-          </button>
         </div>
       </div>
 
@@ -4638,27 +4667,7 @@ function closeArticle() {
   document.body.style.overflow = "";
 }
 
-// ── Comment panel toggle ──
-function toggleArticleComment() {
-  const panel = document.getElementById("articleCommentPanel");
-  const toggle = document.getElementById("commentToggleBtn");
-  const label = document.getElementById("commentToggleLabel");
-  if (!panel) return;
-  const isOpen = panel.classList.toggle("open");
-  if (isOpen) {
-    // Check if user already has a comment — if not, focus textarea
-    const comments = getArticleComments();
-    if (!comments[String(currentArticleId)]) {
-      setTimeout(() => {
-        const ta = document.getElementById("articleCommentInput");
-        if (ta) ta.focus();
-      }, 80);
-    }
-    if (label) label.textContent = "Close note";
-  } else {
-    if (label) label.textContent = "Leave a note";
-  }
-}
+
 
 // Close the journal modal with the Escape key
 document.addEventListener("keydown", function(e) {
@@ -4787,8 +4796,6 @@ function renderArticleComment() {
   const display = document.getElementById("commentDisplay");
   const inputArea = document.getElementById("commentInputArea");
   const cancelBtn = document.getElementById("commentCancelEdit");
-  const toggle = document.getElementById("commentToggleBtn");
-  const label = document.getElementById("commentToggleLabel");
 
   if (comment) {
     const content = document.getElementById("commentDisplayContent");
@@ -4800,18 +4807,13 @@ function renderArticleComment() {
     dateEl.textContent = userName + " · " + dateStr + (comment.edited ? " · edited" : "");
     display.style.display = "block";
     inputArea.style.display = "none";
-    cancelBtn.style.display = "none";
-    // Mark toggle as "has comment"
-    if (toggle) toggle.classList.add("has-comment");
-    if (label) label.textContent = "Your note ✓";
+    if (cancelBtn) cancelBtn.style.display = "none";
   } else {
     display.style.display = "none";
     inputArea.style.display = "block";
     if (cancelBtn) cancelBtn.style.display = "none";
     const ta = document.getElementById("articleCommentInput");
     if (ta) ta.value = "";
-    if (toggle) toggle.classList.remove("has-comment");
-    if (label) label.textContent = "Leave a note";
   }
 }
 
