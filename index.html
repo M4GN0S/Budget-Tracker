@@ -2531,6 +2531,11 @@ footer .footer-links a:hover{color:var(--pri-d)}
       </div>
       <div class="accordion-body"><div class="accordion-content">
         <!-- Version info -->
+        <!-- My Keywords -->
+        <div class="section-label" style="margin-bottom:8px">My Keywords</div>
+        <p style="font-size:12px;color:var(--txt2);margin:0 0 10px">The app learns your category preferences automatically. Every time you correct a suggestion, it remembers for next time — even offline.</p>
+        <div id="learnedKeywordsList" style="margin-bottom:16px"></div>
+
         <!-- Your Name -->
         <div class="section-label" style="margin-bottom:6px">Your Name</div>
         <div style="display:flex;gap:8px;align-items:center;margin-bottom:16px;flex-wrap:wrap">
@@ -3609,6 +3614,7 @@ document.addEventListener("DOMContentLoaded", () => {
   renderDashBills();
   renderNetWorth();
   renderMonthChart();
+  renderLearnedKeywords();
   document.getElementById("billDue").valueAsDate = new Date();
   initAiChat();
   renderNotes();
@@ -3942,8 +3948,9 @@ function showTab(id, el) {
   panel.classList.add("active");
   const tabEl = el || document.querySelector('[data-tab="' + id + '"]');
   if (tabEl) tabEl.classList.add("active");
-  if (id === "history") { renderHistory(); renderMonthChart(); }
-  if (id === "goals")   { renderBills(); renderNetWorth(); }
+  if (id === "history")  { renderHistory(); renderMonthChart(); }
+  if (id === "goals")    { renderBills(); renderNetWorth(); }
+  if (id === "settings") { renderLearnedKeywords(); }
   if (id === "dashboard") updateDashboard();
   if (id === "expenses") renderRecent();
   if (id === "goals") renderGoals();
@@ -4016,63 +4023,214 @@ const UI_ICONS = {
 // ─── SMART EXPENSE CATEGORY GUESSING (0 KB, offline keyword engine) ───
 // Maps description keywords/merchants to {cat, sub}. Sub must match an <option> in #expSub.
 // Order matters: more specific patterns first. Tuned for global + PH context.
-const EXPENSE_LEXICON = [
-  // ── Needs ──
-  { sub: "Rent/Mortgage",  cat: "Needs", kw: ["rent","mortgage","landlord","lease","amortization","amortize","housing","apartment","condo dues","association dues","hoa","boarding house","room rental"] },
-  { sub: "Groceries",      cat: "Needs", kw: ["grocery","groceries","supermarket","market","costco","walmart","kroger","aldi","trader joe","sm supermarket","savemore","puregold","robinsons supermarket","landers","s&r","wet market","palengke","food shopping","produce","econo","landmark","rustan","ever","shopwise","cherry foodarama"] },
-  { sub: "Utilities",      cat: "Needs", kw: ["utility","utilities","electric","electricity","meralco","power bill","water bill","maynilad","manila water","gas bill","internet","wifi","pldt","globe","converge","sky cable","broadband","cable bill","trash","garbage","veco","beneco","iloilo","davao light","batangas","cebu","bohol","sewer"] },
-  { sub: "Transportation", cat: "Needs", kw: ["gas","fuel","petrol","gasoline","shell","petron","caltex","diesel","transport","transit","bus","train","mrt","lrt","jeep","jeepney","tricycle","grab","uber","lyft","taxi","toll","parking","fare","commute","angkas","joyride","motorcycle","car repair","vehicle","auto repair","lto","registration","car wash","bayad center transport"] },
-  { sub: "Insurance",      cat: "Needs", kw: ["insurance","premium","life insurance","car insurance","health insurance","philhealth","sss","pag-ibig","hmo","maxicare","intellicare","generali","sunlife","aia","manulife","prulife","insular","axa"] },
-  { sub: "Healthcare",     cat: "Needs", kw: ["doctor","hospital","clinic","pharmacy","medicine","meds","drug","dental","dentist","mercury drug","watsons","checkup","consultation","lab test","prescription","health","therapy","medical","optical","eye","glasses","specialist","surgeon","operation","xray","ultrasound","ecg","blood test","pcr","covid","vitamins","rose pharmacy","generika","southstar"] },
-  { sub: "Phone",          cat: "Needs", kw: ["phone bill","mobile","load","prepaid load","postpaid","cellphone","sim","data plan","smart","tnt","dito","cellular","globe postpaid","sun cellular"] },
-  { sub: "Education",      cat: "Needs", kw: ["tuition","school","university","college","enrollment","books","school supplies","education","course","training","seminar","review center","allowance","school fees","pte","ielts","toefl"] },
-  // ── Wants ──
-  { sub: "Dining Out",     cat: "Wants", kw: ["restaurant","dining","dinner","lunch","breakfast","cafe","coffee","starbucks","mcdo","mcdonald","jollibee","kfc","chowking","mang inasal","burger","pizza","food panda","foodpanda","grabfood","takeout","take out","fast food","bar","drinks","milk tea","bubble tea","snack","merienda","bistro","diner","bonchon","jco","dunkin","shakeys","greenwich","max's","pancake house","yellowcab","tropical hut","red ribbon","goldilocks","amber","angel's burger","carinderia","eatery","turo-turo","boba","coke","softdrinks"] },
-  { sub: "Entertainment",  cat: "Wants", kw: ["movie","cinema","netflix","spotify","disney","hbo","youtube premium","concert","ticket","game","gaming","steam","playstation","xbox","nintendo","amusement","theme park","bowling","arcade","ktv","videoke","streaming","sm cinema","ayala cinemas","viu","vivamax","moa","okada","casino","resort world"] },
-  { sub: "Shopping",       cat: "Wants", kw: ["shopping","clothes","clothing","shoes","apparel","fashion","mall","lazada","shopee","amazon","zalora","uniqlo","h&m","zara","nike","adidas","accessories","gadget","electronics","makeup","cosmetics","skincare","bench","penshoppe","sm dept","landmark dept","rustan dept","isetann","divisoria","ukay","ref","appliance","furniture","home depot","handyman","ace hardware"] },
-  { sub: "Subscriptions",  cat: "Wants", kw: ["subscription","subscribe","icloud","google one","dropbox","adobe","canva","chatgpt plus","notion","patreon","prime video","apple music","audible","saas","monthly fee","annual fee","membership","club membership"] },
-  { sub: "Hobbies",        cat: "Wants", kw: ["hobby","hobbies","books","book","craft","paint","art supplies","camera","photography","plants","plant","guitar","music gear","fishing","collectible","figure","lego","board game","manga","comic","kwento","novel","national bookstore","fully booked","precious pages"] },
-  { sub: "Travel",         cat: "Wants", kw: ["travel","flight","airfare","airline","cebu pacific","airasia","philippine airlines","hotel","airbnb","resort","vacation","trip","tour","booking","agoda","baggage","bus ticket","ferry","roro","super cat","oceanjet","2go","ceres","ohayami"] },
-  { sub: "Gym",            cat: "Wants", kw: ["gym","gym membership","fitness","anytime fitness","gold's gym","workout","crossfit","yoga","pilates","gym trainer","slimmer's world","fitness first","snap fitness"] },
-  { sub: "Gifts",          cat: "Wants", kw: ["gift","regalo","present","birthday gift","christmas gift","pasalubong","flowers","bouquet","cake","celebration","party","party supplies"] },
-  // ── Savings ──
-  { sub: "Emergency Fund", cat: "Savings", kw: ["emergency fund","emergency savings","rainy day","buffer fund","reserve","contingency"] },
-  { sub: "Investments",    cat: "Savings", kw: ["invest","investment","stocks","stock","mutual fund","index fund","etf","crypto","bitcoin","bonds","reit","cola fin","gstocks","uitf","trading","bpi invest","bdo invest","security bank","first metro","philequity","seedin","tonik","maya savings","gcash gsave","komo","cimb","ozw"] },
-  { sub: "Savings Goal",   cat: "Savings", kw: ["savings","save","savings goal","piggy bank","sinking fund","goal fund","set aside","ipon","alkansya","padala","remittance"] },
-  { sub: "Debt Payment",   cat: "Savings", kw: ["debt","loan","credit card payment","cc payment","installment","utang","pay off","payoff","student loan","car loan","personal loan","bdo loan","bpi loan","metrobank loan","home credit","acom","rfsc","pag-ibig loan","sss loan"] },
-];
+// ══════════════════════════════════════════════════════════
+// ─── SMART CATEGORY ENGINE (dynamic, learnable, offline-first)
+// ══════════════════════════════════════════════════════════
+//
+// Priority chain:
+//   1. User-learned keywords (localStorage) — instant, offline
+//   2. AI query (user's configured key)     — online, smart
+//   3. Graceful no-guess                    — never wrong
+//
+// The old hardcoded EXPENSE_LEXICON is gone. The engine learns
+// from the user's own corrections instead.
+//
+const LEARNED_KEYWORDS_KEY = "bt_learned_keywords";
+// Schema: { "costco": {cat:"Needs",sub:"Groceries",count:3}, ... }
 
-// Returns {cat, sub, matched} or null. matched = the keyword that triggered it.
-function guessExpenseCategory(desc) {
-  if (!desc) return null;
-  const text = " " + desc.toLowerCase().replace(/[^\w\s&'-]/g, " ").replace(/\s+/g, " ") + " ";
-  let best = null;
-  for (const entry of EXPENSE_LEXICON) {
-    for (const kw of entry.kw) {
-      // Word-boundary-ish match so "rent" doesn't hit "different"
-      const k = kw.toLowerCase();
-      const idx = text.indexOf(" " + k + " ");
-      const idxLoose = text.indexOf(k);
-      const hit = idx > -1 || (k.includes(" ") && idxLoose > -1);
-      if (hit) {
-        const score = k.length + (k.includes(" ") ? 5 : 0); // prefer longer / multi-word matches
-        if (!best || score > best.score) best = { cat: entry.cat, sub: entry.sub, matched: kw, score };
-      }
-    }
-  }
-  return best;
+function getLearnedKeywords() {
+  try { return JSON.parse(localStorage.getItem(LEARNED_KEYWORDS_KEY) || "{}"); } catch(e) { return {}; }
+}
+function saveLearnedKeywords(map) {
+  localStorage.setItem(LEARNED_KEYWORDS_KEY, JSON.stringify(map));
 }
 
-// Live handler bound to the description input
+// Extract candidate tokens from a description string
+// e.g. "plier at Costco" → ["plier at costco", "plier at", "at costco", "plier", "at", "costco"]
+function _tokenizeDesc(desc) {
+  const text = desc.toLowerCase().trim();
+  const words = text.split(/\s+/).filter(w => w.length > 1 && !["at","the","a","an","for","and","of","in","on","to","from","with"].includes(w));
+  const tokens = new Set([text]); // full phrase first
+  // Add all pairs and single words
+  for (let i = 0; i < words.length; i++) {
+    tokens.add(words[i]);
+    if (i + 1 < words.length) tokens.add(words[i] + " " + words[i+1]);
+  }
+  return [...tokens].sort((a,b) => b.length - a.length); // longest first = most specific
+}
+
+// Step 1: Check user-learned keywords
+function _checkLearnedKeywords(desc) {
+  if (!desc) return null;
+  const learned = getLearnedKeywords();
+  const tokens  = _tokenizeDesc(desc);
+  for (const token of tokens) {
+    if (learned[token]) {
+      const entry = learned[token];
+      return { cat: entry.cat, sub: entry.sub, matched: token, source: "learned", count: entry.count };
+    }
+  }
+  return null;
+}
+
+// Step 2: Query AI for category (silent, no UI disruption)
+let _aiCatPending = false;
+async function _queryAiCategory(desc, onResult) {
+  if (_aiCatPending) return; // debounce — only one in-flight at a time
+  const config = (() => { try { return getAiConfig(); } catch(e) { return null; } })();
+  if (!config || !config.key) return; // no AI key configured
+  _aiCatPending = true;
+
+  const categories = [
+    "Needs → Rent/Mortgage", "Needs → Groceries", "Needs → Utilities",
+    "Needs → Transportation", "Needs → Insurance", "Needs → Healthcare",
+    "Needs → Phone", "Needs → Education",
+    "Wants → Dining Out", "Wants → Entertainment", "Wants → Shopping",
+    "Wants → Subscriptions", "Wants → Hobbies", "Wants → Travel",
+    "Wants → Gym", "Wants → Gifts",
+    "Savings → Emergency Fund", "Savings → Investments",
+    "Savings → Savings Goal", "Savings → Debt Payment"
+  ];
+
+  const prompt = `You are a budget categorization assistant. Classify this expense description into exactly one of these categories:\n${categories.join(", ")}\n\nExpense: "${desc}"\n\nReply with ONLY the category in this exact format: "Category → Sub-category". No explanation.`;
+
+  try {
+    let result = null;
+    if (config.provider === "gemini") {
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/${config.model||"gemini-2.0-flash"}:generateContent?key=${config.key}`;
+      const res = await fetch(url, { method:"POST", headers:{"Content-Type":"application/json"},
+        body: JSON.stringify({ contents:[{parts:[{text:prompt}]}], generationConfig:{maxOutputTokens:20,temperature:0} }),
+        signal: AbortSignal.timeout(4000)
+      });
+      const data = await res.json();
+      result = data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
+    } else {
+      // OpenAI-compatible (openai, groq, openrouter, custom)
+      const url = config.provider === "custom" ? config.customUrl : getModelEndpoint(config.provider, config.model);
+      const res = await fetch(url, { method:"POST", headers:{"Content-Type":"application/json","Authorization":"Bearer "+config.key},
+        body: JSON.stringify({ model: config.provider==="custom"?config.customModel:config.model, messages:[{role:"user",content:prompt}], max_tokens:20, temperature:0 }),
+        signal: AbortSignal.timeout(4000)
+      });
+      const data = await res.json();
+      result = data?.choices?.[0]?.message?.content?.trim();
+    }
+
+    if (result) {
+      // Parse "Needs → Groceries" format
+      const match = result.match(/^(Needs|Wants|Savings)\s*[→\->]+\s*(.+)$/i);
+      if (match) {
+        const cat = match[1], sub = match[2].trim();
+        onResult({ cat, sub, matched: desc.toLowerCase(), source: "ai" });
+      }
+    }
+  } catch(e) {
+    // Silently fail — offline or rate limited
+  } finally {
+    _aiCatPending = false;
+  }
+}
+
+// Learn from a user correction: desc → {cat, sub}
+// Called when the user manually changes category after a suggestion
+function learnCategoryFromCorrection(desc, cat, sub) {
+  if (!desc || !cat || !sub) return;
+  const learned = getLearnedKeywords();
+  const tokens  = _tokenizeDesc(desc);
+  // Save the most meaningful token (longest, not the full sentence if >4 words)
+  const words = desc.toLowerCase().trim().split(/\s+/);
+  const key   = words.length <= 4 ? desc.toLowerCase().trim() : tokens.find(t => t.split(" ").length <= 3 && t.length >= 4) || tokens[0];
+  if (!key) return;
+  learned[key] = { cat, sub, count: (learned[key]?.count || 0) + 1, updated: Date.now() };
+  saveLearnedKeywords(learned);
+}
+
+// Also learn when user confirms AI suggestion (positive reinforcement)
+function _learnFromAiSuggestion(desc, cat, sub) {
+  learnCategoryFromCorrection(desc, cat, sub);
+}
+
+// Delete a single learned keyword
+function deleteLearnedKeyword(token) {
+  const learned = getLearnedKeywords();
+  delete learned[token];
+  saveLearnedKeywords(learned);
+  renderLearnedKeywords();
+}
+
+// Render the learned keywords list in Settings
+function renderLearnedKeywords() {
+  const container = document.getElementById("learnedKeywordsList");
+  if (!container) return;
+  const learned = getLearnedKeywords();
+  const entries = Object.entries(learned).sort((a,b) => (b[1].count||0) - (a[1].count||0));
+  if (!entries.length) {
+    container.innerHTML = '<p style="font-size:12px;color:var(--txt2);margin:0">No keywords learned yet. The app learns automatically as you use it.</p>';
+    return;
+  }
+  container.innerHTML = entries.map(([token, entry]) =>
+    `<div style="display:flex;align-items:center;gap:8px;padding:7px 10px;background:var(--bg);border:1.5px solid var(--brd);border-radius:9px;margin-bottom:6px;flex-wrap:wrap">
+      <span style="flex:1;font-size:12.5px;font-weight:700;color:var(--txt)">"${escHtml(token)}"</span>
+      <span style="font-size:11px;color:var(--txt2)">${entry.cat} → ${entry.sub}</span>
+      <span style="font-size:10px;color:var(--txt2);padding:1px 6px;border-radius:6px;background:var(--pri-l);color:var(--pri-d)">${entry.count}×</span>
+      <button onclick="deleteLearnedKeyword(${JSON.stringify(token)})" style="background:none;border:none;color:var(--dan);cursor:pointer;font-size:13px;line-height:1;padding:2px 4px;border-radius:5px" title="Remove">✕</button>
+    </div>`
+  ).join("") +
+  (entries.length > 0 ? `<button onclick="clearAllLearnedKeywords()" style="margin-top:4px;font-size:11px;font-weight:700;color:var(--dan);background:none;border:none;cursor:pointer;font-family:inherit;text-decoration:underline">Clear all learned keywords</button>` : "");
+}
+
+function clearAllLearnedKeywords() {
+  if (!confirm("Clear all " + Object.keys(getLearnedKeywords()).length + " learned keywords?")) return;
+  localStorage.removeItem(LEARNED_KEYWORDS_KEY);
+  renderLearnedKeywords();
+  toast("Learned keywords cleared.");
+}
+
+// ── Main entry point: called from onExpenseDescInput ──────
 let _expCatUserOverride = false;
+let _aiDebounceTimer   = null;
+let _lastAiDesc        = "";
+
 function onExpenseDescInput() {
   const descEl = document.getElementById("expDesc");
   const hintEl = document.getElementById("expCatHint");
   if (!descEl) return;
-  // If the user manually picked a category, don't fight them
+
+  const desc = descEl.value.trim();
+
+  // If user manually picked a category, stop suggesting
   if (_expCatUserOverride) { if (hintEl) hintEl.style.display = "none"; return; }
-  const guess = guessExpenseCategory(descEl.value.trim());
-  if (!guess) { if (hintEl) hintEl.style.display = "none"; return; }
+  if (!desc || desc.length < 2) { if (hintEl) hintEl.style.display = "none"; return; }
+
+  // Step 1: Learned keywords — instant
+  const learned = _checkLearnedKeywords(desc);
+  if (learned) {
+    _applyCategoryGuess(learned, hintEl, desc);
+    return;
+  }
+
+  // Step 2: AI query — debounced 700ms (only if description changed enough)
+  clearTimeout(_aiDebounceTimer);
+  if (hintEl) {
+    hintEl.innerHTML = '<span style="color:var(--txt2);font-size:11px;font-style:italic">Thinking…</span>';
+    hintEl.style.display = "block";
+  }
+  _aiDebounceTimer = setTimeout(async () => {
+    if (desc !== descEl.value.trim()) return; // stale
+    if (desc === _lastAiDesc) return;         // same as last query
+    _lastAiDesc = desc;
+    await _queryAiCategory(desc, (guess) => {
+      if (desc !== descEl.value.trim()) return; // stale by the time AI responds
+      if (_expCatUserOverride) return;
+      _applyCategoryGuess(guess, hintEl, desc);
+    });
+    // If AI didn't respond (offline/no key), clear the "Thinking…"
+    if (hintEl && hintEl.innerHTML.includes("Thinking")) {
+      hintEl.style.display = "none";
+    }
+  }, 700);
+}
+
+function _applyCategoryGuess(guess, hintEl, desc) {
   const catEl = document.getElementById("expCat");
   const subEl = document.getElementById("expSub");
   if (catEl) catEl.value = guess.cat;
@@ -4082,16 +4240,29 @@ function onExpenseDescInput() {
     }
   }
   if (hintEl) {
-    hintEl.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px"><path d="M12 3l1.9 4.6L18.5 9l-4.6 1.9L12 15l-1.9-4.1L5.5 9l4.6-1.4z"/></svg> Auto-detected: <strong>' + guess.cat + ' → ' + guess.sub + '</strong> · you can change it';
+    const sourceIcon = guess.source === "ai"
+      ? '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 4.6L18.5 9l-4.6 1.9L12 15l-1.9-4.1L5.5 9l4.6-1.4z"/><path d="M19 14l.8 2 2 .8-2 .8-.8 2-.8-2-2-.8 2-.8z"/></svg> AI'
+      : '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l1.9 4.6L18.5 9l-4.6 1.9L12 15l-1.9-4.1L5.5 9l4.6-1.4z"/></svg> Learned';
+    hintEl.innerHTML = sourceIcon + ': <strong>' + guess.cat + ' → ' + guess.sub + '</strong> &nbsp;<span style="font-size:10px;color:var(--txt2)">· change it to teach the app</span>';
     hintEl.style.display = "block";
   }
+  // If from AI, save to learned keywords (positive reinforcement)
+  if (guess.source === "ai") _learnFromAiSuggestion(desc, guess.cat, guess.sub);
 }
 
-// Called when the user manually changes the category/sub — stop auto-overriding
+// Called when the user manually changes category/sub
 function markExpCatManual() {
   _expCatUserOverride = true;
+  clearTimeout(_aiDebounceTimer);
   const hintEl = document.getElementById("expCatHint");
   if (hintEl) hintEl.style.display = "none";
+  // Learn from this correction
+  const descEl = document.getElementById("expDesc");
+  const catEl  = document.getElementById("expCat");
+  const subEl  = document.getElementById("expSub");
+  if (descEl && catEl && subEl && descEl.value.trim()) {
+    learnCategoryFromCorrection(descEl.value.trim(), catEl.value, subEl.value);
+  }
 }
 
 function addExpense() {
