@@ -746,6 +746,67 @@ tbody tr:hover td{background:var(--pri-l)}
 .recur-toggle-row label{display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--txt2);cursor:pointer;font-weight:600}
 .recur-toggle-row select{padding:5px 10px;border:1.5px solid var(--brd);border-radius:8px;font-size:12px;font-family:inherit;background:var(--bg);color:var(--txt);outline:none;cursor:pointer}
 
+/* ══ TIER 2: BILL TRACKER ══════════════════════════════════ */
+.bill-item{display:flex;align-items:center;gap:12px;padding:11px 14px;background:var(--bg);border:1.5px solid var(--brd);border-radius:12px;margin-bottom:8px;transition:.15s}
+.bill-item:last-child{margin-bottom:0}
+.bill-item.due-soon{border-left:4px solid var(--acc);background:var(--acc-l)}
+.bill-item.overdue{border-left:4px solid var(--dan);background:var(--dan-l)}
+.bill-item.paid{opacity:.55}
+.bill-icon{flex-shrink:0;width:36px;height:36px;border-radius:10px;background:var(--pri-l);display:flex;align-items:center;justify-content:center;color:var(--pri-d)}
+.bill-info{flex:1;min-width:0}
+.bill-name{font-size:13px;font-weight:700;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bill-meta{font-size:11px;color:var(--txt2);margin-top:1px}
+.bill-amt{font-size:14px;font-weight:800;color:var(--txt);white-space:nowrap;font-family:'SF Mono',Consolas,monospace}
+.bill-due-badge{font-size:10px;font-weight:700;padding:2px 7px;border-radius:8px;white-space:nowrap}
+.bill-due-badge.overdue{background:var(--dan-l);color:var(--dan);border:1px solid var(--dan)}
+.bill-due-badge.due-soon{background:var(--acc-l);color:var(--acc);border:1px solid var(--acc)}
+.bill-due-badge.upcoming{background:var(--pri-l);color:var(--pri-d);border:1px solid var(--pri)}
+.bill-due-badge.paid{background:var(--suc-l);color:var(--suc);border:1px solid var(--suc)}
+.bill-actions{display:flex;gap:6px;flex-shrink:0}
+.bill-pay-btn{font-size:11px;font-weight:700;padding:4px 10px;border-radius:8px;border:1.5px solid var(--suc);background:var(--suc-l);color:var(--suc);cursor:pointer;transition:.15s;font-family:inherit}
+.bill-pay-btn:hover{background:var(--suc);color:#fff}
+.bill-pay-btn.unpay{border-color:var(--brd);background:var(--bg);color:var(--txt2)}
+.bill-pay-btn.unpay:hover{border-color:var(--dan);color:var(--dan)}
+
+/* ══ TIER 2: MONTH CHART ════════════════════════════════════ */
+.month-chart-wrap{overflow-x:auto;padding-bottom:4px}
+.month-chart{display:flex;align-items:flex-end;gap:6px;min-height:140px;padding:12px 0 0}
+.month-col{display:flex;flex-direction:column;align-items:center;gap:4px;flex:1;min-width:44px;max-width:72px}
+.month-bars{display:flex;gap:2px;align-items:flex-end;width:100%;height:110px}
+.month-bar{flex:1;border-radius:4px 4px 0 0;transition:height .4s ease;min-height:2px;cursor:default}
+.month-bar.needs{background:var(--pri)}
+.month-bar.wants{background:var(--acc)}
+.month-bar.savings{background:var(--suc)}
+.month-bar:hover{filter:brightness(1.1)}
+.month-label{font-size:10px;color:var(--txt2);font-weight:600;text-align:center;white-space:nowrap}
+.month-total{font-size:10px;color:var(--txt2);font-weight:700;text-align:center}
+.chart-legend{display:flex;gap:14px;margin-top:12px;flex-wrap:wrap}
+.chart-leg-item{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--txt2);font-weight:600}
+.chart-leg-dot{width:10px;height:10px;border-radius:3px;flex-shrink:0}
+.chart-view-btns{display:flex;gap:6px;margin-bottom:12px}
+.chart-view-btn{font-size:11px;font-weight:700;padding:4px 12px;border-radius:8px;border:1.5px solid var(--brd);background:var(--bg);color:var(--txt2);cursor:pointer;font-family:inherit;transition:.15s}
+.chart-view-btn.active{background:var(--pri-l);border-color:var(--pri);color:var(--pri-d)}
+
+/* ══ TIER 2: NET WORTH ══════════════════════════════════════ */
+.nw-number{font-size:32px;font-weight:900;letter-spacing:-1px;line-height:1;margin:8px 0 4px}
+.nw-number.positive{color:var(--suc)}
+.nw-number.negative{color:var(--dan)}
+.nw-trend{font-size:12px;font-weight:700;display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:8px}
+.nw-trend.up{background:var(--suc-l);color:var(--suc)}
+.nw-trend.down{background:var(--dan-l);color:var(--dan)}
+.nw-trend.flat{background:var(--bg);color:var(--txt2);border:1px solid var(--brd)}
+.nw-row{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:10px;background:var(--bg);border:1.5px solid var(--brd);margin-bottom:7px}
+.nw-row:last-child{margin-bottom:0}
+.nw-row-icon{width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.nw-row-icon.asset{background:var(--suc-l);color:var(--suc)}
+.nw-row-icon.liability{background:var(--dan-l);color:var(--dan)}
+.nw-row-name{flex:1;font-size:13px;font-weight:600;color:var(--txt)}
+.nw-row-amt{font-size:13px;font-weight:800;font-family:'SF Mono',Consolas,monospace;white-space:nowrap}
+.nw-row-amt.asset{color:var(--suc)}
+.nw-row-amt.liability{color:var(--dan)}
+.nw-section-label{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:var(--txt2);margin:14px 0 8px;display:flex;align-items:center;gap:8px}
+.nw-section-label::after{content:'';flex:1;height:1px;background:var(--brd)}
+
 /* ─── Export Buttons ─── */
 .export-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
 .export-btn{
@@ -1659,6 +1720,9 @@ footer .footer-links a:hover{color:var(--pri-d)}
     <!-- Budget Alert banners (injected by checkBudgetAlerts) -->
     <div id="budgetAlertContainer"></div>
 
+    <!-- Bills due soon (injected by renderDashBills) -->
+    <div id="dashBillsContainer"></div>
+
     <!-- Greeting -->
     <div id="greetingBar">
       <div class="greeting" id="greetingText"></div>
@@ -2063,6 +2127,23 @@ footer .footer-links a:hover{color:var(--pri-d)}
       <div style="text-align:right;margin-top:12px;font-size:14px;font-weight:800;color:var(--txt)" id="historyTotal"></div>
     </div>
 
+    <!-- Month-over-Month Chart -->
+    <div class="card">
+      <h3><span class="icon-wrap"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></span> Monthly Trends</h3>
+      <div class="chart-view-btns">
+        <button class="chart-view-btn active" onclick="setChartView('bar',this)">Bar</button>
+        <button class="chart-view-btn" onclick="setChartView('total',this)">Total only</button>
+      </div>
+      <div class="month-chart-wrap" id="monthChartWrap">
+        <div id="monthChart" class="month-chart"></div>
+      </div>
+      <div class="chart-legend">
+        <div class="chart-leg-item"><div class="chart-leg-dot" style="background:var(--pri)"></div>Needs</div>
+        <div class="chart-leg-item"><div class="chart-leg-dot" style="background:var(--acc)"></div>Wants</div>
+        <div class="chart-leg-item"><div class="chart-leg-dot" style="background:var(--suc)"></div>Savings</div>
+      </div>
+    </div>
+
     <!-- Recurring Expenses -->
     <div class="card">
       <h3><span class="icon-wrap"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 014-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 01-4 4H3"/></svg></span> Recurring Expenses</h3>
@@ -2075,6 +2156,23 @@ footer .footer-links a:hover{color:var(--pri-d)}
   <!-- SAVINGS GOALS PANEL                     -->
   <!-- ─────────────────────────────────────── -->
   <div id="tab-goals" class="panel">
+
+    <!-- Net Worth Snapshot -->
+    <div class="card">
+      <h3><span class="icon-wrap"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></span> Net Worth</h3>
+      <div id="netWorthDisplay" style="margin-bottom:14px">
+        <div class="nw-number" id="nwTotal">—</div>
+        <div id="nwTrend" style="margin-bottom:12px"></div>
+      </div>
+      <div class="nw-section-label">Assets</div>
+      <div id="nwAssetsList"></div>
+      <button onclick="addNwItem('asset')" style="width:100%;padding:8px;border:1.5px dashed var(--brd);border-radius:10px;background:transparent;color:var(--txt2);font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;margin-bottom:14px;transition:.15s" onmouseover="this.style.borderColor='var(--suc)';this.style.color='var(--suc)'" onmouseout="this.style.borderColor='var(--brd)';this.style.color='var(--txt2)'">+ Add Asset</button>
+      <div class="nw-section-label">Liabilities</div>
+      <div id="nwLiabilitiesList"></div>
+      <button onclick="addNwItem('liability')" style="width:100%;padding:8px;border:1.5px dashed var(--brd);border-radius:10px;background:transparent;color:var(--txt2);font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;transition:.15s" onmouseover="this.style.borderColor='var(--dan)';this.style.color='var(--dan)'" onmouseout="this.style.borderColor='var(--brd)';this.style.color='var(--txt2)'">+ Add Liability</button>
+    </div>
+
+    <!-- Savings Goals -->
     <div class="card">
       <h3><span class="icon-wrap"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></span> Savings Goals</h3>
       <div style="height:14px"></div>
@@ -2099,6 +2197,33 @@ footer .footer-links a:hover{color:var(--pri-d)}
         </div>
       </div>
     </div>
+
+    <!-- Bill Tracker -->
+    <div class="card">
+      <h3><span class="icon-wrap"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg></span> Bill Tracker</h3>
+      <p style="font-size:12px;color:var(--txt2);margin-bottom:12px">Track upcoming bills. Mark as paid to auto-log them as expenses.</p>
+      <div id="billsList"></div>
+      <div class="section-label" style="margin-top:14px;margin-bottom:10px">Add Bill</div>
+      <div style="display:grid;grid-template-columns:2fr 1fr 1fr auto;gap:10px;align-items:end">
+        <div class="fg">
+          <label>Bill Name</label>
+          <input type="text" id="billName" placeholder="e.g. Electricity">
+        </div>
+        <div class="fg">
+          <label>Amount</label>
+          <input type="number" id="billAmt" placeholder="0.00" step="0.01" min="0">
+        </div>
+        <div class="fg">
+          <label>Due Date</label>
+          <input type="date" id="billDue">
+        </div>
+        <div class="fg">
+          <label>&nbsp;</label>
+          <button class="btn btn-pri" onclick="addBill()">+ Add</button>
+        </div>
+      </div>
+    </div>
+
   </div>
 
   <!-- ─────────────────────────────────────── -->
@@ -3480,6 +3605,11 @@ document.addEventListener("DOMContentLoaded", () => {
   renderCustomQuickAdds();
   renderRecurringList();
   checkBudgetAlerts();
+  renderBills();
+  renderDashBills();
+  renderNetWorth();
+  renderMonthChart();
+  document.getElementById("billDue").valueAsDate = new Date();
   initAiChat();
   renderNotes();
   renderInsights();
@@ -3501,6 +3631,308 @@ document.addEventListener("DOMContentLoaded", () => {
   setTimeout(hideAppLoading, 250);
 });
 
+// ══════════════════════════════════════════════════════════
+// ─── TIER 2: BILL TRACKER ─────────────────────────────────
+// ══════════════════════════════════════════════════════════
+
+const BILLS_KEY = "bt_bills";
+
+function getBills() {
+  try { return JSON.parse(localStorage.getItem(BILLS_KEY) || "[]"); } catch(e) { return []; }
+}
+function saveBills(list) { localStorage.setItem(BILLS_KEY, JSON.stringify(list)); }
+
+function addBill() {
+  const name = document.getElementById("billName")?.value.trim();
+  const amt  = parseFloat(document.getElementById("billAmt")?.value);
+  const due  = document.getElementById("billDue")?.value;
+  if (!name || !amt || amt <= 0 || !due) { toast("Please fill in all bill fields"); return; }
+  const list = getBills();
+  list.push({ id: Date.now(), name, amt, due, paid: false, paidDate: null });
+  saveBills(list);
+  document.getElementById("billName").value = "";
+  document.getElementById("billAmt").value  = "";
+  document.getElementById("billDue").value  = "";
+  renderBills();
+  renderDashBills();
+  toast("📋 " + name + " bill added!");
+}
+
+function deleteBill(id) {
+  saveBills(getBills().filter(b => b.id !== id));
+  renderBills(); renderDashBills();
+}
+
+function markBillPaid(id) {
+  const list = getBills();
+  const bill = list.find(b => b.id === id);
+  if (!bill) return;
+  if (!bill.paid) {
+    // Log as expense automatically
+    const data = getData();
+    data.expenses.push({
+      id: Date.now(), date: new Date().toISOString().split("T")[0],
+      desc: bill.name + " (bill)", cat: "Needs", sub: "Utilities", amt: bill.amt
+    });
+    saveData(data);
+    updateDashboard(); renderHistory();
+    bill.paid = true; bill.paidDate = new Date().toISOString().split("T")[0];
+    toast("✅ " + bill.name + " marked paid & logged as expense!");
+  } else {
+    bill.paid = false; bill.paidDate = null;
+    toast("↩️ " + bill.name + " marked unpaid.");
+  }
+  saveBills(list);
+  renderBills(); renderDashBills();
+}
+
+function _billStatus(bill) {
+  if (bill.paid) return { label: "Paid", cls: "paid", days: 0 };
+  const today = new Date(); today.setHours(0,0,0,0);
+  const due   = new Date(bill.due + "T00:00:00");
+  const diff  = Math.round((due - today) / 86400000);
+  if (diff < 0)  return { label: "Overdue " + Math.abs(diff) + "d", cls: "overdue",  days: diff };
+  if (diff <= 3) return { label: "Due in " + diff + "d",           cls: "due-soon", days: diff };
+  return { label: "Due " + due.toLocaleDateString("en-US",{month:"short",day:"numeric"}), cls: "upcoming", days: diff };
+}
+
+function renderBills() {
+  const container = document.getElementById("billsList");
+  if (!container) return;
+  const list = getBills();
+  if (!list.length) {
+    container.innerHTML = '<p style="font-size:12px;color:var(--txt2);margin:0">No bills yet. Add one below.</p>';
+    return;
+  }
+  // Sort: overdue first, then by due date
+  const sorted = list.slice().sort((a,b) => {
+    if (a.paid && !b.paid) return 1;
+    if (!a.paid && b.paid) return -1;
+    return new Date(a.due) - new Date(b.due);
+  });
+  const billIcon = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>`;
+  container.innerHTML = sorted.map(b => {
+    const st = _billStatus(b);
+    return `<div class="bill-item ${b.paid?'paid':st.cls}">
+      <div class="bill-icon">${billIcon}</div>
+      <div class="bill-info">
+        <div class="bill-name">${escHtml(b.name)}</div>
+        <div class="bill-meta"><span class="bill-due-badge ${st.cls}">${st.label}</span></div>
+      </div>
+      <div class="bill-amt">${fmt(b.amt)}</div>
+      <div class="bill-actions">
+        <button class="bill-pay-btn ${b.paid?'unpay':''}" onclick="markBillPaid(${b.id})">${b.paid?"Unpay":"Pay"}</button>
+        <button onclick="deleteBill(${b.id})" style="background:none;border:none;color:var(--dan);cursor:pointer;padding:4px;border-radius:6px;line-height:0;font-size:14px" title="Delete">✕</button>
+      </div>
+    </div>`;
+  }).join("");
+}
+
+// Dashboard mini widget — shows bills due in next 7 days
+function renderDashBills() {
+  const container = document.getElementById("dashBillsContainer");
+  if (!container) return;
+  const list = getBills().filter(b => !b.paid);
+  const today = new Date(); today.setHours(0,0,0,0);
+  const soon  = list.filter(b => {
+    const due  = new Date(b.due + "T00:00:00");
+    const diff = Math.round((due - today) / 86400000);
+    return diff <= 7;
+  });
+  if (!soon.length) { container.innerHTML = ""; return; }
+  soon.sort((a,b) => new Date(a.due) - new Date(b.due));
+  const total = soon.reduce((s,b) => s + b.amt, 0);
+  container.innerHTML =
+    `<div class="card" style="border-left:4px solid var(--acc);margin-bottom:0">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+        <span style="font-size:13px;font-weight:800;color:var(--txt)">📋 Upcoming Bills</span>
+        <span style="font-size:12px;font-weight:700;color:var(--acc)">${fmt(total)} due soon</span>
+      </div>
+      ${soon.map(b => {
+        const st = _billStatus(b);
+        return `<div style="display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--brd);font-size:13px">
+          <span style="font-weight:600;color:var(--txt)">${escHtml(b.name)}</span>
+          <span style="display:flex;align-items:center;gap:8px">
+            <span class="bill-due-badge ${st.cls}">${st.label}</span>
+            <span style="font-weight:800;color:var(--txt);font-family:'SF Mono',monospace">${fmt(b.amt)}</span>
+          </span>
+        </div>`;
+      }).join("")}
+      <div style="margin-top:8px;text-align:right">
+        <button onclick="showTab('goals',null)" style="font-size:11px;font-weight:700;color:var(--pri-d);background:none;border:none;cursor:pointer;font-family:inherit">View all bills →</button>
+      </div>
+    </div>`;
+}
+
+// ══════════════════════════════════════════════════════════
+// ─── TIER 2: MONTH-OVER-MONTH CHART ───────────────────────
+// ══════════════════════════════════════════════════════════
+
+let _chartView = "bar"; // "bar" | "total"
+
+function setChartView(view, btn) {
+  _chartView = view;
+  document.querySelectorAll(".chart-view-btn").forEach(b => b.classList.remove("active"));
+  if (btn) btn.classList.add("active");
+  renderMonthChart();
+}
+
+function _getMonthlyData(nMonths) {
+  const data = getData();
+  const months = [];
+  const now = new Date();
+  for (let i = nMonths - 1; i >= 0; i--) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    const key = d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0");
+    const label = d.toLocaleDateString("en-US", { month: "short" });
+    const exps = data.expenses.filter(e => e.date && e.date.startsWith(key));
+    months.push({
+      key, label,
+      needs:   exps.filter(e => e.cat === "Needs").reduce((s,e)   => s + e.amt, 0),
+      wants:   exps.filter(e => e.cat === "Wants").reduce((s,e)   => s + e.amt, 0),
+      savings: exps.filter(e => e.cat === "Savings").reduce((s,e) => s + e.amt, 0),
+      total:   exps.reduce((s,e) => s + e.amt, 0)
+    });
+  }
+  return months;
+}
+
+function renderMonthChart() {
+  const wrap = document.getElementById("monthChart");
+  if (!wrap) return;
+  const months = _getMonthlyData(6);
+  const maxVal = Math.max(...months.map(m => m.total), 1);
+  const BAR_H  = 110; // px
+
+  wrap.innerHTML = months.map(m => {
+    const totalH   = Math.round((m.total   / maxVal) * BAR_H);
+    const needsH   = Math.round((m.needs   / maxVal) * BAR_H);
+    const wantsH   = Math.round((m.wants   / maxVal) * BAR_H);
+    const savingsH = Math.round((m.savings / maxVal) * BAR_H);
+    const hasData  = m.total > 0;
+    const bars = _chartView === "bar"
+      ? `<div class="month-bar needs"   style="height:${needsH}px"   title="Needs: ${fmt(m.needs)}"></div>
+         <div class="month-bar wants"   style="height:${wantsH}px"   title="Wants: ${fmt(m.wants)}"></div>
+         <div class="month-bar savings" style="height:${savingsH}px" title="Savings: ${fmt(m.savings)}"></div>`
+      : `<div class="month-bar" style="height:${totalH}px;background:var(--pri);flex:1" title="Total: ${fmt(m.total)}"></div>`;
+    return `<div class="month-col">
+      <div class="month-bars">${bars}</div>
+      <div class="month-label">${m.label}</div>
+      <div class="month-total">${hasData ? fmtShort(m.total) : ""}</div>
+    </div>`;
+  }).join("");
+}
+
+// ══════════════════════════════════════════════════════════
+// ─── TIER 2: NET WORTH ────────────────────────────────────
+// ══════════════════════════════════════════════════════════
+
+const NW_KEY = "bt_networth";
+
+function getNwItems() {
+  try { return JSON.parse(localStorage.getItem(NW_KEY) || "[]"); } catch(e) { return []; }
+}
+function saveNwItems(list) { localStorage.setItem(NW_KEY, JSON.stringify(list)); }
+
+function addNwItem(type) {
+  const name = prompt(type === "asset" ? "Asset name (e.g. Savings Account, Investments):" : "Liability name (e.g. Credit Card, Car Loan):");
+  if (!name || !name.trim()) return;
+  const amtStr = prompt("Amount (" + getCurrency() + "):");
+  const amt = parseFloat((amtStr || "").replace(/,/g, ""));
+  if (isNaN(amt) || amt < 0) { toast("Invalid amount"); return; }
+  const list = getNwItems();
+  list.push({ id: Date.now(), name: name.trim(), amt, type });
+  saveNwItems(list);
+  renderNetWorth();
+  toast((type === "asset" ? "💰" : "💳") + " " + name.trim() + " added!");
+}
+
+function deleteNwItem(id) {
+  saveNwItems(getNwItems().filter(i => i.id !== id));
+  renderNetWorth();
+}
+
+function updateNwAmt(id, val) {
+  const list = getNwItems();
+  const item = list.find(i => i.id === id);
+  if (item) { item.amt = parseFloat(val) || 0; saveNwItems(list); renderNetWorth(); }
+}
+
+function renderNetWorth() {
+  const items = getNwItems();
+  const assets      = items.filter(i => i.type === "asset");
+  const liabilities = items.filter(i => i.type === "liability");
+  const totalAssets = assets.reduce((s,i) => s + i.amt, 0);
+  const totalLiab   = liabilities.reduce((s,i) => s + i.amt, 0);
+  const netWorth    = totalAssets - totalLiab;
+
+  // Net Worth number
+  const nwEl = document.getElementById("nwTotal");
+  if (nwEl) {
+    nwEl.textContent = fmt(Math.abs(netWorth));
+    nwEl.className   = "nw-number " + (netWorth >= 0 ? "positive" : "negative");
+    if (netWorth < 0) nwEl.textContent = "-" + nwEl.textContent;
+  }
+
+  // Trend vs last snapshot
+  const trendEl = document.getElementById("nwTrend");
+  if (trendEl) {
+    const prev = parseFloat(localStorage.getItem("bt_nw_prev") || "0");
+    const diff = netWorth - prev;
+    if (items.length === 0) {
+      trendEl.innerHTML = "";
+    } else if (Math.abs(diff) < 1) {
+      trendEl.innerHTML = `<span class="nw-trend flat">— No change</span>`;
+    } else {
+      const dir = diff > 0 ? "up" : "down";
+      const arrow = diff > 0 ? "↑" : "↓";
+      trendEl.innerHTML = `<span class="nw-trend ${dir}">${arrow} ${fmt(Math.abs(diff))} vs last snapshot</span>`;
+    }
+  }
+
+  // Render assets
+  const assetEl = document.getElementById("nwAssetsList");
+  if (assetEl) {
+    if (!assets.length) {
+      assetEl.innerHTML = `<p style="font-size:12px;color:var(--txt2);margin:0 0 8px">No assets added yet.</p>`;
+    } else {
+      assetEl.innerHTML = assets.map(i => _nwRow(i, "asset")).join("") +
+        `<div style="display:flex;justify-content:space-between;padding:8px 12px;font-size:12px;font-weight:700;color:var(--suc);margin-bottom:4px">
+          <span>Total Assets</span><span>${fmt(totalAssets)}</span>
+        </div>`;
+    }
+  }
+
+  // Render liabilities
+  const liabEl = document.getElementById("nwLiabilitiesList");
+  if (liabEl) {
+    if (!liabilities.length) {
+      liabEl.innerHTML = `<p style="font-size:12px;color:var(--txt2);margin:0 0 8px">No liabilities added yet.</p>`;
+    } else {
+      liabEl.innerHTML = liabilities.map(i => _nwRow(i, "liability")).join("") +
+        `<div style="display:flex;justify-content:space-between;padding:8px 12px;font-size:12px;font-weight:700;color:var(--dan);margin-bottom:4px">
+          <span>Total Liabilities</span><span>${fmt(totalLiab)}</span>
+        </div>`;
+    }
+  }
+
+  // Save current as snapshot for next time
+  localStorage.setItem("bt_nw_prev", String(netWorth));
+}
+
+function _nwRow(item, type) {
+  const icon = type === "asset"
+    ? `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>`
+    : `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>`;
+  return `<div class="nw-row">
+    <div class="nw-row-icon ${type}">${icon}</div>
+    <div class="nw-row-name">${escHtml(item.name)}</div>
+    <input type="number" value="${item.amt}" onchange="updateNwAmt(${item.id},this.value)"
+      style="width:90px;padding:5px 8px;border:1.5px solid var(--brd);border-radius:8px;font-size:12px;font-weight:700;font-family:'SF Mono',monospace;color:var(--txt);background:var(--input-bg);outline:none;text-align:right">
+    <button onclick="deleteNwItem(${item.id})" style="background:none;border:none;color:var(--dan);cursor:pointer;font-size:14px;padding:2px 4px;border-radius:6px;line-height:1" title="Remove">✕</button>
+  </div>`;
+}
+
 // ─── TABS ──────────────────────────────────────────────────
 function showTab(id, el) {
   const panel = document.getElementById("tab-" + id);
@@ -3510,7 +3942,8 @@ function showTab(id, el) {
   panel.classList.add("active");
   const tabEl = el || document.querySelector('[data-tab="' + id + '"]');
   if (tabEl) tabEl.classList.add("active");
-  if (id === "history") renderHistory();
+  if (id === "history") { renderHistory(); renderMonthChart(); }
+  if (id === "goals")   { renderBills(); renderNetWorth(); }
   if (id === "dashboard") updateDashboard();
   if (id === "expenses") renderRecent();
   if (id === "goals") renderGoals();
@@ -3585,26 +4018,28 @@ const UI_ICONS = {
 // Order matters: more specific patterns first. Tuned for global + PH context.
 const EXPENSE_LEXICON = [
   // ── Needs ──
-  { sub: "Rent/Mortgage", cat: "Needs", kw: ["rent","mortgage","landlord","lease","amortization","amortize","housing","apartment","condo dues","association dues"] },
-  { sub: "Groceries",     cat: "Needs", kw: ["grocery","groceries","supermarket","market","costco","walmart","kroger","aldi","trader joe","sm supermarket","savemore","puregold","robinsons supermarket","landers","s&r","wet market","palengke","food shopping","produce"] },
-  { sub: "Utilities",     cat: "Needs", kw: ["utility","utilities","electric","electricity","meralco","power bill","water bill","maynilad","manila water","gas bill","internet","wifi","pldt","globe","converge","sky cable","broadband","cable bill","trash","garbage"] },
-  { sub: "Transportation",cat: "Needs", kw: ["gas","fuel","petrol","gasoline","shell","petron","caltex","diesel","transport","transit","bus","train","mrt","lrt","jeep","jeepney","tricycle","grab","uber","lyft","taxi","toll","parking","fare","commute","angkas","joyride"] },
-  { sub: "Insurance",     cat: "Needs", kw: ["insurance","premium","life insurance","car insurance","health insurance","philhealth","sss","pag-ibig","hmo","maxicare","intellicare"] },
-  { sub: "Healthcare",    cat: "Needs", kw: ["doctor","hospital","clinic","pharmacy","medicine","meds","drug","dental","dentist","mercury drug","watsons","checkup","consultation","lab test","prescription","health","therapy","medical"] },
-  { sub: "Phone",         cat: "Needs", kw: ["phone bill","mobile","load","prepaid load","postpaid","cellphone","sim","data plan","smart","tnt","dito","cellular"] },
+  { sub: "Rent/Mortgage",  cat: "Needs", kw: ["rent","mortgage","landlord","lease","amortization","amortize","housing","apartment","condo dues","association dues","hoa","boarding house","room rental"] },
+  { sub: "Groceries",      cat: "Needs", kw: ["grocery","groceries","supermarket","market","costco","walmart","kroger","aldi","trader joe","sm supermarket","savemore","puregold","robinsons supermarket","landers","s&r","wet market","palengke","food shopping","produce","econo","landmark","rustan","ever","shopwise","cherry foodarama"] },
+  { sub: "Utilities",      cat: "Needs", kw: ["utility","utilities","electric","electricity","meralco","power bill","water bill","maynilad","manila water","gas bill","internet","wifi","pldt","globe","converge","sky cable","broadband","cable bill","trash","garbage","veco","beneco","iloilo","davao light","batangas","cebu","bohol","sewer"] },
+  { sub: "Transportation", cat: "Needs", kw: ["gas","fuel","petrol","gasoline","shell","petron","caltex","diesel","transport","transit","bus","train","mrt","lrt","jeep","jeepney","tricycle","grab","uber","lyft","taxi","toll","parking","fare","commute","angkas","joyride","motorcycle","car repair","vehicle","auto repair","lto","registration","car wash","bayad center transport"] },
+  { sub: "Insurance",      cat: "Needs", kw: ["insurance","premium","life insurance","car insurance","health insurance","philhealth","sss","pag-ibig","hmo","maxicare","intellicare","generali","sunlife","aia","manulife","prulife","insular","axa"] },
+  { sub: "Healthcare",     cat: "Needs", kw: ["doctor","hospital","clinic","pharmacy","medicine","meds","drug","dental","dentist","mercury drug","watsons","checkup","consultation","lab test","prescription","health","therapy","medical","optical","eye","glasses","specialist","surgeon","operation","xray","ultrasound","ecg","blood test","pcr","covid","vitamins","rose pharmacy","generika","southstar"] },
+  { sub: "Phone",          cat: "Needs", kw: ["phone bill","mobile","load","prepaid load","postpaid","cellphone","sim","data plan","smart","tnt","dito","cellular","globe postpaid","sun cellular"] },
+  { sub: "Education",      cat: "Needs", kw: ["tuition","school","university","college","enrollment","books","school supplies","education","course","training","seminar","review center","allowance","school fees","pte","ielts","toefl"] },
   // ── Wants ──
-  { sub: "Dining Out",    cat: "Wants", kw: ["restaurant","dining","dinner","lunch","breakfast","cafe","coffee","starbucks","mcdo","mcdonald","jollibee","kfc","chowking","mang inasal","burger","pizza","food panda","foodpanda","grabfood","takeout","take out","fast food","bar","drinks","milk tea","bubble tea","snack","merienda","bistro","diner","bonchon","jco","dunkin"] },
-  { sub: "Entertainment", cat: "Wants", kw: ["movie","cinema","netflix","spotify","disney","hbo","youtube premium","concert","ticket","game","gaming","steam","playstation","xbox","nintendo","amusement","theme park","bowling","arcade","ktv","videoke","streaming"] },
-  { sub: "Shopping",      cat: "Wants", kw: ["shopping","clothes","clothing","shoes","apparel","fashion","mall","lazada","shopee","amazon","zalora","uniqlo","h&m","zara","nike","adidas","accessories","gadget","electronics","makeup","cosmetics","skincare"] },
-  { sub: "Subscriptions", cat: "Wants", kw: ["subscription","subscribe","icloud","google one","dropbox","adobe","canva","chatgpt plus","notion","patreon","prime video","apple music","audible","saas"] },
-  { sub: "Hobbies",       cat: "Wants", kw: ["hobby","hobbies","books","book","craft","paint","art supplies","camera","photography","plants","plant","guitar","music gear","fishing","collectible","figure"] },
-  { sub: "Travel",        cat: "Wants", kw: ["travel","flight","airfare","airline","cebu pacific","airasia","philippine airlines","hotel","airbnb","resort","vacation","trip","tour","booking","agoda","baggage"] },
-  { sub: "Gym",           cat: "Wants", kw: ["gym","gym membership","fitness","anytime fitness","gold's gym","workout","crossfit","yoga","pilates","gym trainer"] },
+  { sub: "Dining Out",     cat: "Wants", kw: ["restaurant","dining","dinner","lunch","breakfast","cafe","coffee","starbucks","mcdo","mcdonald","jollibee","kfc","chowking","mang inasal","burger","pizza","food panda","foodpanda","grabfood","takeout","take out","fast food","bar","drinks","milk tea","bubble tea","snack","merienda","bistro","diner","bonchon","jco","dunkin","shakeys","greenwich","max's","pancake house","yellowcab","tropical hut","red ribbon","goldilocks","amber","angel's burger","carinderia","eatery","turo-turo","boba","coke","softdrinks"] },
+  { sub: "Entertainment",  cat: "Wants", kw: ["movie","cinema","netflix","spotify","disney","hbo","youtube premium","concert","ticket","game","gaming","steam","playstation","xbox","nintendo","amusement","theme park","bowling","arcade","ktv","videoke","streaming","sm cinema","ayala cinemas","viu","vivamax","moa","okada","casino","resort world"] },
+  { sub: "Shopping",       cat: "Wants", kw: ["shopping","clothes","clothing","shoes","apparel","fashion","mall","lazada","shopee","amazon","zalora","uniqlo","h&m","zara","nike","adidas","accessories","gadget","electronics","makeup","cosmetics","skincare","bench","penshoppe","sm dept","landmark dept","rustan dept","isetann","divisoria","ukay","ref","appliance","furniture","home depot","handyman","ace hardware"] },
+  { sub: "Subscriptions",  cat: "Wants", kw: ["subscription","subscribe","icloud","google one","dropbox","adobe","canva","chatgpt plus","notion","patreon","prime video","apple music","audible","saas","monthly fee","annual fee","membership","club membership"] },
+  { sub: "Hobbies",        cat: "Wants", kw: ["hobby","hobbies","books","book","craft","paint","art supplies","camera","photography","plants","plant","guitar","music gear","fishing","collectible","figure","lego","board game","manga","comic","kwento","novel","national bookstore","fully booked","precious pages"] },
+  { sub: "Travel",         cat: "Wants", kw: ["travel","flight","airfare","airline","cebu pacific","airasia","philippine airlines","hotel","airbnb","resort","vacation","trip","tour","booking","agoda","baggage","bus ticket","ferry","roro","super cat","oceanjet","2go","ceres","ohayami"] },
+  { sub: "Gym",            cat: "Wants", kw: ["gym","gym membership","fitness","anytime fitness","gold's gym","workout","crossfit","yoga","pilates","gym trainer","slimmer's world","fitness first","snap fitness"] },
+  { sub: "Gifts",          cat: "Wants", kw: ["gift","regalo","present","birthday gift","christmas gift","pasalubong","flowers","bouquet","cake","celebration","party","party supplies"] },
   // ── Savings ──
-  { sub: "Emergency Fund",cat: "Savings", kw: ["emergency fund","emergency savings","rainy day","buffer fund","reserve"] },
-  { sub: "Investments",   cat: "Savings", kw: ["invest","investment","stocks","stock","mutual fund","index fund","etf","crypto","bitcoin","bonds","reit","cola fin","gstocks","uitf","trading"] },
-  { sub: "Savings Goal",  cat: "Savings", kw: ["savings","save","savings goal","piggy bank","sinking fund","goal fund","set aside"] },
-  { sub: "Debt Payment",  cat: "Savings", kw: ["debt","loan","credit card payment","cc payment","installment","utang","pay off","payoff","student loan","car loan","personal loan"] },
+  { sub: "Emergency Fund", cat: "Savings", kw: ["emergency fund","emergency savings","rainy day","buffer fund","reserve","contingency"] },
+  { sub: "Investments",    cat: "Savings", kw: ["invest","investment","stocks","stock","mutual fund","index fund","etf","crypto","bitcoin","bonds","reit","cola fin","gstocks","uitf","trading","bpi invest","bdo invest","security bank","first metro","philequity","seedin","tonik","maya savings","gcash gsave","komo","cimb","ozw"] },
+  { sub: "Savings Goal",   cat: "Savings", kw: ["savings","save","savings goal","piggy bank","sinking fund","goal fund","set aside","ipon","alkansya","padala","remittance"] },
+  { sub: "Debt Payment",   cat: "Savings", kw: ["debt","loan","credit card payment","cc payment","installment","utang","pay off","payoff","student loan","car loan","personal loan","bdo loan","bpi loan","metrobank loan","home credit","acom","rfsc","pag-ibig loan","sss loan"] },
 ];
 
 // Returns {cat, sub, matched} or null. matched = the keyword that triggered it.
@@ -4324,14 +4759,38 @@ function renderGoals() {
     el.innerHTML = `<div class="empty-state"><div class="empty-icon"><svg width='40' height='40' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.5'><circle cx='12' cy='12' r='10'/><circle cx='12' cy='12' r='6'/><circle cx='12' cy='12' r='2'/></svg></div><p>No savings goals yet</p><span>Add one below to start tracking!</span></div>`;
     return;
   }
+
+  // Tier 3: Calculate monthly savings rate from last 2 months of history
+  const monthlySavingsRate = _calcMonthlySavingsRate(data);
+
   el.innerHTML = data.goals.map(g => {
     const pct = g.target > 0 ? Math.min((g.saved / g.target) * 100, 100) : 0;
     let statusClass, statusLabel;
-    if (pct >= 100)      { statusClass = "complete"; statusLabel = "Complete"; }
+    if (pct >= 100)      { statusClass = "complete"; statusLabel = "Complete! 🎉"; }
     else if (pct >= 75)  { statusClass = "almost";   statusLabel = "Almost there"; }
     else if (pct >= 50)  { statusClass = "halfway";  statusLabel = "Halfway"; }
     else if (pct >= 25)  { statusClass = "started";  statusLabel = "Good start"; }
     else                 { statusClass = "started";  statusLabel = "Starting"; }
+
+    // Smart projection
+    const remaining = Math.max(0, g.target - g.saved);
+    let projectionHtml = "";
+    if (pct < 100 && remaining > 0) {
+      if (monthlySavingsRate > 0) {
+        const monthsNeeded = Math.ceil(remaining / monthlySavingsRate);
+        const projDate = new Date();
+        projDate.setMonth(projDate.getMonth() + monthsNeeded);
+        const projStr = projDate.toLocaleDateString("en-US", { month: "long", year: "numeric" });
+        projectionHtml = `<div style="margin-top:8px;padding:7px 10px;background:var(--pri-l);border-radius:8px;font-size:11.5px;color:var(--pri-d);font-weight:600;display:flex;align-items:center;gap:6px">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          At your current rate (${fmtShort(monthlySavingsRate)}/mo) — reached by <strong>${projStr}</strong> · ${monthsNeeded} month${monthsNeeded!==1?"s":""}
+        </div>`;
+      } else {
+        projectionHtml = `<div style="margin-top:8px;padding:7px 10px;background:var(--bg);border-radius:8px;font-size:11.5px;color:var(--txt2);font-weight:600">
+          💡 Log savings expenses to see your projected completion date
+        </div>`;
+      }
+    }
 
     return `<div class="goal-card">
       <div class="goal-header">
@@ -4350,13 +4809,29 @@ function renderGoals() {
         <div style="display:flex;align-items:center;gap:6px;color:var(--txt2)">
           Saved:
           <input type="number" value="${g.saved}" onchange="updateGoalSaved(${g.id},this.value)"
-            style="width:88px;padding:6px 9px;border:1.5px solid var(--brd);border-radius:8px;font-weight:800;color:var(--txt);background:var(--input-bg);font-size:12px;outline:none;box-shadow:inset 0 0 0 1px rgba(0,0,0,.02)">
+            style="width:88px;padding:6px 9px;border:1.5px solid var(--brd);border-radius:8px;font-weight:800;color:var(--txt);background:var(--input-bg);font-size:12px;outline:none">
           / ${fmt(g.target)}
         </div>
-        <div style="color:var(--txt2)">${fmtShort(Math.max(0, g.target - g.saved))} remaining</div>
+        <div style="color:var(--txt2)">${fmtShort(remaining)} remaining</div>
       </div>
+      ${projectionHtml}
     </div>`;
   }).join("");
+}
+
+// Helper: calculate average monthly savings from last 2 months of data
+function _calcMonthlySavingsRate(data) {
+  const now   = new Date();
+  let totalSavings = 0, monthsWithData = 0;
+  for (let i = 1; i <= 2; i++) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    const key = d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0");
+    const saved = data.expenses
+      .filter(e => e.cat === "Savings" && e.date && e.date.startsWith(key))
+      .reduce((s, e) => s + e.amt, 0);
+    if (saved > 0) { totalSavings += saved; monthsWithData++; }
+  }
+  return monthsWithData > 0 ? totalSavings / monthsWithData : 0;
 }
 
 // ─── EXPORT: CSV ───────────────────────────────────────────
@@ -4859,16 +5334,71 @@ function renderInsights() {
     else if (pct >= 50 && pct < 100) insights.push({ icon: svgGoal, cls: "goal", title: g.name + " — " + pct + "% there!", body: fmt(g.saved) + " saved of " + fmt(g.target) + ". " + fmt(g.target - g.saved) + " to go." });
   });
 
-  // Top expense category
+  // ── Tier 3: Spending Patterns ──────────────────────────────
+  const svgCal  = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>';
+  const svgStar  = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>';
+
+  // 1. Top expense sub-category
   const subTotals = {};
   data.expenses.forEach(e => { subTotals[e.sub] = (subTotals[e.sub]||0) + e.amt; });
   const topSub = Object.entries(subTotals).sort((a,b) => b[1]-a[1])[0];
   if (topSub && topSub[1] > 0) {
-    insights.push({ icon: svgDollar, cls: "info", title: "Biggest category: " + topSub[0], body: fmt(topSub[1]) + " spent on " + topSub[0] + " this month — " + Math.round(topSub[1]/total*100) + "% of your total spending." });
+    insights.push({ icon: svgDollar, cls: "info",
+      title: "Biggest category: " + topSub[0],
+      body: fmt(topSub[1]) + " spent — " + Math.round(topSub[1]/total*100) + "% of total. " + (topSub[0] === "Dining Out" ? "Try cooking at home a few more times this month." : "")
+    });
   }
 
-  // Show max 4 insights
-  const show = insights.slice(0, 4);
+  // 2. Day-of-week pattern — which day has the most spending
+  if (data.expenses.length >= 7) {
+    const dayTotals = [0,0,0,0,0,0,0];
+    const dayNames  = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+    data.expenses.forEach(e => {
+      if (e.date) { const d = new Date(e.date + "T00:00:00"); dayTotals[d.getDay()] += e.amt; }
+    });
+    const maxDay = dayTotals.indexOf(Math.max(...dayTotals));
+    if (dayTotals[maxDay] > 0) {
+      insights.push({ icon: svgCal, cls: "info",
+        title: dayNames[maxDay] + "s are your biggest spending day",
+        body: fmt(dayTotals[maxDay]) + " total spent on " + dayNames[maxDay] + "s. Try planning ahead on " + dayNames[(maxDay+6)%7] + "s to cut back."
+      });
+    }
+  }
+
+  // 3. Month-over-month change
+  const now2 = new Date();
+  const thisMoKey  = now2.getFullYear() + "-" + String(now2.getMonth() + 1).padStart(2,"0");
+  const lastMo     = new Date(now2.getFullYear(), now2.getMonth() - 1, 1);
+  const lastMoKey  = lastMo.getFullYear() + "-" + String(lastMo.getMonth() + 1).padStart(2,"0");
+  const thisMoTotal = data.expenses.filter(e => e.date && e.date.startsWith(thisMoKey)).reduce((s,e) => s+e.amt, 0);
+  const lastMoTotal = data.expenses.filter(e => e.date && e.date.startsWith(lastMoKey)).reduce((s,e) => s+e.amt, 0);
+  if (lastMoTotal > 0 && thisMoTotal > 0) {
+    const diff = thisMoTotal - lastMoTotal;
+    const pctChg = Math.round(Math.abs(diff) / lastMoTotal * 100);
+    if (pctChg >= 5) {
+      insights.push(diff > 0
+        ? { icon: svgDown, cls: "down", title: "Spending up " + pctChg + "% vs last month", body: "You've spent " + fmt(diff) + " more than last month. Check your Wants categories for quick savings." }
+        : { icon: svgUp,   cls: "up",   title: "Spending down " + pctChg + "% vs last month!", body: "You've spent " + fmt(Math.abs(diff)) + " less than last month. Great discipline!" }
+      );
+    }
+  }
+
+  // 4. Logging streak nudge — if no expense logged in 3+ days
+  const dates = data.expenses.filter(e=>e.date).map(e=>e.date).sort().reverse();
+  if (dates.length > 0) {
+    const lastDate = new Date(dates[0] + "T00:00:00");
+    const today2   = new Date(); today2.setHours(0,0,0,0);
+    const gapDays  = Math.round((today2 - lastDate) / 86400000);
+    if (gapDays >= 3) {
+      insights.push({ icon: svgStar, cls: "info",
+        title: "No expense logged in " + gapDays + " days",
+        body: "Missing entries can throw off your budget picture. Take 1 minute to log anything you missed!"
+      });
+    }
+  }
+
+  // Show max 5 insights (upgraded from 4)
+  const show = insights.slice(0, 5);
   if (show.length === 0) { card.style.display = "none"; return; }
 
   card.style.display = "block";
@@ -9127,5 +9657,5 @@ window.addEventListener('appinstalled', () => {
   toast("App installed successfully!");
 });
 </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a18d01407da41099',t:'MTc4MzY1OTYyNw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</body>
 </html>
