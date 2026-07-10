@@ -720,6 +720,32 @@ tbody tr:hover td{background:var(--pri-l)}
 .leg-label strong{display:block;font-size:14px;font-weight:700;color:var(--txt);letter-spacing:-.2px}
 .leg-label span{font-size:12px;color:var(--txt2);font-weight:600}
 
+/* ─── Recurring badge ─── */
+.recur-badge{display:inline-flex;align-items:center;gap:3px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;padding:2px 6px;border-radius:8px;background:var(--pri-l);color:var(--pri-d);border:1px solid var(--pri);margin-left:4px;vertical-align:middle;white-space:nowrap}
+.recur-badge svg{flex-shrink:0}
+
+/* ─── Budget Alert banner ─── */
+.budget-alert-bar{display:flex;align-items:flex-start;gap:10px;padding:11px 14px;border-radius:12px;margin-bottom:12px;font-size:13px;line-height:1.5;animation:fadeUp .25s ease}
+.budget-alert-bar.warn{background:var(--acc-l);border:1.5px solid var(--acc);color:var(--txt)}
+.budget-alert-bar.over{background:var(--dan-l);border:1.5px solid var(--dan);color:var(--txt)}
+.budget-alert-bar .ba-icon{flex-shrink:0;margin-top:1px}
+.budget-alert-bar .ba-body{flex:1}
+.budget-alert-bar .ba-title{font-weight:700;margin-bottom:2px}
+.budget-alert-bar .ba-sub{font-size:11.5px;color:var(--txt2)}
+.budget-alert-bar .ba-close{flex-shrink:0;background:none;border:none;color:var(--txt2);cursor:pointer;line-height:0;padding:2px;border-radius:6px;transition:.15s}
+.budget-alert-bar .ba-close:hover{color:var(--txt);background:var(--bg)}
+
+/* ─── Pay Period badge on dashboard ─── */
+.pay-period-bar{display:flex;align-items:center;gap:8px;padding:8px 14px;background:var(--pri-l);border:1px solid var(--pri);border-radius:10px;margin-bottom:14px;font-size:12px;color:var(--txt);font-weight:600}
+.pay-period-bar svg{flex-shrink:0;color:var(--pri-d)}
+.pay-period-bar span{flex:1}
+.pay-period-bar strong{color:var(--pri-d)}
+
+/* ─── Recurring toggle in add-expense form ─── */
+.recur-toggle-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:4px}
+.recur-toggle-row label{display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--txt2);cursor:pointer;font-weight:600}
+.recur-toggle-row select{padding:5px 10px;border:1.5px solid var(--brd);border-radius:8px;font-size:12px;font-family:inherit;background:var(--bg);color:var(--txt);outline:none;cursor:pointer}
+
 /* ─── Export Buttons ─── */
 .export-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
 .export-btn{
@@ -1627,6 +1653,12 @@ footer .footer-links a:hover{color:var(--pri-d)}
   <div id="tab-dashboard" class="panel active">
   <div id="dashMain">
 
+    <!-- Pay Period bar (shown when Pay Period Mode is on) -->
+    <div id="payPeriodBar" style="display:none"></div>
+
+    <!-- Budget Alert banners (injected by checkBudgetAlerts) -->
+    <div id="budgetAlertContainer"></div>
+
     <!-- Greeting -->
     <div id="greetingBar">
       <div class="greeting" id="greetingText"></div>
@@ -1908,6 +1940,20 @@ footer .footer-links a:hover{color:var(--pri-d)}
           <label>Amount ($)</label>
           <input type="number" id="expAmt" placeholder="0.00" step="0.01" min="0">
         </div>
+        <div class="fg" style="grid-column:1/-1">
+          <div class="recur-toggle-row">
+            <label>
+              <input type="checkbox" id="expRecurring" onchange="toggleRecurringFreq()">
+              Repeat this expense
+            </label>
+            <select id="expRecurFreq" style="display:none">
+              <option value="monthly">Every month</option>
+              <option value="weekly">Every week</option>
+              <option value="fortnightly">Every 2 weeks</option>
+              <option value="yearly">Every year</option>
+            </select>
+          </div>
+        </div>
         <div class="fg">
           <label>&nbsp;</label>
           <button class="btn btn-pri" onclick="addExpense()">+ Add</button>
@@ -2015,6 +2061,13 @@ footer .footer-links a:hover{color:var(--pri-d)}
       <!-- Mobile card list view -->
       <div class="hist-cards-view" id="historyCards" style="display:none"></div>
       <div style="text-align:right;margin-top:12px;font-size:14px;font-weight:800;color:var(--txt)" id="historyTotal"></div>
+    </div>
+
+    <!-- Recurring Expenses -->
+    <div class="card">
+      <h3><span class="icon-wrap"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 014-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 01-4 4H3"/></svg></span> Recurring Expenses</h3>
+      <p style="font-size:12px;color:var(--txt2);margin-bottom:12px">These are auto-logged each period. Check "Repeat this expense" when adding to create one.</p>
+      <div id="recurringList"></div>
     </div>
   </div>
 
@@ -2272,6 +2325,52 @@ footer .footer-links a:hover{color:var(--pri-d)}
           <div class="theme-item">
             <div class="theme-dot" style="background:#9B89B3" onclick="event.stopPropagation();setTheme('lavender',this)" title="Lavender"></div>
             <span class="theme-name">Lavender</span>
+          </div>
+        </div>
+        <!-- Pay Period Mode -->
+        <div class="section-label" style="margin-bottom:8px">Pay Period</div>
+        <div style="margin-bottom:16px;display:flex;flex-direction:column;gap:10px">
+          <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--txt);cursor:pointer;font-weight:600">
+            <input type="checkbox" id="payPeriodEnabled" onchange="savePayPeriodSettings()">
+            Enable Pay Period Mode
+          </label>
+          <div id="payPeriodOptions" style="display:none;display:flex;flex-direction:column;gap:8px">
+            <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+              <label style="font-size:12px;color:var(--txt2);font-weight:600;min-width:80px">Frequency</label>
+              <select id="payPeriodFreq" onchange="savePayPeriodSettings()" style="padding:7px 12px;border:1.5px solid var(--brd);border-radius:8px;font-size:12px;font-family:inherit;background:var(--bg);color:var(--txt);outline:none">
+                <option value="monthly">Monthly</option>
+                <option value="biweekly">Every 2 weeks</option>
+                <option value="semimonthly">Twice a month</option>
+                <option value="weekly">Weekly</option>
+              </select>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+              <label style="font-size:12px;color:var(--txt2);font-weight:600;min-width:80px">Payday</label>
+              <select id="payPeriodDay" onchange="savePayPeriodSettings()" style="padding:7px 12px;border:1.5px solid var(--brd);border-radius:8px;font-size:12px;font-family:inherit;background:var(--bg);color:var(--txt);outline:none">
+                <option value="1">1st of month</option>
+                <option value="5">5th of month</option>
+                <option value="10">10th of month</option>
+                <option value="15">15th of month</option>
+                <option value="20">20th of month</option>
+                <option value="25">25th of month</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <!-- Budget Alerts -->
+        <div class="section-label" style="margin-bottom:8px">Budget Alerts</div>
+        <div style="margin-bottom:16px;display:flex;flex-direction:column;gap:8px">
+          <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--txt);cursor:pointer;font-weight:600">
+            <input type="checkbox" id="alertsEnabled" checked onchange="saveBudgetAlertSettings()">
+            Show budget alerts
+          </label>
+          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+            <label style="font-size:12px;color:var(--txt2);font-weight:600;min-width:80px">Warn at</label>
+            <select id="alertThreshold" onchange="saveBudgetAlertSettings()" style="padding:7px 12px;border:1.5px solid var(--brd);border-radius:8px;font-size:12px;font-family:inherit;background:var(--bg);color:var(--txt);outline:none">
+              <option value="70">70% of budget</option>
+              <option value="80" selected>80% of budget</option>
+              <option value="90">90% of budget</option>
+            </select>
           </div>
         </div>
         <div class="section-label" style="margin-bottom:8px">Currency</div>
@@ -3073,6 +3172,284 @@ function quickBackup() {
   }
 }
 
+// ══════════════════════════════════════════════════════════
+// ─── TIER 1: RECURRING EXPENSES ───────────────────────────
+// ══════════════════════════════════════════════════════════
+
+const RECURRING_KEY = "bt_recurring"; // stores recurring expense templates
+
+function getRecurring() {
+  try { return JSON.parse(localStorage.getItem(RECURRING_KEY) || "[]"); } catch(e) { return []; }
+}
+function saveRecurring(list) {
+  localStorage.setItem(RECURRING_KEY, JSON.stringify(list));
+}
+
+// Called from the add-expense form to show/hide freq dropdown
+function toggleRecurringFreq() {
+  const cb  = document.getElementById("expRecurring");
+  const sel = document.getElementById("expRecurFreq");
+  if (!cb || !sel) return;
+  sel.style.display = cb.checked ? "inline-block" : "none";
+}
+
+// Auto-apply recurring expenses on app open.
+// For each recurring template, if we haven't logged it yet for the
+// current period, insert it into expenses automatically.
+function applyRecurringExpenses() {
+  const recurring = getRecurring();
+  if (!recurring.length) return;
+  const data = getData();
+  const today = new Date();
+  const periodKey = _periodKey(today); // e.g. "2026-07"
+  let changed = false;
+
+  recurring.forEach(r => {
+    // Check if already applied this period
+    const alreadyDone = data.expenses.some(e =>
+      e.recurringId === r.id && e.periodKey === periodKey
+    );
+    if (!alreadyDone && _isDueThisPeriod(r, today)) {
+      data.expenses.push({
+        id: Date.now() + Math.random(),
+        date: today.toISOString().split("T")[0],
+        desc: r.desc,
+        cat:  r.cat,
+        sub:  r.sub,
+        amt:  r.amt,
+        recurringId: r.id,
+        periodKey
+      });
+      changed = true;
+    }
+  });
+
+  if (changed) {
+    saveData(data);
+    toast("🔁 Recurring expenses applied for this period.");
+  }
+}
+
+function _periodKey(date) {
+  return date.getFullYear() + "-" + String(date.getMonth() + 1).padStart(2, "0");
+}
+
+// Is this recurring expense due in the current period?
+function _isDueThisPeriod(r, today) {
+  switch(r.freq) {
+    case "monthly":     return true; // always due once a month
+    case "yearly":      return today.getMonth() === new Date(r.startDate).getMonth();
+    case "weekly":      return true; // apply every week — simplified: once per period
+    case "fortnightly": return true;
+    default:            return true;
+  }
+}
+
+// Delete a recurring template (stops future auto-applies)
+function deleteRecurring(id) {
+  const list = getRecurring().filter(r => r.id !== id);
+  saveRecurring(list);
+  renderRecurringList();
+  toast("Recurring expense removed.");
+}
+
+// Render the recurring templates list in History tab
+function renderRecurringList() {
+  const container = document.getElementById("recurringList");
+  if (!container) return;
+  const list = getRecurring();
+  if (!list.length) {
+    container.innerHTML = '<p style="font-size:12px;color:var(--txt2);margin:0">No recurring expenses set up yet. Check the \'Repeat\' box when adding an expense.</p>';
+    return;
+  }
+  const freqLabel = { monthly:"Monthly", weekly:"Weekly", fortnightly:"Every 2 wks", yearly:"Yearly" };
+  container.innerHTML = list.map(r => `
+    <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--bg);border:1.5px solid var(--brd);border-radius:10px;margin-bottom:8px;flex-wrap:wrap">
+      <span style="flex:1;min-width:0">
+        <span style="font-size:13px;font-weight:700;color:var(--txt);display:block">${escHtml(r.desc)}</span>
+        <span style="font-size:11px;color:var(--txt2)">${r.cat} · ${r.sub} · ${fmt(r.amt)}</span>
+      </span>
+      <span class="recur-badge"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 014-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 01-4 4H3"/></svg>${freqLabel[r.freq]||r.freq}</span>
+      <button onclick="deleteRecurring(${r.id})" style="background:none;border:none;color:var(--dan);cursor:pointer;font-size:12px;font-weight:700;padding:4px 8px;border-radius:6px;transition:.15s" title="Remove recurring">✕</button>
+    </div>
+  `).join("");
+}
+
+// ══════════════════════════════════════════════════════════
+// ─── TIER 1: BUDGET ALERTS ────────────────────────────────
+// ══════════════════════════════════════════════════════════
+
+function saveBudgetAlertSettings() {
+  const enabled   = document.getElementById("alertsEnabled")?.checked ?? true;
+  const threshold = document.getElementById("alertThreshold")?.value  ?? "80";
+  localStorage.setItem("bt_alert_enabled",   enabled ? "1" : "0");
+  localStorage.setItem("bt_alert_threshold", threshold);
+}
+
+function loadBudgetAlertSettings() {
+  const enabled   = localStorage.getItem("bt_alert_enabled") !== "0";
+  const threshold = localStorage.getItem("bt_alert_threshold") || "80";
+  const cb  = document.getElementById("alertsEnabled");
+  const sel = document.getElementById("alertThreshold");
+  if (cb)  cb.checked  = enabled;
+  if (sel) sel.value   = threshold;
+}
+
+function checkBudgetAlerts() {
+  const container = document.getElementById("budgetAlertContainer");
+  if (!container) return;
+  const enabled = localStorage.getItem("bt_alert_enabled") !== "0";
+  if (!enabled) { container.innerHTML = ""; return; }
+
+  const threshold = parseInt(localStorage.getItem("bt_alert_threshold") || "80") / 100;
+  const data      = getData();
+  const income    = data.income || 0;
+  if (!income) { container.innerHTML = ""; return; }
+
+  const budgets = {
+    Needs:   income * 0.5,
+    Wants:   income * 0.3,
+    Savings: income * 0.2
+  };
+  const spent = { Needs: 0, Wants: 0, Savings: 0 };
+  data.expenses.forEach(e => { if (spent[e.cat] !== undefined) spent[e.cat] += e.amt; });
+
+  const alerts = [];
+  ["Needs","Wants","Savings"].forEach(cat => {
+    const pct = budgets[cat] > 0 ? spent[cat] / budgets[cat] : 0;
+    if (pct >= 1) {
+      alerts.push({ cat, pct, type: "over",
+        title: `${cat} budget exceeded`,
+        sub:   `You've spent ${fmt(spent[cat])} of your ${fmt(budgets[cat])} ${cat.toLowerCase()} budget (${Math.round(pct*100)}%).`
+      });
+    } else if (pct >= threshold) {
+      alerts.push({ cat, pct, type: "warn",
+        title: `${cat} budget at ${Math.round(pct*100)}%`,
+        sub:   `${fmt(budgets[cat] - spent[cat])} remaining in your ${cat.toLowerCase()} budget.`
+      });
+    }
+  });
+
+  const dismissedKey = "bt_alert_dismissed_" + _periodKey(new Date());
+  let dismissed = [];
+  try { dismissed = JSON.parse(localStorage.getItem(dismissedKey) || "[]"); } catch(e) {}
+
+  const visible = alerts.filter(a => !dismissed.includes(a.cat));
+  if (!visible.length) { container.innerHTML = ""; return; }
+
+  const warnIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>`;
+  const closeBtn = (cat) => `<button class="ba-close" onclick="_dismissAlert('${cat}')" aria-label="Dismiss">${'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>'}</button>`;
+
+  container.innerHTML = visible.map(a => `
+    <div class="budget-alert-bar ${a.type}" id="alert_${a.cat}">
+      <div class="ba-icon">${warnIcon}</div>
+      <div class="ba-body">
+        <div class="ba-title">${a.title}</div>
+        <div class="ba-sub">${a.sub}</div>
+      </div>
+      ${closeBtn(a.cat)}
+    </div>
+  `).join("");
+}
+
+function _dismissAlert(cat) {
+  const key = "bt_alert_dismissed_" + _periodKey(new Date());
+  let dismissed = [];
+  try { dismissed = JSON.parse(localStorage.getItem(key) || "[]"); } catch(e) {}
+  if (!dismissed.includes(cat)) dismissed.push(cat);
+  localStorage.setItem(key, JSON.stringify(dismissed));
+  const el = document.getElementById("alert_" + cat);
+  if (el) el.remove();
+}
+
+// ══════════════════════════════════════════════════════════
+// ─── TIER 1: PAY PERIOD MODE ──────────────────────────────
+// ══════════════════════════════════════════════════════════
+
+function savePayPeriodSettings() {
+  const enabled = document.getElementById("payPeriodEnabled")?.checked;
+  const freq    = document.getElementById("payPeriodFreq")?.value  || "monthly";
+  const day     = document.getElementById("payPeriodDay")?.value   || "1";
+  localStorage.setItem("bt_pp_enabled", enabled ? "1" : "0");
+  localStorage.setItem("bt_pp_freq",    freq);
+  localStorage.setItem("bt_pp_day",     day);
+  const opts = document.getElementById("payPeriodOptions");
+  if (opts) opts.style.display = enabled ? "flex" : "none";
+  renderPayPeriodBar();
+  updateDashboard();
+}
+
+function loadPayPeriodSettings() {
+  const enabled = localStorage.getItem("bt_pp_enabled") === "1";
+  const freq    = localStorage.getItem("bt_pp_freq")    || "monthly";
+  const day     = localStorage.getItem("bt_pp_day")     || "1";
+  const cb   = document.getElementById("payPeriodEnabled");
+  const fSel = document.getElementById("payPeriodFreq");
+  const dSel = document.getElementById("payPeriodDay");
+  const opts = document.getElementById("payPeriodOptions");
+  if (cb)   cb.checked  = enabled;
+  if (fSel) fSel.value  = freq;
+  if (dSel) dSel.value  = day;
+  if (opts) opts.style.display = enabled ? "flex" : "none";
+}
+
+// Returns { start, end, daysLeft, label } for the current pay period
+function getCurrentPayPeriod() {
+  const freq    = localStorage.getItem("bt_pp_freq")    || "monthly";
+  const payday  = parseInt(localStorage.getItem("bt_pp_day") || "1");
+  const today   = new Date();
+  const todayMs = today.getTime();
+  let start, end;
+
+  if (freq === "monthly") {
+    const y = today.getFullYear(), m = today.getMonth();
+    start = new Date(y, m, payday);
+    if (start > today) start = new Date(y, m - 1, payday);
+    end   = new Date(start.getFullYear(), start.getMonth() + 1, payday - 1);
+  } else if (freq === "biweekly") {
+    // Find most recent payday (payday = day of week: 0=Sun…6=Sat, we use payday as offset from start of year)
+    const msPerWeek = 7 * 86400000;
+    const refDate   = new Date(today.getFullYear(), 0, payday); // payday-th Jan as anchor
+    const weeksAgo  = Math.floor((todayMs - refDate.getTime()) / (2 * msPerWeek));
+    start = new Date(refDate.getTime() + weeksAgo * 2 * msPerWeek);
+    end   = new Date(start.getTime() + 13 * 86400000);
+  } else if (freq === "semimonthly") {
+    const y = today.getFullYear(), m = today.getMonth();
+    const mid = 15;
+    if (today.getDate() >= mid) {
+      start = new Date(y, m, mid);
+      end   = new Date(y, m + 1, 0); // last day of month
+    } else {
+      start = new Date(y, m, 1);
+      end   = new Date(y, m, mid - 1);
+    }
+  } else { // weekly
+    const dow   = today.getDay();
+    const diff  = (dow - (payday % 7) + 7) % 7;
+    start = new Date(todayMs - diff * 86400000);
+    end   = new Date(start.getTime() + 6 * 86400000);
+  }
+
+  const daysLeft = Math.max(0, Math.round((end - today) / 86400000));
+  const fmt2 = d => d.toLocaleDateString("en-US", { month:"short", day:"numeric" });
+  return { start, end, daysLeft, label: fmt2(start) + " – " + fmt2(end) };
+}
+
+function renderPayPeriodBar() {
+  const bar = document.getElementById("payPeriodBar");
+  if (!bar) return;
+  const enabled = localStorage.getItem("bt_pp_enabled") === "1";
+  if (!enabled) { bar.style.display = "none"; bar.innerHTML = ""; return; }
+
+  const pp = getCurrentPayPeriod();
+  bar.style.display = "flex";
+  bar.className = "pay-period-bar";
+  bar.innerHTML =
+    `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>` +
+    `<span>Pay period: <strong>${pp.label}</strong></span>` +
+    `<span style="color:var(--pri-d);font-weight:700">${pp.daysLeft} day${pp.daysLeft!==1?"s":""} left</span>`;
+}
+
 // ─── INIT ──────────────────────────────────────────────────
 document.addEventListener("DOMContentLoaded", () => {
   // Reset session-only reminder flag on fresh page load
@@ -3083,6 +3460,10 @@ document.addEventListener("DOMContentLoaded", () => {
   } catch(e) {}
   loadTheme();
   loadCurrency();
+  loadBudgetAlertSettings();
+  loadPayPeriodSettings();
+  applyRecurringExpenses();
+  renderPayPeriodBar();
   const vLabel = document.getElementById("appVersionLabel");
   if (vLabel) vLabel.textContent = APP_VERSION;
   const data = getData();
@@ -3097,6 +3478,8 @@ document.addEventListener("DOMContentLoaded", () => {
   renderGoals();
   renderRecent();
   renderCustomQuickAdds();
+  renderRecurringList();
+  checkBudgetAlerts();
   initAiChat();
   renderNotes();
   renderInsights();
@@ -3288,20 +3671,35 @@ function addExpense() {
     return;
   }
 
+  const isRecurring = document.getElementById("expRecurring")?.checked;
+  const recurFreq   = document.getElementById("expRecurFreq")?.value || "monthly";
+
   const data = getData();
   data.expenses.push({ id: Date.now(), date, desc, cat, sub, amt });
   saveData(data);
 
+  // Save as a recurring template if the user checked "Repeat"
+  if (isRecurring) {
+    const list = getRecurring();
+    list.push({ id: Date.now() + 1, desc, cat, sub, amt, freq: recurFreq, startDate: date });
+    saveRecurring(list);
+    renderRecurringList();
+    toast("🔁 " + desc + " — " + fmt(amt) + " added & set to repeat " + recurFreq + "!");
+  } else {
+    toast(desc + " — " + fmt(amt) + " added!");
+  }
+
   document.getElementById("expDesc").value = "";
   document.getElementById("expAmt").value = "";
-  // Reset smart-guess state for the next entry
+  const rcb = document.getElementById("expRecurring");
+  if (rcb) { rcb.checked = false; toggleRecurringFreq(); }
   _expCatUserOverride = false;
   const hintEl = document.getElementById("expCatHint");
   if (hintEl) hintEl.style.display = "none";
 
-  toast("" + desc + " — " + fmt(amt) + " added!");
   updateDashboard();
   renderRecent();
+  checkBudgetAlerts();
 }
 
 function quickAdd(sub, cat) {
@@ -3740,8 +4138,10 @@ function updateDashboard() {
   // Donut
   updateDonut(needsSpent, wantsSpent, savingsSpent);
 
-  // Refresh insights
+  // Refresh insights + alerts + pay period
   renderInsights();
+  checkBudgetAlerts();
+  renderPayPeriodBar();
 }
 
 function updateProgress(name, spent, budget, cls) {
@@ -8727,5 +9127,5 @@ window.addEventListener('appinstalled', () => {
   toast("App installed successfully!");
 });
 </script>
-</body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a18d01407da41099',t:'MTc4MzY1OTYyNw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
