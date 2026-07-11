@@ -2004,23 +2004,19 @@ footer .footer-links a:hover{color:var(--pri-d)}
           <label>Amount ($)</label>
           <input type="number" id="expAmt" placeholder="0.00" step="0.01" min="0">
         </div>
-        <div class="fg" style="grid-column:1/-1">
-          <div class="recur-toggle-row">
-            <label>
-              <input type="checkbox" id="expRecurring" onchange="toggleRecurringFreq()">
-              Repeat this expense
-            </label>
-            <select id="expRecurFreq" style="display:none">
-              <option value="monthly">Every month</option>
-              <option value="weekly">Every week</option>
-              <option value="fortnightly">Every 2 weeks</option>
-              <option value="yearly">Every year</option>
-            </select>
-          </div>
-        </div>
-        <div class="fg">
-          <label>&nbsp;</label>
-          <button class="btn btn-pri" onclick="addExpense()">+ Add</button>
+        <div class="fg" style="grid-column:1/-1;display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding-top:2px">
+          <label style="display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--txt2);cursor:pointer;font-weight:600;white-space:nowrap">
+            <input type="checkbox" id="expRecurring" onchange="toggleRecurringFreq()">
+            Repeat this expense
+          </label>
+          <select id="expRecurFreq" style="display:none;padding:5px 10px;border:1.5px solid var(--brd);border-radius:8px;font-size:12px;font-family:inherit;background:var(--bg);color:var(--txt);outline:none;cursor:pointer">
+            <option value="monthly">Every month</option>
+            <option value="weekly">Every week</option>
+            <option value="fortnightly">Every 2 weeks</option>
+            <option value="yearly">Every year</option>
+          </select>
+          <div style="flex:1"></div>
+          <button class="btn btn-pri" onclick="addExpense()" style="padding:10px 24px;font-size:13px;font-weight:700;border-radius:10px">+ Add Expense</button>
         </div>
       </div>
       <div class="exp-cat-hint" id="expCatHint" style="display:none"></div>
@@ -4059,6 +4055,48 @@ function _tokenizeDesc(desc) {
   return [...tokens].sort((a,b) => b.length - a.length); // longest first = most specific
 }
 
+// ── Tiny universal seed — truly locale-agnostic terms only ──────────────────
+// Only the most unambiguous, universal words. No brands. No locale. ~30 entries.
+// This is the fallback when: (a) no learned keyword matches AND (b) no AI key.
+const _SEED = [
+  { kw:["rent","mortgage","landlord","lease","housing"],          cat:"Needs",   sub:"Rent/Mortgage" },
+  { kw:["grocery","groceries","supermarket","market","produce","food shop"], cat:"Needs", sub:"Groceries" },
+  { kw:["electric","electricity","water bill","gas bill","internet","wifi","broadband","utility","utilities","cable bill","trash","garbage","sewer"], cat:"Needs", sub:"Utilities" },
+  { kw:["fuel","petrol","gasoline","diesel","bus","train","taxi","toll","parking","fare","commute","transport","transit"], cat:"Needs", sub:"Transportation" },
+  { kw:["insurance","premium","hmo"],                             cat:"Needs",   sub:"Insurance" },
+  { kw:["doctor","hospital","clinic","pharmacy","medicine","dental","dentist","prescription","medical","therapy","vitamins"], cat:"Needs", sub:"Healthcare" },
+  { kw:["phone bill","mobile bill","data plan","postpaid","prepaid load"], cat:"Needs", sub:"Phone" },
+  { kw:["tuition","school fees","university","enrollment"],       cat:"Needs",   sub:"Education" },
+  { kw:["restaurant","dining","dinner out","lunch out","coffee shop","cafe","takeout","take out","fast food","delivery food"], cat:"Wants", sub:"Dining Out" },
+  { kw:["movie","cinema","concert","ticket","gaming","streaming","netflix","spotify","disney","hbo","game"], cat:"Wants", sub:"Entertainment" },
+  { kw:["clothes","clothing","shoes","fashion","shopping","gadget","electronics","makeup","cosmetics","appliance","furniture"], cat:"Wants", sub:"Shopping" },
+  { kw:["subscription","subscribe","membership","monthly fee","annual fee","saas"], cat:"Wants", sub:"Subscriptions" },
+  { kw:["hobby","craft","camera","photography","book","books","guitar","fishing"], cat:"Wants", sub:"Hobbies" },
+  { kw:["flight","airfare","hotel","vacation","trip","tour","travel","airbnb","resort"], cat:"Wants", sub:"Travel" },
+  { kw:["gym","fitness","yoga","pilates","workout","crossfit"],   cat:"Wants",   sub:"Gym" },
+  { kw:["gift","present","flowers","cake","party"],               cat:"Wants",   sub:"Gifts" },
+  { kw:["emergency fund","rainy day fund","buffer fund"],         cat:"Savings", sub:"Emergency Fund" },
+  { kw:["invest","investment","stocks","mutual fund","index fund","crypto","bitcoin","bonds","trading"], cat:"Savings", sub:"Investments" },
+  { kw:["savings","save","sinking fund","piggy bank","set aside"], cat:"Savings", sub:"Savings Goal" },
+  { kw:["loan payment","debt payment","credit card payment","installment","pay off loan"], cat:"Savings", sub:"Debt Payment" },
+];
+
+function _checkSeed(desc) {
+  if (!desc) return null;
+  const text = " " + desc.toLowerCase().replace(/[^\w\s'-]/g," ") + " ";
+  let best = null;
+  for (const entry of _SEED) {
+    for (const kw of entry.kw) {
+      const hit = text.includes(" " + kw + " ") || (kw.includes(" ") && text.includes(kw));
+      if (hit) {
+        const score = kw.length + (kw.includes(" ") ? 4 : 0);
+        if (!best || score > best.score) best = { cat: entry.cat, sub: entry.sub, matched: kw, score, source: "seed" };
+      }
+    }
+  }
+  return best;
+}
+
 // Step 1: Check user-learned keywords
 function _checkLearnedKeywords(desc) {
   if (!desc) return null;
@@ -4201,14 +4239,30 @@ function onExpenseDescInput() {
   if (_expCatUserOverride) { if (hintEl) hintEl.style.display = "none"; return; }
   if (!desc || desc.length < 2) { if (hintEl) hintEl.style.display = "none"; return; }
 
-  // Step 1: Learned keywords — instant
+  // Step 1: Learned keywords — instant, offline
   const learned = _checkLearnedKeywords(desc);
   if (learned) {
     _applyCategoryGuess(learned, hintEl, desc);
     return;
   }
 
-  // Step 2: AI query — debounced 700ms (only if description changed enough)
+  // Step 1.5: Universal seed — instant, offline, locale-agnostic
+  const seed = _checkSeed(desc);
+  if (seed) {
+    _applyCategoryGuess(seed, hintEl, desc);
+    // Still fire AI in background to confirm/improve — but don't show "Thinking"
+    _queryAiCategory(desc, (aiGuess) => {
+      if (desc !== document.getElementById("expDesc")?.value.trim()) return;
+      if (_expCatUserOverride) return;
+      // Only override seed if AI gives a different answer — let user see the hint update
+      if (aiGuess.cat !== seed.cat || aiGuess.sub !== seed.sub) {
+        _applyCategoryGuess(aiGuess, hintEl, desc);
+      }
+    });
+    return;
+  }
+
+  // Step 2: AI query — debounced 700ms, shown with "Thinking…"
   clearTimeout(_aiDebounceTimer);
   if (hintEl) {
     hintEl.innerHTML = '<span style="color:var(--txt2);font-size:11px;font-style:italic">Thinking…</span>';
@@ -4241,8 +4295,10 @@ function _applyCategoryGuess(guess, hintEl, desc) {
   }
   if (hintEl) {
     const sourceIcon = guess.source === "ai"
-      ? '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 4.6L18.5 9l-4.6 1.9L12 15l-1.9-4.1L5.5 9l4.6-1.4z"/><path d="M19 14l.8 2 2 .8-2 .8-.8 2-.8-2-2-.8 2-.8z"/></svg> AI'
-      : '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l1.9 4.6L18.5 9l-4.6 1.9L12 15l-1.9-4.1L5.5 9l4.6-1.4z"/></svg> Learned';
+      ? '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 4.6L18.5 9l-4.6 1.9L12 15l-1.9-4.1L5.5 9l4.6-1.4z"/><path d="M19 14l.8 2 2 .8-2 .8-.8 2-.8-2-2-.8 2-.8z"/></svg> AI suggested'
+      : guess.source === "learned"
+      ? '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l1.9 4.6L18.5 9l-4.6 1.9L12 15l-1.9-4.1L5.5 9l4.6-1.4z"/></svg> Learned'
+      : '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> Auto-detected';
     hintEl.innerHTML = sourceIcon + ': <strong>' + guess.cat + ' → ' + guess.sub + '</strong> &nbsp;<span style="font-size:10px;color:var(--txt2)">· change it to teach the app</span>';
     hintEl.style.display = "block";
   }
@@ -4395,8 +4451,7 @@ function renderCustomQuickAdds() {
       const pill = document.createElement("button");
       pill.className = "quick-pill qa-custom";
       pill.onclick = () => quickAdd(c.name, c.cat);
-      const catIcon = cat;
-      pill.innerHTML = catIcon + " " + c.name +
+      pill.innerHTML = escHtml(c.name) +
         '<span class="qa-remove" onclick="event.stopPropagation();removeCustomQuickAdd(' + origIdx + ')" aria-label="Remove"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M18 6L6 18M6 6l12 12"/></svg></span>';
       if (addBtn) container.insertBefore(pill, addBtn);
       else container.appendChild(pill);
