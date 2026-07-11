@@ -1714,78 +1714,142 @@ footer .footer-links a:hover{color:var(--pri-d)}
   <div id="tab-dashboard" class="panel active">
   <div id="dashMain">
 
-    <!-- Pay Period bar (shown when Pay Period Mode is on) -->
+    <!-- Pay Period bar -->
     <div id="payPeriodBar" style="display:none"></div>
 
-    <!-- Budget Alert banners (injected by checkBudgetAlerts) -->
+    <!-- Budget Alert banners -->
     <div id="budgetAlertContainer"></div>
 
-    <!-- Bills due soon (injected by renderDashBills) -->
+    <!-- Bills due soon -->
     <div id="dashBillsContainer"></div>
 
-    <!-- Greeting -->
-    <div id="greetingBar">
-      <div class="greeting" id="greetingText"></div>
-      <div class="greeting-sub" id="greetingSub"></div>
+    <!-- ── Header: greeting + streak ── -->
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:16px">
+      <div style="min-width:0;flex:1">
+        <div class="greeting" id="greetingText"></div>
+        <div class="greeting-sub" id="greetingSub"></div>
+      </div>
+      <div class="streak-bar" id="streakBar" style="display:none;margin:0;padding:7px 13px;border-radius:20px;flex-shrink:0;align-self:flex-start">
+        <div class="streak-fire" id="streakIcon" aria-hidden="true"></div>
+        <div class="streak-info">
+          <div class="streak-count" id="streakCount">0-day streak</div>
+          <div class="streak-label" id="streakLabel">Keep tracking daily!</div>
+        </div>
+        <div class="streak-best" id="streakBest" style="display:none">Best: 0</div>
+      </div>
     </div>
 
-    <!-- Personalize (soft onboarding — appears after 3+ expenses) -->
+    <!-- Personalize card (shows once) -->
     <div class="personalize-card" id="personalizeCard" style="display:none">
-      <h4><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--pri)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> Personalize Your Tracker</h4>
-      <p>What should we call you? This is just for your dashboard greeting — nothing is shared.</p>
+      <h4>👋 What should we call you?</h4>
+      <p>Your dashboard greeting — nothing is shared.</p>
       <div class="personalize-row">
         <input type="text" id="userNameInput" placeholder="e.g. Maria, Boss, Kuya..." maxlength="30" onkeydown="if(event.key==='Enter')saveUserName()">
         <button class="btn btn-pri btn-sm" onclick="saveUserName()">Save</button>
-        <button class="btn btn-sec btn-sm" onclick="dismissPersonalize()">Maybe later</button>
+        <button class="btn btn-sec btn-sm" onclick="dismissPersonalize()">Skip</button>
       </div>
     </div>
 
-    <!-- Income -->
-    <div class="income-bar">
-      <div class="income-label">
-        <label>Monthly Take-Home Income</label>
-        <p>Enter your income — everything calculates automatically</p>
-      </div>
-      <div style="display:flex;align-items:center;gap:10px">
-        <div class="income-input-wrap">
-          <span class="currency">$</span>
-          <input type="text" inputmode="decimal" id="incomeInput" placeholder="5,000" oninput="formatIncomeInput(this);updateDashboard()" autocomplete="off">
-          <div class="income-spin">
-            <button class="spin-btn spin-up" onclick="spinIncome(1)" tabindex="-1"><svg width="10" height="10" viewBox="0 0 10 10"><polyline points="2 7 5 3 8 7" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-            <button class="spin-btn spin-down" onclick="spinIncome(-1)" tabindex="-1"><svg width="10" height="10" viewBox="0 0 10 10"><polyline points="2 3 5 7 8 3" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-          </div>
+    <!-- ── Income row ── -->
+    <div class="card" style="padding:16px 20px;margin-bottom:14px">
+      <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+        <div style="flex:1;min-width:0">
+          <div style="font-size:11px;font-weight:700;color:var(--txt2);text-transform:uppercase;letter-spacing:.8px;margin-bottom:2px">Monthly Take-Home Income</div>
+          <div style="font-size:11px;color:var(--txt2)">Enter your income — everything calculates automatically</div>
         </div>
-        <!-- Feed Bell -->
-        <div class="feed-bell" id="feedBellBtn" onclick="toggleFeedBell()" title="The Budget Brief" style="display:none">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
-          <span class="feed-bell-badge" id="feedBellBadge"></span>
-          <!-- Dropdown -->
-          <div class="feed-bell-dropdown" id="feedBellDropdown" onclick="event.stopPropagation()">
-            <div class="feed-dd-head">
-              <h4>The Budget Brief</h4>
-              <button onclick="markAllFromBell()" id="bellMarkAllBtn">Mark all read</button>
+        <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
+          <div style="display:flex;align-items:center;gap:4px;background:var(--bg);border:1.5px solid var(--brd);border-radius:10px;padding:8px 12px">
+            <span style="font-size:16px;font-weight:700;color:var(--txt2)" id="incomeSymbol">$</span>
+            <input type="text" inputmode="decimal" id="incomeInput" placeholder="0" oninput="formatIncomeInput(this);updateDashboard()" autocomplete="off" style="background:none;border:none;outline:none;font-size:22px;font-weight:900;color:var(--txt);width:100px;font-family:inherit">
+            <div style="display:flex;flex-direction:column;gap:1px">
+              <button onclick="spinIncome(1)" style="background:none;border:none;color:var(--txt2);cursor:pointer;line-height:1;padding:1px" aria-label="Increase">▲</button>
+              <button onclick="spinIncome(-1)" style="background:none;border:none;color:var(--txt2);cursor:pointer;line-height:1;padding:1px" aria-label="Decrease">▼</button>
             </div>
-            <div class="feed-dd-list" id="feedBellList"></div>
-            <div class="feed-dd-footer">
-              <button onclick="scrollToFeedSection()">View all articles</button>
+          </div>
+          <div class="feed-bell" id="feedBellBtn" onclick="toggleFeedBell()" title="The Budget Brief" style="display:none">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+            <span class="feed-bell-badge" id="feedBellBadge"></span>
+            <div class="feed-bell-dropdown" id="feedBellDropdown" onclick="event.stopPropagation()">
+              <div class="fbd-head">
+                <span>Budget Brief</span>
+                <button onclick="markAllFromBell()" id="bellMarkAllBtn">Mark all read</button>
+              </div>
+              <div class="feed-dd-list" id="feedBellList"></div>
             </div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Streak Counter -->
-    <div class="streak-bar" id="streakBar" style="display:none">
-      <div class="streak-fire" id="streakIcon" aria-hidden="true"></div>
-      <div class="streak-info">
-        <div class="streak-count" id="streakCount">0-day streak</div>
-        <div class="streak-label" id="streakLabel">Keep tracking daily!</div>
+    <!-- ── Main budget card: amounts + progress + donut + totals ── -->
+    <div class="card" style="margin-bottom:14px">
+      <!-- 3 category amounts -->
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px">
+        <div style="text-align:center;padding:10px 8px;border-radius:10px;background:var(--bg)">
+          <div style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--pri-d);margin-bottom:4px">Needs · 50%</div>
+          <div style="font-size:20px;font-weight:900;color:var(--txt);letter-spacing:-.5px;line-height:1" id="needsAmt">$0</div>
+          <div style="font-size:10px;color:var(--txt2);margin-top:3px" id="needsSub">Budget: —</div>
+        </div>
+        <div style="text-align:center;padding:10px 8px;border-radius:10px;background:var(--bg)">
+          <div style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--acc);margin-bottom:4px">Wants · 30%</div>
+          <div style="font-size:20px;font-weight:900;color:var(--txt);letter-spacing:-.5px;line-height:1" id="wantsAmt">$0</div>
+          <div style="font-size:10px;color:var(--txt2);margin-top:3px" id="wantsSub">Budget: —</div>
+        </div>
+        <div style="text-align:center;padding:10px 8px;border-radius:10px;background:var(--bg)">
+          <div style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--suc);margin-bottom:4px">Savings · 20%</div>
+          <div style="font-size:20px;font-weight:900;color:var(--txt);letter-spacing:-.5px;line-height:1" id="savingsAmt">$0</div>
+          <div style="font-size:10px;color:var(--txt2);margin-top:3px" id="savingsSub">Budget: —</div>
+        </div>
       </div>
-      <div class="streak-best" id="streakBest" style="display:none">Best: 0</div>
+
+      <!-- Progress bars -->
+      <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:18px">
+        <div class="prog">
+          <div class="prog-head"><span class="prog-label">Needs</span><span class="prog-vals" id="needsProg">$0 / $0</span></div>
+          <div class="prog-bar"><div class="prog-fill fill-n" id="needsBar" style="width:0%"><span class="prog-pct" id="needsPct"></span></div></div>
+        </div>
+        <div class="prog">
+          <div class="prog-head"><span class="prog-label">Wants</span><span class="prog-vals" id="wantsProg">$0 / $0</span></div>
+          <div class="prog-bar"><div class="prog-fill fill-w" id="wantsBar" style="width:0%"><span class="prog-pct" id="wantsPct"></span></div></div>
+        </div>
+        <div class="prog">
+          <div class="prog-head"><span class="prog-label">Savings</span><span class="prog-vals" id="savingsProg">$0 / $0</span></div>
+          <div class="prog-bar"><div class="prog-fill fill-s" id="savingsBar" style="width:0%"><span class="prog-pct" id="savingsPct"></span></div></div>
+        </div>
+      </div>
+
+      <!-- Donut + totals -->
+      <div style="display:flex;align-items:center;gap:20px;flex-wrap:wrap;border-top:1px solid var(--brd);padding-top:16px">
+        <div class="donut-wrap" style="flex-shrink:0">
+          <svg class="donut-svg" viewBox="0 0 42 42" id="donutChart" role="img" aria-label="Spending breakdown">
+            <circle cx="21" cy="21" r="15.9" fill="none" stroke="var(--brd)" stroke-width="5.8" opacity=".65"/>
+            <circle id="donutNeeds"   cx="21" cy="21" r="15.9" fill="none" stroke="var(--pri)" stroke-width="5.8" stroke-dasharray="0 100" stroke-dashoffset="25" stroke-linecap="butt"/>
+            <circle id="donutWants"   cx="21" cy="21" r="15.9" fill="none" stroke="var(--acc)" stroke-width="5.8" stroke-dasharray="0 100" stroke-dashoffset="25" stroke-linecap="butt"/>
+            <circle id="donutSavings" cx="21" cy="21" r="15.9" fill="none" stroke="var(--suc)" stroke-width="5.8" stroke-dasharray="0 100" stroke-dashoffset="25" stroke-linecap="butt"/>
+            <text x="21" y="19.5" text-anchor="middle" font-size="4.2" font-weight="900" fill="var(--txt)" id="donutTotal">$0</text>
+            <text x="21" y="23.5" text-anchor="middle" font-size="2.2" fill="var(--txt2)" font-weight="600" letter-spacing=".8">SPENT</text>
+          </svg>
+          <div class="donut-legend">
+            <div class="leg-item"><div class="leg-dot" style="background:var(--pri)"></div><div class="leg-label"><strong>Needs</strong><span id="legNeeds">$0 (0%)</span></div></div>
+            <div class="leg-item"><div class="leg-dot" style="background:var(--acc)"></div><div class="leg-label"><strong>Wants</strong><span id="legWants">$0 (0%)</span></div></div>
+            <div class="leg-item"><div class="leg-dot" style="background:var(--suc)"></div><div class="leg-label"><strong>Savings</strong><span id="legSavings">$0 (0%)</span></div></div>
+          </div>
+        </div>
+        <div style="flex:1;min-width:120px;display:flex;flex-direction:column;gap:14px">
+          <div>
+            <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--txt2);margin-bottom:3px">Total Spent</div>
+            <div style="font-size:26px;font-weight:900;color:var(--txt);letter-spacing:-.5px" id="totalSpent">$0</div>
+          </div>
+          <div>
+            <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--txt2);margin-bottom:3px">Remaining</div>
+            <div style="font-size:26px;font-weight:900;letter-spacing:-.5px;color:var(--suc)" id="totalRemaining">$0</div>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <!-- Smart Insights -->
-    <div id="insightsCard" class="card" style="display:none">
+    <!-- ── Insights (collapsed by default) ── -->
+    <div id="insightsCard" class="card" style="display:none;margin-bottom:14px">
       <div class="insights-head">
         <h3><span class="icon-wrap"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></span> Insights</h3>
         <div class="insights-actions">
@@ -1796,141 +1860,6 @@ footer .footer-links a:hover{color:var(--pri-d)}
         </div>
       </div>
       <div id="insightsList"></div>
-    </div>
-
-    <!-- Stat Cards -->
-    <div class="stats">
-      <div class="stat needs">
-        <div class="stat-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
-        <div class="lbl">50% — Needs</div>
-        <div class="amt" id="needsAmt">$0</div>
-        <div class="sub" id="needsSub">Budget: —</div>
-      </div>
-      <div class="stat wants">
-        <div class="stat-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg></div>
-        <div class="lbl">30% — Wants</div>
-        <div class="amt" id="wantsAmt">$0</div>
-        <div class="sub" id="wantsSub">Budget: —</div>
-      </div>
-      <div class="stat savings">
-        <div class="stat-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></div>
-        <div class="lbl">20% — Savings</div>
-        <div class="amt" id="savingsAmt">$0</div>
-        <div class="sub" id="savingsSub">Budget: —</div>
-      </div>
-    </div>
-
-    <!-- Progress Bars -->
-    <div class="card">
-      <h3><span class="icon-wrap"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg></span> Budget vs. Actual Spending</h3>
-      <div class="prog">
-        <div class="prog-head">
-          <span class="prog-label">Needs (50%)</span>
-          <span class="prog-vals" id="needsProg">$0 / $0</span>
-        </div>
-        <div class="prog-bar">
-          <div class="prog-fill fill-n" id="needsBar" style="width:0%">
-            <span class="prog-pct" id="needsPct"></span>
-          </div>
-        </div>
-      </div>
-      <div class="prog">
-        <div class="prog-head">
-          <span class="prog-label">Wants (30%)</span>
-          <span class="prog-vals" id="wantsProg">$0 / $0</span>
-        </div>
-        <div class="prog-bar">
-          <div class="prog-fill fill-w" id="wantsBar" style="width:0%">
-            <span class="prog-pct" id="wantsPct"></span>
-          </div>
-        </div>
-      </div>
-      <div class="prog">
-        <div class="prog-head">
-          <span class="prog-label">Savings (20%)</span>
-          <span class="prog-vals" id="savingsProg">$0 / $0</span>
-        </div>
-        <div class="prog-bar">
-          <div class="prog-fill fill-s" id="savingsBar" style="width:0%">
-            <span class="prog-pct" id="savingsPct"></span>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Donut Chart -->
-    <div class="card">
-      <h3><span class="icon-wrap"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.21 15.89A10 10 0 118 2.83"/><path d="M22 12A10 10 0 0012 2v10z"/></svg></span> Spending Breakdown</h3>
-      <div class="donut-wrap">
-        <svg class="donut-svg" viewBox="0 0 42 42" id="donutChart" role="img" aria-label="Spending breakdown donut chart">
-          <circle cx="21" cy="21" r="15.9" fill="none" stroke="var(--brd)" stroke-width="5.8" opacity=".65"/>
-          <circle id="donutNeeds" cx="21" cy="21" r="15.9" fill="none" stroke="var(--pri)" stroke-width="5.8" stroke-dasharray="0 100" stroke-dashoffset="25" stroke-linecap="butt"/>
-          <circle id="donutWants" cx="21" cy="21" r="15.9" fill="none" stroke="var(--acc)" stroke-width="5.8" stroke-dasharray="0 100" stroke-dashoffset="25" stroke-linecap="butt"/>
-          <circle id="donutSavings" cx="21" cy="21" r="15.9" fill="none" stroke="var(--suc)" stroke-width="5.8" stroke-dasharray="0 100" stroke-dashoffset="25" stroke-linecap="butt"/>
-          <text x="21" y="19.5" text-anchor="middle" font-size="4.2" font-weight="900" fill="var(--txt)" id="donutTotal">$0</text>
-          <text x="21" y="23.5" text-anchor="middle" font-size="2.2" fill="var(--txt2)" font-weight="600" letter-spacing=".8">TOTAL SPENT</text>
-        </svg>
-        <div class="donut-legend">
-          <div class="leg-item">
-            <div class="leg-dot" style="background:var(--pri)"></div>
-            <div class="leg-label">
-              <strong>Needs</strong>
-              <span id="legNeeds">$0 (0%)</span>
-            </div>
-          </div>
-          <div class="leg-item">
-            <div class="leg-dot" style="background:var(--acc)"></div>
-            <div class="leg-label">
-              <strong>Wants</strong>
-              <span id="legWants">$0 (0%)</span>
-            </div>
-          </div>
-          <div class="leg-item">
-            <div class="leg-dot" style="background:var(--suc)"></div>
-            <div class="leg-label">
-              <strong>Savings</strong>
-              <span id="legSavings">$0 (0%)</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Newsletter Lead Gen -->
-    <div class="card" id="dashNewsletter" style="border-left:4px solid var(--acc)">
-      <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
-        <div style="flex:1;min-width:200px">
-          <div style="font-size:14px;font-weight:800;color:var(--txt);margin-bottom:4px">Get Free Budget Tips & Templates</div>
-          <div style="font-size:12px;color:var(--txt2)">Join our newsletter — money tips, new tools, and exclusive templates. No spam ever.</div>
-        </div>
-        <div style="display:flex;gap:8px;flex-wrap:wrap;flex:1;min-width:200px" id="dashNlForm">
-          <input type="email" id="dashNlEmail" placeholder="your@email.com" style="flex:1;min-width:140px;padding:9px 14px;border:1.5px solid var(--brd);border-radius:10px;font-size:13px;font-family:inherit;outline:none;background:var(--input-bg);color:var(--txt);box-sizing:border-box">
-          <button class="btn btn-pri btn-sm" onclick="submitDashNewsletter()">Subscribe</button>
-        </div>
-        <div id="dashNlDone" style="display:none;font-size:13px;font-weight:700;color:var(--suc)">You're subscribed!</div>
-      </div>
-    </div>
-
-    <!-- Summary -->
-    <div class="summary-grid">
-      <div class="summary-card spent">
-        <div class="sc-label">Total Spent</div>
-        <div class="sc-val" id="totalSpent">$0.00</div>
-      </div>
-      <div class="summary-card remaining">
-        <div class="sc-label">Remaining</div>
-        <div class="sc-val" style="color:var(--suc)" id="totalRemaining">$0.00</div>
-      </div>
-    </div>
-
-    <!-- CTA -->
-    <div class="cta">
-      <h3>Want to See Your Full Year?</h3>
-      <p>This free app is for daily tracking. Export your data into the premium Annual Analysis Kit for 12-month trends, tax-ready summaries, net worth tracking, and printable reports.</p>
-      <a href="#annual-analysis-kit" class="btn-cta" onclick="openAnnualKitInfo(event)">
-        Get the Annual Analysis Kit — $9.99
-      </a>
-      <div class="cta-note">Coming soon: Google Sheets + Excel versions. Your exported app data imports directly.</div>
     </div>
 
   </div><!-- /dashMain -->
