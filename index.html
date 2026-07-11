@@ -486,12 +486,10 @@ input[type="number"]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0
   transition:transform .2s,box-shadow .2s;
 }
 .stat:hover{transform:translateY(-1px);box-shadow:var(--sh)}
-.stat::before{
-  content:'';position:absolute;top:0;left:18px;right:18px;height:2px;border-radius:2px;
-}
-.stat.needs::before{background:linear-gradient(90deg,var(--pri-d),var(--pri))}
-.stat.wants::before{background:linear-gradient(90deg,var(--acc),var(--acc))}
-.stat.savings::before{background:linear-gradient(90deg,var(--suc),var(--suc))}
+/* Replace ::before bar with border-top so it follows the card's border-radius uniformly */
+.stat.needs  { border-top:3px solid var(--pri) }
+.stat.wants  { border-top:3px solid var(--acc) }
+.stat.savings{ border-top:3px solid var(--suc) }
 .stat-icon{
   width:40px;height:40px;border-radius:10px;
   display:flex;align-items:center;justify-content:center;
@@ -1714,32 +1712,16 @@ footer .footer-links a:hover{color:var(--pri-d)}
   <div id="tab-dashboard" class="panel active">
   <div id="dashMain">
 
-    <!-- Pay Period bar -->
+    <!-- Pay Period bar (shown when Pay Period Mode is on) -->
     <div id="payPeriodBar" style="display:none"></div>
 
-    <!-- Budget Alert banners -->
-    <div id="budgetAlertContainer"></div>
-
-    <!-- Bills due soon -->
-    <div id="dashBillsContainer"></div>
-
-    <!-- ── Header: greeting + streak ── -->
-    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:16px">
-      <div style="min-width:0;flex:1">
-        <div class="greeting" id="greetingText"></div>
-        <div class="greeting-sub" id="greetingSub"></div>
-      </div>
-      <div class="streak-bar" id="streakBar" style="display:none;margin:0;padding:7px 13px;border-radius:20px;flex-shrink:0;align-self:flex-start">
-        <div class="streak-fire" id="streakIcon" aria-hidden="true"></div>
-        <div class="streak-info">
-          <div class="streak-count" id="streakCount">0-day streak</div>
-          <div class="streak-label" id="streakLabel">Keep tracking daily!</div>
-        </div>
-        <div class="streak-best" id="streakBest" style="display:none">Best: 0</div>
-      </div>
+    <!-- Greeting -->
+    <div id="greetingBar">
+      <div class="greeting" id="greetingText"></div>
+      <div class="greeting-sub" id="greetingSub"></div>
     </div>
 
-    <!-- Personalize card (shows once) -->
+    <!-- Personalize card (shows once for new users) -->
     <div class="personalize-card" id="personalizeCard" style="display:none">
       <h4>👋 What should we call you?</h4>
       <p>Your dashboard greeting — nothing is shared.</p>
@@ -1750,106 +1732,68 @@ footer .footer-links a:hover{color:var(--pri-d)}
       </div>
     </div>
 
-    <!-- ── Income row ── -->
-    <div class="card" style="padding:16px 20px;margin-bottom:14px">
-      <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
-        <div style="flex:1;min-width:0">
-          <div style="font-size:11px;font-weight:700;color:var(--txt2);text-transform:uppercase;letter-spacing:.8px;margin-bottom:2px">Monthly Take-Home Income</div>
-          <div style="font-size:11px;color:var(--txt2)">Enter your income — everything calculates automatically</div>
+    <!-- Income + bell -->
+    <!-- Income + bell — original .income-bar styling -->
+    <div class="income-bar">
+      <div class="income-label">
+        <label>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+          Monthly Take-Home Income
+        </label>
+        <p>Enter your income — everything calculates automatically</p>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px;flex-shrink:0">
+        <!-- Income display mode (shown when income is set) -->
+        <div id="incomeDisplay" style="display:none;flex-direction:column;align-items:flex-end;gap:2px">
+          <div style="font-size:26px;font-weight:900;color:var(--pri-d);letter-spacing:-.5px;line-height:1" id="incomeDisplayVal"></div>
+          <button onclick="switchToIncomeEdit()" style="font-size:10px;font-weight:700;color:var(--txt2);background:none;border:none;cursor:pointer;font-family:inherit;text-decoration:underline;padding:0">Edit income</button>
         </div>
-        <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
-          <div style="display:flex;align-items:center;gap:4px;background:var(--bg);border:1.5px solid var(--brd);border-radius:10px;padding:8px 12px">
-            <span style="font-size:16px;font-weight:700;color:var(--txt2)" id="incomeSymbol">$</span>
-            <input type="text" inputmode="decimal" id="incomeInput" placeholder="0" oninput="formatIncomeInput(this);updateDashboard()" autocomplete="off" style="background:none;border:none;outline:none;font-size:22px;font-weight:900;color:var(--txt);width:100px;font-family:inherit">
-            <div style="display:flex;flex-direction:column;gap:1px">
-              <button onclick="spinIncome(1)" style="background:none;border:none;color:var(--txt2);cursor:pointer;line-height:1;padding:1px" aria-label="Increase">▲</button>
-              <button onclick="spinIncome(-1)" style="background:none;border:none;color:var(--txt2);cursor:pointer;line-height:1;padding:1px" aria-label="Decrease">▼</button>
-            </div>
+        <!-- Income input mode (shown when no income yet) -->
+        <div id="incomeInputWrap" class="income-input-wrap">
+          <span class="currency" id="incomeSymbol">$</span>
+          <input type="text" inputmode="decimal" id="incomeInput" placeholder="5,000" oninput="formatIncomeInput(this);updateDashboard()" onblur="onIncomeBlur()" autocomplete="off">
+          <div class="income-spin">
+            <button class="spin-btn spin-up" onclick="spinIncome(1)" aria-label="Increase">▲</button>
+            <button class="spin-btn spin-down" onclick="spinIncome(-1)" aria-label="Decrease">▼</button>
           </div>
-          <div class="feed-bell" id="feedBellBtn" onclick="toggleFeedBell()" title="The Budget Brief" style="display:none">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
-            <span class="feed-bell-badge" id="feedBellBadge"></span>
-            <div class="feed-bell-dropdown" id="feedBellDropdown" onclick="event.stopPropagation()">
-              <div class="fbd-head">
-                <span>Budget Brief</span>
-                <button onclick="markAllFromBell()" id="bellMarkAllBtn">Mark all read</button>
-              </div>
-              <div class="feed-dd-list" id="feedBellList"></div>
+        </div>
+        <!-- Bell — outside any overflow-clipped container -->
+        <div class="feed-bell" id="feedBellBtn" onclick="toggleFeedBell()" title="Notifications" style="display:flex;position:relative">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+          <span class="feed-bell-badge" id="feedBellBadge"></span>
+          <div class="feed-bell-dropdown" id="feedBellDropdown" onclick="event.stopPropagation()">
+            <div class="fbd-head">
+              <button onclick="markAllFromBell()" id="bellMarkAllBtn">Mark all read</button>
+            </div>
+            <!-- Budget alerts injected here -->
+            <div id="budgetAlertContainer" style="padding:4px 8px 0"></div>
+            <!-- Articles section label (only shown when there are alerts above) -->
+            <div id="bellArticlesLabel" style="display:none;font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:var(--txt2);padding:8px 10px 4px">Articles &amp; Updates</div>
+            <div class="feed-dd-list" id="feedBellList"></div>
+            <!-- See all footer -->
+            <div class="feed-dd-footer">
+              <button onclick="closeFeedBell();scrollToFeedSection()">See all articles →</button>
             </div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- ── Main budget card: amounts + progress + donut + totals ── -->
-    <div class="card" style="margin-bottom:14px">
-      <!-- 3 category amounts -->
-      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px">
-        <div style="text-align:center;padding:10px 8px;border-radius:10px;background:var(--bg)">
-          <div style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--pri-d);margin-bottom:4px">Needs · 50%</div>
-          <div style="font-size:20px;font-weight:900;color:var(--txt);letter-spacing:-.5px;line-height:1" id="needsAmt">$0</div>
-          <div style="font-size:10px;color:var(--txt2);margin-top:3px" id="needsSub">Budget: —</div>
-        </div>
-        <div style="text-align:center;padding:10px 8px;border-radius:10px;background:var(--bg)">
-          <div style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--acc);margin-bottom:4px">Wants · 30%</div>
-          <div style="font-size:20px;font-weight:900;color:var(--txt);letter-spacing:-.5px;line-height:1" id="wantsAmt">$0</div>
-          <div style="font-size:10px;color:var(--txt2);margin-top:3px" id="wantsSub">Budget: —</div>
-        </div>
-        <div style="text-align:center;padding:10px 8px;border-radius:10px;background:var(--bg)">
-          <div style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--suc);margin-bottom:4px">Savings · 20%</div>
-          <div style="font-size:20px;font-weight:900;color:var(--txt);letter-spacing:-.5px;line-height:1" id="savingsAmt">$0</div>
-          <div style="font-size:10px;color:var(--txt2);margin-top:3px" id="savingsSub">Budget: —</div>
-        </div>
+    <!-- Streak bar -->
+    <div class="streak-bar" id="streakBar" style="display:none">
+      <div class="streak-fire" id="streakIcon" aria-hidden="true"></div>
+      <div class="streak-info">
+        <div class="streak-count" id="streakCount">0-day streak</div>
+        <div class="streak-label" id="streakLabel">Keep tracking daily!</div>
       </div>
-
-      <!-- Progress bars -->
-      <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:18px">
-        <div class="prog">
-          <div class="prog-head"><span class="prog-label">Needs</span><span class="prog-vals" id="needsProg">$0 / $0</span></div>
-          <div class="prog-bar"><div class="prog-fill fill-n" id="needsBar" style="width:0%"><span class="prog-pct" id="needsPct"></span></div></div>
-        </div>
-        <div class="prog">
-          <div class="prog-head"><span class="prog-label">Wants</span><span class="prog-vals" id="wantsProg">$0 / $0</span></div>
-          <div class="prog-bar"><div class="prog-fill fill-w" id="wantsBar" style="width:0%"><span class="prog-pct" id="wantsPct"></span></div></div>
-        </div>
-        <div class="prog">
-          <div class="prog-head"><span class="prog-label">Savings</span><span class="prog-vals" id="savingsProg">$0 / $0</span></div>
-          <div class="prog-bar"><div class="prog-fill fill-s" id="savingsBar" style="width:0%"><span class="prog-pct" id="savingsPct"></span></div></div>
-        </div>
-      </div>
-
-      <!-- Donut + totals -->
-      <div style="display:flex;align-items:center;gap:20px;flex-wrap:wrap;border-top:1px solid var(--brd);padding-top:16px">
-        <div class="donut-wrap" style="flex-shrink:0">
-          <svg class="donut-svg" viewBox="0 0 42 42" id="donutChart" role="img" aria-label="Spending breakdown">
-            <circle cx="21" cy="21" r="15.9" fill="none" stroke="var(--brd)" stroke-width="5.8" opacity=".65"/>
-            <circle id="donutNeeds"   cx="21" cy="21" r="15.9" fill="none" stroke="var(--pri)" stroke-width="5.8" stroke-dasharray="0 100" stroke-dashoffset="25" stroke-linecap="butt"/>
-            <circle id="donutWants"   cx="21" cy="21" r="15.9" fill="none" stroke="var(--acc)" stroke-width="5.8" stroke-dasharray="0 100" stroke-dashoffset="25" stroke-linecap="butt"/>
-            <circle id="donutSavings" cx="21" cy="21" r="15.9" fill="none" stroke="var(--suc)" stroke-width="5.8" stroke-dasharray="0 100" stroke-dashoffset="25" stroke-linecap="butt"/>
-            <text x="21" y="19.5" text-anchor="middle" font-size="4.2" font-weight="900" fill="var(--txt)" id="donutTotal">$0</text>
-            <text x="21" y="23.5" text-anchor="middle" font-size="2.2" fill="var(--txt2)" font-weight="600" letter-spacing=".8">SPENT</text>
-          </svg>
-          <div class="donut-legend">
-            <div class="leg-item"><div class="leg-dot" style="background:var(--pri)"></div><div class="leg-label"><strong>Needs</strong><span id="legNeeds">$0 (0%)</span></div></div>
-            <div class="leg-item"><div class="leg-dot" style="background:var(--acc)"></div><div class="leg-label"><strong>Wants</strong><span id="legWants">$0 (0%)</span></div></div>
-            <div class="leg-item"><div class="leg-dot" style="background:var(--suc)"></div><div class="leg-label"><strong>Savings</strong><span id="legSavings">$0 (0%)</span></div></div>
-          </div>
-        </div>
-        <div style="flex:1;min-width:120px;display:flex;flex-direction:column;gap:14px">
-          <div>
-            <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--txt2);margin-bottom:3px">Total Spent</div>
-            <div style="font-size:26px;font-weight:900;color:var(--txt);letter-spacing:-.5px" id="totalSpent">$0</div>
-          </div>
-          <div>
-            <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--txt2);margin-bottom:3px">Remaining</div>
-            <div style="font-size:26px;font-weight:900;letter-spacing:-.5px;color:var(--suc)" id="totalRemaining">$0</div>
-          </div>
-        </div>
-      </div>
+      <div class="streak-best" id="streakBest" style="display:none">Best: 0</div>
     </div>
 
-    <!-- ── Insights (collapsed by default) ── -->
-    <div id="insightsCard" class="card" style="display:none;margin-bottom:14px">
+    <!-- Bills due soon -->
+    <div id="dashBillsContainer"></div>
+
+    <!-- Smart Insights -->
+    <div id="insightsCard" class="card" style="display:none">
       <div class="insights-head">
         <h3><span class="icon-wrap"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></span> Insights</h3>
         <div class="insights-actions">
@@ -1860,6 +1804,132 @@ footer .footer-links a:hover{color:var(--pri-d)}
         </div>
       </div>
       <div id="insightsList"></div>
+    </div>
+
+    <!-- Stat Cards -->
+    <div class="stats">
+      <div class="stat needs">
+        <div class="stat-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
+        <div class="lbl">50% — Needs</div>
+        <div class="amt" id="needsAmt">$0</div>
+        <div class="sub" id="needsSub">Budget: —</div>
+      </div>
+      <div class="stat wants">
+        <div class="stat-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg></div>
+        <div class="lbl">30% — Wants</div>
+        <div class="amt" id="wantsAmt">$0</div>
+        <div class="sub" id="wantsSub">Budget: —</div>
+      </div>
+      <div class="stat savings">
+        <div class="stat-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></div>
+        <div class="lbl">20% — Savings</div>
+        <div class="amt" id="savingsAmt">$0</div>
+        <div class="sub" id="savingsSub">Budget: —</div>
+      </div>
+    </div>
+
+    <!-- Progress Bars -->
+    <div class="card">
+      <h3><span class="icon-wrap"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg></span> Budget vs. Actual Spending</h3>
+      <div class="prog">
+        <div class="prog-head">
+          <span class="prog-label">Needs (50%)</span>
+          <span class="prog-vals" id="needsProg">$0 / $0</span>
+        </div>
+        <div class="prog-bar">
+          <div class="prog-fill fill-n" id="needsBar" style="width:0%">
+            <span class="prog-pct" id="needsPct"></span>
+          </div>
+        </div>
+      </div>
+      <div class="prog">
+        <div class="prog-head">
+          <span class="prog-label">Wants (30%)</span>
+          <span class="prog-vals" id="wantsProg">$0 / $0</span>
+        </div>
+        <div class="prog-bar">
+          <div class="prog-fill fill-w" id="wantsBar" style="width:0%">
+            <span class="prog-pct" id="wantsPct"></span>
+          </div>
+        </div>
+      </div>
+      <div class="prog">
+        <div class="prog-head">
+          <span class="prog-label">Savings (20%)</span>
+          <span class="prog-vals" id="savingsProg">$0 / $0</span>
+        </div>
+        <div class="prog-bar">
+          <div class="prog-fill fill-s" id="savingsBar" style="width:0%">
+            <span class="prog-pct" id="savingsPct"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Donut Chart -->
+    <div class="card">
+      <h3><span class="icon-wrap"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.21 15.89A10 10 0 118 2.83"/><path d="M22 12A10 10 0 0012 2v10z"/></svg></span> Spending Breakdown</h3>
+      <div class="donut-wrap">
+        <svg class="donut-svg" viewBox="0 0 42 42" id="donutChart" role="img" aria-label="Spending breakdown donut chart">
+          <circle cx="21" cy="21" r="15.9" fill="none" stroke="var(--brd)" stroke-width="5.8" opacity=".65"/>
+          <circle id="donutNeeds" cx="21" cy="21" r="15.9" fill="none" stroke="var(--pri)" stroke-width="5.8" stroke-dasharray="0 100" stroke-dashoffset="25" stroke-linecap="butt"/>
+          <circle id="donutWants" cx="21" cy="21" r="15.9" fill="none" stroke="var(--acc)" stroke-width="5.8" stroke-dasharray="0 100" stroke-dashoffset="25" stroke-linecap="butt"/>
+          <circle id="donutSavings" cx="21" cy="21" r="15.9" fill="none" stroke="var(--suc)" stroke-width="5.8" stroke-dasharray="0 100" stroke-dashoffset="25" stroke-linecap="butt"/>
+          <text x="21" y="19.5" text-anchor="middle" font-size="4.2" font-weight="900" fill="var(--txt)" id="donutTotal">$0</text>
+          <text x="21" y="23.5" text-anchor="middle" font-size="2.2" fill="var(--txt2)" font-weight="600" letter-spacing=".8">TOTAL SPENT</text>
+        </svg>
+        <div class="donut-legend">
+          <div class="leg-item">
+            <div class="leg-dot" style="background:var(--pri)"></div>
+            <div class="leg-label"><strong>Needs</strong><span id="legNeeds">$0 (0%)</span></div>
+          </div>
+          <div class="leg-item">
+            <div class="leg-dot" style="background:var(--acc)"></div>
+            <div class="leg-label"><strong>Wants</strong><span id="legWants">$0 (0%)</span></div>
+          </div>
+          <div class="leg-item">
+            <div class="leg-dot" style="background:var(--suc)"></div>
+            <div class="leg-label"><strong>Savings</strong><span id="legSavings">$0 (0%)</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Summary -->
+    <div class="summary-grid">
+      <div class="summary-card spent">
+        <div class="sc-label">Total Spent</div>
+        <div class="sc-val" id="totalSpent">$0.00</div>
+      </div>
+      <div class="summary-card remaining">
+        <div class="sc-label">Remaining</div>
+        <div class="sc-val" style="color:var(--suc)" id="totalRemaining">$0.00</div>
+      </div>
+    </div>
+
+    <!-- Newsletter -->
+    <div class="card" id="dashNewsletter" style="border-left:4px solid var(--acc)">
+      <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+        <div style="flex:1;min-width:200px">
+          <div style="font-size:14px;font-weight:800;color:var(--txt);margin-bottom:4px">Get Free Budget Tips &amp; Templates</div>
+          <div style="font-size:12px;color:var(--txt2)">Join our newsletter — money tips, new tools, and exclusive templates. No spam ever.</div>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;flex:1;min-width:200px" id="dashNlForm">
+          <input type="email" id="dashNlEmail" placeholder="your@email.com" style="flex:1;min-width:140px;padding:9px 14px;border:1.5px solid var(--brd);border-radius:10px;font-size:13px;font-family:inherit;outline:none;background:var(--input-bg);color:var(--txt);box-sizing:border-box">
+          <button class="btn btn-pri btn-sm" onclick="submitDashNewsletter()">Subscribe</button>
+        </div>
+        <div id="dashNlDone" style="display:none;font-size:13px;font-weight:700;color:var(--suc)">You're subscribed! ✓</div>
+      </div>
+    </div>
+
+    <!-- Annual Analysis CTA -->
+    <div class="cta">
+      <h3>Want to See Your Full Year?</h3>
+      <p>This free app is for daily tracking. Export your data into the premium Annual Analysis Kit for 12-month trends, tax-ready summaries, net worth tracking, and printable reports.</p>
+      <a href="#annual-analysis-kit" class="btn-cta" onclick="openAnnualKitInfo(event)">
+        Get the Annual Analysis Kit — $9.99
+      </a>
+      <div class="cta-note">Coming soon: Google Sheets + Excel versions. Your exported app data imports directly.</div>
     </div>
 
   </div><!-- /dashMain -->
@@ -2456,6 +2526,21 @@ footer .footer-links a:hover{color:var(--pri-d)}
       </div>
       <div class="accordion-body"><div class="accordion-content">
         <!-- Version info -->
+        <!-- Monthly Income (edit here once set on dashboard) -->
+        <div class="section-label" style="margin-bottom:6px">Monthly Income</div>
+        <div style="display:flex;gap:8px;align-items:center;margin-bottom:16px;flex-wrap:wrap">
+          <div class="income-input-wrap" style="flex:1;max-width:260px">
+            <span class="currency" id="incomeSymbolSettings">$</span>
+            <input type="text" inputmode="decimal" id="incomeInputSettings" placeholder="5,000"
+              oninput="formatIncomeSettingsInput(this)"
+              onblur="saveIncomeFromSettings()"
+              onkeydown="if(event.key==='Enter'){event.preventDefault();saveIncomeFromSettings()}"
+              style="width:100%"
+              autocomplete="off">
+          </div>
+          <span id="incomeSettingsSaved" style="display:none;font-size:12px;font-weight:700;color:var(--suc)">Saved!</span>
+        </div>
+
         <!-- My Keywords -->
         <div class="section-label" style="margin-bottom:8px">My Keywords</div>
         <p style="font-size:12px;color:var(--txt2);margin:0 0 10px">The app learns your category preferences automatically. Every time you correct a suggestion, it remembers for next time — even offline.</p>
@@ -3352,35 +3437,34 @@ function loadBudgetAlertSettings() {
 
 function checkBudgetAlerts() {
   const container = document.getElementById("budgetAlertContainer");
+  const bellBtn   = document.getElementById("feedBellBtn");
+  const bellBadge = document.getElementById("feedBellBadge");
   if (!container) return;
+
   const enabled = localStorage.getItem("bt_alert_enabled") !== "0";
-  if (!enabled) { container.innerHTML = ""; return; }
+  if (!enabled) { container.innerHTML = ""; _updateBellVisibility(); return; }
 
   const threshold = parseInt(localStorage.getItem("bt_alert_threshold") || "80") / 100;
-  const data      = getData();
-  const income    = data.income || 0;
-  if (!income) { container.innerHTML = ""; return; }
+  const data = getData();
+  const income = data.income || 0;
+  if (!income) { container.innerHTML = ""; _updateBellVisibility(); return; }
 
-  const budgets = {
-    Needs:   income * 0.5,
-    Wants:   income * 0.3,
-    Savings: income * 0.2
-  };
-  const spent = { Needs: 0, Wants: 0, Savings: 0 };
+  const budgets = { Needs: income*0.5, Wants: income*0.3, Savings: income*0.2 };
+  const spent   = { Needs:0, Wants:0, Savings:0 };
   data.expenses.forEach(e => { if (spent[e.cat] !== undefined) spent[e.cat] += e.amt; });
 
   const alerts = [];
   ["Needs","Wants","Savings"].forEach(cat => {
     const pct = budgets[cat] > 0 ? spent[cat] / budgets[cat] : 0;
     if (pct >= 1) {
-      alerts.push({ cat, pct, type: "over",
-        title: `${cat} budget exceeded`,
-        sub:   `You've spent ${fmt(spent[cat])} of your ${fmt(budgets[cat])} ${cat.toLowerCase()} budget (${Math.round(pct*100)}%).`
+      alerts.push({ cat, pct, type:"over",
+        title: cat + " budget exceeded",
+        sub:   "Spent " + fmt(spent[cat]) + " of " + fmt(budgets[cat]) + " (" + Math.round(pct*100) + "%)"
       });
     } else if (pct >= threshold) {
-      alerts.push({ cat, pct, type: "warn",
-        title: `${cat} budget at ${Math.round(pct*100)}%`,
-        sub:   `${fmt(budgets[cat] - spent[cat])} remaining in your ${cat.toLowerCase()} budget.`
+      alerts.push({ cat, pct, type:"warn",
+        title: cat + " budget at " + Math.round(pct*100) + "%",
+        sub:   fmt(budgets[cat] - spent[cat]) + " remaining"
       });
     }
   });
@@ -3388,23 +3472,57 @@ function checkBudgetAlerts() {
   const dismissedKey = "bt_alert_dismissed_" + _periodKey(new Date());
   let dismissed = [];
   try { dismissed = JSON.parse(localStorage.getItem(dismissedKey) || "[]"); } catch(e) {}
-
   const visible = alerts.filter(a => !dismissed.includes(a.cat));
-  if (!visible.length) { container.innerHTML = ""; return; }
 
-  const warnIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>`;
-  const closeBtn = (cat) => `<button class="ba-close" onclick="_dismissAlert('${cat}')" aria-label="Dismiss">${'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>'}</button>`;
+  const labelEl = document.getElementById("bellArticlesLabel");
+  if (!visible.length) {
+    container.innerHTML = "";
+    if (labelEl) labelEl.style.display = "none";
+    _updateBellVisibility();
+    return;
+  }
+  // Show "Articles & Updates" separator only when alerts are present above it
+  if (labelEl) labelEl.style.display = "block";
+
+  // Render as compact notification rows inside the bell dropdown
+  const warnSvg = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>`;
 
   container.innerHTML = visible.map(a => `
-    <div class="budget-alert-bar ${a.type}" id="alert_${a.cat}">
-      <div class="ba-icon">${warnIcon}</div>
-      <div class="ba-body">
-        <div class="ba-title">${a.title}</div>
-        <div class="ba-sub">${a.sub}</div>
+    <div id="alert_${a.cat}" style="display:flex;align-items:flex-start;gap:8px;padding:9px 10px;margin-bottom:4px;background:${a.type==="over"?"var(--dan-l)":"var(--acc-l)"};border-radius:10px;border-left:3px solid ${a.type==="over"?"var(--dan)":"var(--acc)"}">
+      <span style="color:${a.type==="over"?"var(--dan)":"var(--acc)"};flex-shrink:0;margin-top:1px">${warnSvg}</span>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:12px;font-weight:700;color:var(--txt)">${a.title}</div>
+        <div style="font-size:11px;color:var(--txt2);margin-top:1px">${a.sub}</div>
       </div>
-      ${closeBtn(a.cat)}
+      <button onclick="_dismissAlert('${a.cat}')" style="background:none;border:none;color:var(--txt2);cursor:pointer;font-size:16px;line-height:1;padding:0;flex-shrink:0" title="Dismiss">×</button>
     </div>
   `).join("");
+
+  // Show bell with red badge for budget alerts
+  _updateBellVisibility(visible.length);
+}
+
+function _updateBellVisibility(alertCount) {
+  const btn   = document.getElementById("feedBellBtn");
+  const badge = document.getElementById("feedBellBadge");
+  if (!btn) return;
+  btn.style.display = "flex"; // always show bell
+  // Badge: red number for alerts, or the existing unread article count
+  const articleBadge = badge?.dataset.articles || "0";
+  const total = (alertCount || 0) + parseInt(articleBadge);
+  if (badge) {
+    if (alertCount > 0) {
+      badge.textContent = alertCount;
+      badge.style.background = "var(--dan)";
+      badge.style.display = "flex";
+    } else if (parseInt(articleBadge) > 0) {
+      badge.textContent = articleBadge;
+      badge.style.background = "";
+      badge.style.display = "flex";
+    } else {
+      badge.style.display = "none";
+    }
+  }
 }
 
 function _dismissAlert(cat) {
@@ -3415,6 +3533,9 @@ function _dismissAlert(cat) {
   localStorage.setItem(key, JSON.stringify(dismissed));
   const el = document.getElementById("alert_" + cat);
   if (el) el.remove();
+  // Recount visible alerts
+  const remaining = document.querySelectorAll("#budgetAlertContainer [id^='alert_']").length - 1;
+  _updateBellVisibility(Math.max(0, remaining));
 }
 
 // ══════════════════════════════════════════════════════════
@@ -3928,10 +4049,13 @@ function setCurrency(sym) {
 }
 function loadCurrency() {
   const sym = getCurrency();
-  const el = document.querySelector(".income-input-wrap .currency");
-  if (el) el.textContent = sym;
+  // Update all currency symbols
+  document.querySelectorAll(".currency, #incomeSymbol, #incomeSymbolSettings").forEach(el => { if (el) el.textContent = sym; });
   const sel = document.getElementById("currencySelect");
   if (sel) sel.value = sym;
+  // Refresh income display value with new currency symbol
+  const val = parseIncome();
+  if (val > 0) setIncomeDisplay(val);
 }
 // Non-breaking space between symbol and number so the ₱ never orphans onto its own line
 const fmt = n => getCurrency() + "\u00A0" + Math.abs(n).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
@@ -4668,9 +4792,74 @@ function parseIncome() {
 }
 
 function setIncomeDisplay(val) {
-  const el = document.getElementById("incomeInput");
-  if (!val) { el.value = ""; return; }
-  el.value = Number(val).toLocaleString("en-US");
+  const input   = document.getElementById("incomeInput");
+  const display = document.getElementById("incomeDisplay");
+  const dispVal = document.getElementById("incomeDisplayVal");
+  const inputWrap = document.getElementById("incomeInputWrap");
+
+  if (val && val > 0) {
+    // Show formatted display, hide input
+    if (input) input.value = Number(val).toLocaleString("en-US");
+    if (dispVal) dispVal.textContent = getCurrency() + "\u00A0" + Number(val).toLocaleString("en-US", {minimumFractionDigits:0, maximumFractionDigits:0});
+    if (display) display.style.display = "flex";
+    if (inputWrap) inputWrap.style.display = "none";
+  } else {
+    // No income yet — show input
+    if (input) input.value = "";
+    if (display) display.style.display = "none";
+    if (inputWrap) inputWrap.style.display = "flex";
+  }
+
+  // Sync Settings income field
+  const settingsInput = document.getElementById("incomeInputSettings");
+  const settingsSym   = document.getElementById("incomeSymbolSettings");
+  if (settingsInput && val > 0) settingsInput.value = Number(val).toLocaleString("en-US");
+  if (settingsSym) settingsSym.textContent = getCurrency();
+}
+
+// Called when user clicks "Edit income" link — switches back to input mode
+function switchToIncomeEdit() {
+  const display   = document.getElementById("incomeDisplay");
+  const inputWrap = document.getElementById("incomeInputWrap");
+  const input     = document.getElementById("incomeInput");
+  if (display) display.style.display = "none";
+  if (inputWrap) inputWrap.style.display = "flex";
+  if (input) { input.focus(); input.select(); }
+}
+
+// Called when income input loses focus — lock it into display mode
+function onIncomeBlur() {
+  const val = parseIncome();
+  if (val > 0) setIncomeDisplay(val);
+}
+
+// Settings income field
+function formatIncomeSettingsInput(el) {
+  const pos = el.selectionStart;
+  const oldLen = el.value.length;
+  let raw = el.value.replace(/[^0-9.]/g, "");
+  const parts = raw.split(".");
+  if (parts.length > 2) raw = parts[0] + "." + parts.slice(1).join("");
+  if (raw) {
+    const [whole, dec] = raw.split(".");
+    const formatted = whole.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    el.value = dec !== undefined ? formatted + "." + dec : formatted;
+  }
+  const newLen = el.value.length;
+  el.setSelectionRange(pos + (newLen - oldLen), pos + (newLen - oldLen));
+}
+
+function saveIncomeFromSettings() {
+  const el  = document.getElementById("incomeInputSettings");
+  const msg = document.getElementById("incomeSettingsSaved");
+  if (!el) return;
+  const val = parseFloat(el.value.replace(/,/g, "")) || 0;
+  // Update the main income input and trigger dashboard update
+  const mainInput = document.getElementById("incomeInput");
+  if (mainInput) mainInput.value = Number(val).toLocaleString("en-US");
+  updateDashboard();
+  setIncomeDisplay(val);
+  if (msg) { msg.style.display = "inline"; setTimeout(() => { msg.style.display = "none"; }, 2000); }
 }
 
 function spinIncome(dir) {
@@ -6151,12 +6340,14 @@ function renderBellDropdown(posts) {
   const markBtn = document.getElementById("bellMarkAllBtn");
   if (!bellBtn || !list) return;
 
+  // Bell is always visible (alerts may be in it even with no posts)
+  bellBtn.style.display = "flex";
+
   if (!posts || posts.length === 0) {
-    bellBtn.style.display = "none";
+    list.innerHTML = '<div class="feed-dd-empty">No articles yet — check back soon!</div>';
     return;
   }
 
-  bellBtn.style.display = "flex";
   const readIds = getReadPosts();
 
   // Sort: pinned first, then newest first (date descending)
@@ -6169,13 +6360,19 @@ function renderBellDropdown(posts) {
   const show = sorted.slice(0, 8);
   const unreadCount = posts.filter(p => !readIds.includes(p.id)).length;
 
-  // Update badge
-  if (unreadCount > 0) {
-    badge.textContent = unreadCount > 9 ? "9+" : unreadCount;
-    badge.style.display = "flex";
-  } else {
-    badge.textContent = "";
-    badge.style.display = "none";
+  // Store article unread count so budget alert badge can combine with it
+  if (badge) badge.dataset.articles = String(unreadCount);
+  // Only update badge if no budget alerts are overriding it
+  const alertCount = document.querySelectorAll("#budgetAlertContainer [id^='alert_']").length;
+  if (alertCount === 0) {
+    if (unreadCount > 0) {
+      badge.textContent = unreadCount > 9 ? "9+" : unreadCount;
+      badge.style.background = "";
+      badge.style.display = "flex";
+    } else {
+      badge.textContent = "";
+      badge.style.display = "none";
+    }
   }
 
   // Update mark all button
