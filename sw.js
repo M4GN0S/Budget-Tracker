@@ -9,9 +9,9 @@
 //   The browser detects the SW file changed → downloads new version → updates cache.
 //   You don't need to manually bump version numbers anymore.
 //
-// Last updated: 2026-06-29
+// Last updated: 2026-07-11
 
-const CACHE_NAME = 'budget-tracker-v44';
+const CACHE_NAME = 'budget-tracker-v49';
 const ASSETS = [
   './',
   './index.html',
