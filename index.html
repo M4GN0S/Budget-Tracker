@@ -680,6 +680,7 @@ tbody tr:hover td{background:var(--pri-l)}
   border:none;cursor:pointer;opacity:0;transition:.2s;
 }
 .qa-custom:hover .qa-remove{opacity:1}
+@media(hover:none){.qa-custom .qa-remove{opacity:.7}}
 
 /* ─── CTA Banner ─── */
 .cta{
@@ -1553,6 +1554,43 @@ tbody tr:hover td{background:var(--pri-l)}
   .article-comment-panel{padding:7px 18px calc(7px + env(safe-area-inset-bottom,0px))}
 }
 
+/* ─── Floating Action Button (mobile only — above bottom nav) ─── */
+.page-fab{
+  display:none; /* desktop: hidden */
+}
+@media(max-width:900px){
+  .page-fab{
+    display:flex;align-items:center;gap:8px;
+    position:fixed;
+    bottom:calc(92px + env(safe-area-inset-bottom, 0px));
+    right:16px;
+    z-index:850;
+    padding:12px 20px;
+    border-radius:24px;
+    background:var(--pri);
+    color:var(--on-pri);
+    font-size:14px;font-weight:800;font-family:inherit;
+    border:none;cursor:pointer;
+    box-shadow:0 6px 20px rgba(74,122,107,.45);
+    transition:.2s;
+    white-space:nowrap;
+  }
+  .page-fab:hover{filter:brightness(1.08)}
+  .page-fab:active{transform:scale(.96)}
+  /* Hide the inline header button on mobile — FAB replaces it */
+  .inline-action-btn{display:none !important}
+}
+
+/* Expense modal — same style as journal compose */
+#expenseOverlay{position:fixed;inset:0;z-index:1000;display:none;flex-direction:column;background:var(--bg)}
+#expenseOverlay.show{display:flex}
+.exp-modal{background:var(--card);width:100%;flex:1;overflow-y:auto;display:flex;flex-direction:column;animation:fadeUp .25s ease}
+/* Desktop: centered card */
+@media(min-width:641px){
+  #expenseOverlay{align-items:center;justify-content:center;background:rgba(0,0,0,.55);backdrop-filter:blur(4px)}
+  .exp-modal{border-radius:18px;max-width:560px;flex:none;box-shadow:0 20px 60px rgba(0,0,0,.25);max-height:90dvh;overflow-y:auto}
+}
+
 /* ─── Section Divider ─── */
 .section-label{
   font-size:10px;font-weight:700;text-transform:uppercase;
@@ -2002,107 +2040,76 @@ footer .footer-links a:hover{color:var(--pri-d)}
   <!-- ─────────────────────────────────────── -->
   <div id="tab-expenses" class="panel">
 
-    <div class="card">
-      <h3><span class="icon-wrap"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></span> Add New Expense</h3>
-      <div style="height:16px"></div>
-      <div class="add-form" id="expenseForm">
-        <div class="fg">
-          <label>Date</label>
-          <input type="date" id="expDate">
+    <!-- Expenses header: title + Add button (desktop/tablet) -->
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:10px">
+      <div>
+        <div style="font-size:17px;font-weight:900;color:var(--txt);letter-spacing:-.3px;display:flex;align-items:center;gap:8px">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          Add Expense
         </div>
-        <div class="fg">
-          <label>Description</label>
-          <input type="text" id="expDesc" placeholder="e.g. Groceries at Costco" oninput="onExpenseDescInput()">
-        </div>
-        <div class="fg">
-          <label>Category</label>
-          <select id="expCat" onchange="markExpCatManual();updateSubcategories()">
-            <option value="Needs">Needs</option>
-            <option value="Wants">Wants</option>
-            <option value="Savings">Savings</option>
-          </select>
-        </div>
-        <div class="fg">
-          <label>Sub-Category</label>
-          <select id="expSub" onchange="markExpCatManual()">
-            <optgroup label="Needs">
-              <option>Rent/Mortgage</option><option>Groceries</option>
-              <option>Utilities</option><option>Transportation</option>
-              <option>Insurance</option><option>Healthcare</option><option>Phone</option>
-            </optgroup>
-            <optgroup label="Wants">
-              <option>Dining Out</option><option>Entertainment</option>
-              <option>Shopping</option><option>Subscriptions</option>
-              <option>Hobbies</option><option>Travel</option><option>Gym</option>
-            </optgroup>
-            <optgroup label="Savings">
-              <option>Emergency Fund</option><option>Investments</option>
-              <option>Savings Goal</option><option>Debt Payment</option>
-            </optgroup>
-          </select>
-        </div>
-        <div class="fg">
-          <label>Amount ($)</label>
-          <input type="number" id="expAmt" placeholder="0.00" step="0.01" min="0">
-        </div>
-        <div class="fg" style="grid-column:1/-1;display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding-top:2px">
-          <label style="display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--txt2);cursor:pointer;font-weight:600;white-space:nowrap">
-            <input type="checkbox" id="expRecurring" onchange="toggleRecurringFreq()">
-            Repeat this expense
-          </label>
-          <select id="expRecurFreq" style="display:none;padding:5px 10px;border:1.5px solid var(--brd);border-radius:8px;font-size:12px;font-family:inherit;background:var(--bg);color:var(--txt);outline:none;cursor:pointer">
-            <option value="monthly">Every month</option>
-            <option value="weekly">Every week</option>
-            <option value="fortnightly">Every 2 weeks</option>
-            <option value="yearly">Every year</option>
-          </select>
-          <div style="flex:1"></div>
-          <button class="btn btn-pri" onclick="addExpense()" style="padding:10px 24px;font-size:13px;font-weight:700;border-radius:10px">+ Add Expense</button>
-        </div>
+        <div style="font-size:11px;color:var(--txt2);margin-top:2px">Use Quick Add below or tap + to log a custom expense</div>
       </div>
-      <div class="exp-cat-hint" id="expCatHint" style="display:none"></div>
+      <button class="btn btn-pri inline-action-btn" onclick="openExpenseModal()" style="display:flex;align-items:center;gap:7px;padding:10px 18px;border-radius:12px;font-size:13px;font-weight:700;white-space:nowrap">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        + Add Expense
+      </button>
     </div>
 
-    <!-- Quick Add -->
+        <!-- Quick Add -->
     <div class="card">
       <h3><span class="icon-wrap"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></span> Quick Add</h3>
       <div id="quickAddList">
         <div style="margin-bottom:10px">
           <div class="section-label">Needs</div>
           <div style="display:flex;flex-wrap:wrap;gap:6px" id="quickNeeds">
-            <button class="quick-pill" onclick="quickAdd('Rent/Mortgage','Needs')">Rent</button>
-            <button class="quick-pill" onclick="quickAdd('Groceries','Needs')">Groceries</button>
-            <button class="quick-pill" onclick="quickAdd('Transportation','Needs')">Gas/Transit</button>
-            <button class="quick-pill" onclick="quickAdd('Utilities','Needs')">Utilities</button>
-            <button class="quick-pill" onclick="quickAdd('Healthcare','Needs')">Healthcare</button>
+            <button class="quick-pill" onclick="quickAdd('Rent/Mortgage','Rent/Mortgage','Needs')">Rent</button>
+            <button class="quick-pill" onclick="quickAdd('Groceries','Groceries','Needs')">Groceries</button>
+            <button class="quick-pill" onclick="quickAdd('Transportation','Transportation','Needs')">Gas/Transit</button>
+            <button class="quick-pill" onclick="quickAdd('Utilities','Utilities','Needs')">Utilities</button>
+            <button class="quick-pill" onclick="quickAdd('Healthcare','Healthcare','Needs')">Healthcare</button>
             <button class="quick-pill qa-add-btn" onclick="showInlineAdd('Needs')" title="Add custom">＋</button>
           </div>
         </div>
         <div style="margin-bottom:10px">
           <div class="section-label">Wants</div>
           <div style="display:flex;flex-wrap:wrap;gap:6px" id="quickWants">
-            <button class="quick-pill" onclick="quickAdd('Dining Out','Wants')">Dining Out</button>
-            <button class="quick-pill" onclick="quickAdd('Entertainment','Wants')">Entertainment</button>
-            <button class="quick-pill" onclick="quickAdd('Shopping','Wants')">Shopping</button>
-            <button class="quick-pill" onclick="quickAdd('Subscriptions','Wants')">Subscriptions</button>
+            <button class="quick-pill" onclick="quickAdd('Dining Out','Dining Out','Wants')">Dining Out</button>
+            <button class="quick-pill" onclick="quickAdd('Entertainment','Entertainment','Wants')">Entertainment</button>
+            <button class="quick-pill" onclick="quickAdd('Shopping','Shopping','Wants')">Shopping</button>
+            <button class="quick-pill" onclick="quickAdd('Subscriptions','Subscriptions','Wants')">Subscriptions</button>
             <button class="quick-pill qa-add-btn" onclick="showInlineAdd('Wants')" title="Add custom">＋</button>
           </div>
         </div>
         <div style="margin-bottom:0">
           <div class="section-label">Savings</div>
           <div style="display:flex;flex-wrap:wrap;gap:6px" id="quickSavings">
-            <button class="quick-pill" onclick="quickAdd('Emergency Fund','Savings')">Emergency Fund</button>
-            <button class="quick-pill" onclick="quickAdd('Investments','Savings')">Investments</button>
+            <button class="quick-pill" onclick="quickAdd('Emergency Fund','Emergency Fund','Savings')">Emergency Fund</button>
+            <button class="quick-pill" onclick="quickAdd('Investments','Investments','Savings')">Investments</button>
             <button class="quick-pill qa-add-btn" onclick="showInlineAdd('Savings')" title="Add custom">＋</button>
           </div>
         </div>
       </div>
-      <!-- Inline add (hidden by default, appears when + is clicked) -->
+      <!-- Inline add — name + sub-category + default amount -->
       <div id="inlineAddRow" style="display:none;margin-top:12px;border-top:1px solid var(--brd);padding-top:12px">
-        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-          <span style="font-size:12px;font-weight:700;color:var(--txt2)" id="inlineAddLabel">Adding to: Needs</span>
-          <input type="text" id="inlineAddName" placeholder="Type name & press Enter" style="flex:1;min-width:140px;padding:8px 12px;border:1.5px solid var(--pri);border-radius:10px;font-size:13px;font-family:inherit;outline:none;background:var(--input-bg);color:var(--txt);box-sizing:border-box">
-          <button class="btn btn-pri btn-sm" onclick="confirmInlineAdd()">Add</button>
+        <div style="font-size:12px;font-weight:700;color:var(--txt2);margin-bottom:8px" id="inlineAddLabel">Adding to: Needs</div>
+        <div style="display:grid;grid-template-columns:2fr 1fr 1fr;gap:8px;margin-bottom:8px">
+          <div>
+            <div style="font-size:10px;color:var(--txt2);font-weight:600;margin-bottom:3px">Button Name</div>
+            <input type="text" id="inlineAddName" placeholder="e.g. Lunch" style="width:100%;padding:8px 10px;border:1.5px solid var(--pri);border-radius:8px;font-size:13px;font-family:inherit;outline:none;background:var(--input-bg);color:var(--txt);box-sizing:border-box">
+          </div>
+          <div>
+            <div style="font-size:10px;color:var(--txt2);font-weight:600;margin-bottom:3px">Sub-Category</div>
+            <select id="inlineAddSub" style="width:100%;padding:7px 8px;border:1.5px solid var(--brd);border-radius:8px;font-size:12px;font-family:inherit;background:var(--input-bg);color:var(--txt);outline:none;box-sizing:border-box">
+              <option value="">Pick sub-category</option>
+            </select>
+          </div>
+          <div>
+            <div style="font-size:10px;color:var(--txt2);font-weight:600;margin-bottom:3px">Default Amount</div>
+            <input type="number" id="inlineAddAmt" placeholder="optional" step="0.01" min="0" style="width:100%;padding:8px 10px;border:1.5px solid var(--brd);border-radius:8px;font-size:13px;font-family:inherit;outline:none;background:var(--input-bg);color:var(--txt);box-sizing:border-box">
+          </div>
+        </div>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-pri btn-sm" onclick="confirmInlineAdd()">Save Button</button>
           <button class="btn btn-sec btn-sm" onclick="hideInlineAdd()">Cancel</button>
         </div>
       </div>
@@ -2235,31 +2242,6 @@ footer .footer-links a:hover{color:var(--pri-d)}
       </div>
     </div>
 
-    <!-- Bill Tracker -->
-    <div class="card">
-      <h3><span class="icon-wrap"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg></span> Bill Tracker</h3>
-      <p style="font-size:12px;color:var(--txt2);margin-bottom:12px">Track upcoming bills. Mark as paid to auto-log them as expenses.</p>
-      <div id="billsList"></div>
-      <div class="section-label" style="margin-top:14px;margin-bottom:10px">Add Bill</div>
-      <div style="display:grid;grid-template-columns:2fr 1fr 1fr auto;gap:10px;align-items:end">
-        <div class="fg">
-          <label>Bill Name</label>
-          <input type="text" id="billName" placeholder="e.g. Electricity">
-        </div>
-        <div class="fg">
-          <label>Amount</label>
-          <input type="number" id="billAmt" placeholder="0.00" step="0.01" min="0">
-        </div>
-        <div class="fg">
-          <label>Due Date</label>
-          <input type="date" id="billDue">
-        </div>
-        <div class="fg">
-          <label>&nbsp;</label>
-          <button class="btn btn-pri" onclick="addBill()">+ Add</button>
-        </div>
-      </div>
-    </div>
 
   </div>
 
@@ -2277,7 +2259,7 @@ footer .footer-links a:hover{color:var(--pri-d)}
         </div>
         <div style="font-size:11px;color:var(--txt2);margin-top:2px">Tap an entry to read · long-press to pin</div>
       </div>
-      <button class="btn btn-pri" onclick="openComposeModal()" style="display:flex;align-items:center;gap:7px;padding:10px 18px;border-radius:12px;font-size:13px;font-weight:700;white-space:nowrap">
+      <button class="btn btn-pri inline-action-btn" onclick="openComposeModal()" style="display:flex;align-items:center;gap:7px;padding:10px 18px;border-radius:12px;font-size:13px;font-weight:700;white-space:nowrap">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
         New Entry
       </button>
@@ -3057,6 +3039,92 @@ footer .footer-links a:hover{color:var(--pri-d)}
   </div><!-- .article-shell -->
 </div>
 
+<!-- ─── EXPENSE MODAL ─── -->
+<div id="expenseOverlay" onclick="if(event.target===this)closeExpenseModal()">
+  <div class="exp-modal">
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:calc(14px + env(safe-area-inset-top,0px)) 20px 14px;border-bottom:1px solid var(--brd);flex-shrink:0">
+      <span style="font-size:15px;font-weight:800;color:var(--txt);display:flex;align-items:center;gap:7px">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        Add New Expense
+      </span>
+      <button onclick="closeExpenseModal()" style="background:var(--bg);border:1px solid var(--brd);color:var(--txt2);width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px;line-height:1" aria-label="Close">×</button>
+    </div>
+    <div style="padding:18px 20px;display:flex;flex-direction:column;gap:14px">
+      <div class="add-form" id="expenseForm">
+        <div class="fg">
+          <label>Date</label>
+          <input type="date" id="expDate">
+        </div>
+        <div class="fg">
+          <label>Description</label>
+          <input type="text" id="expDesc" placeholder="e.g. Groceries at Costco" oninput="onExpenseDescInput()">
+        </div>
+        <div class="fg">
+          <label>Category</label>
+          <select id="expCat" onchange="markExpCatManual();updateSubcategories()">
+            <option value="Needs">Needs</option>
+            <option value="Wants">Wants</option>
+            <option value="Savings">Savings</option>
+          </select>
+        </div>
+        <div class="fg">
+          <label>Sub-Category</label>
+          <select id="expSub" onchange="markExpCatManual()">
+            <optgroup label="Needs">
+              <option>Rent/Mortgage</option><option>Groceries</option>
+              <option>Utilities</option><option>Transportation</option>
+              <option>Insurance</option><option>Healthcare</option><option>Phone</option>
+            </optgroup>
+            <optgroup label="Wants">
+              <option>Dining Out</option><option>Entertainment</option>
+              <option>Shopping</option><option>Subscriptions</option>
+              <option>Hobbies</option><option>Travel</option><option>Gym</option>
+            </optgroup>
+            <optgroup label="Savings">
+              <option>Emergency Fund</option><option>Investments</option>
+              <option>Savings Goal</option><option>Debt Payment</option>
+            </optgroup>
+          </select>
+        </div>
+        <div class="fg">
+          <label>Amount</label>
+          <input type="number" id="expAmt" placeholder="0.00" step="0.01" min="0">
+        </div>
+        <div class="fg" style="grid-column:1/-1;display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding-top:2px">
+          <label style="display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--txt2);cursor:pointer;font-weight:600;white-space:nowrap">
+            <input type="checkbox" id="expRecurring" onchange="toggleRecurringFreq()">
+            Repeat this expense
+          </label>
+          <select id="expRecurFreq" style="display:none;padding:5px 10px;border:1.5px solid var(--brd);border-radius:8px;font-size:12px;font-family:inherit;background:var(--bg);color:var(--txt);outline:none;cursor:pointer">
+            <option value="daily">Every day</option>
+            <option value="weekly">Every week</option>
+            <option value="fortnightly">Every 2 weeks</option>
+            <option value="monthly">Every month</option>
+            <option value="yearly">Every year</option>
+          </select>
+        </div>
+      </div>
+      <div class="exp-cat-hint" id="expCatHint" style="display:none"></div>
+      <div style="display:flex;gap:10px;justify-content:flex-end;padding-top:4px;border-top:1px solid var(--brd)">
+        <button onclick="closeExpenseModal()" style="padding:10px 18px;border-radius:10px;border:1.5px solid var(--brd);background:var(--bg);color:var(--txt2);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit">Cancel</button>
+        <button onclick="addExpense()" class="btn btn-pri" style="padding:10px 24px;font-size:13px;font-weight:700;border-radius:10px">+ Add Expense</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ─── FLOATING ACTION BUTTONS (mobile only, above tab bar) ─── -->
+<!-- Expenses FAB -->
+<button class="page-fab" id="expFab" onclick="openExpenseModal()" style="display:none" aria-label="Add expense">
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+  Add Expense
+</button>
+<!-- Journal FAB -->
+<button class="page-fab" id="journalFab" onclick="openComposeModal()" style="display:none" aria-label="New journal entry">
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+  New Entry
+</button>
+
 <!-- ─── TOAST ─── -->
 <div class="toast" id="toast"></div>
 
@@ -3417,6 +3485,7 @@ function _periodKey(date) {
 // Is this recurring expense due in the current period?
 function _isDueThisPeriod(r, today) {
   switch(r.freq) {
+    case "daily":       return true; // due every day
     case "monthly":     return true; // always due once a month
     case "yearly":      return today.getMonth() === new Date(r.startDate).getMonth();
     case "weekly":      return true; // apply every week — simplified: once per period
@@ -3442,7 +3511,7 @@ function renderRecurringList() {
     container.innerHTML = '<p style="font-size:12px;color:var(--txt2);margin:0">No recurring expenses set up yet. Check the \'Repeat\' box when adding an expense.</p>';
     return;
   }
-  const freqLabel = { monthly:"Monthly", weekly:"Weekly", fortnightly:"Every 2 wks", yearly:"Yearly" };
+  const freqLabel = { daily:"Daily", weekly:"Weekly", fortnightly:"Every 2 wks", monthly:"Monthly", yearly:"Yearly" };
   container.innerHTML = list.map(r => `
     <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--bg);border:1.5px solid var(--brd);border-radius:10px;margin-bottom:8px;flex-wrap:wrap">
       <span style="flex:1;min-width:0">
@@ -3703,6 +3772,8 @@ document.addEventListener("DOMContentLoaded", () => {
   renderMonthChart();
   renderLearnedKeywords();
   document.getElementById("billDue").valueAsDate = new Date();
+  // Show correct FAB for initial active tab
+  _updateFab("dashboard");
   initAiChat();
   renderNotes();
   renderInsights();
@@ -3898,16 +3969,14 @@ function renderMonthChart() {
   const BAR_H  = 110; // px
 
   wrap.innerHTML = months.map(m => {
-    const totalH   = Math.round((m.total   / maxVal) * BAR_H);
-    const needsH   = Math.round((m.needs   / maxVal) * BAR_H);
-    const wantsH   = Math.round((m.wants   / maxVal) * BAR_H);
-    const savingsH = Math.round((m.savings / maxVal) * BAR_H);
     const hasData  = m.total > 0;
+    const nPct = (m.needs   / maxVal * 100).toFixed(1);
+    const wPct = (m.wants   / maxVal * 100).toFixed(1);
+    const sPct = (m.savings / maxVal * 100).toFixed(1);
+    const tPct = (m.total   / maxVal * 100).toFixed(1);
     const bars = _chartView === "bar"
-      ? `<div class="month-bar needs"   style="height:${needsH}px"   title="Needs: ${fmt(m.needs)}"></div>
-         <div class="month-bar wants"   style="height:${wantsH}px"   title="Wants: ${fmt(m.wants)}"></div>
-         <div class="month-bar savings" style="height:${savingsH}px" title="Savings: ${fmt(m.savings)}"></div>`
-      : `<div class="month-bar" style="height:${totalH}px;background:var(--pri);flex:1" title="Total: ${fmt(m.total)}"></div>`;
+      ? `<div class="month-bar needs"   style="height:${nPct}%;min-height:${m.needs>0?2:0}px"   title="Needs: ${fmt(m.needs)}"></div><div class="month-bar wants"   style="height:${wPct}%;min-height:${m.wants>0?2:0}px"   title="Wants: ${fmt(m.wants)}"></div><div class="month-bar savings" style="height:${sPct}%;min-height:${m.savings>0?2:0}px" title="Savings: ${fmt(m.savings)}"></div>`
+      : `<div class="month-bar" style="height:${tPct}%;min-height:${m.total>0?2:0}px;background:var(--pri);flex:1" title="Total: ${fmt(m.total)}"></div>`;
     return `<div class="month-col">
       <div class="month-bars">${bars}</div>
       <div class="month-label">${m.label}</div>
@@ -4044,6 +4113,8 @@ function showTab(id, el) {
   if (id === "notes") renderNotes();
   if (id === "ai") initAiChat();
   if (id === "data") renderDataStats();
+  // Show the right FAB on mobile
+  _updateFab(id);
   // Close brief sub-view when switching tabs
   closeBriefView();
   // Scroll to top on tab switch (desktop)
@@ -4456,18 +4527,26 @@ function addExpense() {
   updateDashboard();
   renderRecent();
   checkBudgetAlerts();
+  closeExpenseModal();
 }
 
-function quickAdd(sub, cat) {
-  document.getElementById("expCat").value = cat;
-  updateSubcategories(sub);
-  document.getElementById("expDesc").value = sub;
-  // Quick Add explicitly sets the category — lock it so the guesser won't override
-  _expCatUserOverride = true;
-  const hintEl = document.getElementById("expCatHint");
-  if (hintEl) hintEl.style.display = "none";
-  document.getElementById("expAmt").focus();
-  toast("Fill in the amount for " + sub);
+function quickAdd(label, sub, cat, amt) {
+  // label = description shown in form; sub = sub-category; cat = category; amt = default amount
+  openExpenseModal();
+  setTimeout(() => {
+    document.getElementById("expCat").value = cat || "Needs";
+    updateSubcategories(sub || label);
+    document.getElementById("expDesc").value = label || "";
+    if (amt && parseFloat(amt) > 0) {
+      document.getElementById("expAmt").value = parseFloat(amt).toFixed(2);
+    } else {
+      document.getElementById("expAmt").value = "";
+      document.getElementById("expAmt").focus();
+    }
+    _expCatUserOverride = true;
+    const hintEl = document.getElementById("expCatHint");
+    if (hintEl) hintEl.style.display = "none";
+  }, 60);
 }
 
 function updateSubcategories(selectVal) {
@@ -4489,14 +4568,28 @@ let inlineAddCat = "";
 
 function showInlineAdd(cat) {
   inlineAddCat = cat;
-  const row = document.getElementById("inlineAddRow");
+  const row   = document.getElementById("inlineAddRow");
   const label = document.getElementById("inlineAddLabel");
   const input = document.getElementById("inlineAddName");
-  const catIcon = cat;
-  label.textContent = catIcon + " Adding to: " + cat;
+  const subSel = document.getElementById("inlineAddSub");
+  const amtInp = document.getElementById("inlineAddAmt");
+  label.textContent = "Adding to: " + cat;
+  // Populate sub-category options based on category
+  const subOptions = {
+    Needs:   ["Rent/Mortgage","Groceries","Utilities","Transportation","Insurance","Healthcare","Phone","Education","Other"],
+    Wants:   ["Dining Out","Entertainment","Shopping","Subscriptions","Hobbies","Travel","Gym","Gifts","Other"],
+    Savings: ["Emergency Fund","Investments","Savings Goal","Debt Payment","Other"]
+  };
+  subSel.innerHTML = '<option value="">Pick sub-category</option>' +
+    (subOptions[cat] || []).map(s => `<option value="${s}">${s}</option>`).join("");
   row.style.display = "block";
   input.value = "";
-  input.focus();
+  if (amtInp) amtInp.value = "";
+  // Scroll the form into view so user doesn't have to find it
+  setTimeout(() => {
+    row.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    input.focus();
+  }, 50);
 }
 
 function hideInlineAdd() {
@@ -4506,18 +4599,20 @@ function hideInlineAdd() {
 
 function confirmInlineAdd() {
   const name = document.getElementById("inlineAddName").value.trim();
-  if (!name) { toast("Enter a name"); return; }
+  if (!name) { toast("Enter a button name"); return; }
   if (!inlineAddCat) return;
+  const sub = document.getElementById("inlineAddSub")?.value || "";
+  const amt = parseFloat(document.getElementById("inlineAddAmt")?.value) || 0;
 
   const customs = JSON.parse(localStorage.getItem("bt_custom_qa") || "[]");
   if (customs.find(c => c.name.toLowerCase() === name.toLowerCase() && c.cat === inlineAddCat)) {
     toast("'" + name + "' already exists in " + inlineAddCat); return;
   }
-  customs.push({ name, cat: inlineAddCat });
+  customs.push({ name, cat: inlineAddCat, sub: sub || name, amt: amt > 0 ? amt : 0 });
   localStorage.setItem("bt_custom_qa", JSON.stringify(customs));
   renderCustomQuickAdds();
   hideInlineAdd();
-  toast("'" + name + "' added to " + inlineAddCat + "!");
+  toast("'" + name + "' quick button added!");
 }
 
 function removeCustomQuickAdd(idx) {
@@ -4544,7 +4639,8 @@ function renderCustomQuickAdds() {
       const origIdx = customs.indexOf(c);
       const pill = document.createElement("button");
       pill.className = "quick-pill qa-custom";
-      pill.onclick = () => quickAdd(c.name, c.cat);
+      // Pass sub-category and default amount so modal opens pre-filled
+      pill.onclick = () => quickAdd(c.name, c.sub || c.name, c.cat, c.amt || 0);
       pill.innerHTML = escHtml(c.name) +
         '<span class="qa-remove" onclick="event.stopPropagation();removeCustomQuickAdd(' + origIdx + ')" aria-label="Remove"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M18 6L6 18M6 6l12 12"/></svg></span>';
       if (addBtn) container.insertBefore(pill, addBtn);
@@ -6192,6 +6288,8 @@ document.addEventListener("keydown", function(e) {
   if (e.key === "Escape") {
     const apiGuide = document.getElementById("apiGuideModal");
     if (apiGuide) { apiGuide.remove(); return; }
+    const expOv = document.getElementById("expenseOverlay");
+    if (expOv && expOv.classList.contains("show")) { closeExpenseModal(); return; }
     const composeOv = document.getElementById("composeOverlay");
     if (composeOv && composeOv.classList.contains("show")) { closeComposeModal(); return; }
     const noteOv = document.getElementById("noteOverlay");
@@ -6627,6 +6725,34 @@ function addNote() {
 }
 
 // ── Compose modal open / close ──────────────────────────────
+// ── Expense modal ──────────────────────────────────────────
+function openExpenseModal() {
+  const ov = document.getElementById("expenseOverlay");
+  if (!ov) return;
+  ov.classList.add("show");
+  document.getElementById("expDate").valueAsDate = new Date();
+  setTimeout(() => document.getElementById("expDesc")?.focus(), 80);
+}
+function closeExpenseModal() {
+  const ov = document.getElementById("expenseOverlay");
+  if (ov) ov.classList.remove("show");
+}
+
+// ── FAB visibility: show correct FAB per active tab (mobile only) ──
+function _updateFab(tabId) {
+  const expFab     = document.getElementById("expFab");
+  const journalFab = document.getElementById("journalFab");
+  if (!expFab || !journalFab) return;
+  // Only show FABs on mobile/tablet
+  if (window.innerWidth > 900) {
+    expFab.style.display = "none";
+    journalFab.style.display = "none";
+    return;
+  }
+  expFab.style.display     = tabId === "expenses" ? "flex" : "none";
+  journalFab.style.display = tabId === "notes"    ? "flex" : "none";
+}
+
 function openComposeModal() {
   const ov = document.getElementById("composeOverlay");
   if (!ov) return;
@@ -10150,5 +10276,5 @@ window.addEventListener('appinstalled', () => {
   toast("App installed successfully!");
 });
 </script>
-</body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a19e8b232efc3947',t:'MTc4Mzg0MzUzMw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a19f7a279c59aec4',t:'MTc4Mzg1MzMyMw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
