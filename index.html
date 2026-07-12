@@ -456,7 +456,7 @@ header p{font-size:14px;color:var(--txt2);font-weight:400;max-width:460px;margin
 .income-bar .income-label p{font-size:11px;color:var(--txt2)}
 .income-right{display:flex;align-items:center;gap:12px;flex-shrink:0}
 .income-input-wrap{
-  display:inline-flex;align-items:center;gap:0;
+  display:inline-flex;align-items:center;
   border:2px solid var(--pri);border-radius:10px;
   background:var(--input-bg);overflow:hidden;
   transition:.2s;flex-shrink:0;width:auto;
@@ -469,7 +469,7 @@ header p{font-size:14px;color:var(--txt2);font-weight:400;max-width:460px;margin
 #incomeInput{
   font-size:18px;font-weight:800;color:var(--pri-d);
   border:none;padding:7px 10px 7px 2px;background:transparent;
-  outline:none;width:120px;min-width:60px;
+  outline:none;width:130px;
 }
 /* Fix number input spinners in dark mode across all themes */
 input[type="number"]{-moz-appearance:textfield}
@@ -1602,7 +1602,7 @@ footer .footer-links a:hover{color:var(--pri-d)}
 @media(max-width:700px){
   .stats{grid-template-columns:1fr}
   .income-bar{flex-direction:column;text-align:center}
-  #incomeInput{width:90px}
+  #incomeInput{width:110px}
   .summary-grid{grid-template-columns:1fr 1fr}
   .export-grid{grid-template-columns:1fr}
   .theme-swatch{justify-content:center}
@@ -1734,11 +1734,11 @@ footer .footer-links a:hover{color:var(--pri-d)}
       <!-- Divider -->
       <div style="border-top:1px solid var(--brd);margin-bottom:12px"></div>
 
-      <!-- Bottom row: income + streak (left) | icons (right) -->
-      <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+      <!-- Bottom row: income (left, fixed width) | streak + icons (right) -->
+      <div style="display:flex;align-items:center;gap:12px">
 
-        <!-- Income block -->
-        <div style="flex:1;min-width:0">
+        <!-- Income block — fixed width, never stretches -->
+        <div style="flex-shrink:0">
           <div style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:var(--txt2);margin-bottom:3px">Monthly Income</div>
           <div id="incomeDisplay" style="display:none;align-items:baseline;gap:5px">
             <span style="font-size:20px;font-weight:900;color:var(--pri-d);letter-spacing:-.5px;line-height:1" id="incomeDisplayVal"></span>
@@ -1750,18 +1750,21 @@ footer .footer-links a:hover{color:var(--pri-d)}
           </div>
         </div>
 
-        <!-- Streak pill -->
-        <div class="streak-bar" id="streakBar" style="display:none;flex-shrink:0;margin:0;padding:0;border:none;background:none;box-shadow:none;gap:5px">
-          <div class="streak-fire" id="streakIcon" aria-hidden="true"></div>
-          <div style="flex:none">
-            <div id="streakCount" style="font-size:12px;font-weight:800;color:var(--txt);line-height:1.2"></div>
-            <div id="streakLabel" style="font-size:10px;color:var(--txt2)"></div>
-          </div>
-          <div id="streakBest" style="display:none"></div>
-        </div>
+        <!-- Right side: streak + icon buttons -->
+        <div style="display:flex;align-items:center;gap:10px;margin-left:auto;flex-shrink:0">
 
-        <!-- Icon buttons: Insights + Bell -->
-        <div style="display:flex;align-items:center;gap:6px;flex-shrink:0">
+          <!-- Streak pill -->
+          <div class="streak-bar" id="streakBar" style="display:none;margin:0;padding:0;border:none;background:none;box-shadow:none;gap:5px;flex-shrink:0">
+            <div class="streak-fire" id="streakIcon" aria-hidden="true"></div>
+            <div style="flex:none">
+              <div id="streakCount" style="font-size:12px;font-weight:800;color:var(--txt);line-height:1.2"></div>
+              <div id="streakLabel" style="font-size:10px;color:var(--txt2)"></div>
+            </div>
+            <div id="streakBest" style="display:none"></div>
+          </div>
+
+          <!-- Icon buttons: Insights + Bell -->
+          <div style="display:flex;align-items:center;gap:6px;flex-shrink:0">
 
           <!-- Insights dropdown button -->
           <div style="position:relative" id="insightsIconWrap">
@@ -1798,6 +1801,7 @@ footer .footer-links a:hover{color:var(--pri-d)}
             </div>
           </div>
 
+          </div>
         </div>
       </div>
 
@@ -10063,5 +10067,5 @@ window.addEventListener('appinstalled', () => {
   toast("App installed successfully!");
 });
 </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a19993f0dc56dda2',t:'MTc4Mzc5MTQ2NQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</body>
 </html>
