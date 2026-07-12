@@ -1335,7 +1335,17 @@ tbody tr:hover td{background:var(--pri-l)}
 .feed-bell-dropdown.show{display:flex}
 /* Mobile: fixed center so it doesn't get clipped */
 @media(max-width:640px){
+  /* Bell dropdown — bottom sheet */
   .feed-bell-dropdown{position:fixed;top:auto;bottom:0;left:0;right:0;width:100%;max-width:100%;border-radius:20px 20px 0 0;max-height:70dvh;z-index:1200}
+  /* Insights dropdown — also bottom sheet on mobile */
+  #insightsDropdown{position:fixed !important;top:auto !important;bottom:0 !important;left:0 !important;right:0 !important;width:100% !important;max-width:100% !important;border-radius:20px 20px 0 0!important;max-height:70dvh;z-index:1200}
+  /* Desktop streak: hide on mobile (shown in separate mobile row instead) */
+  #streakBar{display:none !important}
+  /* Mobile streak row */
+  #streakMobileRow{display:flex !important;align-items:center;gap:8px;padding:7px 10px;border-radius:8px;background:var(--suc-l);border:1px solid var(--suc)}
+  #streakMobileRow.inactive{background:var(--bg);border-color:var(--brd)}
+  /* Income input on mobile */
+  #incomeInput{width:110px}
 }
 /* Header: title + mark-all button */
 .fbd-head{display:flex;align-items:center;justify-content:space-between;padding:12px 14px 10px;border-bottom:1px solid var(--brd);flex-shrink:0}
@@ -1734,10 +1744,10 @@ footer .footer-links a:hover{color:var(--pri-d)}
       <!-- Divider -->
       <div style="border-top:1px solid var(--brd);margin-bottom:12px"></div>
 
-      <!-- Bottom row: income (left, fixed width) | streak + icons (right) -->
+      <!-- Row: income (left) | icons (right) -->
       <div style="display:flex;align-items:center;gap:12px">
 
-        <!-- Income block — fixed width, never stretches -->
+        <!-- Income block — fixed width -->
         <div style="flex-shrink:0">
           <div style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:var(--txt2);margin-bottom:3px">Monthly Income</div>
           <div id="incomeDisplay" style="display:none;align-items:baseline;gap:5px">
@@ -1750,10 +1760,10 @@ footer .footer-links a:hover{color:var(--pri-d)}
           </div>
         </div>
 
-        <!-- Right side: streak + icon buttons -->
+        <!-- Right side: streak (desktop only — hidden mobile) + icons -->
         <div style="display:flex;align-items:center;gap:10px;margin-left:auto;flex-shrink:0">
 
-          <!-- Streak pill -->
+          <!-- Streak — desktop only (mobile shows it separately below) -->
           <div class="streak-bar" id="streakBar" style="display:none;margin:0;padding:0;border:none;background:none;box-shadow:none;gap:5px;flex-shrink:0">
             <div class="streak-fire" id="streakIcon" aria-hidden="true"></div>
             <div style="flex:none">
@@ -1804,6 +1814,9 @@ footer .footer-links a:hover{color:var(--pri-d)}
           </div>
         </div>
       </div>
+
+      <!-- Streak row — mobile only, shown below income row -->
+      <div id="streakMobileRow" style="display:none;margin-top:10px"></div>
 
     </div>
 
@@ -4784,6 +4797,23 @@ function renderStreak() {
   } else {
     bestEl.style.display = "none";
   }
+
+  // Sync mobile-only streak row (separate element below income)
+  const mobileRow = document.getElementById("streakMobileRow");
+  if (mobileRow) {
+    mobileRow.className = current === 0 ? "inactive" : "";
+    const iconHtml = current >= 30 ? UI_ICONS.streakAward : current >= 14 ? UI_ICONS.streakStar : current > 0 ? UI_ICONS.streakChart : UI_ICONS.streakIdle;
+    const countTxt = current === 0 ? "Streak paused" : current + "-day streak";
+    const labelTxt = count.textContent === "Streak paused"
+      ? "Add an expense today to restart!"
+      : label.textContent;
+    mobileRow.innerHTML =
+      '<span style="flex-shrink:0;color:' + (current === 0 ? "var(--txt2)" : "var(--suc)") + '">' + iconHtml + '</span>' +
+      '<div style="flex:1;min-width:0">' +
+        '<div style="font-size:12px;font-weight:800;color:' + (current === 0 ? "var(--txt2)" : "var(--suc)") + ';line-height:1.2">' + countTxt + '</div>' +
+        '<div style="font-size:10px;color:var(--txt2)">' + labelTxt + '</div>' +
+      '</div>';
+  }
 }
 
 // ─── NUMBER FORMATTING ─────────────────────────────────────
@@ -5625,16 +5655,46 @@ function openShopLink(event) {
 
 function _positionDropdown(dd, btnEl) {
   if (!dd || !btnEl) return;
+  // On mobile: CSS handles it as a bottom sheet — don't set inline top/left
+  if (window.innerWidth <= 640) {
+    dd.style.top  = "";
+    dd.style.left = "";
+    dd.style.right = "";
+    // Add overlay backdrop on mobile
+    _showMobileDropdownBackdrop(dd);
+    return;
+  }
   const r = btnEl.getBoundingClientRect();
   const ddW = parseInt(dd.style.width) || 320;
   const vw  = window.innerWidth;
-  // Position below the button, right-aligned but not off-screen
   let left = r.right - ddW;
   if (left < 8) left = 8;
   if (left + ddW > vw - 8) left = vw - ddW - 8;
   dd.style.top  = (r.bottom + 8) + "px";
   dd.style.left = left + "px";
   dd.style.right = "auto";
+}
+
+function _showMobileDropdownBackdrop(dd) {
+  // Remove any existing backdrop
+  const existing = document.getElementById("_ddBackdrop");
+  if (existing) existing.remove();
+  const backdrop = document.createElement("div");
+  backdrop.id = "_ddBackdrop";
+  backdrop.style.cssText = "position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:1199;";
+  backdrop.addEventListener("click", () => {
+    closeFeedBell();
+    const idd = document.getElementById("insightsDropdown");
+    if (idd) idd.style.display = "none";
+    backdrop.remove();
+  });
+  document.body.appendChild(backdrop);
+  // Remove backdrop when dropdown closes
+  const observer = new MutationObserver(() => {
+    const ddVisible = dd.style.display !== "none" && dd.classList.contains("show") || dd.style.display === "flex";
+    if (!ddVisible) { backdrop.remove(); observer.disconnect(); }
+  });
+  observer.observe(dd, { attributes:true, attributeFilter:["style","class"] });
 }
 
 function toggleInsightsDropdown() {
@@ -5659,6 +5719,8 @@ function _closeInsightsDdOnOutside(e) {
     const dd = document.getElementById("insightsDropdown");
     if (dd) dd.style.display = "none";
     document.removeEventListener("click", _closeInsightsDdOnOutside);
+    const bd = document.getElementById("_ddBackdrop");
+    if (bd) bd.remove();
   }
 }
 // Keep toggleInsights as alias for backward compat (called from keyboard shortcuts etc)
@@ -6353,6 +6415,8 @@ function closeFeedBell() {
   const dd = document.getElementById("feedBellDropdown");
   if (dd) dd.classList.remove("show");
   document.removeEventListener("click", closeFeedBellOnOutside);
+  const bd = document.getElementById("_ddBackdrop");
+  if (bd) bd.remove();
 }
 
 function closeFeedBellOnOutside(e) {
