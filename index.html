@@ -2104,7 +2104,7 @@ footer .footer-links a:hover{color:var(--pri-d)}
         </div>
         <div style="font-size:11px;color:var(--txt2);margin-top:2px">Use Quick Add below or tap + to log a custom expense</div>
       </div>
-      <button class="btn btn-pri inline-action-btn" onclick="openExpenseModal()" style="padding:9px 18px;border-radius:12px;font-size:13px;font-weight:700;white-space:nowrap">Log Expense</button>
+      <button class="btn btn-pri inline-action-btn" onclick="openExpenseModal()" style="padding:9px 18px;border-radius:12px;font-size:13px;font-weight:700;white-space:nowrap">+ Log Expense</button>
     </div>
 
         <!-- Quick Add -->
@@ -2365,7 +2365,7 @@ footer .footer-links a:hover{color:var(--pri-d)}
         </div>
         <div style="font-size:11px;color:var(--txt2);margin-top:2px">Tap an entry to read · long-press to pin</div>
       </div>
-      <button class="btn btn-pri inline-action-btn" onclick="openComposeModal()" style="padding:9px 18px;border-radius:12px;font-size:13px;font-weight:700;white-space:nowrap">New Entry</button>
+      <button class="btn btn-pri inline-action-btn" onclick="openComposeModal()" style="padding:9px 18px;border-radius:12px;font-size:13px;font-weight:700;white-space:nowrap">+ New Entry</button>
     </div>
 
     <!-- Trending Topics (keyword cloud) -->
@@ -3898,6 +3898,64 @@ document.addEventListener("DOMContentLoaded", () => {
   }
   setTimeout(hideAppLoading, 250);
 });
+
+// ══════════════════════════════════════════════════════════
+// ─── TIER 2: MONTH-OVER-MONTH CHART ───────────────────────
+// ══════════════════════════════════════════════════════════
+
+let _chartView = "bar"; // "bar" | "total"
+
+function setChartView(view, btn) {
+  _chartView = view;
+  document.querySelectorAll(".chart-view-btn").forEach(b => b.classList.remove("active"));
+  if (btn) btn.classList.add("active");
+  renderMonthChart();
+}
+
+function _getMonthlyData(nMonths) {
+  const data = getData();
+  const months = [];
+  const now = new Date();
+  for (let i = nMonths - 1; i >= 0; i--) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    const key = d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0");
+    const label = d.toLocaleDateString("en-US", { month: "short" });
+    const exps = data.expenses.filter(e => e.date && e.date.startsWith(key));
+    months.push({
+      key, label,
+      needs:   exps.filter(e => e.cat === "Needs").reduce((s,e)   => s + e.amt, 0),
+      wants:   exps.filter(e => e.cat === "Wants").reduce((s,e)   => s + e.amt, 0),
+      savings: exps.filter(e => e.cat === "Savings").reduce((s,e) => s + e.amt, 0),
+      total:   exps.reduce((s,e) => s + e.amt, 0)
+    });
+  }
+  return months;
+}
+
+function renderMonthChart() {
+  const wrap = document.getElementById("monthChart");
+  if (!wrap) return;
+  const months = _getMonthlyData(6);
+  const maxVal = Math.max(...months.map(m => m.total), 1);
+
+  wrap.innerHTML = months.map(m => {
+    const hasData = m.total > 0;
+    const nPct = (m.needs   / maxVal * 100).toFixed(1);
+    const wPct = (m.wants   / maxVal * 100).toFixed(1);
+    const sPct = (m.savings / maxVal * 100).toFixed(1);
+    const tPct = (m.total   / maxVal * 100).toFixed(1);
+    const bars = _chartView === "bar"
+      ? `<div class="month-bar needs"   style="height:${nPct}%;min-height:${m.needs>0?2:0}px"   title="Needs: ${fmt(m.needs)}"></div>` +
+        `<div class="month-bar wants"   style="height:${wPct}%;min-height:${m.wants>0?2:0}px"   title="Wants: ${fmt(m.wants)}"></div>` +
+        `<div class="month-bar savings" style="height:${sPct}%;min-height:${m.savings>0?2:0}px" title="Savings: ${fmt(m.savings)}"></div>`
+      : `<div class="month-bar" style="height:${tPct}%;min-height:${m.total>0?2:0}px;background:var(--pri);flex:1" title="Total: ${fmt(m.total)}"></div>`;
+    return `<div class="month-col">
+      <div class="month-bars">${bars}</div>
+      <div class="month-label">${m.label}</div>
+      <div class="month-total">${hasData ? fmtShort(m.total) : ""}</div>
+    </div>`;
+  }).join("");
+}
 
 // ══════════════════════════════════════════════════════════
 // ─── TIER 2: NET WORTH ────────────────────────────────────
@@ -5710,11 +5768,9 @@ function renderGoals() {
           <div style="color:var(--txt2)">${fmtShort(remaining)} remaining</div>
         </div>
         ${projectionHtml}
-        <div style="display:flex;gap:8px;margin-top:10px">
-          <button onclick="addGoalContribution(${g.id})" class="btn btn-pri btn-sm" style="flex:1;font-size:12px">+ Add ₱</button>
-          <button onclick="toggleGoalLog(${g.id})" style="font-size:11px;font-weight:600;color:var(--txt2);background:var(--bg);border:1px solid var(--brd);border-radius:8px;padding:5px 12px;cursor:pointer;font-family:inherit;transition:.15s">
-            📋 Log ${contribs.length > 0 ? "("+contribs.length+")" : ""}
-          </button>
+        <div style="display:flex;gap:6px;margin-top:10px;flex-wrap:wrap">
+          <button onclick="addGoalContribution(${g.id})" class="btn btn-pri btn-sm" style="font-size:12px;padding:6px 14px">+ Add</button>
+          <button onclick="toggleGoalLog(${g.id})" style="font-size:11px;font-weight:600;color:var(--txt2);background:var(--bg);border:1px solid var(--brd);border-radius:8px;padding:5px 10px;cursor:pointer;font-family:inherit">📋 ${contribs.length > 0 ? contribs.length+" entries" : "Log"}</button>
         </div>
       </div>
       <div class="goal-contrib-log" id="goalLog_${g.id}">
@@ -6925,6 +6981,14 @@ function toggleFeedBell() {
   if (!isOpen) {
     dd.classList.add("show");
     _positionDropdown(dd, btn);
+    // Re-render articles every time bell opens (ensures fresh content)
+    const cached = localStorage.getItem("bt_feed_cache");
+    if (cached) {
+      try { renderBellDropdown(JSON.parse(cached)); } catch(e) {}
+    } else if (typeof feedPostsCache !== "undefined" && feedPostsCache.length) {
+      renderBellDropdown(feedPostsCache);
+    }
+    _checkBillAlerts();
     // Only add outside-click listener on desktop; mobile is full-screen
     if (window.innerWidth > 640) {
       setTimeout(() => document.addEventListener("click", closeFeedBellOnOutside), 10);
