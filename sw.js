@@ -11,7 +11,7 @@
 //
 // Last updated: 2026-07-11
 
-const CACHE_NAME = 'budget-tracker-v68';
+const CACHE_NAME = 'budget-tracker-v73';
 const ASSETS = [
   './',
   './index.html',
