@@ -1788,7 +1788,7 @@ footer .footer-links a:hover{color:var(--pri-d)}
       </div>
       <span class="sidebar-divider"></span>
       <div class="tab" data-tab="goals" data-priority="secondary" onclick="showTab('goals',this)">
-        <span class="tab-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></span><span class="tab-label">Finance</span>
+        <span class="tab-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12V7H5a2 2 0 010-4h14v4"/><path d="M3 5v14a2 2 0 002 2h16v-5"/><path d="M18 12a2 2 0 000 4h4v-4z"/></svg></span><span class="tab-label">Finance</span>
       </div>
       <div class="tab" data-tab="history" data-priority="secondary" onclick="showTab('history',this)">
         <span class="tab-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></span><span class="tab-label">History</span>
@@ -1865,42 +1865,18 @@ footer .footer-links a:hover{color:var(--pri-d)}
           <!-- Insights dropdown button -->
           <div style="position:relative" id="insightsIconWrap">
             <button id="insightsIconBtn" onclick="toggleInsightsDropdown()" title="Insights" aria-label="Insights"
-              class="feed-bell" style="display:none;position:relative;cursor:pointer">
+              class="feed-bell" style="display:none">
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-              <span id="insightsIconBadge" style="display:none;position:absolute;top:-4px;right:-4px;min-width:16px;height:16px;border-radius:8px;background:var(--pri);color:var(--on-pri);font-size:9px;font-weight:800;align-items:center;justify-content:center;padding:0 3px;line-height:16px"></span>
+              <span id="insightsIconBadge" class="feed-bell-badge" style="display:none"></span>
             </button>
             <!-- Insights dropdown panel — same style as bell -->
-            <div id="insightsDropdown" style="display:none;position:fixed;width:320px;max-height:420px;background:var(--card);border-radius:16px;box-shadow:0 16px 48px rgba(0,0,0,.22);border:1px solid var(--brd);z-index:2000;flex-direction:column;overflow:hidden;animation:fadeUp .2s ease;text-align:left">
-              <div class="fbd-head">
-                <span>Insights</span>
-                <div style="display:flex;align-items:center;gap:8px">
-                  <span id="insightsCount" style="font-size:11px;font-weight:600;color:var(--txt2)"></span>
-                  <button onclick="toggleInsightsDropdown()" aria-label="Close" style="background:var(--bg);border:1px solid var(--brd);color:var(--txt2);width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;font-size:16px;line-height:1">×</button>
-                </div>
-              </div>
-              <div style="overflow-y:auto;flex:1;padding:4px 6px;min-height:0" id="insightsList"></div>
-            </div>
+          
           </div>
 
           <!-- Bell -->
           <div class="feed-bell" id="feedBellBtn" onclick="toggleFeedBell()" title="Notifications" style="display:flex;flex-shrink:0">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
             <span class="feed-bell-badge" id="feedBellBadge"></span>
-            <div class="feed-bell-dropdown" id="feedBellDropdown" onclick="event.stopPropagation()">
-              <div class="fbd-head">
-                <span>Updates &amp; Alerts</span>
-                <div style="display:flex;align-items:center;gap:8px">
-                  <button onclick="markAllFromBell()" id="bellMarkAllBtn" style="font-size:11px;font-weight:600;color:var(--pri);background:none;border:none;cursor:pointer;padding:2px 6px;font-family:inherit;border-radius:6px;transition:.15s">Mark all read</button>
-                  <button onclick="closeFeedBell()" aria-label="Close" style="background:var(--bg);border:1px solid var(--brd);color:var(--txt2);width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;font-size:16px;line-height:1">×</button>
-                </div>
-              </div>
-              <div class="feed-dd-list" id="feedBellList">
-                <div id="budgetAlertContainer"></div>
-              </div>
-              <div class="feed-dd-footer" style="flex-shrink:0">
-                <button onclick="closeFeedBell();scrollToFeedSection()">See all articles →</button>
-              </div>
-            </div>
           </div>
 
           </div>
@@ -1914,7 +1890,7 @@ footer .footer-links a:hover{color:var(--pri-d)}
 
     <!-- Personalize card (shows once for new users) -->
     <div class="personalize-card" id="personalizeCard" style="display:none">
-      <h4>👋 What should we call you?</h4>
+      <h4>What should we call you?</h4>
       <p>Your dashboard greeting — nothing is shared.</p>
       <div class="personalize-row">
         <input type="text" id="userNameInput" placeholder="e.g. Maria, Boss, Kuya..." maxlength="30" onkeydown="if(event.key==='Enter')saveUserName()">
@@ -2119,7 +2095,7 @@ footer .footer-links a:hover{color:var(--pri-d)}
             <button class="quick-pill" onclick="quickAdd('Transportation','Transportation','Needs')">Gas/Transit</button>
             <button class="quick-pill" onclick="quickAdd('Utilities','Utilities','Needs')">Utilities</button>
             <button class="quick-pill" onclick="quickAdd('Healthcare','Healthcare','Needs')">Healthcare</button>
-            <button class="quick-pill qa-add-btn" onclick="showInlineAdd('Needs')" title="Add custom">＋</button>
+            <button class="quick-pill qa-add-btn" onclick="showInlineAdd('Needs')" title="Add custom">+</button>
           </div>
         </div>
         <div style="margin-bottom:10px">
@@ -2129,7 +2105,7 @@ footer .footer-links a:hover{color:var(--pri-d)}
             <button class="quick-pill" onclick="quickAdd('Entertainment','Entertainment','Wants')">Entertainment</button>
             <button class="quick-pill" onclick="quickAdd('Shopping','Shopping','Wants')">Shopping</button>
             <button class="quick-pill" onclick="quickAdd('Subscriptions','Subscriptions','Wants')">Subscriptions</button>
-            <button class="quick-pill qa-add-btn" onclick="showInlineAdd('Wants')" title="Add custom">＋</button>
+            <button class="quick-pill qa-add-btn" onclick="showInlineAdd('Wants')" title="Add custom">+</button>
           </div>
         </div>
         <div style="margin-bottom:0">
@@ -2137,7 +2113,7 @@ footer .footer-links a:hover{color:var(--pri-d)}
           <div style="display:flex;flex-wrap:wrap;gap:6px" id="quickSavings">
             <button class="quick-pill" onclick="quickAdd('Emergency Fund','Emergency Fund','Savings')">Emergency Fund</button>
             <button class="quick-pill" onclick="quickAdd('Investments','Investments','Savings')">Investments</button>
-            <button class="quick-pill qa-add-btn" onclick="showInlineAdd('Savings')" title="Add custom">＋</button>
+            <button class="quick-pill qa-add-btn" onclick="showInlineAdd('Savings')" title="Add custom">+</button>
           </div>
         </div>
       </div>
@@ -2171,7 +2147,7 @@ footer .footer-links a:hover{color:var(--pri-d)}
     <div class="card">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;flex-wrap:wrap;gap:8px">
         <h3 style="margin:0"><span class="icon-wrap"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg></span> Bill Tracker</h3>
-        <span style="font-size:11px;color:var(--txt2)">Alerts via 🔔</span>
+        <span style="font-size:11px;color:var(--txt2)">Alerts via bell</span>
       </div>
       <p style="font-size:12px;color:var(--txt2);margin-bottom:10px">Track upcoming bills. Set reminders so they appear in the bell before due.</p>
       <div id="billsList"></div>
@@ -3223,6 +3199,35 @@ footer .footer-links a:hover{color:var(--pri-d)}
 <!-- Journal FAB — circle + -->
 <button class="page-fab" id="journalFab" onclick="openComposeModal()" style="display:none" aria-label="New journal entry" title="New Journal Entry">+</button>
 
+<!-- ─── INSIGHTS DROPDOWN (portal) ─── -->
+<div id="insightsDropdown" style="display:none;position:fixed;width:320px;max-height:420px;background:var(--card);border-radius:16px;box-shadow:0 16px 48px rgba(0,0,0,.22);border:1px solid var(--brd);z-index:2000;flex-direction:column;overflow:hidden;animation:fadeUp .2s ease;text-align:left">
+              <div class="fbd-head">
+                <span>Insights</span>
+                <div style="display:flex;align-items:center;gap:8px">
+                  <span id="insightsCount" style="font-size:11px;font-weight:600;color:var(--txt2)"></span>
+                  <button onclick="toggleInsightsDropdown()" aria-label="Close" style="background:var(--bg);border:1px solid var(--brd);color:var(--txt2);width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;font-size:16px;line-height:1">×</button>
+                </div>
+              </div>
+              <div style="overflow-y:auto;flex:1;padding:4px 6px;min-height:0" id="insightsList"></div>
+            </div>
+
+<!-- ─── BELL DROPDOWN (portal — outside stacking contexts) ─── -->
+<div class="feed-bell-dropdown" id="feedBellDropdown" onclick="event.stopPropagation()">
+              <div class="fbd-head">
+                <span>Updates &amp; Alerts</span>
+                <div style="display:flex;align-items:center;gap:8px">
+                  <button onclick="markAllFromBell()" id="bellMarkAllBtn" style="font-size:11px;font-weight:600;color:var(--pri);background:none;border:none;cursor:pointer;padding:2px 6px;font-family:inherit;border-radius:6px;transition:.15s">Mark all read</button>
+                  <button onclick="closeFeedBell()" aria-label="Close" style="background:var(--bg);border:1px solid var(--brd);color:var(--txt2);width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;font-size:16px;line-height:1">×</button>
+                </div>
+              </div>
+              <div class="feed-dd-list" id="feedBellList">
+                <div id="budgetAlertContainer"></div>
+              </div>
+              <div class="feed-dd-footer" style="flex-shrink:0">
+                <button onclick="closeFeedBell();scrollToFeedSection()">See all articles →</button>
+              </div>
+            </div>
+
 <!-- ─── TOAST ─── -->
 <div class="toast" id="toast"></div>
 
@@ -3572,7 +3577,7 @@ function applyRecurringExpenses() {
 
   if (changed) {
     saveData(data);
-    toast("🔁 Recurring expenses applied for this period.");
+    toast("Recurring expenses applied for this period.");
   }
 }
 
@@ -3978,7 +3983,7 @@ function addNwItem(type) {
   list.push({ id: Date.now(), name: name.trim(), amt, type });
   saveNwItems(list);
   renderNetWorth();
-  toast((type === "asset" ? "💰" : "💳") + " " + name.trim() + " added!");
+  toast(name.trim() + " added!");
 }
 
 function deleteNwItem(id) {
@@ -4485,7 +4490,7 @@ function addExpense() {
     list.push({ id: Date.now() + 1, desc, cat, sub, amt, freq: recurFreq, startDate: date });
     saveRecurring(list);
     renderRecurringList();
-    toast("🔁 " + desc + " — " + fmt(amt) + " added & set to repeat " + recurFreq + "!");
+    toast(desc + " — " + fmt(amt) + " added & set to repeat " + recurFreq + "!");
   } else {
     toast(desc + " — " + fmt(amt) + " added!");
   }
@@ -5254,7 +5259,7 @@ function addIncomeSource() {
         <label>Category</label>
         <select id="_incType" onchange="_updateIncTypeHint(this)" style="width:100%;padding:9px 12px;border:1.5px solid var(--brd);border-radius:9px;font-size:13px;font-family:inherit;background:var(--input-bg);color:var(--txt);outline:none;box-sizing:border-box">${typeOptions}</select>
       </div>
-      <div id="_incTypeHint" style="font-size:11px;color:var(--txt2);margin:-4px 0 10px;padding:6px 10px;background:var(--bg);border-radius:8px;display:none">💡 One-time income won't be added to your monthly budget total — it's logged separately.</div>
+      <div id="_incTypeHint" style="font-size:11px;color:var(--txt2);margin:-4px 0 10px;padding:6px 10px;background:var(--bg);border-radius:8px;display:none">Note: One-time income won't be added to your monthly budget total — it's logged separately.</div>
       <div class="fg" style="margin-bottom:10px">
         <label>Label <span style="font-weight:400;color:var(--txt2)">(optional)</span></label>
         <input type="text" id="_incLabel" placeholder="e.g. Day job, Airbnb" style="width:100%;padding:9px 12px;border:1.5px solid var(--brd);border-radius:9px;font-size:13px;color:var(--txt);background:var(--input-bg);outline:none;box-sizing:border-box">
@@ -5289,12 +5294,106 @@ function _saveIncomeSource() {
   if (!amt || amt <= 0) { toast("Enter a valid amount"); return; }
   const isWindfall = !!INCOME_WINDFALL_LABELS[type];
   const list = getIncomeSources();
-  list.push({ id: Date.now(), type, label, amount: amt, isWindfall, date: new Date().toISOString().split("T")[0] });
+  const entry = { id: Date.now(), type, label, amount: amt, isWindfall, date: new Date().toISOString().split("T")[0] };
+  list.push(entry);
   saveIncomeSources(list);
   document.getElementById("_incSrcModal")?.remove();
-  if (!isWindfall) _syncIncomeSources();
-  renderIncomeSourcesList();
-  toast((isWindfall ? "💰 Windfall" : "Income source") + " added!");
+  if (!isWindfall) {
+    _syncIncomeSources();
+    renderIncomeSourcesList();
+    toast("Income source added!");
+  } else {
+    // Windfall: auto-add to Net Worth assets + show allocation prompt
+    renderIncomeSourcesList();
+    _handleWindfall(entry);
+  }
+}
+
+function _handleWindfall(entry) {
+  // 1. Auto-add to Net Worth as a cash asset
+  const nwList = getNwItems();
+  const assetLabel = entry.label + " (windfall)";
+  nwList.push({ id: Date.now() + 1, name: assetLabel, amt: entry.amount, type: "asset" });
+  saveNwItems(nwList);
+  renderNetWorth();
+  _renderDashNetWorth();
+
+  // 2. Show allocation prompt
+  const existing = document.getElementById("_windfallPrompt");
+  if (existing) existing.remove();
+
+  const data = getData();
+  const goals = data.goals || [];
+  const goalOptions = goals.length
+    ? goals.map(g => `<option value="goal_${g.id}">${escHtml(g.name)} (${fmt(g.target - g.saved)} remaining)</option>`).join("")
+    : "";
+  const nwItems = getNwItems().filter(i => i.type === "asset");
+  const assetOptions = nwItems.map(i => `<option value="nw_${i.id}">${escHtml(i.name)}</option>`).join("");
+
+  const overlay = document.createElement("div");
+  overlay.id = "_windfallPrompt";
+  overlay.style.cssText = "position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.55)";
+  overlay.innerHTML = `
+    <div style="background:var(--card);border-radius:18px;padding:24px;max-width:480px;width:90vw;box-shadow:0 16px 48px rgba(0,0,0,.3)">
+      <div style="font-size:18px;font-weight:900;color:var(--txt);margin-bottom:4px">Windfall received!</div>
+      <div style="font-size:13px;color:var(--txt2);margin-bottom:16px">${escHtml(entry.label)} — <strong style="color:var(--acc)">${fmt(entry.amount)}</strong><br>Added to your Net Worth as a cash asset.</div>
+
+      <div style="font-size:13px;font-weight:700;color:var(--txt);margin-bottom:10px">Allocate this money (optional):</div>
+      <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px">
+        ${goalOptions ? `<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+          <span style="font-size:12px;color:var(--txt2);flex-shrink:0">→ Savings Goal:</span>
+          <select id="_wfGoalSel" style="flex:1;padding:6px 10px;border:1.5px solid var(--brd);border-radius:8px;font-size:12px;font-family:inherit;background:var(--input-bg);color:var(--txt);outline:none">
+            <option value="">Pick a goal...</option>${goalOptions}
+          </select>
+          <input type="text" inputmode="decimal" id="_wfGoalAmt" placeholder="Amount" oninput="formatNumberInput(this)"
+            style="width:100px;padding:6px 9px;border:1.5px solid var(--brd);border-radius:8px;font-size:12px;background:var(--input-bg);color:var(--txt);outline:none">
+          <button onclick="_allocateWindfall('goal')" class="btn btn-pri btn-sm">Allocate</button>
+        </div>` : ""}
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+          <span style="font-size:12px;color:var(--txt2);flex-shrink:0">→ Mark as:</span>
+          <select id="_wfAssetSel" style="flex:1;padding:6px 10px;border:1.5px solid var(--brd);border-radius:8px;font-size:12px;font-family:inherit;background:var(--input-bg);color:var(--txt);outline:none">
+            <option value="">Keep as cash (already done)</option>
+            <option value="savings">Move to Savings Account</option>
+            <option value="investment">Move to Investments</option>
+            <option value="emergency">Add to Emergency Fund</option>
+          </select>
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;justify-content:flex-end">
+        <button onclick="document.getElementById('_windfallPrompt').remove()" style="padding:10px 18px;border-radius:10px;border:1.5px solid var(--brd);background:var(--bg);color:var(--txt2);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit">Keep in Net Worth</button>
+        <button onclick="_allocateWindfall('done')" class="btn btn-pri" style="padding:10px 20px;border-radius:10px;font-size:13px;font-weight:700">Done</button>
+      </div>
+      <div style="font-size:10.5px;color:var(--txt2);margin-top:10px;text-align:center">Your Net Worth has been updated. View Finance tab for details.</div>
+    </div>`;
+  document.body.appendChild(overlay);
+  overlay.addEventListener("click", e => { if(e.target===overlay) overlay.remove(); });
+}
+
+function _allocateWindfall(action) {
+  if (action === "goal") {
+    const goalSel = document.getElementById("_wfGoalSel");
+    const amtInput = document.getElementById("_wfGoalAmt");
+    const goalId = parseInt((goalSel?.value || "").replace("goal_",""));
+    const allocAmt = parseFloat((amtInput?.value||"").replace(/,/g,""));
+    if (!goalId || !allocAmt || allocAmt <= 0) { toast("Pick a goal and enter an amount"); return; }
+    // Add as contribution to goal
+    const data = getData();
+    const g = data.goals.find(g => g.id === goalId);
+    if (g) {
+      if (!g.contributions) g.contributions = [];
+      g.contributions.push({ date: new Date().toISOString().split("T")[0], amt: allocAmt, note: "Windfall allocation" });
+      g.saved = (g.saved || 0) + allocAmt;
+      saveData(data);
+      toast("+" + fmt(allocAmt) + " allocated to " + g.name + "!");
+      renderGoals();
+    }
+    document.getElementById("_windfallPrompt")?.remove();
+    return;
+  }
+  // action = "done" — just close
+  document.getElementById("_windfallPrompt")?.remove();
+  toast("Windfall recorded in Net Worth and Income Sources.");
+  showTab("goals", document.querySelector("[data-tab=goals]"));
 }
 
 function deleteIncomeSource(id) {
@@ -5349,8 +5448,10 @@ function renderIncomeSourcesList() {
       </div>`;
   }
   if (windfalls.length) {
-    html2 += `<div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:var(--acc);margin:4px 0 8px">One-time / Windfall</div>` +
-      windfalls.map(srcRow).join("");
+    html2 += `<div style="display:flex;align-items:center;justify-content:space-between;margin:4px 0 8px">
+      <span style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:var(--acc)">One-time / Windfall</span>
+      <span style="font-size:10px;color:var(--txt2);font-style:italic">→ Added to Net Worth assets</span>
+    </div>` + windfalls.map(srcRow).join("");
   }
   el.innerHTML = html2;
 }
@@ -5541,7 +5642,7 @@ function addBill() {
   document.getElementById("billAmt").value = "";
   renderBills();
   _checkBillAlerts();
-  toast("📋 " + name + " bill added!");
+  toast(name + " bill added!");
 }
 
 function deleteBill(id) {
@@ -5568,10 +5669,10 @@ function markBillPaid(id) {
           recur: bill.recur, remind: bill.remind, cat: bill.cat, paid: false, paidDate: null });
       }
     }
-    toast("✅ " + bill.name + " paid & logged!");
+    toast(bill.name + " paid & logged!");
   } else {
     bill.paid = false; bill.paidDate = null;
-    toast("↩️ " + bill.name + " marked unpaid");
+    toast(bill.name + " marked unpaid");
   }
   saveBills(list);
   renderBills(); _checkBillAlerts();
@@ -5633,9 +5734,9 @@ function _checkBillAlerts() {
   bills.forEach(b => {
     const days = _billDaysLeft(b.due);
     if (days < 0) {
-      alerts.push({ id: "bill_" + b.id, title: b.name + " is overdue!", sub: "Due " + Math.abs(days) + " day(s) ago · " + fmt(b.amt), type: "over" });
+      alerts.push({ id: "bill_" + b.id, billId: b.id, title: b.name + " is overdue!", sub: "Due " + Math.abs(days) + " day(s) ago · " + fmt(b.amt), type: "over" });
     } else if (days <= b.remind) {
-      alerts.push({ id: "bill_" + b.id, title: b.name + " due " + (days === 0 ? "today" : "in " + days + "d"), sub: fmt(b.amt) + " · " + (b.cat || "Needs") + (b.recur ? " · " + b.recur : ""), type: "warn" });
+      alerts.push({ id: "bill_" + b.id, billId: b.id, title: b.name + " due " + (days === 0 ? "today" : "in " + days + "d"), sub: fmt(b.amt) + " · " + (b.cat || "Needs") + (b.recur ? " · " + b.recur : ""), type: "warn" });
     }
   });
   // Merge with budget alerts in bell
@@ -5649,14 +5750,151 @@ function _checkBillAlerts() {
   container.querySelectorAll("[id^='bill_']").forEach(el => el.remove());
   // Insert each alert as a direct child
   const alertsHtml = alerts.map(a =>
-    `<div class="feed-dd-item" id="${a.id}">
+    `<div class="feed-dd-item" id="${a.id}" onclick="closeFeedBell();openBillDetail(${a.billId})" style="cursor:pointer" title="Tap to view bill details">
       <span class="dd-dot" style="background:${a.type==="over"?"var(--dan)":"var(--acc)"};margin-top:6px;flex-shrink:0"></span>
-      <div class="dd-text"><div class="dd-title">${a.title}</div><div class="dd-meta"><span class="dd-tag ${a.type==="over"?"product":"seasonal"}">${a.type==="over"?"overdue":"bill due"}</span> ${a.sub}</div></div>
+      <div class="dd-text"><div class="dd-title">${a.title}</div><div class="dd-meta"><span class="dd-tag ${a.type==="over"?"product":"seasonal"}">${a.type==="over"?"overdue":"bill due"}</span> ${a.sub} <span style="color:var(--pri-d);font-size:10px;margin-left:4px">→ details</span></div></div>
     </div>`).join("");
   const tmp = document.createElement("div");
   tmp.innerHTML = alertsHtml;
   while (tmp.firstChild) container.appendChild(tmp.firstChild);
   _updateBellVisibility(alerts.length);
+}
+
+// ══════════════════════════════════════════════════════════
+// ─── BILL DETAIL MODAL ────────────────────────────────────
+// ══════════════════════════════════════════════════════════
+
+function openBillDetail(billId) {
+  const list = getBills();
+  const b = list.find(b => b.id === billId);
+  if (!b) return;
+
+  const existing = document.getElementById("_billDetailModal");
+  if (existing) existing.remove();
+
+  const days = _billDaysLeft(b.due);
+  const urgent = days < 0;
+  const dueLabel = days < 0
+    ? `<span style="color:var(--dan);font-weight:800">Overdue by ${Math.abs(days)} day${Math.abs(days)!==1?"s":""}</span>`
+    : days === 0
+    ? `<span style="color:var(--acc);font-weight:800">Due today!</span>`
+    : `<span style="color:var(--pri-d)">Due in ${days} day${days!==1?"s":""}</span>`;
+
+  const paidBadge = b.paid
+    ? `<span style="display:inline-flex;align-items:center;gap:4px;background:var(--suc-l);color:var(--suc);border:1px solid var(--suc);border-radius:8px;padding:3px 10px;font-size:11px;font-weight:700">✓ Paid ${b.paidDate ? "on "+b.paidDate : ""}</span>`
+    : `<span style="display:inline-flex;align-items:center;gap:4px;background:${urgent?"var(--dan-l)":"var(--acc-l)"};color:${urgent?"var(--dan)":"var(--acc)"};border:1px solid ${urgent?"var(--dan)":"var(--acc)"};border-radius:8px;padding:3px 10px;font-size:11px;font-weight:700"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> ${urgent?"Overdue":"Upcoming"}</span>`;
+
+  const recurLabel = b.recur ? `Every ${b.recur}` : "One-time";
+  const remindLabel = b.remind === 0 ? "On due date" : `${b.remind} day${b.remind!==1?"s":""} before`;
+
+  const overlay = document.createElement("div");
+  overlay.id = "_billDetailModal";
+  overlay.style.cssText = "position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.55);backdrop-filter:blur(4px);padding:20px 16px";
+  overlay.innerHTML = `
+    <div style="background:var(--card);border-radius:20px;max-width:440px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.3);overflow:hidden;animation:modalIn .25s cubic-bezier(.4,0,.2,1)">
+      <!-- Header -->
+      <div style="padding:18px 20px 14px;border-bottom:1px solid var(--brd);display:flex;align-items:flex-start;justify-content:space-between;gap:10px">
+        <div>
+          <div style="font-size:18px;font-weight:900;color:var(--txt);margin-bottom:4px">${escHtml(b.name)}</div>
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">${paidBadge} ${dueLabel}</div>
+        </div>
+        <button onclick="document.getElementById('_billDetailModal').remove()" style="background:var(--bg);border:1px solid var(--brd);color:var(--txt2);width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px;flex-shrink:0">×</button>
+      </div>
+      <!-- Detail rows -->
+      <div style="padding:16px 20px;display:flex;flex-direction:column;gap:10px">
+        <!-- Amount -->
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:var(--bg);border-radius:10px;border:1.5px solid var(--brd)">
+          <span style="font-size:12px;font-weight:600;color:var(--txt2)">Amount</span>
+          <span style="font-size:22px;font-weight:900;color:var(--txt);font-family:'SF Mono',monospace">${fmt(b.amt)}</span>
+        </div>
+        <!-- Info grid -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+          <div style="padding:10px 12px;background:var(--bg);border-radius:9px;border:1px solid var(--brd)">
+            <div style="font-size:10px;font-weight:700;color:var(--txt2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px">Due Date</div>
+            <div style="font-size:13px;font-weight:700;color:var(--txt)">${b.due}</div>
+          </div>
+          <div style="padding:10px 12px;background:var(--bg);border-radius:9px;border:1px solid var(--brd)">
+            <div style="font-size:10px;font-weight:700;color:var(--txt2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px">Category</div>
+            <div style="font-size:13px;font-weight:700;color:var(--txt)">${b.cat || "Needs"}</div>
+          </div>
+          <div style="padding:10px 12px;background:var(--bg);border-radius:9px;border:1px solid var(--brd)">
+            <div style="font-size:10px;font-weight:700;color:var(--txt2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px">Repeats</div>
+            <div style="font-size:13px;font-weight:700;color:var(--txt)">${recurLabel}</div>
+          </div>
+          <div style="padding:10px 12px;background:var(--bg);border-radius:9px;border:1px solid var(--brd)">
+            <div style="font-size:10px;font-weight:700;color:var(--txt2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px">Reminder</div>
+            <div style="font-size:13px;font-weight:700;color:var(--txt)">${remindLabel}</div>
+          </div>
+        </div>
+        <!-- Partial payment note (if partially paid) -->
+        ${b.paidDate ? `<div style="font-size:11.5px;color:var(--txt2);padding:8px 12px;background:var(--suc-l);border-radius:8px;border:1px solid var(--suc)">✓ Marked paid on ${b.paidDate}${b.recur?" · Next bill scheduled":""}</div>` : ""}
+      </div>
+      <!-- Actions -->
+      <div style="padding:0 20px 18px;display:flex;gap:8px;flex-wrap:wrap">
+        ${!b.paid ? `
+        <button onclick="_billPayFromDetail(${b.id})" class="btn btn-pri" style="flex:2;min-width:0;padding:11px;border-radius:12px;font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center;gap:6px">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          Mark as Paid
+        </button>
+        <button onclick="_billSnoozeFromDetail(${b.id})" style="flex:1;min-width:0;padding:11px;border-radius:12px;font-size:13px;font-weight:600;background:var(--bg);color:var(--txt2);border:1.5px solid var(--brd);cursor:pointer;font-family:inherit">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Snooze 3d
+        </button>
+        ` : `
+        <button onclick="_billUnpayFromDetail(${b.id})" style="flex:1;padding:11px;border-radius:12px;font-size:13px;font-weight:600;background:var(--bg);color:var(--txt2);border:1.5px solid var(--brd);cursor:pointer;font-family:inherit">↩ Mark Unpaid</button>
+        `}
+        <button onclick="_billEditFromDetail(${b.id})" style="flex:1;min-width:0;padding:11px;border-radius:12px;font-size:13px;font-weight:600;background:var(--bg);color:var(--txt2);border:1.5px solid var(--brd);cursor:pointer;font-family:inherit"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> Edit</button>
+        <button onclick="_billDeleteFromDetail(${b.id})" style="padding:11px 14px;border-radius:12px;font-size:13px;background:var(--dan-l);color:var(--dan);border:1.5px solid var(--dan);cursor:pointer;font-family:inherit" title="Delete"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-2 14a2 2 0 01-2 2H9a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a2 2 0 012-2h2a2 2 0 012 2v2"/></svg></button>
+      </div>
+    </div>`;
+  document.body.appendChild(overlay);
+  overlay.addEventListener("click", e => { if(e.target===overlay) overlay.remove(); });
+}
+
+function _billPayFromDetail(id) {
+  document.getElementById("_billDetailModal")?.remove();
+  markBillPaid(id);
+  // Re-render sidebar if article reader is open
+  const ao = document.getElementById("articleOverlay");
+  if (ao && ao.classList.contains("show")) _renderArticleSidebar(window._currentArticleId || 0);
+}
+
+function _billUnpayFromDetail(id) {
+  document.getElementById("_billDetailModal")?.remove();
+  markBillPaid(id); // toggles paid state
+  const ao = document.getElementById("articleOverlay");
+  if (ao && ao.classList.contains("show")) _renderArticleSidebar(window._currentArticleId || 0);
+}
+
+function _billSnoozeFromDetail(id) {
+  const list = getBills();
+  const b = list.find(b => b.id === id);
+  if (!b) return;
+  const d = new Date(b.due + "T00:00:00");
+  d.setDate(d.getDate() + 3);
+  b.due = d.toISOString().split("T")[0];
+  saveBills(list);
+  document.getElementById("_billDetailModal")?.remove();
+  renderBills(); _checkBillAlerts();
+  toast(b.name + " snoozed 3 days → " + b.due);
+}
+
+function _billDeleteFromDetail(id) {
+  if (!confirm("Delete this bill?")) return;
+  saveBills(getBills().filter(b => b.id !== id));
+  document.getElementById("_billDetailModal")?.remove();
+  renderBills(); _checkBillAlerts();
+  toast("Bill deleted");
+}
+
+function _billEditFromDetail(id) {
+  document.getElementById("_billDetailModal")?.remove();
+  // Navigate to expenses tab and scroll to bill form
+  showTab("expenses", document.querySelector("[data-tab=expenses]"));
+  setTimeout(() => {
+    const billSection = document.getElementById("billsList");
+    if (billSection) billSection.scrollIntoView({ behavior: "smooth", block: "center" });
+  }, 200);
+  toast("Edit the bill below");
 }
 
 // ══════════════════════════════════════════════════════════
@@ -5705,7 +5943,7 @@ function renderGoals() {
   el.innerHTML = data.goals.map(g => {
     const pct = g.target > 0 ? Math.min((g.saved / g.target) * 100, 100) : 0;
     let statusClass, statusLabel;
-    if (pct >= 100)      { statusClass = "complete"; statusLabel = "Complete! 🎉"; }
+    if (pct >= 100)      { statusClass = "complete"; statusLabel = "Complete ✓"; }
     else if (pct >= 75)  { statusClass = "almost";   statusLabel = "Almost there"; }
     else if (pct >= 50)  { statusClass = "halfway";  statusLabel = "Halfway"; }
     else if (pct >= 25)  { statusClass = "started";  statusLabel = "Good start"; }
@@ -5725,9 +5963,7 @@ function renderGoals() {
           At your current rate (${fmtShort(monthlySavingsRate)}/mo) — reached by <strong>${projStr}</strong> · ${monthsNeeded} month${monthsNeeded!==1?"s":""}
         </div>`;
       } else {
-        projectionHtml = `<div style="margin-top:8px;padding:7px 10px;background:var(--bg);border-radius:8px;font-size:11.5px;color:var(--txt2);font-weight:600">
-          💡 Log savings expenses to see your projected completion date
-        </div>`;
+        projectionHtml = `<div style="margin-top:8px;padding:7px 10px;background:var(--bg);border-radius:8px;font-size:11.5px;color:var(--txt2);font-weight:600">Log savings expenses to see your projected completion date</div>`;
       }
     }
 
@@ -5742,7 +5978,7 @@ function renderGoals() {
             <span class="goal-contrib-note">${escHtml(c.note || "")}</span>
             <span class="goal-contrib-amt">+${fmt(c.amt)}</span>
             <span style="display:flex;gap:4px;flex-shrink:0;margin-left:6px">
-              <button onclick="editGoalContrib(${g.id},${origIdx})" style="background:none;border:none;color:var(--txt2);cursor:pointer;font-size:11px;padding:1px 5px;border-radius:5px;font-family:inherit;transition:.15s" title="Edit">✏️</button>
+              <button onclick="editGoalContrib(${g.id},${origIdx})" style="background:none;border:none;color:var(--txt2);cursor:pointer;font-size:11px;padding:1px 5px;border-radius:5px;font-family:inherit;transition:.15s" title="Edit"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
               <button onclick="deleteGoalContrib(${g.id},${origIdx})" style="background:none;border:none;color:var(--dan);cursor:pointer;font-size:11px;padding:1px 5px;border-radius:5px" title="Delete">✕</button>
             </span>
           </div>`;
@@ -5770,7 +6006,7 @@ function renderGoals() {
         ${projectionHtml}
         <div style="display:flex;gap:6px;margin-top:10px;flex-wrap:wrap">
           <button onclick="addGoalContribution(${g.id})" class="btn btn-pri btn-sm" style="font-size:12px;padding:6px 14px">+ Add</button>
-          <button onclick="toggleGoalLog(${g.id})" style="font-size:11px;font-weight:600;color:var(--txt2);background:var(--bg);border:1px solid var(--brd);border-radius:8px;padding:5px 10px;cursor:pointer;font-family:inherit">📋 ${contribs.length > 0 ? contribs.length+" entries" : "Log"}</button>
+          <button onclick="toggleGoalLog(${g.id})" style="font-size:11px;font-weight:600;color:var(--txt2);background:var(--bg);border:1px solid var(--brd);border-radius:8px;padding:5px 10px;cursor:pointer;font-family:inherit"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg> ${contribs.length > 0 ? contribs.length+" entries" : "Log"}</button>
         </div>
       </div>
       <div class="goal-contrib-log" id="goalLog_${g.id}">
@@ -6572,6 +6808,12 @@ function renderFeed(posts) {
 }
 
 function openArticle(id) {
+  // Ensure feedPostsCache is populated (may be empty if user only opened bell)
+  if (!feedPostsCache.length) {
+    const cached = localStorage.getItem("bt_feed_cache");
+    if (cached) { try { feedPostsCache = JSON.parse(cached); } catch(e) {} }
+    if (!feedPostsCache.length) feedPostsCache = EMBEDDED_POSTS;
+  }
   const post = feedPostsCache.find(p => p.id === id);
   if (!post) return;
 
@@ -6602,6 +6844,7 @@ function openArticle(id) {
 
   document.getElementById("articleOverlay").classList.add("show");
   document.body.style.overflow = "hidden";
+  window._currentArticleId = id; // track for sidebar refresh after bill actions
   // Scroll reader back to top
   const scroll = document.querySelector(".article-scroll");
   if (scroll) scroll.scrollTop = 0;
@@ -6724,7 +6967,34 @@ function _renderArticleSidebar(activeId) {
     if (!a.pinned && b.pinned) return 1;
     return new Date(b.date) - new Date(a.date);
   });
-  list.innerHTML = posts.map(p => {
+  // Show active bill alerts at top of sidebar
+  const billAlerts = getBills ? getBills().filter(b => {
+    if (b.paid) return false;
+    const days = _billDaysLeft(b.due);
+    return days < 0 || days <= (b.remind || 3);
+  }) : [];
+  const billHtml = billAlerts.map(b => {
+    const days = _billDaysLeft(b.due);
+    const urgent = days < 0 || days === 0;
+    return `<div onclick="openBillDetail(${b.id})" style="padding:9px 11px;margin-bottom:4px;border-radius:9px;background:${urgent?"var(--dan-l)":"var(--acc-l)"};border:1px solid ${urgent?"var(--dan)":"var(--acc)"};cursor:pointer;transition:.15s" title="Tap for details">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:2px">
+        <span style="font-size:10px;font-weight:800;color:${urgent?"var(--dan)":"var(--acc)"};">${urgent?"OVERDUE":"BILL DUE"}</span>
+        <span style="font-size:9px;color:var(--txt2)">tap for details</span>
+      </div>
+      <div style="font-size:12px;font-weight:700;color:var(--txt)">${escHtml(b.name)}</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-top:2px">
+        <span style="font-size:10.5px;color:var(--txt2)">${days<0?Math.abs(days)+"d ago":days===0?"Today":"In "+days+"d"}</span>
+        <span style="font-size:12px;font-weight:800;color:var(--txt);font-family:'SF Mono',monospace">${fmt(b.amt)}</span>
+      </div>
+    </div>`;
+  }).join("");
+  if (billAlerts.length) {
+    list.innerHTML = `<div style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:var(--txt2);padding:6px 11px 4px">Notifications</div>` + billHtml +
+      `<div style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:var(--txt2);padding:6px 11px 4px;border-top:1px solid var(--brd);margin-top:4px">Articles</div>`;
+  } else {
+    list.innerHTML = "";
+  }
+  list.innerHTML += posts.map(p => {
     const d = new Date(p.date + "T00:00:00");
     const dateStr = d.toLocaleDateString("en-US", { month:"short", day:"numeric" });
     const isUnread = !readIds.includes(p.id);
@@ -6981,13 +7251,13 @@ function toggleFeedBell() {
   if (!isOpen) {
     dd.classList.add("show");
     _positionDropdown(dd, btn);
-    // Re-render articles every time bell opens (ensures fresh content)
+    // Re-render articles every time bell opens
     const cached = localStorage.getItem("bt_feed_cache");
-    if (cached) {
-      try { renderBellDropdown(JSON.parse(cached)); } catch(e) {}
-    } else if (typeof feedPostsCache !== "undefined" && feedPostsCache.length) {
-      renderBellDropdown(feedPostsCache);
-    }
+    let postsToRender = [];
+    if (cached) { try { postsToRender = JSON.parse(cached); } catch(e) {} }
+    if (!postsToRender.length && typeof feedPostsCache !== "undefined") postsToRender = feedPostsCache;
+    if (!postsToRender.length) postsToRender = EMBEDDED_POSTS;
+    renderBellDropdown(postsToRender);
     _checkBillAlerts();
     // Only add outside-click listener on desktop; mobile is full-screen
     if (window.innerWidth > 640) {
@@ -7018,11 +7288,20 @@ function renderBellDropdown(posts) {
   const markBtn = document.getElementById("bellMarkAllBtn");
   if (!bellBtn || !list) return;
 
-  // Bell is always visible (alerts may be in it even with no posts)
   bellBtn.style.display = "flex";
 
+  // Always populate feedPostsCache so openArticle works from bell
+  if (posts && posts.length > 0) feedPostsCache = posts;
+
   if (!posts || posts.length === 0) {
-    list.innerHTML = '<div class="feed-dd-empty">No articles yet — check back soon!</div>';
+    // Don't wipe list with innerHTML — keep budgetAlertContainer intact
+    Array.from(list.children).forEach(child => {
+      if (child.id !== "budgetAlertContainer") child.remove();
+    });
+    const empty = document.createElement("div");
+    empty.className = "feed-dd-empty";
+    empty.textContent = "No articles yet — check back soon!";
+    list.appendChild(empty);
     return;
   }
 
@@ -7116,6 +7395,8 @@ function markAllFromBell() {
 function scrollToFeedSection() {
   closeFeedBell();
   openBriefView();
+  // Brief pause to let tab switch complete, then scroll to feed
+  setTimeout(() => window.scrollTo({ top: 0, behavior: "smooth" }), 50);
 }
 
 function openBriefView() {
@@ -7127,6 +7408,16 @@ function openBriefView() {
   const brief = document.getElementById("briefView");
   if (main) main.style.display = "none";
   if (brief) brief.style.display = "block";
+  // Always re-render feed when opening so list is populated
+  const cached = localStorage.getItem("bt_feed_cache");
+  if (cached) {
+    try { renderFeed(JSON.parse(cached)); } catch(e) {}
+  } else if (typeof feedPostsCache !== "undefined" && feedPostsCache.length) {
+    renderFeed(feedPostsCache);
+  } else {
+    // Force load from embedded posts
+    renderFeed(EMBEDDED_POSTS);
+  }
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
@@ -7981,7 +8272,7 @@ function _promptAddChecklistToExpenses(items, dismissKey) {
     renderHistory();
     if (typeof renderRecent === 'function') renderRecent();
     if (typeof renderInsights === 'function') renderInsights();
-    toast('✅ ' + items.length + ' item' + (items.length!==1?'s':'') + ' added to Expenses!');
+    toast(items.length + ' item' + (items.length!==1?'s':'') + ' added to Expenses!');
   });
 }
 
@@ -10747,5 +11038,5 @@ window.addEventListener('appinstalled', () => {
   toast("App installed successfully!");
 });
 </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a19e8b232efc3947',t:'MTc4Mzg0MzUzMw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a19e8b232efc3947',t:'MTc4Mzg0MzUzMw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1a74eb14ddce2f7',t:'MTc4MzkzNTQyOQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
