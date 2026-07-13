@@ -6764,6 +6764,27 @@ function renderInsights() {
   window._insightsData = show;
 }
 
+function _retryAiTips(insightId) {
+  const insights = window._insightsData || [];
+  const insight  = insights.find(i => i.id === insightId);
+  if (!insight) return;
+  const tieredTips = _getTieredTips(insight);
+  // Re-open the modal in loading state and retry
+  const modal = document.getElementById("_insightDetailModal");
+  if (!modal) { openInsightDetail(insightId); return; }
+  // Find and update just the error section to loading
+  const errDiv = modal.querySelector('[style*="Could not reach"]')?.parentElement;
+  if (errDiv) errDiv.innerHTML = '<span style="font-size:11px;color:var(--txt2)">Retrying AI...</span>';
+  _fetchAiInsightTips(insight).then(aiTips => {
+    if (!document.getElementById("_insightDetailModal")) return;
+    // Re-open fresh with result
+    document.getElementById("_insightDetailModal").remove();
+    openInsightDetail(insightId);
+  }).catch(() => {
+    if (errDiv) errDiv.innerHTML = '<span style="font-size:11px;color:var(--dan)">AI still unavailable. Check your API key in Settings.</span>';
+  });
+}
+
 function dismissInsight(id, dismissKey) {
   let dismissed = [];
   try { dismissed = JSON.parse(sessionStorage.getItem(dismissKey) || "[]"); } catch(e) {}
@@ -6809,7 +6830,10 @@ function openInsightDetail(id) {
           AI is generating personalised tips for your situation...
         </div>`
       : aiError
-      ? `<div style="font-size:11px;color:var(--txt2);padding:8px 0;text-align:center">AI tips unavailable — showing offline tips above</div>`
+      ? `<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 10px;background:var(--bg);border-radius:8px;border:1px solid var(--brd);margin-top:10px">
+          <span style="font-size:11px;color:var(--txt2)">Could not reach AI — check your connection or API key</span>
+          <button onclick="event.stopPropagation();_retryAiTips('${insight.id}')" style="font-size:11px;font-weight:700;color:var(--pri-d);background:var(--pri-l);border:1px solid var(--pri);border-radius:6px;padding:3px 9px;cursor:pointer;font-family:inherit;white-space:nowrap">Retry</button>
+        </div>`
       : "";
 
     overlay.innerHTML = `
@@ -6999,61 +7023,94 @@ function _getTieredTips(insight) {
 
 // ── AI tips via user's configured provider ──────────────────
 async function _fetchAiInsightTips(insight) {
-  const config = (() => { try { return getAiConfig(); } catch(e) { return null; } })();
+  if (!aiIsConfigured()) return null;
+  const config = getAiConfig();
   if (!config || !config.key) return null;
 
-  const data   = getData();
-  const income = data.income || 0;
-  const needs  = data.expenses.filter(e=>e.cat==="Needs").reduce((s,e)=>s+e.amt,0);
-  const wants  = data.expenses.filter(e=>e.cat==="Wants").reduce((s,e)=>s+e.amt,0);
-  const savings= data.expenses.filter(e=>e.cat==="Savings").reduce((s,e)=>s+e.amt,0);
-  const sym    = getCurrency();
+  const data    = getData();
+  const income  = data.income || 0;
+  const needs   = data.expenses.filter(e=>e.cat==="Needs").reduce((s,e)=>s+e.amt,0);
+  const wants   = data.expenses.filter(e=>e.cat==="Wants").reduce((s,e)=>s+e.amt,0);
+  const savings = data.expenses.filter(e=>e.cat==="Savings").reduce((s,e)=>s+e.amt,0);
+  const sym     = getCurrency();
 
-  const prompt = `You are a personal finance advisor. Give exactly 4 short, actionable, personalized tips for this specific financial situation.
+  const nPct = income>0?Math.round(needs/income*100):0;
+  const wPct = income>0?Math.round(wants/income*100):0;
+  const sPct = income>0?Math.round(savings/income*100):0;
 
-Insight: "${insight.title}"
-Detail: "${insight.detail || insight.body}"
-User data: Income ${sym}${income.toLocaleString()}/month, Needs ${sym}${needs.toLocaleString()} (${income>0?Math.round(needs/income*100):0}%), Wants ${sym}${wants.toLocaleString()} (${income>0?Math.round(wants/income*100):0}%), Savings ${sym}${savings.toLocaleString()} (${income>0?Math.round(savings/income*100):0}%)
+  const prompt = `Financial situation: Income ${sym}${income.toLocaleString()}/mo | Needs ${nPct}% (${sym}${needs.toLocaleString()}) | Wants ${wPct}% (${sym}${wants.toLocaleString()}) | Savings ${sPct}% (${sym}${savings.toLocaleString()}).
 
-Rules:
-- Each tip must be specific to their EXACT numbers above
-- Use their currency symbol ${sym} and their actual figures
-- Maximum 20 words per tip
-- No generic advice — every tip must reference their specific situation
-- Format: Return ONLY a JSON array of 4 strings, nothing else. Example: ["Tip 1","Tip 2","Tip 3","Tip 4"]`;
+Issue: ${insight.title}. ${insight.detail || insight.body}
+
+Task: Return ONLY a JSON array of 4 specific actionable tips using the exact numbers above. Each tip max 25 words. Use ${sym} currency. Example: ["Tip one","Tip two","Tip three","Tip four"]
+
+Reply with ONLY the JSON array, nothing else.`;
+
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 9000);
 
   try {
     let result = null;
-    const timeout = AbortSignal.timeout(8000);
 
     if (config.provider === "gemini") {
-      const url = `https://generativelanguage.googleapis.com/v1beta/models/${config.model||"gemini-2.0-flash"}:generateContent?key=${config.key}`;
+      const model = config.model || "gemini-2.0-flash";
+      const url = "https://generativelanguage.googleapis.com/v1beta/models/" + model + ":generateContent?key=" + config.key;
       const res = await fetch(url, {
-        method:"POST", signal: timeout,
+        method:"POST", signal: controller.signal,
         headers:{"Content-Type":"application/json"},
-        body: JSON.stringify({ contents:[{parts:[{text:prompt}]}], generationConfig:{maxOutputTokens:200, temperature:0.4} })
+        body: JSON.stringify({ contents:[{parts:[{text:prompt}]}], generationConfig:{maxOutputTokens:300,temperature:0.3} })
       });
+      if (!res.ok) { clearTimeout(timer); return null; }
       const d = await res.json();
       result = d?.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
     } else {
-      const url = config.provider==="custom" ? config.customUrl : getModelEndpoint(config.provider, config.model);
-      const res = await fetch(url, {
-        method:"POST", signal: timeout,
+      // OpenAI-compatible: Groq, OpenAI, OpenRouter, custom
+      let apiUrl;
+      if (config.provider === "custom") {
+        apiUrl = config.customUrl;
+      } else {
+        const ep = getModelEndpoint(config.provider, config.model);
+        apiUrl = (ep && typeof ep === "object") ? ep.url : ep;
+      }
+      if (!apiUrl) { clearTimeout(timer); return null; }
+      const model = config.provider === "custom" ? config.customModel : config.model;
+      const res = await fetch(apiUrl, {
+        method:"POST", signal: controller.signal,
         headers:{"Content-Type":"application/json","Authorization":"Bearer "+config.key},
-        body: JSON.stringify({ model: config.provider==="custom"?config.customModel:config.model, messages:[{role:"user",content:prompt}], max_tokens:200, temperature:0.4 })
+        body: JSON.stringify({ model, messages:[{role:"user",content:prompt}], max_tokens:300, temperature:0.3 })
       });
+      if (!res.ok) { clearTimeout(timer); return null; }
       const d = await res.json();
       result = d?.choices?.[0]?.message?.content?.trim();
     }
 
-    if (!result) return null;
-    // Parse JSON array from response
-    const match = result.match(/\[[\s\S]*?\]/);
-    if (!match) return null;
-    const tips = JSON.parse(match[0]);
-    return Array.isArray(tips) && tips.length >= 2 ? tips : null;
+    clearTimeout(timer);
+    if (!result) { console.warn("AI insight tips: empty result"); return null; }
+
+    // Strip markdown code fences if model wrapped response: ```json [...]  ```
+    let clean = result.replace(/```(?:json|js)?/gi, '').trim();
+
+    // Find JSON array — be very lenient
+    const match = clean.match(/\[[\s\S]*\]/);
+    if (!match) {
+      console.warn("AI insight tips: no JSON array in response:", clean.substring(0,100));
+      return null;
+    }
+    let tips;
+    try { tips = JSON.parse(match[0]); } catch(pe) {
+      console.warn("AI insight tips: JSON parse failed:", pe.message, match[0].substring(0,100));
+      return null;
+    }
+    if (!Array.isArray(tips) || tips.length < 2) {
+      console.warn("AI insight tips: not an array or too short:", tips);
+      return null;
+    }
+    return tips.map(t => String(t).trim()).filter(t => t.length > 8).slice(0, 4);
+
   } catch(e) {
-    return null; // Network error, timeout, parse error — silently fall back
+    clearTimeout(timer);
+    console.warn("AI insight tips exception:", e?.name, e?.message);
+    return null;
   }
 }
 
