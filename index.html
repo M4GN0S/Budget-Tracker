@@ -436,25 +436,6 @@ header p{font-size:14px;color:var(--txt2);font-weight:400;max-width:460px;margin
 .personalize-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 
 /* ─── Income ─── */
-.income-bar{
-  background:linear-gradient(135deg,var(--pri-l),var(--card));
-  border:1.5px solid var(--pri);
-  border-radius:var(--rad);
-  padding:12px 18px;
-  margin-bottom:10px;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  flex-wrap:wrap;
-  gap:12px;
-  box-shadow:var(--sh);
-}
-.income-bar .income-label label{
-  font-size:12px;font-weight:700;color:var(--pri-d);
-  display:flex;align-items:center;gap:5px;margin-bottom:2px;
-}
-.income-bar .income-label p{font-size:11px;color:var(--txt2)}
-.income-right{display:flex;align-items:center;gap:12px;flex-shrink:0}
 .income-input-wrap{
   display:inline-flex;align-items:center;
   border:2px solid var(--pri);border-radius:10px;
@@ -724,15 +705,6 @@ tbody tr:hover td{background:var(--pri-l)}
 .recur-badge svg{flex-shrink:0}
 
 /* ─── Budget Alert banner ─── */
-.budget-alert-bar{display:flex;align-items:flex-start;gap:10px;padding:11px 14px;border-radius:12px;margin-bottom:12px;font-size:13px;line-height:1.5;animation:fadeUp .25s ease}
-.budget-alert-bar.warn{background:var(--acc-l);border:1.5px solid var(--acc);color:var(--txt)}
-.budget-alert-bar.over{background:var(--dan-l);border:1.5px solid var(--dan);color:var(--txt)}
-.budget-alert-bar .ba-icon{flex-shrink:0;margin-top:1px}
-.budget-alert-bar .ba-body{flex:1}
-.budget-alert-bar .ba-title{font-weight:700;margin-bottom:2px}
-.budget-alert-bar .ba-sub{font-size:11.5px;color:var(--txt2)}
-.budget-alert-bar .ba-close{flex-shrink:0;background:none;border:none;color:var(--txt2);cursor:pointer;line-height:0;padding:2px;border-radius:6px;transition:.15s}
-.budget-alert-bar .ba-close:hover{color:var(--txt);background:var(--bg)}
 
 /* ─── Pay Period badge on dashboard ─── */
 .pay-period-bar{display:flex;align-items:center;gap:6px;padding:4px 10px;background:var(--pri-l);border:1px solid var(--pri);border-radius:6px;margin-bottom:8px;font-size:10.5px;color:var(--pri-d);font-weight:600}
@@ -741,9 +713,6 @@ tbody tr:hover td{background:var(--pri-l)}
 .pay-period-bar strong{color:var(--pri-d)}
 
 /* ─── Recurring toggle in add-expense form ─── */
-.recur-toggle-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:4px}
-.recur-toggle-row label{display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--txt2);cursor:pointer;font-weight:600}
-.recur-toggle-row select{padding:5px 10px;border:1.5px solid var(--brd);border-radius:8px;font-size:12px;font-family:inherit;background:var(--bg);color:var(--txt);outline:none;cursor:pointer}
 
 /* ══ TIER 2: BILL TRACKER ══════════════════════════════════ */
 .bill-item{display:flex;align-items:center;gap:12px;padding:11px 14px;background:var(--bg);border:1.5px solid var(--brd);border-radius:12px;margin-bottom:8px;transition:.15s}
@@ -770,9 +739,9 @@ tbody tr:hover td{background:var(--pri-l)}
 /* ══ TIER 2: MONTH CHART ════════════════════════════════════ */
 .month-chart-wrap{overflow-x:auto;padding-bottom:4px}
 .month-chart{display:flex;align-items:flex-end;gap:6px;min-height:140px;padding:12px 0 0}
-.month-col{display:flex;flex-direction:column;align-items:center;gap:4px;flex:1;min-width:44px;max-width:72px}
-.month-bars{display:flex;gap:2px;align-items:flex-end;width:100%;height:110px}
-.month-bar{flex:1;border-radius:4px 4px 0 0;transition:height .4s ease;min-height:2px;cursor:default}
+.month-col{display:flex;flex-direction:column;align-items:center;gap:4px;flex:1;min-width:44px;max-width:72px;position:relative}
+.month-bars{display:flex;gap:2px;align-items:flex-end;justify-content:center;width:100%;height:110px}
+.month-bar{flex:1;border-radius:4px 4px 0 0;transition:height .4s ease;min-height:2px;cursor:default;align-self:flex-end}
 .month-bar.needs{background:var(--pri)}
 .month-bar.wants{background:var(--acc)}
 .month-bar.savings{background:var(--suc)}
@@ -800,9 +769,6 @@ tbody tr:hover td{background:var(--pri-l)}
 .nw-row-icon.asset{background:var(--suc-l);color:var(--suc)}
 .nw-row-icon.liability{background:var(--dan-l);color:var(--dan)}
 .nw-row-name{flex:1;font-size:13px;font-weight:600;color:var(--txt)}
-.nw-row-amt{font-size:13px;font-weight:800;font-family:'SF Mono',Consolas,monospace;white-space:nowrap}
-.nw-row-amt.asset{color:var(--suc)}
-.nw-row-amt.liability{color:var(--dan)}
 .nw-section-label{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:var(--txt2);margin:14px 0 8px;display:flex;align-items:center;gap:8px}
 .nw-section-label::after{content:'';flex:1;height:1px;background:var(--brd)}
 
@@ -829,9 +795,6 @@ tbody tr:hover td{background:var(--pri-l)}
 .export-btn .eb-sub{font-size:11px;color:var(--txt2);font-weight:400}
 
 /* ─── Theme Dots ─── */
-.theme-swatch{
-  display:flex;align-items:center;gap:10px;flex-wrap:wrap;
-}
 .theme-item{display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer}
 .theme-dot{
   width:36px;height:36px;border-radius:50%;
@@ -953,11 +916,6 @@ tbody tr:hover td{background:var(--pri-l)}
 .accordion-content{padding:14px 18px 18px}
 
 /* ─── Financial Journal ─── */
-.note-card{background:var(--card);border:1px solid var(--brd);border-radius:12px;padding:14px;margin-bottom:10px;transition:.2s;position:relative}
-.note-card:hover{box-shadow:var(--sh)}
-.note-card.pinned{border-left:4px solid var(--acc);background:linear-gradient(135deg,var(--card),var(--acc-l))}
-.note-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;gap:8px}
-.note-date{font-size:11px;color:var(--txt2);font-weight:500}
 .note-tag{display:inline-block;padding:2px 8px;border-radius:12px;font-size:10px;font-weight:700;background:var(--pri-l);color:var(--pri-d)}
 .note-tag.goal{background:var(--suc-l);color:var(--suc)}
 .note-tag.reminder{background:var(--acc-l);color:var(--acc)}
@@ -966,17 +924,8 @@ tbody tr:hover td{background:var(--pri-l)}
 .note-tag.receipt{background:var(--dan-l);color:var(--dan)}
 .note-tag.checklist{background:var(--suc-l);color:var(--suc)}
 .note-tag.tip{background:var(--acc-l);color:var(--acc)}
-.note-body{font-size:13px;color:var(--txt);line-height:1.6;white-space:pre-wrap;word-wrap:break-word}
 /* Checkboxes in notes */
-.note-body .note-check{display:inline-flex;align-items:center;gap:6px;cursor:pointer;padding:2px 0}
-.note-body .note-check input[type="checkbox"]{width:16px;height:16px;accent-color:var(--pri);cursor:pointer;margin:0;flex-shrink:0}
-.note-body .note-check.checked span{text-decoration:line-through;opacity:.5}
 
-.note-body strong{font-weight:700}
-.note-body em{font-style:italic}
-.note-actions{display:flex;gap:4px;align-items:center}
-.note-actions button{background:none;border:none;cursor:pointer;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;padding:2px 4px;opacity:.45;transition:.2s;color:var(--txt2)}
-.note-actions button:hover{opacity:1}
 /* ─── Compact Journal List (Gmail-style rows) ─── */
 .note-row{display:flex;align-items:flex-start;gap:12px;padding:13px 14px;background:var(--card);border:1px solid var(--brd);border-radius:12px;margin-bottom:8px;cursor:pointer;transition:.16s;position:relative}
 .note-row:hover{box-shadow:var(--sh);border-color:var(--pri)}
@@ -1166,7 +1115,6 @@ tbody tr:hover td{background:var(--pri-l)}
 .add-item-fab svg{width:12px;height:12px}
 @media(max-width:520px){.add-item-fab{font-size:10px;padding:4px 8px}}
 /* Visually style placeholders (item N / 0.00) so they read as tappable */
-.placeholder-hint{background:linear-gradient(transparent 60%,rgba(126,154,142,.22) 60%);color:var(--txt2);border-radius:2px;padding:0 1px}
 /* Count prompt modal */
 .count-prompt-wrap{display:flex;align-items:center;gap:10px;margin:12px 0 6px;justify-content:center}
 .count-prompt-wrap button{width:36px;height:36px;border-radius:10px;border:1.5px solid var(--brd);background:var(--bg);color:var(--txt);font-size:18px;font-weight:800;cursor:pointer}
@@ -1302,13 +1250,6 @@ tbody tr:hover td{background:var(--pri-l)}
 .streak-bar.inactive .streak-count{color:var(--txt2)}
 
 /* ─── Smart Insights ─── */
-.insights-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:8px}
-.insights-head h3{margin:0}
-.insights-actions{display:flex;align-items:center;gap:8px;flex-shrink:0}
-.insights-count{font-size:10px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;color:var(--txt2);background:var(--bg);border:1px solid var(--brd);border-radius:999px;padding:3px 8px}
-.insights-toggle{width:30px;height:30px;border-radius:999px;background:var(--bg);border:1px solid var(--brd);color:var(--txt2);display:flex;align-items:center;justify-content:center;transition:.2s}
-.insights-toggle:hover{background:var(--pri-l);color:var(--pri-d);border-color:var(--pri)}
-.insights-toggle svg{transition:transform .2s ease}
 #insightsCard.collapsed .insights-toggle svg{transform:rotate(-90deg)}
 #insightsCard.collapsed #insightsList{display:none}
 #insightsCard.collapsed{padding-bottom:18px}
@@ -1321,8 +1262,6 @@ tbody tr:hover td{background:var(--pri-l)}
 .insight-icon.goal{background:var(--pri-l);color:var(--pri-d)}
 .insight-icon.info{background:var(--acc-l);color:var(--acc)}
 .insight-icon.streak{background:var(--pri-l);color:var(--pri-d);font-weight:800;font-size:16px}
-.insight-title{font-size:13px;font-weight:700;color:var(--txt);margin-bottom:2px}
-.insight-body{font-size:12px;color:var(--txt2);line-height:1.5}
 
 /* ─── Feed Bell Notification ─── */
 .feed-bell{position:relative;cursor:pointer;display:flex;align-items:center;justify-content:center;width:40px;height:40px;border-radius:12px;background:var(--card);border:1.5px solid var(--brd);transition:.2s;flex-shrink:0}
@@ -1361,10 +1300,6 @@ tbody tr:hover td{background:var(--pri-l)}
 .fbd-head button{font-size:11px;font-weight:600;color:var(--pri);background:none;border:none;cursor:pointer;padding:2px 6px;font-family:inherit}
 .fbd-head button:hover{text-decoration:underline}
 /* Old dd-head aliases */
-.feed-dd-head{display:flex;align-items:center;justify-content:space-between;padding:12px 14px 10px;border-bottom:1px solid var(--brd)}
-.feed-dd-head h4{margin:0;font-size:13px;font-weight:800;color:var(--txt)}
-.feed-dd-head button{font-size:11px;font-weight:600;color:var(--pri);background:none;border:none;cursor:pointer;padding:2px 6px}
-.feed-dd-head button:hover{text-decoration:underline}
 /* Scrollable middle section */
 .feed-dd-list{overflow-y:auto;flex:1;padding:4px 6px;min-height:0}
 .feed-dd-item{display:flex;gap:10px;padding:10px 12px;border-radius:10px;cursor:pointer;transition:.15s;align-items:flex-start}
@@ -1409,7 +1344,6 @@ tbody tr:hover td{background:var(--pri-l)}
 .feed-header-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px}
 .feed-header-bar h3{margin:0}
 .feed-unread-badge{font-size:10px;font-weight:700;background:var(--pri);color:var(--on-pri);padding:2px 8px;border-radius:10px}
-.feed-empty{text-align:center;padding:24px 16px;color:var(--txt2);font-size:13px}
 .feed-item{cursor:pointer}
 
 /* ─── Article Reader — full-screen, two-panel on desktop ─── */
@@ -1602,6 +1536,13 @@ tbody tr:hover td{background:var(--pri-l)}
 .insight-card-actions{flex-shrink:0;display:flex;align-items:center}
 @keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
 
+/* ── Net Worth dashboard mini-card ── */
+.nw-dash{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 16px;background:var(--card);border:1px solid var(--brd);border-radius:12px;margin-bottom:10px;cursor:pointer;transition:.15s}
+.nw-dash:hover{border-color:var(--pri);box-shadow:var(--sh)}
+.nw-dash-val{font-size:20px;font-weight:900;letter-spacing:-.5px}
+.nw-dash-val.positive{color:var(--suc)}
+.nw-dash-val.negative{color:var(--dan)}
+
 /* ─── Section Divider ─── */
 .section-label{
   font-size:10px;font-weight:700;text-transform:uppercase;
@@ -1700,6 +1641,10 @@ footer .footer-links a:hover{color:var(--pri-d)}
   .donut-wrap{flex-direction:column;align-items:center}
   .donut-svg{width:170px;height:170px}
 }
+
+/* ─── Portal dropdowns show/hide ─── */
+#feedBellDropdown.show { display: flex !important; flex-direction: column; }
+#insightsDropdown.open { display: flex !important; flex-direction: column; }
 </style>
 </head>
 <body>
@@ -1758,7 +1703,7 @@ footer .footer-links a:hover{color:var(--pri-d)}
       </div>
       <span class="sidebar-divider"></span>
       <div class="tab" data-tab="goals" data-priority="secondary" onclick="showTab('goals',this)">
-        <span class="tab-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></span><span class="tab-label">Goals</span>
+        <span class="tab-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="16" rx="2"/><path d="M2 10h20"/><path d="M16 14h.01M12 14h.01"/></svg></span><span class="tab-label">Finance</span>
       </div>
       <div class="tab" data-tab="history" data-priority="secondary" onclick="showTab('history',this)">
         <span class="tab-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></span><span class="tab-label">History</span>
@@ -1839,38 +1784,14 @@ footer .footer-links a:hover{color:var(--pri-d)}
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
               <span id="insightsIconBadge" style="display:none;position:absolute;top:-4px;right:-4px;min-width:16px;height:16px;border-radius:8px;background:var(--pri);color:var(--on-pri);font-size:9px;font-weight:800;align-items:center;justify-content:center;padding:0 3px;line-height:16px"></span>
             </button>
-            <!-- Insights dropdown panel — same style as bell -->
-            <div id="insightsDropdown" style="display:none;position:fixed;width:320px;max-height:420px;background:var(--card);border-radius:16px;box-shadow:0 16px 48px rgba(0,0,0,.22);border:1px solid var(--brd);z-index:2000;flex-direction:column;overflow:hidden;animation:fadeUp .2s ease;text-align:left">
-              <div class="fbd-head">
-                <span>Insights</span>
-                <div style="display:flex;align-items:center;gap:8px">
-                  <span id="insightsCount" style="font-size:11px;font-weight:600;color:var(--txt2)"></span>
-                  <button onclick="toggleInsightsDropdown()" aria-label="Close" style="background:var(--bg);border:1px solid var(--brd);color:var(--txt2);width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;font-size:16px;line-height:1">×</button>
-                </div>
-              </div>
-              <div style="overflow-y:auto;flex:1;padding:4px 6px;min-height:0" id="insightsList"></div>
-            </div>
+
           </div>
 
           <!-- Bell -->
           <div class="feed-bell" id="feedBellBtn" onclick="toggleFeedBell()" title="Notifications" style="display:flex;flex-shrink:0">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
             <span class="feed-bell-badge" id="feedBellBadge"></span>
-            <div class="feed-bell-dropdown" id="feedBellDropdown" onclick="event.stopPropagation()">
-              <div class="fbd-head">
-                <span>Updates &amp; Alerts</span>
-                <div style="display:flex;align-items:center;gap:8px">
-                  <button onclick="markAllFromBell()" id="bellMarkAllBtn" style="font-size:11px;font-weight:600;color:var(--pri);background:none;border:none;cursor:pointer;padding:2px 6px;font-family:inherit;border-radius:6px;transition:.15s">Mark all read</button>
-                  <button onclick="closeFeedBell()" aria-label="Close" style="background:var(--bg);border:1px solid var(--brd);color:var(--txt2);width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;font-size:16px;line-height:1">×</button>
-                </div>
-              </div>
-              <div class="feed-dd-list" id="feedBellList">
-                <div id="budgetAlertContainer"></div>
-              </div>
-              <div class="feed-dd-footer" style="flex-shrink:0">
-                <button onclick="closeFeedBell();scrollToFeedSection()">See all articles →</button>
-              </div>
-            </div>
+            
           </div>
 
           </div>
@@ -1884,7 +1805,7 @@ footer .footer-links a:hover{color:var(--pri-d)}
 
     <!-- Personalize card (shows once for new users) -->
     <div class="personalize-card" id="personalizeCard" style="display:none">
-      <h4>👋 What should we call you?</h4>
+      <h4 style="display:flex;align-items:center;gap:8px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg> What should we call you?</h4>
       <p>Your dashboard greeting — nothing is shared.</p>
       <div class="personalize-row">
         <input type="text" id="userNameInput" placeholder="e.g. Maria, Boss, Kuya..." maxlength="30" onkeydown="if(event.key==='Enter')saveUserName()">
@@ -1893,9 +1814,18 @@ footer .footer-links a:hover{color:var(--pri-d)}
       </div>
     </div>
 
-    <!-- Bills due soon -->
-    <!-- Bills due soon -->
-    <div id="dashBillsContainer"></div>
+    <!-- Net Worth mini card (shown when NW items exist) -->
+    <div class="nw-dash" id="dashNwCard" onclick="showTab('goals',document.querySelector('[data-tab=goals]'))" title="View full Net Worth details" style="display:none">
+      <div>
+        <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--txt2);margin-bottom:3px">NET WORTH</div>
+        <div class="nw-dash-val" id="dashNwVal">—</div>
+        <div id="dashNwTrend" style="font-size:10px;margin-top:2px"></div>
+      </div>
+      <div style="text-align:right;flex-shrink:0">
+        <div style="font-size:10px;color:var(--txt2);margin-bottom:4px" id="dashNwBreakdown"></div>
+        <button onclick="showTab('goals',document.querySelector('[data-tab=goals]'))" style="font-size:10px;color:var(--pri-d);font-weight:700;background:none;border:none;cursor:pointer;padding:0;font-family:inherit">View details →</button>
+      </div>
+    </div>
 
     <!-- Stat Cards -->
     <div class="stats">
@@ -2009,7 +1939,7 @@ footer .footer-links a:hover{color:var(--pri-d)}
           <input type="email" id="dashNlEmail" placeholder="your@email.com" style="flex:1;min-width:140px;padding:9px 14px;border:1.5px solid var(--brd);border-radius:10px;font-size:13px;font-family:inherit;outline:none;background:var(--input-bg);color:var(--txt);box-sizing:border-box">
           <button class="btn btn-pri btn-sm" onclick="submitDashNewsletter()">Subscribe</button>
         </div>
-        <div id="dashNlDone" style="display:none;font-size:13px;font-weight:700;color:var(--suc)">You're subscribed! ✓</div>
+        <div id="dashNlDone" style="display:none;font-size:13px;font-weight:700;color:var(--suc)">You're subscribed! <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle"><polyline points="20 6 9 17 4 12"/></svg></div>
       </div>
     </div>
 
@@ -2138,6 +2068,60 @@ footer .footer-links a:hover{color:var(--pri-d)}
       </div>
     </div>
 
+    <!-- Bill Tracker -->
+    <div class="card">
+      <h3><span class="icon-wrap"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg></span> Bill Tracker</h3>
+      <p style="font-size:12px;color:var(--txt2);margin-bottom:12px">Track upcoming bills. Mark as paid to auto-log them as expenses.</p>
+      <div id="billsList"></div>
+      <div class="section-label" style="margin-top:14px;margin-bottom:10px">Add Bill</div>
+      <div style="display:grid;grid-template-columns:2fr 1fr 1fr auto;gap:10px;align-items:end">
+        <div class="fg">
+          <label>Bill Name</label>
+          <input type="text" id="billName" placeholder="e.g. Electricity">
+        </div>
+        <div class="fg">
+          <label>Amount</label>
+          <input type="number" id="billAmt" placeholder="0.00" step="0.01" min="0">
+        </div>
+        <div class="fg">
+          <label>Due Date</label>
+          <input type="date" id="billDue">
+        </div>
+        <div class="fg">
+          <label>&nbsp;</label>
+          <button class="btn btn-pri" onclick="addBill()">+ Add</button>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:8px">
+        <div class="fg">
+          <label style="font-size:10px">Repeats</label>
+          <select id="billRecur" style="padding:6px 8px;border:1.5px solid var(--brd);border-radius:8px;font-size:11px;font-family:inherit;background:var(--input-bg);color:var(--txt);outline:none;width:100%">
+            <option value="">One-time</option>
+            <option value="monthly">Monthly</option>
+            <option value="weekly">Weekly</option>
+            <option value="yearly">Yearly</option>
+          </select>
+        </div>
+        <div class="fg">
+          <label style="font-size:10px">Remind me</label>
+          <select id="billRemind" style="padding:6px 8px;border:1.5px solid var(--brd);border-radius:8px;font-size:11px;font-family:inherit;background:var(--input-bg);color:var(--txt);outline:none;width:100%">
+            <option value="0">On due date</option>
+            <option value="1">1 day before</option>
+            <option value="3" selected>3 days before</option>
+            <option value="7">1 week before</option>
+          </select>
+        </div>
+        <div class="fg">
+          <label style="font-size:10px">Category</label>
+          <select id="billCat" style="padding:6px 8px;border:1.5px solid var(--brd);border-radius:8px;font-size:11px;font-family:inherit;background:var(--input-bg);color:var(--txt);outline:none;width:100%">
+            <option value="Needs">Needs</option>
+            <option value="Wants">Wants</option>
+            <option value="Savings">Savings</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
   </div>
 
   <!-- ─────────────────────────────────────── -->
@@ -2227,6 +2211,17 @@ footer .footer-links a:hover{color:var(--pri-d)}
       <button onclick="addNwItem('liability')" style="width:100%;padding:8px;border:1.5px dashed var(--brd);border-radius:10px;background:transparent;color:var(--txt2);font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;transition:.15s" onmouseover="this.style.borderColor='var(--dan)';this.style.color='var(--dan)'" onmouseout="this.style.borderColor='var(--brd)';this.style.color='var(--txt2)'">+ Add Liability</button>
     </div>
 
+    <!-- Income Sources -->
+    <div class="card">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:8px">
+        <h3 style="margin:0"><span class="icon-wrap"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></span> Income Sources</h3>
+        <div style="font-size:11px;color:var(--txt2)">Total: <strong id="incomeSourcesTotalLabel" style="color:var(--pri-d)">—</strong></div>
+      </div>
+      <p style="font-size:12px;color:var(--txt2);margin-bottom:10px">Break down your income by source. The total auto-sets your monthly budget.</p>
+      <div id="incomeSourcesList"></div>
+      <button onclick="addIncomeSource()" style="width:100%;padding:8px;border:1.5px dashed var(--brd);border-radius:10px;background:transparent;color:var(--txt2);font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;margin-top:8px;transition:.15s" onmouseover="this.style.borderColor='var(--pri)';this.style.color='var(--pri-d)'" onmouseout="this.style.borderColor='var(--brd)';this.style.color='var(--txt2)'">+ Add Income Source</button>
+    </div>
+
     <!-- Savings Goals -->
     <div class="card">
       <h3><span class="icon-wrap"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></span> Savings Goals</h3>
@@ -2249,32 +2244,6 @@ footer .footer-links a:hover{color:var(--pri-d)}
         <div class="fg">
           <label>&nbsp;</label>
           <button class="btn btn-pri" onclick="addGoal()">+ Add Goal</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Bill Tracker -->
-    <div class="card">
-      <h3><span class="icon-wrap"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg></span> Bill Tracker</h3>
-      <p style="font-size:12px;color:var(--txt2);margin-bottom:12px">Track upcoming bills. Mark as paid to auto-log them as expenses.</p>
-      <div id="billsList"></div>
-      <div class="section-label" style="margin-top:14px;margin-bottom:10px">Add Bill</div>
-      <div style="display:grid;grid-template-columns:2fr 1fr 1fr auto;gap:10px;align-items:end">
-        <div class="fg">
-          <label>Bill Name</label>
-          <input type="text" id="billName" placeholder="e.g. Electricity">
-        </div>
-        <div class="fg">
-          <label>Amount</label>
-          <input type="number" id="billAmt" placeholder="0.00" step="0.01" min="0">
-        </div>
-        <div class="fg">
-          <label>Due Date</label>
-          <input type="date" id="billDue">
-        </div>
-        <div class="fg">
-          <label>&nbsp;</label>
-          <button class="btn btn-pri" onclick="addBill()">+ Add</button>
         </div>
       </div>
     </div>
@@ -2452,6 +2421,8 @@ footer .footer-links a:hover{color:var(--pri-d)}
           <button class="qa-chip" onclick="aiQuickAction('afford')">Can I afford...?</button>
           <button class="qa-chip" onclick="aiQuickAction('goals')">Check my goals</button>
           <button class="qa-chip" onclick="aiQuickAction('compare')">This month vs budget</button>
+          <button class="qa-chip" onclick="aiQuickAction('bills')">Review bills</button>
+          <button class="qa-chip" onclick="aiQuickAction('forecast')">Forecast month-end</button>
         </div>
         <!-- Messages -->
         <div class="chat-messages" id="chatMessages"></div>
@@ -2514,7 +2485,7 @@ footer .footer-links a:hover{color:var(--pri-d)}
             <input type="checkbox" id="payPeriodEnabled" onchange="savePayPeriodSettings()">
             Enable Pay Period Mode
           </label>
-          <div id="payPeriodOptions" style="display:none;display:flex;flex-direction:column;gap:8px">
+          <div id="payPeriodOptions" style="display:none;flex-direction:column;gap:8px">
             <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
               <label style="font-size:12px;color:var(--txt2);font-weight:600;min-width:80px">Frequency</label>
               <select id="payPeriodFreq" onchange="savePayPeriodSettings()" style="padding:7px 12px;border:1.5px solid var(--brd);border-radius:8px;font-size:12px;font-family:inherit;background:var(--bg);color:var(--txt);outline:none">
@@ -2530,7 +2501,7 @@ footer .footer-links a:hover{color:var(--pri-d)}
                 <input type="number" id="payPeriodDay" min="1" max="31" placeholder="e.g. 15"
                   onchange="savePayPeriodSettings()"
                   style="width:72px;padding:7px 10px;border:1.5px solid var(--brd);border-radius:8px;font-size:13px;font-weight:700;font-family:inherit;background:var(--bg);color:var(--txt);outline:none;text-align:center">
-                <span style="font-size:12px;color:var(--txt2)">day of month (1–31)</span>
+                <span id="paydayHint" style="font-size:12px;color:var(--txt2)">day of month (1–31)</span>
               </div>
             </div>
           </div>
@@ -2550,6 +2521,10 @@ footer .footer-links a:hover{color:var(--pri-d)}
               <option value="90">90% of budget</option>
             </select>
           </div>
+          <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--txt);cursor:pointer;font-weight:500;margin-top:6px">
+            <input type="checkbox" id="billAlertsEnabled" checked onchange="saveBudgetAlertSettings()">
+            Show bill due alerts in notifications
+          </label>
         </div>
         <div class="section-label" style="margin-bottom:8px">Currency</div>
         <select id="currencySelect" onclick="event.stopPropagation()" onchange="setCurrency(this.value)" style="padding:9px 14px;border:1.5px solid var(--brd);border-radius:10px;font-size:13px;font-family:inherit;outline:none;background:var(--input-bg);color:var(--txt);min-width:200px">
@@ -2760,6 +2735,10 @@ footer .footer-links a:hover{color:var(--pri-d)}
           <div class="export-btn" onclick="event.stopPropagation();exportJSON()">
             <div class="eb-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/></svg></div>
             <div><div class="eb-text">Full Backup</div><div class="eb-sub">JSON — everything</div></div>
+          </div>
+          <div class="export-btn" onclick="event.stopPropagation();exportPDF()">
+            <div class="eb-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg></div>
+            <div><div class="eb-text">PDF Report</div><div class="eb-sub">Print or save as PDF</div></div>
           </div>
         </div>
         <!-- Import -->
@@ -3164,7 +3143,7 @@ footer .footer-links a:hover{color:var(--pri-d)}
 <div class="toast" id="toast"></div>
 
 <script>
-const APP_VERSION = "1.0.1";
+const APP_VERSION = '1.0.98'; // v98
 const PRODUCT_LINKS = { annualKit: "#annual-analysis-kit", managedAi: "#managed-ai", shop: "#shop" };
 // ─── DATA STORE + AUTO-BACKUP SYSTEM ───────────────────────
 const STORAGE_KEY = "budget_tracker_503020";
@@ -3509,7 +3488,7 @@ function applyRecurringExpenses() {
 
   if (changed) {
     saveData(data);
-    toast("🔁 Recurring expenses applied for this period.");
+    toast("Recurring expenses applied for this period.");
   }
 }
 
@@ -3553,7 +3532,7 @@ function renderRecurringList() {
         <span style="font-size:11px;color:var(--txt2)">${r.cat} · ${r.sub} · ${fmt(r.amt)}</span>
       </span>
       <span class="recur-badge"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 014-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 01-4 4H3"/></svg>${freqLabel[r.freq]||r.freq}</span>
-      <button onclick="deleteRecurring(${r.id})" style="background:none;border:none;color:var(--dan);cursor:pointer;font-size:12px;font-weight:700;padding:4px 8px;border-radius:6px;transition:.15s" title="Remove recurring">✕</button>
+      <button onclick="deleteRecurring(${r.id})" style="background:none;border:none;color:var(--dan);cursor:pointer;padding:4px;border-radius:6px;transition:.15s;line-height:0;display:flex;align-items:center" title="Remove recurring"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
     </div>
   `).join("");
 }
@@ -3563,19 +3542,24 @@ function renderRecurringList() {
 // ══════════════════════════════════════════════════════════
 
 function saveBudgetAlertSettings() {
-  const enabled   = document.getElementById("alertsEnabled")?.checked ?? true;
-  const threshold = document.getElementById("alertThreshold")?.value  ?? "80";
+  const enabled     = document.getElementById("alertsEnabled")?.checked ?? true;
+  const threshold   = document.getElementById("alertThreshold")?.value  ?? "80";
+  const billAlerts  = document.getElementById("billAlertsEnabled")?.checked ?? true;
   localStorage.setItem("bt_alert_enabled",   enabled ? "1" : "0");
   localStorage.setItem("bt_alert_threshold", threshold);
+  localStorage.setItem("bt_bill_alerts",     billAlerts ? "1" : "0");
 }
 
 function loadBudgetAlertSettings() {
-  const enabled   = localStorage.getItem("bt_alert_enabled") !== "0";
-  const threshold = localStorage.getItem("bt_alert_threshold") || "80";
-  const cb  = document.getElementById("alertsEnabled");
-  const sel = document.getElementById("alertThreshold");
+  const enabled    = localStorage.getItem("bt_alert_enabled") !== "0";
+  const threshold  = localStorage.getItem("bt_alert_threshold") || "80";
+  const billAlerts = localStorage.getItem("bt_bill_alerts") !== "0";
+  const cb   = document.getElementById("alertsEnabled");
+  const sel  = document.getElementById("alertThreshold");
+  const cbB  = document.getElementById("billAlertsEnabled");
   if (cb)  cb.checked  = enabled;
   if (sel) sel.value   = threshold;
+  if (cbB) cbB.checked = billAlerts;
 }
 
 function checkBudgetAlerts() {
@@ -3695,6 +3679,13 @@ function savePayPeriodSettings() {
   localStorage.setItem("bt_pp_day",     day);
   const opts = document.getElementById("payPeriodOptions");
   if (opts) opts.style.display = enabled ? "flex" : "none";
+  // Update the payday hint text based on frequency
+  const hint = document.getElementById("paydayHint");
+  if (hint) {
+    if (freq === "weekly")    hint.textContent = "day of week (0=Sun, 1=Mon…6=Sat)";
+    else if (freq === "biweekly") hint.textContent = "anchor day of year (1–31, used for 2-week cycle)";
+    else                      hint.textContent = "day of month (1–31)";
+  }
   renderPayPeriodBar();
   updateDashboard();
 }
@@ -3801,10 +3792,13 @@ document.addEventListener("DOMContentLoaded", () => {
   renderRecurringList();
   checkBudgetAlerts();
   renderBills();
-  renderDashBills();
   renderNetWorth();
   renderMonthChart();
   renderLearnedKeywords();
+  renderIncomeSourcesList();
+  _syncIncomeSources();
+  _checkBillAlerts();
+  _renderDashNetWorth();
   document.getElementById("billDue").valueAsDate = new Date();
   // Show correct FAB for initial active tab
   _updateFab("dashboard");
@@ -3853,7 +3847,7 @@ function addBill() {
   document.getElementById("billDue").value  = "";
   renderBills();
   renderDashBills();
-  toast("📋 " + name + " bill added!");
+  toast(name + " bill added!");
 }
 
 function deleteBill(id) {
@@ -3875,13 +3869,20 @@ function markBillPaid(id) {
     saveData(data);
     updateDashboard(); renderHistory();
     bill.paid = true; bill.paidDate = new Date().toISOString().split("T")[0];
-    toast("✅ " + bill.name + " marked paid & logged as expense!");
+    toast(bill.name + " marked paid & logged as expense!");
   } else {
     bill.paid = false; bill.paidDate = null;
     toast("↩️ " + bill.name + " marked unpaid.");
   }
   saveBills(list);
   renderBills(); renderDashBills();
+}
+
+function _billDaysLeft(dueStr) {
+  // Returns days until due date (negative = overdue)
+  const today = new Date(); today.setHours(0,0,0,0);
+  const due   = new Date(dueStr + "T00:00:00");
+  return Math.round((due - today) / 86400000);
 }
 
 function _billStatus(bill) {
@@ -3920,7 +3921,7 @@ function renderBills() {
       <div class="bill-amt">${fmt(b.amt)}</div>
       <div class="bill-actions">
         <button class="bill-pay-btn ${b.paid?'unpay':''}" onclick="markBillPaid(${b.id})">${b.paid?"Unpay":"Pay"}</button>
-        <button onclick="deleteBill(${b.id})" style="background:none;border:none;color:var(--dan);cursor:pointer;padding:4px;border-radius:6px;line-height:0;font-size:14px" title="Delete">✕</button>
+        <button onclick="deleteBill(${b.id})" style="background:none;border:none;color:var(--dan);cursor:pointer;padding:4px;border-radius:6px;line-line-height:0;display:flex;align-items:center" title="Delete"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
       </div>
     </div>`;
   }).join("");
@@ -3943,7 +3944,7 @@ function renderDashBills() {
   container.innerHTML =
     `<div class="card" style="border-left:4px solid var(--acc);margin-bottom:0">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
-        <span style="font-size:13px;font-weight:800;color:var(--txt)">📋 Upcoming Bills</span>
+        <span style="font-size:13px;font-weight:800;color:var(--txt)">Upcoming Bills</span>
         <span style="font-size:12px;font-weight:700;color:var(--acc)">${fmt(total)} due soon</span>
       </div>
       ${soon.map(b => {
@@ -3957,7 +3958,7 @@ function renderDashBills() {
         </div>`;
       }).join("")}
       <div style="margin-top:8px;text-align:right">
-        <button onclick="showTab('goals',null)" style="font-size:11px;font-weight:700;color:var(--pri-d);background:none;border:none;cursor:pointer;font-family:inherit">View all bills →</button>
+        <button onclick="showTab('expenses',document.querySelector('[data-tab=expenses]'))" style="font-size:11px;font-weight:700;color:var(--pri-d);background:none;border:none;cursor:pointer;font-family:inherit">View all bills →</button>
       </div>
     </div>`;
 }
@@ -4033,16 +4034,79 @@ function getNwItems() {
 function saveNwItems(list) { localStorage.setItem(NW_KEY, JSON.stringify(list)); }
 
 function addNwItem(type) {
-  const name = prompt(type === "asset" ? "Asset name (e.g. Savings Account, Investments):" : "Liability name (e.g. Credit Card, Car Loan):");
-  if (!name || !name.trim()) return;
-  const amtStr = prompt("Amount (" + getCurrency() + "):");
-  const amt = parseFloat((amtStr || "").replace(/,/g, ""));
-  if (isNaN(amt) || amt < 0) { toast("Invalid amount"); return; }
-  const list = getNwItems();
-  list.push({ id: Date.now(), name: name.trim(), amt, type });
-  saveNwItems(list);
-  renderNetWorth();
-  toast((type === "asset" ? "💰" : "💳") + " " + name.trim() + " added!");
+  // Remove any existing modal
+  const existing = document.getElementById("_nwAddModal");
+  if (existing) existing.remove();
+
+  const isAsset = type === "asset";
+  const label   = isAsset ? "Asset" : "Liability";
+  const ph      = isAsset ? "e.g. Savings Account, Car" : "e.g. Credit Card, Mortgage";
+  const accentColor = isAsset ? "var(--suc)" : "var(--dan)";
+  const accentLight = isAsset ? "var(--suc-l)" : "var(--dan-l)";
+
+  const overlay = document.createElement("div");
+  overlay.id = "_nwAddModal";
+  overlay.style.cssText = "position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:1300;display:flex;align-items:flex-end;justify-content:center;padding:0";
+  overlay.innerHTML = `
+    <div style="background:var(--card);border-radius:20px 20px 0 0;width:100%;max-width:480px;padding:22px 20px calc(22px + env(safe-area-inset-bottom,0px));box-shadow:0 -8px 32px rgba(0,0,0,.18)" onclick="event.stopPropagation()">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px">
+        <div style="display:flex;align-items:center;gap:10px">
+          <div style="width:32px;height:32px;border-radius:10px;background:${accentLight};display:flex;align-items:center;justify-content:center">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="${accentColor}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">${isAsset
+              ? '<path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>'
+              : '<rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/>'}
+            </svg>
+          </div>
+          <span style="font-size:15px;font-weight:800;color:var(--txt)">Add ${label}</span>
+        </div>
+        <button onclick="document.getElementById('_nwAddModal').remove()" style="background:var(--bg);border:1px solid var(--brd);color:var(--txt2);width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;font-size:18px;line-height:1" aria-label="Close">×</button>
+      </div>
+      <div class="fg" style="margin-bottom:12px">
+        <label style="font-size:11px;font-weight:700;color:var(--txt2);text-transform:uppercase;letter-spacing:.6px">${label} Name</label>
+        <input type="text" id="_nwAddName" placeholder="${ph}"
+          style="width:100%;padding:10px 12px;border:1.5px solid var(--brd);border-radius:10px;font-size:14px;font-family:inherit;background:var(--input-bg);color:var(--txt);outline:none;box-sizing:border-box;margin-top:5px"
+          oninput="if(this.value.trim())document.getElementById('_nwAddName').style.borderColor='var(--brd)'">
+      </div>
+      <div class="fg" style="margin-bottom:18px">
+        <label style="font-size:11px;font-weight:700;color:var(--txt2);text-transform:uppercase;letter-spacing:.6px">Amount</label>
+        <div style="display:flex;align-items:center;gap:0;margin-top:5px">
+          <span style="padding:10px 10px 10px 12px;background:var(--bg);border:1.5px solid var(--brd);border-right:none;border-radius:10px 0 0 10px;font-size:13px;font-weight:700;color:var(--txt2)">${getCurrency()}</span>
+          <input type="text" inputmode="decimal" id="_nwAddAmt" placeholder="0"
+            style="flex:1;padding:10px 12px;border:1.5px solid var(--brd);border-left:none;border-radius:0 10px 10px 0;font-size:14px;font-weight:700;font-family:'SF Mono',monospace;background:var(--input-bg);color:var(--txt);outline:none"
+            oninput="formatNumberInput(this)">
+        </div>
+      </div>
+      <button onclick="window._saveNwAdd('${type}')"
+        style="width:100%;padding:13px;background:${accentColor};color:#fff;border:none;border-radius:12px;font-size:14px;font-weight:800;cursor:pointer;font-family:inherit;letter-spacing:.2px">
+        Add ${label}
+      </button>
+    </div>`;
+
+  // Save handler
+  window._saveNwAdd = function(t) {
+    const nameEl = document.getElementById("_nwAddName");
+    const amtEl  = document.getElementById("_nwAddAmt");
+    const name   = (nameEl ? nameEl.value : "").trim();
+    const amt    = parseFloat((amtEl ? amtEl.value : "").replace(/,/g,""));
+    if (!name) { if(nameEl) { nameEl.style.borderColor="var(--dan)"; nameEl.focus(); } return; }
+    if (isNaN(amt) || amt < 0) { toast("Enter a valid amount"); return; }
+    const list = getNwItems();
+    list.push({ id: Date.now(), name, amt, type: t });
+    saveNwItems(list);
+    renderNetWorth();
+    overlay.remove();
+    toast(name + " added to " + (t === "asset" ? "assets" : "liabilities"));
+  };
+
+  // Close on backdrop click
+  overlay.addEventListener("click", () => overlay.remove());
+  document.body.appendChild(overlay);
+
+  // Focus name input after paint
+  requestAnimationFrame(() => {
+    const inp = document.getElementById("_nwAddName");
+    if (inp) inp.focus();
+  });
 }
 
 function deleteNwItem(id) {
@@ -4116,6 +4180,7 @@ function renderNetWorth() {
 
   // Save current as snapshot for next time
   localStorage.setItem("bt_nw_prev", String(netWorth));
+  _renderDashNetWorth();
 }
 
 function _nwRow(item, type) {
@@ -4127,7 +4192,7 @@ function _nwRow(item, type) {
     <div class="nw-row-name">${escHtml(item.name)}</div>
     <input type="number" value="${item.amt}" onchange="updateNwAmt(${item.id},this.value)"
       style="width:90px;padding:5px 8px;border:1.5px solid var(--brd);border-radius:8px;font-size:12px;font-weight:700;font-family:'SF Mono',monospace;color:var(--txt);background:var(--input-bg);outline:none;text-align:right">
-    <button onclick="deleteNwItem(${item.id})" style="background:none;border:none;color:var(--dan);cursor:pointer;font-size:14px;padding:2px 4px;border-radius:6px;line-height:1" title="Remove">✕</button>
+    <button onclick="deleteNwItem(${item.id})" style="background:none;border:none;color:var(--dan);cursor:pointer;padding:3px;border-radius:6px;line-height:0;display:flex;align-items:center" title="Remove"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
   </div>`;
 }
 
@@ -4141,10 +4206,10 @@ function showTab(id, el) {
   const tabEl = el || document.querySelector('[data-tab="' + id + '"]');
   if (tabEl) tabEl.classList.add("active");
   if (id === "history")  { renderHistory(); renderMonthChart(); }
-  if (id === "goals")    { renderBills(); renderNetWorth(); }
+  if (id === "goals")    { renderNetWorth(); renderIncomeSourcesList(); _renderDashNetWorth(); }
   if (id === "settings") { renderLearnedKeywords(); }
   if (id === "dashboard") updateDashboard();
-  if (id === "expenses") renderRecent();
+  if (id === "expenses") { renderRecent(); renderBills(); _checkBillAlerts(); }
   if (id === "goals") renderGoals();
   if (id === "notes") renderNotes();
   if (id === "ai") initAiChat();
@@ -4411,7 +4476,7 @@ function renderLearnedKeywords() {
       <span style="flex:1;font-size:12.5px;font-weight:700;color:var(--txt)">"${escHtml(token)}"</span>
       <span style="font-size:11px;color:var(--txt2)">${entry.cat} → ${entry.sub}</span>
       <span style="font-size:10px;color:var(--txt2);padding:1px 6px;border-radius:6px;background:var(--pri-l);color:var(--pri-d)">${entry.count}×</span>
-      <button onclick="deleteLearnedKeyword(${JSON.stringify(token)})" style="background:none;border:none;color:var(--dan);cursor:pointer;font-size:13px;line-height:1;padding:2px 4px;border-radius:5px" title="Remove">✕</button>
+      <button onclick="deleteLearnedKeyword(${JSON.stringify(token)})" style="background:none;border:none;color:var(--dan);cursor:pointer;font-size:13px;line-height:1;padding:2px 4px;border-radius:5px;line-height:0;display:flex;align-items:center" title="Remove"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
     </div>`
   ).join("") +
   (entries.length > 0 ? `<button onclick="clearAllLearnedKeywords()" style="margin-top:4px;font-size:11px;font-weight:700;color:var(--dan);background:none;border:none;cursor:pointer;font-family:inherit;text-decoration:underline">Clear all learned keywords</button>` : "");
@@ -4547,7 +4612,7 @@ function addExpense() {
     list.push({ id: Date.now() + 1, desc, cat, sub, amt, freq: recurFreq, startDate: date });
     saveRecurring(list);
     renderRecurringList();
-    toast("🔁 " + desc + " — " + fmt(amt) + " added & set to repeat " + recurFreq + "!");
+    toast(desc + " — " + fmt(amt) + " added & set to repeat " + recurFreq + "!");
   } else {
     toast(desc + " — " + fmt(amt) + " added!");
   }
@@ -5052,13 +5117,6 @@ function saveIncomeFromSettings() {
   if (msg) { msg.style.display = "inline"; setTimeout(() => { msg.style.display = "none"; }, 2000); }
 }
 
-function spinIncome(dir) {
-  const current = parseIncome();
-  const step = current >= 10000 ? 500 : current >= 1000 ? 100 : 50;
-  const next = Math.max(0, current + (dir * step));
-  setIncomeDisplay(next);
-  updateDashboard();
-}
 
 // ─── DASHBOARD ─────────────────────────────────────────────
 function updateDashboard() {
@@ -5110,7 +5168,9 @@ function updateDashboard() {
   // Refresh insights + alerts + pay period
   renderInsights();
   checkBudgetAlerts();
+  _checkBillAlerts();
   renderPayPeriodBar();
+  _renderDashNetWorth();
 }
 
 function updateProgress(name, spent, budget, cls) {
@@ -5300,7 +5360,7 @@ function renderGoals() {
   el.innerHTML = data.goals.map(g => {
     const pct = g.target > 0 ? Math.min((g.saved / g.target) * 100, 100) : 0;
     let statusClass, statusLabel;
-    if (pct >= 100)      { statusClass = "complete"; statusLabel = "Complete! 🎉"; }
+    if (pct >= 100)      { statusClass = "complete"; statusLabel = "Complete!"; }
     else if (pct >= 75)  { statusClass = "almost";   statusLabel = "Almost there"; }
     else if (pct >= 50)  { statusClass = "halfway";  statusLabel = "Halfway"; }
     else if (pct >= 25)  { statusClass = "started";  statusLabel = "Good start"; }
@@ -5321,7 +5381,7 @@ function renderGoals() {
         </div>`;
       } else {
         projectionHtml = `<div style="margin-top:8px;padding:7px 10px;background:var(--bg);border-radius:8px;font-size:11.5px;color:var(--txt2);font-weight:600">
-          💡 Log savings expenses to see your projected completion date
+          Log savings expenses to see your projected completion date
         </div>`;
       }
     }
@@ -5349,6 +5409,24 @@ function renderGoals() {
         <div style="color:var(--txt2)">${fmtShort(remaining)} remaining</div>
       </div>
       ${projectionHtml}
+      <div style="display:flex;gap:8px;margin-top:10px">
+        <button onclick="addGoalContribution(${g.id})" style="flex:1;padding:7px 12px;border-radius:9px;background:var(--pri-l);border:1.5px solid var(--pri);color:var(--pri-d);font-size:12px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Add contribution
+        </button>
+      </div>
+      ${g.contributions && g.contributions.length > 0 ? `<div style="margin-top:8px;border-top:1px solid var(--brd);padding-top:8px">
+        ${g.contributions.slice().reverse().map((c,ri) => {
+          const idx = g.contributions.length - 1 - ri;
+          return `<div style="display:flex;align-items:center;gap:8px;padding:4px 0;font-size:12px;color:var(--txt2)">
+            <span style="color:var(--suc);font-weight:700">${fmt(c.amt)}</span>
+            <span>${c.date}</span>
+            ${c.note ? `<span style="flex:1;color:var(--txt2)">${escHtml(c.note)}</span>` : '<span style="flex:1"></span>'}
+            <button onclick="editGoalContrib(${g.id},${idx})" style="background:none;border:none;color:var(--txt2);cursor:pointer;padding:2px;line-height:0" title="Edit"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+            <button onclick="deleteGoalContrib(${g.id},${idx})" style="background:none;border:none;color:var(--dan);cursor:pointer;padding:2px;line-height:0" title="Delete"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+          </div>`;
+        }).join("")}
+      </div>` : ""}
     </div>`;
   }).join("");
 }
@@ -5368,7 +5446,540 @@ function _calcMonthlySavingsRate(data) {
   return monthsWithData > 0 ? totalSavings / monthsWithData : 0;
 }
 
+// ══════════════════════════════════════════════════════════
+// ─── RESTORED FEATURE FUNCTIONS ───────────────────────────
+// ══════════════════════════════════════════════════════════
+
+// ── Global number formatter ──────────────────────────────
+function formatNumberInput(el) {
+  const pos = el.selectionStart;
+  const oldLen = el.value.length;
+  let raw = el.value.replace(/[^0-9.]/g, "");
+  const parts = raw.split(".");
+  if (parts.length > 2) raw = parts[0] + "." + parts.slice(1).join("");
+  if (raw) {
+    const [whole, dec] = raw.split(".");
+    const formatted = whole.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    el.value = dec !== undefined ? formatted + "." + dec : formatted;
+  } else { el.value = ""; }
+  const newLen = el.value.length;
+  try { el.setSelectionRange(pos + (newLen - oldLen), pos + (newLen - oldLen)); } catch(e){}
+}
+
+// ── Net Worth dashboard mini card ────────────────────────
+function _renderDashNetWorth() {
+  const card  = document.getElementById("dashNwCard");
+  const valEl = document.getElementById("dashNwVal");
+  const trendEl = document.getElementById("dashNwTrend");
+  const breakEl = document.getElementById("dashNwBreakdown");
+  if (!card || !valEl) return;
+  const items = getNwItems();
+  if (!items.length) { card.style.display = "none"; return; }
+  card.style.display = "flex";
+  const assets = items.filter(i=>i.type==="asset").reduce((s,i)=>s+i.amt,0);
+  const liab   = items.filter(i=>i.type==="liability").reduce((s,i)=>s+i.amt,0);
+  const nw     = assets - liab;
+  valEl.textContent  = (nw < 0 ? "-" : "") + fmt(Math.abs(nw));
+  valEl.className    = "nw-dash-val " + (nw >= 0 ? "positive" : "negative");
+  const prev = parseFloat(localStorage.getItem("bt_nw_prev") || "0");
+  const diff = nw - prev;
+  if (trendEl) {
+    if (Math.abs(diff) >= 1) {
+      const color = diff > 0 ? "var(--suc)" : "var(--dan)";
+      trendEl.innerHTML = "<span style='color:" + color + "'>" + (diff>0?"↑ +":"↓ ") + fmt(Math.abs(diff)) + " vs last</span>";
+    } else { trendEl.innerHTML = ""; }
+  }
+  if (breakEl) breakEl.innerHTML =
+    "<span style='color:var(--suc)'>↑ " + fmt(assets) + "</span>&nbsp;&nbsp;" +
+    "<span style='color:var(--dan)'>↓ " + fmt(liab) + "</span>";
+}
+
+// ── Bill alerts → bell notification ──────────────────────
+function _checkBillAlerts() {
+  // Respect bill alerts toggle setting
+  if (localStorage.getItem("bt_bill_alerts") === "0") return;
+  const container = document.getElementById("budgetAlertContainer");
+  if (!container) return;
+  const bills  = getBills ? getBills().filter(b => !b.paid) : [];
+  const alerts = [];
+  bills.forEach(b => {
+    const days = _billDaysLeft ? _billDaysLeft(b.due) : 0;
+    if (days < 0) {
+      alerts.push({ id:"bill_"+b.id, billId:b.id,
+        title: b.name + " is overdue!",
+        sub:   fmt(b.amt) + " · " + Math.abs(days) + "d ago",
+        type:"over" });
+    } else if (days <= (b.remind || 3)) {
+      alerts.push({ id:"bill_"+b.id, billId:b.id,
+        title: b.name + " due " + (days===0?"today":"in "+days+"d"),
+        sub:   fmt(b.amt) + " · " + (b.cat||"Needs"),
+        type:"warn" });
+    }
+  });
+  container.querySelectorAll("[id^='bill_']").forEach(el => el.remove());
+  if (!alerts.length) { _updateBellVisibility && _updateBellVisibility(); return; }
+  alerts.forEach(a => {
+    const div = document.createElement("div");
+    div.className = "feed-dd-item";
+    div.id = a.id;
+    div.style.cursor = "pointer";
+    div.onclick = () => { closeFeedBell && closeFeedBell(); openBillDetail && openBillDetail(a.billId); };
+    div.innerHTML = `<span class="dd-dot" style="background:${a.type==="over"?"var(--dan)":"var(--acc)"};margin-top:6px;flex-shrink:0"></span>
+      <div class="dd-text">
+        <div class="dd-title">${a.title}</div>
+        <div class="dd-meta"><span class="dd-tag ${a.type==="over"?"product":"seasonal"}">${a.type==="over"?"overdue":"bill due"}</span> ${a.sub}</div>
+      </div>`;
+    container.appendChild(div);
+  });
+  if (typeof _updateBellVisibility === "function") _updateBellVisibility(alerts.length);
+}
+
+// ── Goal contribution log ─────────────────────────────────
+function addGoalContribution(goalId) {
+  const ex = document.getElementById("_contribModal");
+  if (ex) ex.remove();
+  const data = getData();
+  const g = data.goals.find(g => g.id === goalId);
+  if (!g) return;
+  const overlay = document.createElement("div");
+  overlay.id = "_contribModal";
+  overlay.style.cssText = "position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.5)";
+  overlay.innerHTML = `
+    <div style="background:var(--card);border-radius:16px;padding:22px 24px;min-width:280px;max-width:90vw;box-shadow:0 12px 40px rgba(0,0,0,.28)">
+      <div style="font-size:14px;font-weight:800;color:var(--txt);margin-bottom:14px">Add to: ${escHtml(g.name)}</div>
+      <div class="fg" style="margin-bottom:10px">
+        <label>Amount</label>
+        <input type="text" inputmode="decimal" id="_contribAmt" placeholder="0.00" oninput="formatNumberInput(this)"
+          style="width:100%;padding:9px 12px;border:1.5px solid var(--brd);border-radius:9px;font-size:15px;font-weight:800;color:var(--txt);background:var(--input-bg);outline:none;box-sizing:border-box">
+      </div>
+      <div class="fg" style="margin-bottom:16px">
+        <label>Note <span style="font-weight:400;color:var(--txt2)">(optional)</span></label>
+        <input type="text" id="_contribNote" placeholder="e.g. July salary savings"
+          style="width:100%;padding:9px 12px;border:1.5px solid var(--brd);border-radius:9px;font-size:13px;color:var(--txt);background:var(--input-bg);outline:none;box-sizing:border-box">
+      </div>
+      <div style="display:flex;gap:10px;justify-content:flex-end">
+        <button onclick="document.getElementById('_contribModal').remove()" style="padding:9px 16px;border-radius:9px;border:1.5px solid var(--brd);background:var(--bg);color:var(--txt2);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit">Cancel</button>
+        <button onclick="_saveGoalContribution(${goalId})" class="btn btn-pri" style="padding:9px 20px;border-radius:9px;font-size:13px;font-weight:700">Save</button>
+      </div>
+    </div>`;
+  document.body.appendChild(overlay);
+  overlay.addEventListener("click", e => { if(e.target===overlay) overlay.remove(); });
+  setTimeout(() => document.getElementById("_contribAmt")?.focus(), 60);
+}
+
+function _saveGoalContribution(goalId) {
+  const amtRaw = (document.getElementById("_contribAmt")?.value || "").replace(/,/g,"");
+  const amt = parseFloat(amtRaw);
+  if (isNaN(amt) || amt <= 0) { toast("Enter a valid amount"); return; }
+  const note = document.getElementById("_contribNote")?.value.trim() || "";
+  const data = getData();
+  const g = data.goals.find(g => g.id === goalId);
+  if (!g) return;
+  if (!g.contributions) g.contributions = [];
+  g.contributions.push({ date: new Date().toISOString().split("T")[0], amt, note });
+  g.saved = (g.saved || 0) + amt;
+  saveData(data);
+  document.getElementById("_contribModal")?.remove();
+  renderGoals();
+  renderNetWorth();
+  _renderDashNetWorth();
+  toast("+" + fmt(amt) + " added to " + g.name + "!");
+}
+
+function editGoalContrib(goalId, idx) {
+  const data = getData();
+  const g = data.goals.find(g => g.id === goalId);
+  if (!g || !g.contributions || !g.contributions[idx]) return;
+  const c = g.contributions[idx];
+  const ex = document.getElementById("_contribModal");
+  if (ex) ex.remove();
+  const overlay = document.createElement("div");
+  overlay.id = "_contribModal";
+  overlay.style.cssText = "position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.5)";
+  overlay.innerHTML = `
+    <div style="background:var(--card);border-radius:16px;padding:22px 24px;min-width:280px;max-width:90vw;box-shadow:0 12px 40px rgba(0,0,0,.28)">
+      <div style="font-size:14px;font-weight:800;color:var(--txt);margin-bottom:14px">Edit Contribution</div>
+      <div class="fg" style="margin-bottom:10px">
+        <label>Amount</label>
+        <input type="text" inputmode="decimal" id="_contribAmt" value="${c.amt.toFixed(2)}" oninput="formatNumberInput(this)"
+          style="width:100%;padding:9px 12px;border:1.5px solid var(--brd);border-radius:9px;font-size:15px;font-weight:800;color:var(--txt);background:var(--input-bg);outline:none;box-sizing:border-box">
+      </div>
+      <div class="fg" style="margin-bottom:10px">
+        <label>Note</label>
+        <input type="text" id="_contribNote" value="${escHtml(c.note||'')}"
+          style="width:100%;padding:9px 12px;border:1.5px solid var(--brd);border-radius:9px;font-size:13px;color:var(--txt);background:var(--input-bg);outline:none;box-sizing:border-box">
+      </div>
+      <div class="fg" style="margin-bottom:16px">
+        <label>Date</label>
+        <input type="date" id="_contribDate" value="${c.date}"
+          style="width:100%;padding:9px 12px;border:1.5px solid var(--brd);border-radius:9px;font-size:13px;color:var(--txt);background:var(--input-bg);outline:none;box-sizing:border-box">
+      </div>
+      <div style="display:flex;gap:10px;justify-content:flex-end">
+        <button onclick="document.getElementById('_contribModal').remove()" style="padding:9px 16px;border-radius:9px;border:1.5px solid var(--brd);background:var(--bg);color:var(--txt2);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit">Cancel</button>
+        <button onclick="_updateGoalContrib(${goalId},${idx})" class="btn btn-pri" style="padding:9px 20px;border-radius:9px;font-size:13px;font-weight:700">Save</button>
+      </div>
+    </div>`;
+  document.body.appendChild(overlay);
+  overlay.addEventListener("click", e => { if(e.target===overlay) overlay.remove(); });
+}
+
+function _updateGoalContrib(goalId, idx) {
+  const amtRaw = (document.getElementById("_contribAmt")?.value||"").replace(/,/g,"");
+  const newAmt = parseFloat(amtRaw);
+  if (isNaN(newAmt)||newAmt<=0) { toast("Enter a valid amount"); return; }
+  const newNote = document.getElementById("_contribNote")?.value.trim()||"";
+  const newDate = document.getElementById("_contribDate")?.value||new Date().toISOString().split("T")[0];
+  const data = getData();
+  const g = data.goals.find(g=>g.id===goalId);
+  if (!g||!g.contributions||!g.contributions[idx]) return;
+  const oldAmt = g.contributions[idx].amt;
+  g.contributions[idx] = { date:newDate, amt:newAmt, note:newNote };
+  g.saved = Math.max(0,(g.saved||0)-oldAmt+newAmt);
+  saveData(data);
+  document.getElementById("_contribModal")?.remove();
+  renderGoals(); renderNetWorth(); _renderDashNetWorth();
+  toast("Contribution updated!");
+}
+
+function deleteGoalContrib(goalId, idx) {
+  if (!confirm("Delete this contribution?")) return;
+  const data = getData();
+  const g = data.goals.find(g=>g.id===goalId);
+  if (!g||!g.contributions) return;
+  const removed = g.contributions[idx];
+  g.contributions.splice(idx,1);
+  g.saved = Math.max(0,(g.saved||0)-(removed?.amt||0));
+  saveData(data);
+  renderGoals(); renderNetWorth(); _renderDashNetWorth();
+  toast("Contribution deleted");
+}
+
+// ── Income Sources ────────────────────────────────────────
+const INCOME_SOURCES_KEY = "bt_income_sources";
+const INCOME_TYPE_LABELS = {
+  salary:"Salary / Employment", business:"Business", freelance:"Freelance",
+  dividends:"Dividends / Investments", retirement:"Retirement / Pension",
+  rental:"Rental Income", other:"Other Income"
+};
+const INCOME_WINDFALL_LABELS = {
+  lottery:"Lottery Win", inheritance:"Inheritance",
+  property_sale:"Property / Asset Sale", bonus:"One-time Bonus",
+  gift:"Cash Gift", settlement:"Settlement Payout", windfall_other:"Other Windfall"
+};
+
+function getIncomeSources() {
+  try { return JSON.parse(localStorage.getItem(INCOME_SOURCES_KEY)||"[]"); } catch(e){ return []; }
+}
+function saveIncomeSources(list) { localStorage.setItem(INCOME_SOURCES_KEY,JSON.stringify(list)); }
+
+function addIncomeSource() {
+  const ex = document.getElementById("_incSrcModal");
+  if (ex) ex.remove();
+  const typeOpts = '<optgroup label="Monthly / Recurring">' +
+    Object.entries(INCOME_TYPE_LABELS).map(([v,l])=>`<option value="${v}">${l}</option>`).join("") +
+    '</optgroup><optgroup label="One-time / Windfall">' +
+    Object.entries(INCOME_WINDFALL_LABELS).map(([v,l])=>`<option value="${v}">${l}</option>`).join("") + '</optgroup>';
+  const overlay = document.createElement("div");
+  overlay.id = "_incSrcModal";
+  overlay.style.cssText = "position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.5)";
+  overlay.innerHTML = `
+    <div style="background:var(--card);border-radius:16px;padding:22px 24px;min-width:280px;max-width:90vw;box-shadow:0 12px 40px rgba(0,0,0,.28)">
+      <div style="font-size:14px;font-weight:800;color:var(--txt);margin-bottom:14px">Add Income Source</div>
+      <div class="fg" style="margin-bottom:10px">
+        <label>Category</label>
+        <select id="_incType" onchange="_updateIncTypeHint(this)" style="width:100%;padding:9px 12px;border:1.5px solid var(--brd);border-radius:9px;font-size:13px;font-family:inherit;background:var(--input-bg);color:var(--txt);outline:none;box-sizing:border-box">${typeOpts}</select>
+      </div>
+      <div id="_incTypeHint" style="font-size:11px;color:var(--txt2);margin:-4px 0 10px;padding:6px 10px;background:var(--bg);border-radius:8px;display:none">Note: One-time income is logged separately and won't affect your monthly budget.</div>
+      <div class="fg" style="margin-bottom:10px">
+        <label>Label <span style="font-weight:400;color:var(--txt2)">(optional)</span></label>
+        <input type="text" id="_incLabel" placeholder="e.g. Day job, Airbnb" style="width:100%;padding:9px 12px;border:1.5px solid var(--brd);border-radius:9px;font-size:13px;color:var(--txt);background:var(--input-bg);outline:none;box-sizing:border-box">
+      </div>
+      <div class="fg" style="margin-bottom:16px">
+        <label>Monthly Amount</label>
+        <input type="text" inputmode="decimal" id="_incAmt" placeholder="0.00" oninput="formatNumberInput(this)" style="width:100%;padding:9px 12px;border:1.5px solid var(--brd);border-radius:9px;font-size:15px;font-weight:800;color:var(--txt);background:var(--input-bg);outline:none;box-sizing:border-box">
+      </div>
+      <div style="display:flex;gap:10px;justify-content:flex-end">
+        <button onclick="document.getElementById('_incSrcModal').remove()" style="padding:9px 16px;border-radius:9px;border:1.5px solid var(--brd);background:var(--bg);color:var(--txt2);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit">Cancel</button>
+        <button onclick="_saveIncomeSource()" class="btn btn-pri" style="padding:9px 20px;border-radius:9px;font-size:13px;font-weight:700">Save</button>
+      </div>
+    </div>`;
+  document.body.appendChild(overlay);
+  overlay.addEventListener("click", e=>{ if(e.target===overlay) overlay.remove(); });
+  setTimeout(()=>document.getElementById("_incAmt")?.focus(), 60);
+}
+
+function _updateIncTypeHint(sel) {
+  const hint = document.getElementById("_incTypeHint");
+  if (hint) hint.style.display = INCOME_WINDFALL_LABELS[sel.value] ? "block" : "none";
+}
+
+function _saveIncomeSource() {
+  const type  = document.getElementById("_incType")?.value||"other";
+  const label = document.getElementById("_incLabel")?.value.trim()||INCOME_TYPE_LABELS[type]||INCOME_WINDFALL_LABELS[type]||"Income";
+  const amt   = parseFloat((document.getElementById("_incAmt")?.value||"").replace(/,/g,""));
+  if (!amt||amt<=0) { toast("Enter a valid amount"); return; }
+  const isWindfall = !!INCOME_WINDFALL_LABELS[type];
+  const list = getIncomeSources();
+  list.push({ id:Date.now(), type, label, amount:amt, isWindfall, date:new Date().toISOString().split("T")[0] });
+  saveIncomeSources(list);
+  document.getElementById("_incSrcModal")?.remove();
+  if (!isWindfall) _syncIncomeSources();
+  renderIncomeSourcesList();
+  toast((isWindfall?"Windfall":"Income source")+" added!");
+}
+
+function deleteIncomeSource(id) {
+  saveIncomeSources(getIncomeSources().filter(s=>s.id!==id));
+  _syncIncomeSources(); renderIncomeSourcesList();
+}
+
+function _syncIncomeSources() {
+  const sources = getIncomeSources().filter(s=>!s.isWindfall);
+  if (!sources.length) return;
+  const total = sources.reduce((s,src)=>s+src.amount,0);
+  const el = document.getElementById("incomeInput");
+  if (el) { el.value = total.toLocaleString("en-US"); updateDashboard(); setIncomeDisplay(total); }
+  const lbl = document.getElementById("incomeSourcesTotalLabel");
+  if (lbl) lbl.textContent = fmt(total);
+}
+
+function renderIncomeSourcesList() {
+  const el  = document.getElementById("incomeSourcesList");
+  if (!el) return;
+  const sources = getIncomeSources();
+  const monthly  = sources.filter(s=>!s.isWindfall);
+  const windfalls = sources.filter(s=>s.isWindfall);
+  const mTotal = monthly.reduce((s,src)=>s+src.amount,0);
+  const lbl = document.getElementById("incomeSourcesTotalLabel");
+  if (lbl) lbl.textContent = mTotal>0 ? fmt(mTotal) : "—";
+  if (!sources.length) {
+    el.innerHTML = '<p style="font-size:12px;color:var(--txt2);margin:0 0 8px">No income sources yet.</p>';
+    return;
+  }
+  const row = s => `<div style="display:flex;align-items:center;gap:10px;padding:9px 12px;background:var(--bg);border:1.5px solid var(--brd);border-radius:10px;margin-bottom:6px">
+    <div style="flex:1;min-width:0">
+      <div style="font-size:13px;font-weight:700;color:var(--txt)">${escHtml(s.label)}</div>
+      <div style="font-size:10.5px;color:var(--txt2)">${INCOME_TYPE_LABELS[s.type]||INCOME_WINDFALL_LABELS[s.type]||s.type}${s.date?" · "+s.date:""}</div>
+    </div>
+    <div style="font-size:14px;font-weight:800;color:${s.isWindfall?"var(--acc)":"var(--suc)"};white-space:nowrap;font-family:'SF Mono',monospace">${fmt(s.amount)}</div>
+    <button onclick="deleteIncomeSource(${s.id})" style="background:none;border:none;color:var(--dan);cursor:pointer;padding:3px;border-radius:5px;line-height:0;display:flex;align-items:center"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+  </div>`;
+  let html2 = "";
+  if (monthly.length) {
+    html2 += monthly.map(row).join("") +
+      `<div style="display:flex;justify-content:space-between;padding:7px 12px;font-size:12px;font-weight:700;color:var(--pri-d);background:var(--pri-l);border-radius:8px;margin-bottom:8px"><span>Monthly Total</span><span>${fmt(mTotal)}</span></div>`;
+  }
+  if (windfalls.length) {
+    html2 += `<div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:var(--acc);margin:4px 0 8px;display:flex;align-items:center;justify-content:space-between"><span>One-time / Windfall</span><span style="font-style:italic;font-weight:400">Added to Net Worth</span></div>` + windfalls.map(row).join("");
+  }
+  el.innerHTML = html2;
+}
+
+// ── Bill detail modal ─────────────────────────────────────
+function openBillDetail(billId) {
+  const list = getBills ? getBills() : [];
+  const b = list.find(b=>b.id===billId);
+  if (!b) return;
+  const ex = document.getElementById("_billDetailModal");
+  if (ex) ex.remove();
+  const days = _billDaysLeft ? _billDaysLeft(b.due) : 0;
+  const urgent = days < 0;
+  const overlay = document.createElement("div");
+  overlay.id = "_billDetailModal";
+  overlay.style.cssText = "position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.55);backdrop-filter:blur(4px);padding:20px 16px";
+  overlay.innerHTML = `
+    <div style="background:var(--card);border-radius:20px;max-width:440px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.3);overflow:hidden;animation:modalIn .25s cubic-bezier(.4,0,.2,1)">
+      <div style="padding:18px 20px 14px;border-bottom:1px solid var(--brd);display:flex;align-items:flex-start;justify-content:space-between;gap:10px">
+        <div>
+          <div style="font-size:18px;font-weight:900;color:var(--txt);margin-bottom:4px">${escHtml(b.name)}</div>
+          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+            <span style="background:${urgent?"var(--dan-l)":"var(--acc-l)"};color:${urgent?"var(--dan)":"var(--acc)"};border:1px solid ${urgent?"var(--dan)":"var(--acc)"};border-radius:8px;padding:3px 10px;font-size:11px;font-weight:700">${urgent?"Overdue":"Upcoming"}</span>
+            <span style="font-size:12px;color:var(--txt2)">${days<0?Math.abs(days)+"d ago":days===0?"Due today":"Due in "+days+"d"}</span>
+          </div>
+        </div>
+        <button onclick="document.getElementById('_billDetailModal').remove()" style="background:var(--bg);border:1px solid var(--brd);color:var(--txt2);width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px">×</button>
+      </div>
+      <div style="padding:16px 20px;display:flex;flex-direction:column;gap:10px">
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:var(--bg);border-radius:10px;border:1.5px solid var(--brd)">
+          <span style="font-size:12px;font-weight:600;color:var(--txt2)">Amount</span>
+          <span style="font-size:22px;font-weight:900;color:var(--txt);font-family:'SF Mono',monospace">${fmt(b.amt)}</span>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+          <div style="padding:10px 12px;background:var(--bg);border-radius:9px;border:1px solid var(--brd)"><div style="font-size:10px;font-weight:700;color:var(--txt2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px">Due Date</div><div style="font-size:13px;font-weight:700;color:var(--txt)">${b.due}</div></div>
+          <div style="padding:10px 12px;background:var(--bg);border-radius:9px;border:1px solid var(--brd)"><div style="font-size:10px;font-weight:700;color:var(--txt2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px">Category</div><div style="font-size:13px;font-weight:700;color:var(--txt)">${b.cat||"Needs"}</div></div>
+          <div style="padding:10px 12px;background:var(--bg);border-radius:9px;border:1px solid var(--brd)"><div style="font-size:10px;font-weight:700;color:var(--txt2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px">Repeats</div><div style="font-size:13px;font-weight:700;color:var(--txt)">${b.recur?"Every "+b.recur:"One-time"}</div></div>
+          <div style="padding:10px 12px;background:var(--bg);border-radius:9px;border:1px solid var(--brd)"><div style="font-size:10px;font-weight:700;color:var(--txt2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px">Reminder</div><div style="font-size:13px;font-weight:700;color:var(--txt)">${b.remind===0?"On due date":b.remind+"d before"}</div></div>
+        </div>
+      </div>
+      <div style="padding:0 20px 18px;display:flex;gap:8px;flex-wrap:wrap">
+        ${!b.paid?`
+        <button onclick="markBillPaid(${b.id});document.getElementById('_billDetailModal').remove()" class="btn btn-pri" style="flex:2;min-width:0;padding:11px;border-radius:12px;font-size:13px;font-weight:800">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px"><polyline points="20 6 9 17 4 12"/></svg>Mark as Paid
+        </button>
+        <button onclick="_billSnooze(${b.id})" style="flex:1;min-width:0;padding:11px;border-radius:12px;font-size:13px;font-weight:600;background:var(--bg);color:var(--txt2);border:1.5px solid var(--brd);cursor:pointer;font-family:inherit">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px;margin-right:2px"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Snooze 3d
+        </button>`:
+        `<button onclick="markBillPaid(${b.id});document.getElementById('_billDetailModal').remove()" style="flex:1;padding:11px;border-radius:12px;font-size:13px;font-weight:600;background:var(--bg);color:var(--txt2);border:1.5px solid var(--brd);cursor:pointer;font-family:inherit">Mark Unpaid</button>`}
+        <button onclick="document.getElementById('_billDetailModal').remove();deleteBill(${b.id})" style="padding:11px 14px;border-radius:12px;font-size:13px;background:var(--dan-l);color:var(--dan);border:1.5px solid var(--dan);cursor:pointer;font-family:inherit" title="Delete">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-2 14a2 2 0 01-2 2H9a2 2 0 01-2-2L5 6"/></svg>
+        </button>
+      </div>
+    </div>`;
+  document.body.appendChild(overlay);
+  overlay.addEventListener("click", e=>{ if(e.target===overlay) overlay.remove(); });
+}
+
+function _billSnooze(id) {
+  const list = getBills ? getBills() : [];
+  const b = list.find(b=>b.id===id);
+  if (!b) return;
+  const d = new Date(b.due+"T00:00:00");
+  d.setDate(d.getDate()+3);
+  b.due = d.toISOString().split("T")[0];
+  saveBills(list);
+  document.getElementById("_billDetailModal")?.remove();
+  renderBills(); _checkBillAlerts();
+  toast(b.name+" snoozed to "+b.due);
+}
+
 // ─── EXPORT: CSV ───────────────────────────────────────────
+function exportPDF() {
+  const data = getData();
+  if (!data.expenses.length) { toast("No expenses to export"); return; }
+
+  const income   = data.income || 0;
+  const needs    = data.expenses.filter(e => e.cat === "Needs").reduce((s,e)=>s+e.amt,0);
+  const wants    = data.expenses.filter(e => e.cat === "Wants").reduce((s,e)=>s+e.amt,0);
+  const savings  = data.expenses.filter(e => e.cat === "Savings").reduce((s,e)=>s+e.amt,0);
+  const total    = needs + wants + savings;
+  const sym      = getCurrency();
+  const fmtN     = n => sym + " " + Number(n).toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2});
+  const pct      = (v,t) => t > 0 ? Math.round(v/t*100) : 0;
+  const now      = new Date().toLocaleDateString("en-US",{year:"numeric",month:"long",day:"numeric"});
+
+  // Group by category then sub-category
+  const byCat = {};
+  data.expenses.forEach(e => {
+    if (!byCat[e.cat]) byCat[e.cat] = {};
+    const sub = e.sub || "Other";
+    if (!byCat[e.cat][sub]) byCat[e.cat][sub] = [];
+    byCat[e.cat][sub].push(e);
+  });
+
+  const catColor = { Needs:"#5B8FB9", Wants:"#D4A0A0", Savings:"#6C9A8B" };
+  const catRows = cat => {
+    const subs = byCat[cat] || {};
+    return Object.entries(subs).map(([sub, exps]) => {
+      const subtotal = exps.reduce((s,e)=>s+e.amt,0);
+      const rows = exps.map(e =>
+        `<tr><td style="padding:5px 10px 5px 28px;font-size:11px;color:#666">${e.date}</td>
+         <td style="padding:5px 10px;font-size:11px">${e.desc||"—"}</td>
+         <td style="padding:5px 10px;font-size:11px;color:#999">${sub}</td>
+         <td style="padding:5px 10px;font-size:11px;text-align:right;font-family:monospace">${fmtN(e.amt)}</td></tr>`
+      ).join("");
+      return `<tr style="background:#f8f9fa">
+        <td colspan="3" style="padding:6px 10px 6px 16px;font-weight:700;font-size:12px;color:${catColor[cat]||"#444"}">${sub}</td>
+        <td style="padding:6px 10px;text-align:right;font-weight:700;font-size:12px;font-family:monospace">${fmtN(subtotal)}</td>
+      </tr>${rows}`;
+    }).join("");
+  };
+
+  const summaryBar = (label, spent, budget, color) => {
+    const p = budget > 0 ? Math.min(Math.round(spent/budget*100),100) : 0;
+    const over = spent > budget;
+    return `<div style="margin-bottom:14px">
+      <div style="display:flex;justify-content:space-between;margin-bottom:4px;font-size:12px">
+        <span style="font-weight:700;color:${color}">${label}</span>
+        <span>${fmtN(spent)} <span style="color:#999">/ ${fmtN(budget)}</span>
+          <span style="margin-left:6px;font-size:11px;color:${over?'#e74c3c':'#27ae60'};font-weight:700">${over?'Over':'Under'} by ${fmtN(Math.abs(budget-spent))}</span>
+        </span>
+      </div>
+      <div style="height:8px;background:#eee;border-radius:4px;overflow:hidden">
+        <div style="height:100%;width:${p}%;background:${over?'#e74c3c':color};border-radius:4px"></div>
+      </div>
+    </div>`;
+  };
+
+  const html2 = `<!DOCTYPE html><html><head><meta charset="UTF-8">
+  <title>Budget Report — ${now}</title>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:'Segoe UI',Arial,sans-serif;color:#222;padding:32px;max-width:900px;margin:0 auto}
+    h1{font-size:22px;font-weight:800;color:#333;margin-bottom:4px}
+    .sub{font-size:13px;color:#888;margin-bottom:28px}
+    .summary-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:28px}
+    .summary-card{background:#f8f9fa;border-radius:10px;padding:14px;text-align:center}
+    .sc-label{font-size:10px;text-transform:uppercase;letter-spacing:.8px;color:#888;font-weight:700;margin-bottom:4px}
+    .sc-value{font-size:18px;font-weight:900;font-family:monospace}
+    .section-title{font-size:14px;font-weight:800;color:#444;margin:24px 0 12px;padding-bottom:6px;border-bottom:2px solid #eee}
+    table{width:100%;border-collapse:collapse}
+    th{background:#f0f0f0;padding:8px 10px;font-size:11px;text-align:left;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#666}
+    th:last-child,td:last-child{text-align:right}
+    tr:last-child td{border-bottom:2px solid #eee}
+    .cat-header{background:#fff;font-size:13px;font-weight:800}
+    .cat-header td{padding:10px 10px 6px;color:#333}
+    .grand-total td{font-weight:900;font-size:13px;background:#f8f9fa;padding:10px}
+    @media print{body{padding:16px}button{display:none}}
+  </style>
+  </head><body>
+  <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px">
+    <div>
+      <h1>50/30/20 Budget Report</h1>
+      <div class="sub">L'Atelier de Luz · Generated ${now}</div>
+    </div>
+    <button onclick="window.print()" style="padding:8px 18px;background:#6C9A8B;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer">Print / Save PDF</button>
+  </div>
+
+  <div class="summary-grid">
+    <div class="summary-card">
+      <div class="sc-label">Income</div>
+      <div class="sc-value" style="color:#333">${fmtN(income)}</div>
+    </div>
+    <div class="summary-card">
+      <div class="sc-label">Needs ${pct(needs,income)}%</div>
+      <div class="sc-value" style="color:#5B8FB9">${fmtN(needs)}</div>
+    </div>
+    <div class="summary-card">
+      <div class="sc-label">Wants ${pct(wants,income)}%</div>
+      <div class="sc-value" style="color:#D4A0A0">${fmtN(wants)}</div>
+    </div>
+    <div class="summary-card">
+      <div class="sc-label">Savings ${pct(savings,income)}%</div>
+      <div class="sc-value" style="color:#6C9A8B">${fmtN(savings)}</div>
+    </div>
+  </div>
+
+  <div class="section-title">Budget vs Actual</div>
+  ${income > 0 ? summaryBar("Needs (50% target)", needs, income*0.5, "#5B8FB9") : ""}
+  ${income > 0 ? summaryBar("Wants (30% target)", wants, income*0.3, "#D4A0A0") : ""}
+  ${income > 0 ? summaryBar("Savings (20% target)", savings, income*0.2, "#6C9A8B") : ""}
+
+  <div class="section-title">Transaction Detail</div>
+  <table>
+    <thead><tr>
+      <th>Date</th><th>Description</th><th>Sub-category</th><th>Amount</th>
+    </tr></thead>
+    <tbody>
+      ${["Needs","Wants","Savings"].filter(c=>byCat[c]).map(cat=>`
+        <tr class="cat-header"><td colspan="4" style="color:${catColor[cat]}">${cat}</td></tr>
+        ${catRows(cat)}
+      `).join("")}
+      <tr class="grand-total">
+        <td colspan="3">Total Spent</td><td>${fmtN(total)}</td>
+      </tr>
+    </tbody>
+  </table>
+  </body></html>`;
+
+  const win = window.open("","_blank");
+  if (win) {
+    win.document.write(html2);
+    win.document.close();
+  } else {
+    toast("Allow pop-ups to open the PDF report");
+  }
+}
+
 function exportCSV() {
   const data = getData();
   if (!data.expenses.length) { toast("No expenses to export"); return; }
@@ -5562,11 +6173,6 @@ const NEWSLETTER_URL = "YOUR_GOOGLE_APPS_SCRIPT_URL_HERE"; // ← Replace this
 const CONTACT_URL = "YOUR_GOOGLE_APPS_SCRIPT_URL_HERE";    // ← Replace this (can be same sheet)
 const TELEMETRY_URL = "YOUR_GOOGLE_APPS_SCRIPT_URL_HERE";  // ← Replace this (can be same sheet)
 
-function submitNewsletter() {
-  // Settings newsletter removed — redirect to dashboard version
-  submitDashNewsletter();
-  toast("Subscribed! Welcome aboard!");
-}
 
 // ─── DASHBOARD NEWSLETTER ──────────────────────────────────
 function submitDashNewsletter() {
@@ -5853,6 +6459,8 @@ function toggleInsightsDropdown() {
     dd.style.display = "flex";
     dd.style.flexDirection = "column";
     _positionDropdown(dd, btn);
+    if (window.innerWidth <= 640) _showMobileDropdownBackdrop(dd);
+    renderInsights(); // Refresh insights on open
     // Only add outside-click listener on desktop; mobile is full-screen
     if (window.innerWidth > 640) {
       setTimeout(() => document.addEventListener("click", _closeInsightsDdOnOutside), 10);
@@ -5872,9 +6480,6 @@ function _closeInsightsDdOnOutside(e) {
 // Keep toggleInsights as alias for backward compat (called from keyboard shortcuts etc)
 function toggleInsights() { toggleInsightsDropdown(); }
 
-function applyInsightsCollapsedState() {
-  // No-op — insights now live in a dropdown, no collapsed state needed
-}
 
 // ─── SMART INSIGHTS ────────────────────────────────────────
 function renderInsights() {
@@ -6742,9 +7347,16 @@ function toggleFeedBell() {
   if (!isOpen) {
     dd.classList.add("show");
     _positionDropdown(dd, btn);
+    // Refresh alerts and article list every time the bell opens
+    checkBudgetAlerts();
+    _checkBillAlerts();
+    const cached = localStorage.getItem("bt_feed_cache");
+    if (cached) { try { renderBellDropdown(JSON.parse(cached)); } catch(e) {} }
     // Only add outside-click listener on desktop; mobile is full-screen
     if (window.innerWidth > 640) {
       setTimeout(() => document.addEventListener("click", closeFeedBellOnOutside), 10);
+    } else {
+      _showMobileDropdownBackdrop(dd);
     }
   }
 }
@@ -6826,7 +7438,7 @@ function renderBellDropdown(posts) {
         const markReadBtn = isUnread
           ? `<button onclick="event.stopPropagation();markBellItemRead(${p.id})" title="Mark as read"
               style="background:none;border:none;color:var(--txt2);cursor:pointer;font-size:11px;padding:2px 6px;border-radius:6px;font-family:inherit;flex-shrink:0;white-space:nowrap;transition:.15s"
-              onmouseover="this.style.color='var(--pri)'" onmouseout="this.style.color='var(--txt2)'">✓ Read</button>`
+              onmouseover="this.style.color='var(--pri)'" onmouseout="this.style.color='var(--txt2)'">Read</button>`
           : '';
         return `<div class="feed-dd-item" onclick="openArticleFromBell(${p.id})">
           <span class="dd-dot ${isUnread ? 'unread' : 'read'}"></span>
@@ -7735,7 +8347,7 @@ function _promptAddChecklistToExpenses(items, dismissKey) {
     renderHistory();
     if (typeof renderRecent === 'function') renderRecent();
     if (typeof renderInsights === 'function') renderInsights();
-    toast('✅ ' + items.length + ' item' + (items.length!==1?'s':'') + ' added to Expenses!');
+    toast(items.length + ' item' + (items.length!==1?'s':'') + ' added to Expenses!');
   });
 }
 
@@ -9051,10 +9663,6 @@ function getUsageData() {
   } catch(e) { return { date: new Date().toISOString().split("T")[0], count: 0, total: 0 }; }
 }
 
-function incrementUsage() {
-  // Now handled inside parseRateLimitHeaders
-  renderUsageBar();
-}
 
 function getDailyLimit() {
   // Use real provider data if available
@@ -9235,6 +9843,16 @@ function initAiChat() {
   if (config && config.key) {
     if (setup) setup.style.display = "none";
     if (chat) chat.style.display = "block";
+    // Show data context summary so user knows AI has their data
+    const statusEl = document.getElementById("aiStatus");
+    if (statusEl) {
+      const d = getData();
+      const expCount = d.expenses.length;
+      const goalCount = (d.goals || []).length;
+      statusEl.innerHTML = expCount > 0
+        ? "● " + expCount + " transactions · " + goalCount + " goal" + (goalCount!==1?"s":"") + " loaded"
+        : "● Connected — add expenses to get personalized advice";
+    }
     renderUsageBar();
     const providerNames = { gemini:"Google Gemini", groq:"Groq", openai:"OpenAI", openrouter:"OpenRouter", custom:"Custom" };
     const providerLabel = config.provider === "custom" ? "Custom (" + (config.customUrl || "").replace(/https?:\/\//, "").split("/")[0] + ")" : providerNames[config.provider];
@@ -9348,7 +9966,10 @@ Total Spent: ${fmtCtx(total)} | Remaining: ${fmtCtx(income-total)}
 Top Expenses: ${topExpenses || "None yet"}
 Category Breakdown: ${subBreakdown || "None yet"}
 Savings Goals: ${goalInfo}
-Number of Transactions: ${data.expenses.length}`;
+Number of Transactions: ${data.expenses.length}
+${(() => { const bills = (typeof getBills === 'function' ? getBills() : []).filter(b => !b.paid); if (!bills.length) return ''; return 'Upcoming Bills: ' + bills.map(b => b.name + ': ' + fmtCtx(b.amt) + ' due ' + b.due).join(', '); })()}
+${(() => { const nwItems = (typeof getNwItems === 'function' ? getNwItems() : []); if (!nwItems.length) return ''; const a = nwItems.filter(i=>i.type==='asset').reduce((s,i)=>s+i.amt,0); const l = nwItems.filter(i=>i.type==='liability').reduce((s,i)=>s+i.amt,0); return 'Net Worth: ' + fmtCtx(a - l) + ' (Assets: ' + fmtCtx(a) + ', Liabilities: ' + fmtCtx(l) + ')'; })()}
+${(() => { const r = (typeof getRecurring === 'function' ? getRecurring() : []); if (!r.length) return ''; return 'Recurring: ' + r.map(x => x.desc + ' ' + fmtCtx(x.amt) + '/' + x.freq).join(', '); })()}`;
 }
 
 const SYSTEM_PROMPT = `You are a personal budget advisor inside a 50/30/20 budget tracking app.
@@ -9803,7 +10424,9 @@ function aiQuickAction(type) {
     tips: "Based on my actual spending data, give me 3 specific tips to save more money this month.",
     afford: "I want to make a purchase. Based on my remaining budget, how much can I safely spend on 'wants' this month?",
     goals: "Look at my savings goals. Am I on track? What do I need to do to hit them faster?",
-    compare: "Compare my actual spending vs my 50/30/20 budget. Where am I over or under? Be specific."
+    compare: "Compare my actual spending vs my 50/30/20 budget. Where am I over or under? Be specific.",
+    bills: "Look at my upcoming bills. Which ones are most urgent? Anything I should prioritize paying?",
+    forecast: "Based on my current spending rate and remaining days in the month, forecast how much I'll spend by month-end. Will I go over budget?"
   };
   document.getElementById("chatInput").value = actions[type] || "";
   sendChat();
@@ -10462,7 +11085,27 @@ document.addEventListener("click", e => {
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('./sw.js').then(reg => {
     console.log('SW registered:', reg.scope);
+    // Auto-activate any waiting SW immediately (forces cache-busting on update)
+    if (reg.waiting) {
+      reg.waiting.postMessage({ type: 'SKIP_WAITING' });
+    }
+    reg.addEventListener('updatefound', () => {
+      const newWorker = reg.installing;
+      if (newWorker) {
+        newWorker.addEventListener('statechange', () => {
+          if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+            // New SW installed — activate it right away
+            newWorker.postMessage({ type: 'SKIP_WAITING' });
+            window.location.reload();
+          }
+        });
+      }
+    });
   }).catch(err => console.log('SW failed:', err));
+  // Also: whenever a new SW takes control, reload to get fresh content
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    window.location.reload();
+  });
 }
 
 let deferredPrompt = null;
@@ -10501,5 +11144,34 @@ window.addEventListener('appinstalled', () => {
   toast("App installed successfully!");
 });
 </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a19e8b232efc3947',t:'MTc4Mzg0MzUzMw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a19e8b232efc3947',t:'MTc4Mzg0MzUzMw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
+<!-- Insights Dropdown Portal -->
+<div id="insightsDropdown" style="display:none;position:fixed;width:320px;max-height:420px;background:var(--card);border-radius:16px;box-shadow:0 16px 48px rgba(0,0,0,.22);border:1px solid var(--brd);z-index:2000;flex-direction:column;overflow:hidden;animation:fadeUp .2s ease;text-align:left">
+              <div class="fbd-head">
+                <span>Insights</span>
+                <div style="display:flex;align-items:center;gap:8px">
+                  <span id="insightsCount" style="font-size:11px;font-weight:600;color:var(--txt2)"></span>
+                  <button onclick="toggleInsightsDropdown()" aria-label="Close" style="background:var(--bg);border:1px solid var(--brd);color:var(--txt2);width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;font-size:16px;line-height:1">×</button>
+                </div>
+              </div>
+              <div style="overflow-y:auto;flex:1;padding:4px 6px;min-height:0" id="insightsList"></div>
+            </div>
+
+<!-- Bell Dropdown Portal -->
+<div id="feedBellDropdown" style="display:none;position:fixed;z-index:1200;width:min(340px,calc(100vw - 16px));max-height:min(520px,85vh);background:var(--card);border-radius:16px;box-shadow:0 16px 48px rgba(0,0,0,.22);border:1px solid var(--brd);overflow:hidden;flex-direction:column" onclick="event.stopPropagation()">
+              <div class="fbd-head">
+                <span>Updates &amp; Alerts</span>
+                <div style="display:flex;align-items:center;gap:8px">
+                  <button onclick="markAllFromBell()" id="bellMarkAllBtn" style="font-size:11px;font-weight:600;color:var(--pri);background:none;border:none;cursor:pointer;padding:2px 6px;font-family:inherit;border-radius:6px;transition:.15s">Mark all read</button>
+                  <button onclick="closeFeedBell()" aria-label="Close" style="background:var(--bg);border:1px solid var(--brd);color:var(--txt2);width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;font-size:16px;line-height:1">×</button>
+                </div>
+              </div>
+              <div class="feed-dd-list" id="feedBellList">
+                <div id="budgetAlertContainer"></div>
+              </div>
+              <div class="feed-dd-footer" style="flex-shrink:0">
+                <button onclick="closeFeedBell();scrollToFeedSection()">See all articles →</button>
+              </div>
+            </div>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1b14fdafe607d31',t:'MTc4NDA0MDMzNA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
