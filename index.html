@@ -462,7 +462,7 @@ input[type="number"]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0
 .stat{
   background:var(--card);border-radius:var(--rad);
   padding:20px 18px;box-shadow:var(--sh);
-  position:relative;overflow:hidden;
+  position:relative;overflow:visible;
   border:1px solid var(--brd);
   transition:transform .2s,box-shadow .2s;
 }
@@ -1645,6 +1645,337 @@ footer .footer-links a:hover{color:var(--pri-d)}
 /* ─── Portal dropdowns show/hide ─── */
 #feedBellDropdown.show { display: flex !important; flex-direction: column; }
 #insightsDropdown.open { display: flex !important; flex-direction: column; }
+
+/* ─── Finance Tab Accordions ──────────────────────────── */
+.fin-accordion{border:1px solid var(--brd);border-radius:var(--rad);margin-bottom:10px;overflow:hidden;background:var(--card)}
+.fin-accordion .accordion-header{padding:14px 16px;cursor:pointer;transition:background .15s}
+.fin-accordion .accordion-header:hover{background:var(--bg)}
+.fin-accordion .accordion-body{max-height:0;overflow:hidden;transition:max-height .35s cubic-bezier(.4,0,.2,1)}
+.fin-accordion.open .accordion-body{max-height:2000px}
+.fin-accordion .accordion-chevron{transition:transform .25s cubic-bezier(.4,0,.2,1);flex-shrink:0;color:var(--txt2)}
+.fin-accordion.open .accordion-chevron{transform:rotate(180deg)}
+.fin-accordion .accordion-header:hover .accordion-chevron{color:var(--txt)}
+
+
+/* ─── NW Row Cards ─────────────────────────────────────── */
+.nw-row-card{transition:border-color .15s}
+.nw-row-card:hover{border-color:var(--pri) !important}
+
+
+/* ─── Budget Overview: Category Row ──────────────────────── */
+.fin-cat-row {
+  position: relative;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1.5px solid transparent;
+  cursor: pointer;
+  transition: background .15s, border-color .15s;
+  margin-bottom: 4px;
+}
+.fin-cat-row:hover {
+  background: var(--bg);
+  border-color: var(--brd);
+}
+.fin-cat-row .fin-cat-add {
+  /* always visible */
+}
+.fin-cat-add {
+  width: 24px;
+  height: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--card);
+  border: 1.5px solid var(--brd);
+  border-radius: 7px;
+  padding: 0;
+  cursor: pointer;
+  flex-shrink: 0;
+  color: var(--txt2);
+  transition: background .15s, color .15s, border-color .15s, opacity .15s, transform .1s;
+}
+.fin-cat-add:hover {
+  background: var(--pri-l);
+  border-color: var(--pri);
+  color: var(--pri-d);
+  transform: scale(1.08);
+}
+/* Emphasized "left" amount */
+.fin-left-amt {
+  font-size: 13px;
+  font-weight: 900;
+  font-family: 'SF Mono', Consolas, monospace;
+}
+.fin-left-amt.over {
+  color: var(--dan);
+}
+.fin-left-amt.ok {
+  color: var(--txt2);
+}
+/* Summary container (Remaining + Windfall) */
+.fin-summary-box {
+  background: var(--bg);
+  border: 1px solid var(--brd);
+  border-radius: 12px;
+  padding: 10px 14px;
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.fin-summary-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.fin-summary-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--txt2);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.fin-summary-amt {
+  font-size: 14px;
+  font-weight: 900;
+  font-family: 'SF Mono', Consolas, monospace;
+  white-space: nowrap;
+}
+/* ─── Tooltip system ──────────────────────────────────────── */
+.fin-tooltip-wrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+.fin-tooltip-icon {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--bg);
+  border: 1.5px solid var(--brd);
+  color: var(--txt2);
+  font-size: 9px;
+  font-weight: 800;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: default;
+  flex-shrink: 0;
+  transition: background .15s, border-color .15s, color .15s;
+  font-family: inherit;
+  line-height: 1;
+}
+.fin-tooltip-wrap:hover .fin-tooltip-icon {
+  background: var(--pri-l);
+  border-color: var(--pri);
+  color: var(--pri-d);
+}
+.fin-tooltip-bubble {
+  display: none;
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 7px);
+  transform: translateX(-50%);
+  background: var(--txt);
+  color: var(--card);
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1.5;
+  padding: 7px 10px;
+  border-radius: 8px;
+  white-space: nowrap;
+  z-index: 900;
+  box-shadow: 0 4px 14px rgba(0,0,0,.18);
+  pointer-events: none;
+  max-width: 220px;
+  white-space: normal;
+  text-align: center;
+  min-width: 160px;
+}
+.fin-tooltip-bubble::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 5px solid transparent;
+  border-top-color: var(--txt);
+}
+.fin-tooltip-wrap:hover .fin-tooltip-bubble {
+  display: block;
+}
+
+
+/* ─── Dashboard stat card: top-right corner + button ──── */
+.stat-corner-add {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 26px;
+  height: 26px;
+  border-radius: 7px;
+  border: 1.5px solid var(--brd);
+  background: var(--bg);
+  color: var(--txt2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background .15s, border-color .15s, color .15s, transform .1s;
+  padding: 0;
+  flex-shrink: 0;
+}
+.stat-corner-add:hover {
+  transform: scale(1.08);
+}
+.stat.needs   .stat-corner-add:hover { background: var(--pri-l); border-color: var(--pri); color: var(--pri-d); }
+.stat.wants   .stat-corner-add:hover { background: var(--acc-l); border-color: var(--acc); color: var(--acc); }
+.stat.savings .stat-corner-add:hover { background: var(--suc-l); border-color: var(--suc); color: var(--suc); }
+/* Keep tooltip bubbles from clipping inside stat cards */
+.stat { overflow: visible; }
+.stat .fin-tooltip-bubble { min-width: 180px; }
+
+
+/* ─── Unified Financial Card ─────────────────────────────── */
+.fin-card {
+  background: var(--bg);
+  border: 1.5px solid var(--brd);
+  border-radius: 12px;
+  padding: 13px 14px;
+  margin-bottom: 8px;
+  transition: border-color .15s;
+}
+.fin-card-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--txt);
+  line-height: 1.35;
+  word-break: break-word;
+}
+.fin-card-balance {
+  font-size: 13px;
+  font-weight: 900;
+  font-family: 'SF Mono', Consolas, monospace;
+  white-space: nowrap;
+  letter-spacing: -.3px;
+}
+.fin-card-tag {
+  font-size: 9.5px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 10px;
+  white-space: nowrap;
+}
+/* On wider screens balance can be slightly larger */
+@media (min-width: 480px) {
+  .fin-card-balance { font-size: 14px; }
+  .fin-card-name    { font-size: 14px; }
+}
+
+
+/* ─── Budget Overview — mobile-first ─────────────────────── */
+.fin-income-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-bottom: 10px;
+}
+.fin-income-label {
+  font-size: 10.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .7px;
+  color: var(--txt2);
+}
+.fin-income-total {
+  font-size: 22px;
+  font-weight: 900;
+  color: var(--pri-d);
+  font-family: 'SF Mono', Consolas, monospace;
+  letter-spacing: -.5px;
+  line-height: 1;
+}
+/* Cat row tweaks */
+.fin-cat-row {
+  position: relative;
+  padding: 11px 12px;
+  border-radius: 10px;
+  border: 1.5px solid transparent;
+  cursor: pointer;
+  transition: background .15s, border-color .15s;
+  margin-bottom: 6px;
+}
+.fin-cat-row:hover { background: var(--bg); border-color: var(--brd); }
+/* fin-cat-add always visible square */
+.fin-cat-add {
+  width: 26px;
+  height: 26px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--card);
+  border: 1.5px solid var(--brd);
+  border-radius: 7px;
+  padding: 0;
+  cursor: pointer;
+  flex-shrink: 0;
+  color: var(--txt2);
+  transition: background .15s, color .15s, border-color .15s, transform .1s;
+}
+.fin-cat-add:hover {
+  background: var(--pri-l);
+  border-color: var(--pri);
+  color: var(--pri-d);
+  transform: scale(1.08);
+}
+/* Left/over amount emphasis */
+.fin-left-amt { font-size: 11px; font-weight: 800; font-family: 'SF Mono', Consolas, monospace; }
+.fin-left-amt.over { color: var(--dan); }
+.fin-left-amt.ok   { color: var(--suc); }
+/* Summary box */
+.fin-summary-box {
+  background: var(--bg);
+  border: 1px solid var(--brd);
+  border-radius: 12px;
+  padding: 10px 14px;
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.fin-summary-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.fin-summary-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--txt2);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex: 1;
+  min-width: 0;
+}
+.fin-summary-amt {
+  font-size: 13px;
+  font-weight: 900;
+  font-family: 'SF Mono', Consolas, monospace;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+/* Wider screens: larger income total */
+@media (min-width: 480px) {
+  .fin-income-total { font-size: 26px; }
+}
+
 </style>
 </head>
 <body>
@@ -1703,7 +2034,7 @@ footer .footer-links a:hover{color:var(--pri-d)}
       </div>
       <span class="sidebar-divider"></span>
       <div class="tab" data-tab="goals" data-priority="secondary" onclick="showTab('goals',this)">
-        <span class="tab-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12V8H6a2 2 0 01-2-2c0-1.1.9-2 2-2h12v4"/><path d="M4 6v12a2 2 0 002 2h14v-4"/><path d="M18 12a2 2 0 000 4h4v-4z"/></svg></span><span class="tab-label">Finance</span>
+        <span class="tab-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12V8H6a2 2 0 01-2-2c0-1.1.9-2 2-2h12v4"/><path d="M4 6v12a2 2 0 002 2h14v-4"/><path d="M18 12a2 2 0 000 4h4v-4z"/></svg></span><span class="tab-label">Budget</span>
       </div>
       <div class="tab" data-tab="history" data-priority="secondary" onclick="showTab('history',this)">
         <span class="tab-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></span><span class="tab-label">History</span>
@@ -1833,21 +2164,48 @@ footer .footer-links a:hover{color:var(--pri-d)}
     <div class="stats">
       <div class="stat needs">
         <div class="stat-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
-        <div class="lbl">50% — Needs</div>
+        <div class="lbl" style="display:flex;align-items:center;gap:5px">
+          50% — Needs
+          <span class="fin-tooltip-wrap">
+            <span class="fin-tooltip-icon">?</span>
+            <span class="fin-tooltip-bubble">Needs: Rent, utilities, groceries, transport, insurance</span>
+          </span>
+        </div>
         <div class="amt" id="needsAmt">$0</div>
         <div class="sub" id="needsSub">Budget: —</div>
+        <button class="stat-corner-add" onclick="quickAdd('','','Needs',0)" title="Add Needs expense">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </button>
       </div>
       <div class="stat wants">
         <div class="stat-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg></div>
-        <div class="lbl">30% — Wants</div>
+        <div class="lbl" style="display:flex;align-items:center;gap:5px">
+          30% — Wants
+          <span class="fin-tooltip-wrap">
+            <span class="fin-tooltip-icon">?</span>
+            <span class="fin-tooltip-bubble">Wants: Dining out, subscriptions, hobbies, entertainment</span>
+          </span>
+        </div>
         <div class="amt" id="wantsAmt">$0</div>
         <div class="sub" id="wantsSub">Budget: —</div>
+        <button class="stat-corner-add" onclick="quickAdd('','','Wants',0)" title="Add Wants expense">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </button>
       </div>
       <div class="stat savings">
         <div class="stat-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></div>
-        <div class="lbl">20% — Savings</div>
+        <div class="lbl" style="display:flex;align-items:center;gap:5px">
+          20% — Savings
+          <span class="fin-tooltip-wrap">
+            <span class="fin-tooltip-icon">?</span>
+            <span class="fin-tooltip-bubble">Savings: Emergency fund, investments, debt payments, goals</span>
+          </span>
+        </div>
         <div class="amt" id="savingsAmt">$0</div>
         <div class="sub" id="savingsSub">Budget: —</div>
+        <button class="stat-corner-add" onclick="quickAdd('','','Savings',0)" title="Add Savings expense">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </button>
       </div>
     </div>
 
@@ -2207,15 +2565,17 @@ footer .footer-links a:hover{color:var(--pri-d)}
   <!-- ─────────────────────────────────────── -->
   <div id="tab-goals" class="panel">
 
-  <!-- ─── BUDGET OVERVIEW (hero card) ──────────────── -->
+  <!-- ─── BUDGET OVERVIEW (hero card — always open) ─── -->
   <div class="card" style="margin-bottom:10px">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
-      <h3 style="margin:0"><span class="icon-wrap"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></span> Budget Overview</h3>
-      <span id="financeMonthLabel" style="font-size:11px;color:var(--txt2);font-weight:600"></span>
+    <!-- Header: title + month label -->
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;gap:8px">
+      <h3 style="margin:0;font-size:14px"><span class="icon-wrap"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></span> Budget Overview</h3>
+      <span id="financeMonthLabel" style="font-size:10.5px;color:var(--txt2);font-weight:600;white-space:nowrap;flex-shrink:0"></span>
     </div>
-    <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:8px">
-      <span style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--txt2)">Monthly Income</span>
-      <span id="financeIncomeTotal" style="font-size:20px;font-weight:900;color:var(--pri-d);font-family:'SF Mono',monospace">—</span>
+    <!-- Income total — stacked on mobile, inline on wider -->
+    <div class="fin-income-row">
+      <span class="fin-income-label">Monthly Income</span>
+      <span id="financeIncomeTotal" class="fin-income-total">—</span>
     </div>
     <div id="financeSplitBar" style="display:flex;height:10px;border-radius:99px;overflow:hidden;gap:2px;margin-bottom:10px">
       <div id="fsNeeds"   style="background:var(--pri);border-radius:99px;transition:width .4s ease;width:0%"></div>
@@ -2224,81 +2584,118 @@ footer .footer-links a:hover{color:var(--pri-d)}
       <div id="fsUnused"  style="background:var(--brd);border-radius:99px;transition:width .4s ease;width:100%"></div>
     </div>
     <div id="financeCatRows" style="display:flex;flex-direction:column;gap:8px;margin-bottom:10px"></div>
-    <div id="financeUnallocated" style="display:none;padding:10px 14px;border-radius:10px;background:var(--pri-l);border:1.5px solid var(--pri);display:flex;align-items:center;justify-content:space-between">
-      <div>
-        <div style="font-size:12px;font-weight:800;color:var(--pri-d)">Unallocated Budget</div>
-        <div style="font-size:11px;color:var(--txt2)">Not yet spent — still in your budget</div>
-      </div>
-      <div id="financeUnallocatedAmt" style="font-size:16px;font-weight:900;color:var(--pri-d);font-family:'SF Mono',monospace"></div>
-    </div>
-
-    <!-- Windfall summary — separate from monthly budget -->
-    <div id="financeWindfallRow" style="display:none;margin-top:8px;padding:10px 14px;border-radius:10px;background:var(--acc-l);border:1.5px solid var(--acc);align-items:center;justify-content:space-between">
-      <div>
-        <div style="font-size:12px;font-weight:800;color:var(--acc)">One-time / Windfall Income</div>
-        <div style="font-size:11px;color:var(--txt2)">Not counted in monthly budget — added to Net Worth</div>
-      </div>
-      <div id="financeWindfallAmt" style="font-size:16px;font-weight:900;color:var(--acc);font-family:'SF Mono',monospace"></div>
-    </div>
+    <!-- Legacy IDs kept for backward compat (hidden by JS) -->
+    <div id="financeUnallocated" style="display:none"></div>
+    <div id="financeWindfallRow" style="display:none"></div>
+    <!-- Unified summary box -->
+    <div id="financeSummaryBox" class="fin-summary-box" style="display:none"></div>
   </div>
 
-  <!-- ─── INCOME SOURCES ──────────────────────────── -->
-  <div class="card" id="incomeSrcAnchor" style="margin-bottom:10px">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;flex-wrap:wrap;gap:8px">
-      <h3 style="margin:0"><span class="icon-wrap"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></span> Income Sources</h3>
-      <div style="font-size:11px;color:var(--txt2)">Monthly total: <strong id="incomeSourcesTotalLabel" style="color:var(--pri-d)">—</strong></div>
+  <!-- ─── INCOME SOURCES accordion ─────────────────── -->
+  <div class="accordion fin-accordion" id="incomeSrcAnchor" onclick="toggleFinAccordion(this)">
+    <div class="accordion-header" style="padding:14px 16px">
+      <div class="acc-left">
+        <div class="acc-icon" style="background:var(--suc-l)">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--suc)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+        </div>
+        <div>
+          <div style="font-size:13px;font-weight:800;color:var(--txt)">Income Sources</div>
+          <div style="font-size:10.5px;color:var(--txt2)">Monthly recurring income</div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <span id="incomeSourcesTotalLabel" style="font-size:13px;font-weight:800;color:var(--suc);font-family:'SF Mono',monospace">—</span>
+        <svg class="accordion-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
     </div>
-    <p style="font-size:12px;color:var(--txt2);margin-bottom:10px">Add every income stream here — salary, freelance, side income. The total auto-sets your budget above.</p>
-    <div id="incomeSourcesList"></div>
-    <button onclick="addIncomeSource()" style="width:100%;padding:8px;border:1.5px dashed var(--brd);border-radius:10px;background:transparent;color:var(--txt2);font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;transition:.15s" onmouseover="this.style.borderColor='var(--pri)';this.style.color='var(--pri-d)'" onmouseout="this.style.borderColor='var(--brd)';this.style.color='var(--txt2)'">+ Add Income Source</button>
-  </div>
-
-  <!-- ─── SAVINGS GOALS ──────────────────────────── -->
-  <div class="card" style="margin-bottom:10px">
-    <h3><span class="icon-wrap"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></span> Savings Goals</h3>
-    <div style="height:4px"></div>
-    <div id="goalsList"></div>
-    <div class="section-label" style="margin-top:8px">Add New Goal</div>
-    <div class="goals-form" style="display:grid;grid-template-columns:2fr 1fr 1fr auto;gap:10px;align-items:end">
-      <div class="fg">
-        <label>Goal Name</label>
-        <input type="text" id="goalName" placeholder="e.g. Vacation Fund">
-      </div>
-      <div class="fg">
-        <label>Target</label>
-        <input type="number" id="goalTarget" placeholder="1000" step="100">
-      </div>
-      <div class="fg">
-        <label>Saved So Far</label>
-        <input type="number" id="goalSaved" placeholder="0" step="50">
-      </div>
-      <div class="fg">
-        <label>&nbsp;</label>
-        <button class="btn btn-pri" onclick="addGoal()">+ Add</button>
+    <div class="accordion-body">
+      <div class="accordion-content" style="padding:0 16px 16px">
+        <p style="font-size:12px;color:var(--txt2);margin-bottom:10px">Add every income stream — salary, freelance, side income. The total auto-sets your monthly budget.</p>
+        <div id="incomeSourcesList"></div>
+        <button onclick="event.stopPropagation();addIncomeSource()" style="width:100%;padding:8px;border:1.5px dashed var(--brd);border-radius:10px;background:transparent;color:var(--txt2);font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;transition:.15s;margin-top:4px" onmouseover="this.style.borderColor='var(--suc)';this.style.color='var(--suc)'" onmouseout="this.style.borderColor='var(--brd)';this.style.color='var(--txt2)'">+ Add Income Source</button>
       </div>
     </div>
   </div>
 
-  <!-- ─── NET WORTH ──────────────────────────────── -->
-  <div class="card">
-    <h3><span class="icon-wrap"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></span> Net Worth</h3>
-    <div id="netWorthDisplay" style="margin-bottom:14px">
-      <div class="nw-number" id="nwTotal">—</div>
-      <div id="nwTrend" style="margin-bottom:12px"></div>
+  <!-- ─── SAVINGS GOALS accordion ──────────────────── -->
+  <div class="accordion fin-accordion" onclick="toggleFinAccordion(this)">
+    <div class="accordion-header" style="padding:14px 16px">
+      <div class="acc-left">
+        <div class="acc-icon" style="background:var(--pri-l)">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--pri-d)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+        </div>
+        <div>
+          <div style="font-size:13px;font-weight:800;color:var(--txt)">Savings Goals</div>
+          <div style="font-size:10.5px;color:var(--txt2)" id="goalsAccSummary">No goals yet</div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <span id="goalsAccTotal" style="font-size:13px;font-weight:800;color:var(--pri-d);font-family:'SF Mono',monospace"></span>
+        <svg class="accordion-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
     </div>
-    <div class="nw-section-label">Assets</div>
-    <div id="nwAssetsList"></div>
-    <button onclick="addNwItem('asset')" style="width:100%;padding:8px;border:1.5px dashed var(--brd);border-radius:10px;background:transparent;color:var(--txt2);font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;margin-bottom:14px;transition:.15s" onmouseover="this.style.borderColor='var(--suc)';this.style.color='var(--suc)'" onmouseout="this.style.borderColor='var(--brd)';this.style.color='var(--txt2)'">+ Add Asset</button>
-    <div class="nw-section-label">Liabilities</div>
-    <div id="nwLiabilitiesList"></div>
-    <button onclick="addNwItem('liability')" style="width:100%;padding:8px;border:1.5px dashed var(--brd);border-radius:10px;background:transparent;color:var(--txt2);font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;transition:.15s" onmouseover="this.style.borderColor='var(--dan)';this.style.color='var(--dan)'" onmouseout="this.style.borderColor='var(--brd)';this.style.color='var(--txt2)'">+ Add Liability</button>
+    <div class="accordion-body">
+      <div class="accordion-content" style="padding:0 16px 16px">
+        <div id="goalsList"></div>
+        <div class="section-label" style="margin-top:8px">Add New Goal</div>
+        <div class="goals-form" style="display:grid;grid-template-columns:2fr 1fr 1fr auto;gap:10px;align-items:end">
+          <div class="fg">
+            <label>Goal Name</label>
+            <input type="text" id="goalName" placeholder="e.g. Vacation Fund" onclick="event.stopPropagation()">
+          </div>
+          <div class="fg">
+            <label>Target</label>
+            <input type="number" id="goalTarget" placeholder="1000" step="100" onclick="event.stopPropagation()">
+          </div>
+          <div class="fg">
+            <label>Saved So Far</label>
+            <input type="number" id="goalSaved" placeholder="0" step="50" onclick="event.stopPropagation()">
+          </div>
+          <div class="fg">
+            <label>&nbsp;</label>
+            <button class="btn btn-pri" onclick="event.stopPropagation();addGoal()">+ Add</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── NET WORTH accordion ──────────────────────── -->
+  <div class="accordion fin-accordion" onclick="toggleFinAccordion(this)">
+    <div class="accordion-header" style="padding:14px 16px">
+      <div class="acc-left">
+        <div class="acc-icon" style="background:var(--bg)">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--txt)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+        </div>
+        <div>
+          <div style="font-size:13px;font-weight:800;color:var(--txt)">Net Worth</div>
+          <div style="font-size:10.5px;color:var(--txt2)" id="nwAccSummary">Assets minus Liabilities</div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <span id="nwTotal" style="font-size:13px;font-weight:800;font-family:'SF Mono',monospace">—</span>
+        <svg class="accordion-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+    </div>
+    <div class="accordion-body">
+      <div class="accordion-content" style="padding:0 16px 16px">
+        <div id="nwTrend" style="margin-bottom:10px;font-size:12px"></div>
+        <div class="nw-section-label">Assets</div>
+        <div id="nwAssetsList"></div>
+        <button onclick="event.stopPropagation();addNwItem('asset')" style="width:100%;padding:8px;border:1.5px dashed var(--brd);border-radius:10px;background:transparent;color:var(--txt2);font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;margin-bottom:14px;transition:.15s" onmouseover="this.style.borderColor='var(--suc)';this.style.color='var(--suc)'" onmouseout="this.style.borderColor='var(--brd)';this.style.color='var(--txt2)'">+ Add Asset</button>
+        <div class="nw-section-label">Liabilities</div>
+        <div style="display:flex;align-items:flex-start;gap:7px;padding:8px 10px;background:var(--bg);border-radius:8px;border:1px solid var(--brd);margin-bottom:8px">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--txt2)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:1px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <span style="font-size:11px;color:var(--txt2);line-height:1.5"><strong style="color:var(--txt)">Tip:</strong> Paying off liabilities increases your net worth and can be tracked via your monthly Savings goals.</span>
+        </div>
+        <div id="nwLiabilitiesList"></div>
+        <button onclick="event.stopPropagation();addNwItem('liability')" style="width:100%;padding:8px;border:1.5px dashed var(--brd);border-radius:10px;background:transparent;color:var(--txt2);font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;transition:.15s" onmouseover="this.style.borderColor='var(--dan)';this.style.color='var(--dan)'" onmouseout="this.style.borderColor='var(--brd)';this.style.color='var(--txt2)'">+ Add Liability</button>
+      </div>
+    </div>
   </div>
 
 </div>
 
-  <!-- ─────────────────────────────────────── -->
-  <!-- FINANCIAL JOURNAL PANEL                 -->
-  <!-- ─────────────────────────────────────── -->
   <div id="tab-notes" class="panel">
 
     <!-- Journal header row: title + New Entry button -->
@@ -3840,6 +4237,9 @@ document.addEventListener("DOMContentLoaded", () => {
   renderRecurringList();
   checkBudgetAlerts();
   renderBills();
+  _migrateNwItems();
+  _migrateIncomeSources();
+  _migrateGoals();
   renderNetWorth();
   renderMonthChart();
   renderLearnedKeywords();
@@ -4212,30 +4612,61 @@ function renderFinanceOverview() {
         { label:"Wants",   pctTarget:30, target:income*0.3, spent:wants,   color:"var(--acc)" },
         { label:"Savings", pctTarget:20, target:income*0.2, spent:savings, color:"var(--suc)" },
       ];
+      const tooltips = {
+        Needs:   "Rent, utilities, groceries, transport, insurance",
+        Wants:   "Dining out, subscriptions, hobbies, entertainment",
+        Savings: "Emergency fund, investments, debt payments"
+      };
       catRows.innerHTML = cats.map(c => {
         const pct    = c.target > 0 ? Math.min(Math.round(c.spent/c.target*100),999) : 0;
         const isOver = c.spent > c.target;
         const barW   = Math.min(pct, 100);
         const diff   = Math.abs(c.target - c.spent);
-        const diffTxt = isOver
-          ? `<span style="color:var(--dan);font-weight:700">+${fmt(diff)} over</span>`
-          : `<span style="color:var(--txt2)">${fmt(diff)} left</span>`;
-        return `<div>
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
-            <div style="display:flex;align-items:center;gap:6px">
-              <span style="width:9px;height:9px;border-radius:50%;background:${c.color};flex-shrink:0;display:inline-block"></span>
-              <span style="font-size:12px;font-weight:700;color:var(--txt)">${c.label}</span>
-              <span style="font-size:10px;color:var(--txt2)">${c.pctTarget}% target</span>
-            </div>
-            <div style="font-size:12px;text-align:right">
-              <span style="font-weight:800;color:var(--txt);font-family:'SF Mono',monospace">${fmt(c.spent)}</span>
+        const leftClass = isOver ? "fin-left-amt over" : "fin-left-amt ok";
+        const leftTxt   = isOver
+          ? `<span class="${leftClass}">+${fmt(diff)} over</span>`
+          : `<span class="${leftClass}">${fmt(diff)} left</span>`;
+        // Tooltip icon (Needs + Wants only — Savings is self-explanatory)
+        const tipHtml = tooltips[c.label]
+          ? `<span class="fin-tooltip-wrap">
+              <span class="fin-tooltip-icon">?</span>
+              <span class="fin-tooltip-bubble">${c.label}: ${tooltips[c.label]}</span>
+            </span>` : "";
+        // Quick-add button — opens expense modal pre-filled with this category
+        const addBtn = `<button class="fin-cat-add"
+          onclick="event.stopPropagation();quickAdd('','',${JSON.stringify(c.label)},0)"
+          title="Add ${c.label} expense">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </button>`;
+        return `<div class="fin-cat-row"
+          onclick="quickAdd('','',${JSON.stringify(c.label)},0)"
+          title="Click to add a ${c.label} expense">
+
+          <!-- Row A: dot + label + tooltip + % · spent amount + add btn -->
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:7px;flex-wrap:nowrap">
+            <span style="width:9px;height:9px;border-radius:50%;background:${c.color};
+                         flex-shrink:0;display:inline-block"></span>
+            <span style="font-size:13px;font-weight:800;color:var(--txt);flex-shrink:0">${c.label}</span>
+            ${tipHtml}
+            <span style="font-size:10px;color:var(--txt2);flex-shrink:0">${c.pctTarget}%</span>
+            <span style="flex:1"></span>
+            ${addBtn}
+          </div>
+
+          <!-- Row B: progress bar -->
+          <div style="height:8px;background:var(--bg);border-radius:99px;overflow:hidden;margin-bottom:6px">
+            <div style="height:100%;width:${barW}%;background:${isOver?"var(--dan)":c.color};
+                        border-radius:99px;transition:width .4s ease"></div>
+          </div>
+
+          <!-- Row C: spent / target  ·  left/over -->
+          <div style="display:flex;justify-content:space-between;align-items:baseline;font-size:11px;flex-wrap:wrap;gap:4px">
+            <span style="color:var(--txt2)">
+              <span style="font-weight:700;color:var(--txt);font-family:'SF Mono',monospace">${fmt(c.spent)}</span>
               <span style="color:var(--txt2)"> / ${fmt(c.target)}</span>
-            </div>
+            </span>
+            <span>${leftTxt} &nbsp;·&nbsp; <span style="color:var(--txt2)">${pct}% used</span></span>
           </div>
-          <div style="height:6px;background:var(--bg);border-radius:99px;overflow:hidden;margin-bottom:2px">
-            <div style="height:100%;width:${barW}%;background:${isOver?"var(--dan)":c.color};border-radius:99px;transition:width .4s ease"></div>
-          </div>
-          <div style="font-size:10.5px;text-align:right">${diffTxt} &nbsp;·&nbsp; ${pct}% used</div>
         </div>`;
       }).join("");
     } else {
@@ -4243,32 +4674,571 @@ function renderFinanceOverview() {
     }
   }
 
-  // Unallocated
-  const unallocCard = document.getElementById("financeUnallocated");
-  const unallocAmt  = document.getElementById("financeUnallocatedAmt");
-  if (unallocCard) {
-    if (income > 0 && unalloc > 1) {
-      unallocCard.style.display = "flex";
-      if (unallocAmt) unallocAmt.textContent = fmt(unalloc);
-    } else {
-      unallocCard.style.display = "none";
-    }
-  }
-
-  // Windfall summary — shown separately, not in the 50/30/20 bars
+  // ── Summary box: Remaining to Spend + Windfall ──────────────
   const sources   = typeof getIncomeSources === "function" ? getIncomeSources() : [];
   const windfalls = sources.filter(s => s.isWindfall);
   const wfTotal   = windfalls.reduce((s, w) => s + w.amount, 0);
-  const wfEl      = document.getElementById("financeWindfallRow");
-  if (wfEl) {
+
+  const summaryBox = document.getElementById("financeSummaryBox");
+  if (summaryBox) {
+    // Build rows dynamically
+    let rows = "";
+    if (income > 0 && unalloc > 1) {
+      const unallocColor = unalloc / income > 0.1 ? "var(--suc)" : "var(--acc)";
+      rows += `<div class="fin-summary-row">
+        <span class="fin-summary-label">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/>
+            <line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+          </svg>
+          Remaining to Spend
+        </span>
+        <span class="fin-summary-amt" style="color:${unallocColor}">${fmt(unalloc)}</span>
+      </div>`;
+    }
     if (wfTotal > 0) {
-      wfEl.style.display = "flex";
-      const wfAmt = wfEl.querySelector("#financeWindfallAmt");
-      if (wfAmt) wfAmt.textContent = fmt(wfTotal);
+      rows += `<div class="fin-summary-row">
+        <span class="fin-summary-label">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2.5" stroke-linecap="round"><polygon points="12 2 15 9 22 9 16 14 18 21 12 17 6 21 8 14 2 9 9 9"/></svg>
+          Windfall Income
+          <span style="font-size:9px;font-weight:400;color:var(--txt2);margin-left:2px">· added to Net Worth</span>
+        </span>
+        <span class="fin-summary-amt" style="color:var(--acc)">${fmt(wfTotal)}</span>
+      </div>`;
+    }
+    if (rows) {
+      summaryBox.innerHTML = rows;
+      summaryBox.style.display = "flex";
     } else {
-      wfEl.style.display = "none";
+      summaryBox.style.display = "none";
     }
   }
+  // Keep legacy IDs working (for any other callers)
+  const legacyUnalloc = document.getElementById("financeUnallocated");
+  if (legacyUnalloc) legacyUnalloc.style.display = "none";
+  const legacyWf = document.getElementById("financeWindfallRow");
+  if (legacyWf) legacyWf.style.display = "none";
+}
+
+
+function toggleFinAccordion(el) {
+  // Close all other fin-accordions on Finance tab (one-at-a-time feel)
+  // but only if opening — if closing, just close this one
+  const isOpen = el.classList.contains("open");
+  if (!isOpen) {
+    // Close siblings
+    document.querySelectorAll(".fin-accordion.open").forEach(a => {
+      if (a !== el) a.classList.remove("open");
+    });
+  }
+  el.classList.toggle("open");
+}
+
+
+// ─── NET WORTH TRANSACTION MODAL ───────────────────────────
+function openNwTxnModal(itemId, action) {
+  // Unified: delegate to openFinTxnModal
+  const item = getNwItems().find(i => i.id === itemId);
+  if (!item) return;
+  openFinTxnModal(itemId, item.type === "asset" ? "asset" : "liability", action);
+}
+
+function saveNwTxn(itemId, action) {
+  // Unified: delegate to saveFinTxn
+  const item = getNwItems().find(i => i.id === itemId);
+  if (!item) return;
+  saveFinTxn(itemId, item.type === "asset" ? "asset" : "liability", action);
+}
+
+// Migrate legacy NW items (no transactions array) on first load
+function _migrateNwItems() {
+  const items = getNwItems();
+  let changed = false;
+  items.forEach(item => {
+    if (!item.transactions) {
+      item.transactions = [];
+      // Add an "init" entry so history isn't empty
+      if (item.amt > 0) {
+        item.transactions.push({
+          id:      item.id,
+          date:    new Date().toISOString().split("T")[0],
+          action:  "init",
+          amount:  item.amt,
+          note:    "Initial balance",
+          balance: item.amt
+        });
+      }
+      changed = true;
+    }
+  });
+  if (changed) saveNwItems(items);
+}
+
+
+// ═══════════════════════════════════════════════════════════════════
+// UNIFIED FINANCIAL CARD SYSTEM
+// Shared by: Income Sources, Savings Goals, Assets, Liabilities
+// ═══════════════════════════════════════════════════════════════════
+
+/**
+ * _finCard(item, cfg) — renders one unified card for any financial item.
+ * cfg = {
+ *   module:      "income"|"goal"|"asset"|"liability"
+ *   accentColor: CSS var string
+ *   accentLight: CSS var string
+ *   tagLabel:    string (e.g. "Salary / Employment")
+ *   tagColor:    CSS var string
+ *   actionLabel: string (e.g. "+ Log Income")
+ *   actionFn:    string (e.g. "openFinTxnModal(123,'income','log')")
+ *   balance:     number  (current balance / saved / amount)
+ *   target:      number? (for goals)
+ *   extraHtml:   string? (projection bar, progress bar, etc.)
+ * }
+ */
+function _finCard(item, cfg) {
+  const txns    = item.transactions || [];
+  const txCount = txns.length;
+  const histId  = "_finHist_" + cfg.module + "_" + item.id;
+
+  // ── Delete button (icon only) ──
+  const delFn = cfg.module === "income"
+    ? `deleteIncomeSource(${item.id})`
+    : cfg.module === "goal"
+    ? `deleteGoal(${item.id})`
+    : `deleteNwItem(${item.id})`;
+
+  const delBtn = `<button onclick="event.stopPropagation();${delFn}"
+    style="background:none;border:none;color:var(--txt2);cursor:pointer;
+           padding:4px;border-radius:6px;line-height:0;display:flex;
+           align-items:center;opacity:.45;transition:.15s;flex-shrink:0"
+    onmouseover="this.style.opacity='1';this.style.color='var(--dan)'"
+    onmouseout="this.style.opacity='.45';this.style.color='var(--txt2)'"
+    title="Remove">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2.5" stroke-linecap="round">
+      <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+    </svg>
+  </button>`;
+
+  // ── History toggle (compact) ──
+  const histBtn = txCount > 0 ? `<button
+    onclick="event.stopPropagation();_toggleFinHist('${histId}')"
+    style="font-size:10px;color:var(--txt2);background:var(--card);
+           border:1px solid var(--brd);border-radius:6px;cursor:pointer;
+           padding:3px 7px;font-family:inherit;display:flex;align-items:center;
+           gap:3px;transition:.15s;flex-shrink:0;line-height:1.4"
+    onmouseover="this.style.borderColor='var(--pri)';this.style.color='var(--pri-d)'"
+    onmouseout="this.style.borderColor='var(--brd)';this.style.color='var(--txt2)'"
+    title="View history">
+    <svg id="${histId}_chev" width="10" height="10" viewBox="0 0 24 24" fill="none"
+      stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+      style="transition:transform .2s"><polyline points="6 9 12 15 18 9"/></svg>
+    ${txCount}
+  </button>` : "";
+
+  // ── Action button ──
+  const actionBtn = `<button
+    onclick="event.stopPropagation();${cfg.actionFn}"
+    style="font-size:11px;font-weight:700;padding:5px 12px;border-radius:8px;
+           border:1.5px solid ${cfg.accentColor};background:${cfg.accentLight};
+           color:${cfg.accentColor};cursor:pointer;font-family:inherit;
+           white-space:nowrap;transition:.15s;flex:1;justify-content:center;
+           display:flex;align-items:center;gap:5px"
+    onmouseover="this.style.background='${cfg.accentColor}';this.style.color='#fff'"
+    onmouseout="this.style.background='${cfg.accentLight}';this.style.color='${cfg.accentColor}'">
+    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="3" stroke-linecap="round">
+      <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+    </svg>
+    ${cfg.actionLabel}
+  </button>`;
+
+  // ── Progress bar (goals only) ──
+  let progressHtml = "";
+  if (cfg.target > 0) {
+    const pct = Math.min((cfg.balance / cfg.target) * 100, 100);
+    const barColor = pct >= 100 ? "var(--suc)" : pct >= 50 ? "var(--pri)" : "var(--acc)";
+    progressHtml = `
+      <div style="margin:10px 0 2px">
+        <div style="height:5px;background:var(--card);border-radius:99px;overflow:hidden">
+          <div style="height:100%;width:${pct}%;background:${barColor};
+                      border-radius:99px;transition:width .4s ease"></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-top:5px;
+                    font-size:10.5px;color:var(--txt2)">
+          <span>${fmt(cfg.balance)} saved</span>
+          <span>${Math.round(pct)}% of ${fmt(cfg.target)}</span>
+        </div>
+      </div>`;
+  }
+
+  // ── Transaction history table ──
+  const histRows = txns.slice().reverse().map(t => {
+    const isPositive = ["fund","log","contribution","init"].includes(t.action);
+    const actionLabels = {
+      fund:"Funded", log:"Logged", contribution:"Contributed", pay:"Paid", init:"Initial"
+    };
+    const col   = isPositive ? "var(--suc)" : "var(--dan)";
+    const ltCol = isPositive ? "var(--suc-l)" : "var(--dan-l)";
+    return `<tr>
+      <td style="padding:5px 8px;font-size:11px;color:var(--txt2);white-space:nowrap">${t.date}</td>
+      <td style="padding:5px 8px">
+        <span style="display:inline-flex;padding:1px 7px;border-radius:6px;font-size:9.5px;
+                     font-weight:700;background:${ltCol};color:${col}">
+          ${actionLabels[t.action] || t.action}
+        </span>
+      </td>
+      <td style="padding:5px 8px;font-size:11px;font-weight:700;font-family:'SF Mono',monospace;
+                 color:${col};text-align:right;white-space:nowrap">
+        ${isPositive ? "+" : "−"}${fmt(t.amount)}
+      </td>
+      <td style="padding:5px 8px;font-size:11px;color:var(--txt2);max-width:100px;
+                 overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escHtml(t.note||"")}</td>
+      <td style="padding:5px 8px;font-size:11px;font-weight:700;font-family:'SF Mono',monospace;
+                 text-align:right;white-space:nowrap">${fmt(t.balance)}</td>
+    </tr>`;
+  }).join("");
+
+  const histSection = txCount > 0 ? `
+    <div id="${histId}" style="display:none;padding-top:10px">
+      <div style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.7px;
+                  color:var(--txt2);margin-bottom:6px;display:flex;align-items:center;gap:5px">
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="2.5"><circle cx="12" cy="12" r="10"/>
+          <polyline points="12 6 12 12 16 14"/></svg>
+        Transaction History
+      </div>
+      <div style="overflow-x:auto;border-radius:8px;border:1px solid var(--brd)">
+        <table style="width:100%;border-collapse:collapse;min-width:320px">
+          <thead>
+            <tr style="background:var(--bg)">
+              ${["Date","Action","Amount","Notes","Balance"].map(h =>
+                `<th style="padding:5px 8px;font-size:9px;font-weight:700;
+                   text-align:${h==="Amount"||h==="Balance"?"right":"left"};
+                   color:var(--txt2);text-transform:uppercase;letter-spacing:.5px">${h}</th>`
+              ).join("")}
+            </tr>
+          </thead>
+          <tbody>${histRows}</tbody>
+        </table>
+      </div>
+    </div>` : "";
+
+  // ══════════════════════════════════════════════════════
+  // CARD LAYOUT — mobile-first, 3-row structure:
+  //
+  //  Row 1: [Name (truncated)]        [Balance]  [×]
+  //  Row 2: [Tag badge] [Target?]
+  //  Row 3: [Action button (full width)]  [History btn]
+  //  Row 4: Progress bar (goals only)
+  //  Row 5: Extra html (projection etc)
+  //  Row 6: History drawer
+  // ══════════════════════════════════════════════════════
+  return `<div class="fin-card"
+    onmouseover="this.style.borderColor='${cfg.accentColor}'"
+    onmouseout="this.style.borderColor='var(--brd)'">
+
+    <!-- Row 1: Name + Balance + Delete -->
+    <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:6px">
+      <div style="flex:1;min-width:0">
+        <div class="fin-card-name">${escHtml(item.label||item.name)}</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:6px;flex-shrink:0">
+        <div class="fin-card-balance" style="color:${cfg.accentColor}">${fmt(cfg.balance)}</div>
+        ${delBtn}
+      </div>
+    </div>
+
+    <!-- Row 2: Tag + Target -->
+    <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:10px">
+      <span class="fin-card-tag" style="background:${cfg.accentLight};color:${cfg.accentColor}">
+        ${cfg.tagLabel}
+      </span>
+      ${cfg.target > 0
+        ? `<span style="font-size:10px;color:var(--txt2)">Target: ${fmt(cfg.target)}</span>`
+        : ""}
+    </div>
+
+    <!-- Row 3: Action + History toggle -->
+    <div style="display:flex;align-items:center;gap:6px">
+      ${actionBtn}
+      ${histBtn}
+    </div>
+
+    <!-- Row 4+: Progress, extra content, history -->
+    ${progressHtml}
+    ${cfg.extraHtml || ""}
+    ${histSection}
+  </div>`;
+}
+
+function _toggleFinHist(id) {
+  const el   = document.getElementById(id);
+  const chev = document.getElementById(id + "_chev");
+  if (!el) return;
+  const isOpen = el.style.display !== "none";
+  el.style.display  = isOpen ? "none" : "block";
+  if (chev) chev.style.transform = isOpen ? "" : "rotate(180deg)";
+}
+
+// ─── UNIFIED TRANSACTION MODAL ──────────────────────────────────────
+function openFinTxnModal(itemId, module, action) {
+  document.getElementById("_finTxnModal")?.remove();
+
+  // Resolve item from the right store
+  let item, itemName, currentBalance, accentColor, accentLight, title, btnLabel, notePh;
+  const today = new Date().toISOString().split("T")[0];
+
+  if (module === "income") {
+    item = getIncomeSources().find(s => s.id === itemId);
+    if (!item) return;
+    itemName       = item.label;
+    currentBalance = item.amount;
+    accentColor    = item.isWindfall ? "var(--acc)" : "var(--suc)";
+    accentLight    = item.isWindfall ? "var(--acc-l)" : "var(--suc-l)";
+    title          = "Log Income — " + itemName;
+    btnLabel       = "Log Income";
+    notePh         = "e.g. July salary, client payment";
+  } else if (module === "goal") {
+    const data = getData();
+    item = data.goals.find(g => g.id === itemId);
+    if (!item) return;
+    itemName       = item.name;
+    currentBalance = item.saved || 0;
+    accentColor    = "var(--pri-d)";
+    accentLight    = "var(--pri-l)";
+    title          = "Add Contribution — " + itemName;
+    btnLabel       = "Add Contribution";
+    notePh         = "e.g. July savings, bonus allocation";
+  } else if (module === "asset") {
+    item = getNwItems().find(i => i.id === itemId);
+    if (!item) return;
+    itemName       = item.name;
+    currentBalance = item.amt;
+    accentColor    = "var(--suc)";
+    accentLight    = "var(--suc-l)";
+    title          = "Add Funds — " + itemName;
+    btnLabel       = "Add Funds";
+    notePh         = "e.g. Monthly deposit, dividend";
+  } else { // liability
+    item = getNwItems().find(i => i.id === itemId);
+    if (!item) return;
+    itemName       = item.name;
+    currentBalance = item.amt;
+    accentColor    = "var(--dan)";
+    accentLight    = "var(--dan-l)";
+    title          = "Pay Down — " + itemName;
+    btnLabel       = "Record Payment";
+    notePh         = "e.g. Monthly amortization, extra payment";
+  }
+
+  const overlay = document.createElement("div");
+  overlay.id    = "_finTxnModal";
+  overlay.style.cssText = "position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:1400;display:flex;align-items:flex-end;justify-content:center";
+  overlay.innerHTML = `
+    <div style="background:var(--card);border-radius:22px 22px 0 0;width:100%;max-width:520px;
+                padding:24px 20px calc(24px + env(safe-area-inset-bottom,0px));
+                box-shadow:0 -8px 40px rgba(0,0,0,.22)" onclick="event.stopPropagation()">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+        <div>
+          <div style="font-size:15px;font-weight:800;color:var(--txt)">${title}</div>
+          <div style="font-size:11px;color:var(--txt2);margin-top:2px">
+            Current: <strong style="font-family:'SF Mono',monospace;color:${accentColor}">${fmt(currentBalance)}</strong>
+          </div>
+        </div>
+        <button onclick="document.getElementById('_finTxnModal').remove()"
+          style="background:var(--bg);border:1px solid var(--brd);color:var(--txt2);width:30px;height:30px;
+                 border-radius:8px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px">×</button>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <div class="fg">
+          <label style="font-size:11px;font-weight:700;color:var(--txt2);text-transform:uppercase;letter-spacing:.6px">Amount</label>
+          <div style="display:flex;align-items:center;margin-top:5px">
+            <span style="padding:10px 10px 10px 12px;background:var(--bg);border:1.5px solid var(--brd);
+                         border-right:none;border-radius:10px 0 0 10px;font-size:13px;font-weight:700;
+                         color:var(--txt2)">${getCurrency()}</span>
+            <input type="text" inputmode="decimal" id="_finTxnAmt" placeholder="0.00"
+              style="flex:1;padding:10px 12px;border:1.5px solid var(--brd);border-left:none;
+                     border-radius:0 10px 10px 0;font-size:15px;font-weight:800;
+                     font-family:'SF Mono',monospace;background:var(--input-bg);color:var(--txt);outline:none"
+              oninput="formatNumberInput(this)">
+          </div>
+        </div>
+        <div class="fg">
+          <label style="font-size:11px;font-weight:700;color:var(--txt2);text-transform:uppercase;letter-spacing:.6px">Date</label>
+          <input type="date" id="_finTxnDate" value="${today}"
+            style="width:100%;padding:10px 12px;border:1.5px solid var(--brd);border-radius:10px;
+                   font-size:13px;font-family:inherit;background:var(--input-bg);color:var(--txt);
+                   outline:none;box-sizing:border-box;margin-top:5px">
+        </div>
+        <div class="fg">
+          <label style="font-size:11px;font-weight:700;color:var(--txt2);text-transform:uppercase;letter-spacing:.6px">
+            Notes <span style="font-weight:400;text-transform:none">(optional)</span>
+          </label>
+          <input type="text" id="_finTxnNote" placeholder="${notePh}"
+            style="width:100%;padding:10px 12px;border:1.5px solid var(--brd);border-radius:10px;
+                   font-size:13px;font-family:inherit;background:var(--input-bg);color:var(--txt);
+                   outline:none;box-sizing:border-box;margin-top:5px">
+        </div>
+      </div>
+
+      <button onclick="saveFinTxn(${itemId},'${module}','${action}')"
+        style="width:100%;margin-top:20px;padding:13px;background:${accentColor};color:#fff;
+               border:none;border-radius:12px;font-size:14px;font-weight:800;
+               cursor:pointer;font-family:inherit;letter-spacing:.1px">
+        ${btnLabel}
+      </button>
+    </div>`;
+
+  overlay.addEventListener("click", () => overlay.remove());
+  document.body.appendChild(overlay);
+  requestAnimationFrame(() => document.getElementById("_finTxnAmt")?.focus());
+}
+
+// ─── UNIFIED SAVE HANDLER ────────────────────────────────────────────
+function saveFinTxn(itemId, module, action) {
+  const amtRaw = (document.getElementById("_finTxnAmt")?.value || "").replace(/,/g, "");
+  const amt    = parseFloat(amtRaw);
+  const date   = document.getElementById("_finTxnDate")?.value || new Date().toISOString().split("T")[0];
+  const note   = (document.getElementById("_finTxnNote")?.value || "").trim();
+
+  if (isNaN(amt) || amt <= 0) { toast("Enter a valid amount"); return; }
+
+  const txn = { id: Date.now(), date, action, amount: amt, note, balance: 0 };
+
+  if (module === "income") {
+    const list = getIncomeSources();
+    const item = list.find(s => s.id === itemId);
+    if (!item) return;
+    item.amount += amt;
+    txn.balance  = item.amount;
+    if (!item.transactions) item.transactions = [];
+    item.transactions.push(txn);
+    saveIncomeSources(list);
+    _syncIncomeSources();
+    renderIncomeSourcesList();
+    renderFinanceOverview();
+    toast("+" + fmt(amt) + " logged for " + item.label);
+
+  } else if (module === "goal") {
+    const data = getData();
+    const g    = data.goals.find(g => g.id === itemId);
+    if (!g) return;
+    g.saved = (g.saved || 0) + amt;
+    txn.balance = g.saved;
+    if (!g.transactions) g.transactions = [];
+    g.transactions.push(txn);
+    // Log as Savings expense → Budget Overview bars update
+    data.expenses.push({
+      id: Date.now() + 1, date,
+      desc: "Goal: " + g.name + (note ? " — " + note : ""),
+      cat: "Savings", sub: "Savings Goal", amt
+    });
+    saveData(data);
+    renderGoals();
+    updateDashboard();
+    renderFinanceOverview();
+    toast("+" + fmt(amt) + " added to " + g.name);
+
+  } else if (module === "asset") {
+    const items = getNwItems();
+    const item  = items.find(i => i.id === itemId);
+    if (!item) return;
+    item.amt += amt;
+    txn.balance = item.amt;
+    if (!item.transactions) item.transactions = [];
+    item.transactions.push(txn);
+    saveNwItems(items);
+    // Log as Savings expense
+    const data = getData();
+    data.expenses.push({
+      id: Date.now() + 2, date,
+      desc: "Asset funded: " + item.name + (note ? " — " + note : ""),
+      cat: "Savings", sub: "Savings Goal", amt
+    });
+    saveData(data);
+    renderNetWorth(); updateDashboard(); renderFinanceOverview();
+    toast("+" + fmt(amt) + " added to " + item.name);
+
+  } else { // liability
+    const items = getNwItems();
+    const item  = items.find(i => i.id === itemId);
+    if (!item) return;
+    item.amt    = Math.max(0, item.amt - amt);
+    txn.action  = "pay";
+    txn.balance = item.amt;
+    if (!item.transactions) item.transactions = [];
+    item.transactions.push(txn);
+    saveNwItems(items);
+    // Log as Savings > Debt Payment
+    const data = getData();
+    data.expenses.push({
+      id: Date.now() + 3, date,
+      desc: "Debt payment: " + item.name + (note ? " — " + note : ""),
+      cat: "Savings", sub: "Debt Payment", amt
+    });
+    saveData(data);
+    renderNetWorth(); updateDashboard(); renderFinanceOverview();
+    toast("−" + fmt(amt) + " paid off on " + item.name);
+  }
+
+  document.getElementById("_finTxnModal")?.remove();
+}
+
+// ─── MIGRATION ──────────────────────────────────────────────────────
+// Migrate income sources — add transactions[] if missing
+function _migrateIncomeSources() {
+  const list = getIncomeSources();
+  let changed = false;
+  list.forEach(s => {
+    if (!s.transactions) {
+      s.transactions = [];
+      if (s.amount > 0) {
+        s.transactions.push({
+          id: s.id, date: s.date || new Date().toISOString().split("T")[0],
+          action: "init", amount: s.amount, note: "Initial balance", balance: s.amount
+        });
+      }
+      changed = true;
+    }
+  });
+  if (changed) saveIncomeSources(list);
+}
+
+// Migrate goals — move contributions[] → transactions[]
+function _migrateGoals() {
+  const data = getData();
+  let changed = false;
+  data.goals.forEach(g => {
+    if (!g.transactions) {
+      g.transactions = [];
+      // Convert existing contributions
+      if (g.contributions && g.contributions.length) {
+        let running = 0;
+        g.contributions.forEach(c => {
+          running += c.amt || 0;
+          g.transactions.push({
+            id: c.date ? new Date(c.date).getTime() : Date.now(),
+            date: c.date || new Date().toISOString().split("T")[0],
+            action: "contribution",
+            amount: c.amt || 0,
+            note: c.note || "",
+            balance: running
+          });
+        });
+      } else if ((g.saved || 0) > 0) {
+        // No contributions but has saved — create init entry
+        g.transactions.push({
+          id: g.id, date: new Date().toISOString().split("T")[0],
+          action: "init", amount: g.saved, note: "Initial balance", balance: g.saved
+        });
+      }
+      changed = true;
+    }
+  });
+  if (changed) saveData(data);
 }
 
 
@@ -4280,12 +5250,17 @@ function renderNetWorth() {
   const totalLiab   = liabilities.reduce((s,i) => s + i.amt, 0);
   const netWorth    = totalAssets - totalLiab;
 
-  // Net Worth number
+  // Net Worth number — now in accordion header
   const nwEl = document.getElementById("nwTotal");
   if (nwEl) {
-    nwEl.textContent = fmt(Math.abs(netWorth));
-    nwEl.className   = "nw-number " + (netWorth >= 0 ? "positive" : "negative");
-    if (netWorth < 0) nwEl.textContent = "-" + nwEl.textContent;
+    const absStr = fmt(Math.abs(netWorth));
+    nwEl.textContent = (netWorth < 0 ? "-" : "") + absStr;
+    nwEl.style.color = netWorth >= 0 ? "var(--suc)" : "var(--dan)";
+  }
+  // Accordion sub-label
+  const nwSummary = document.getElementById("nwAccSummary");
+  if (nwSummary && items.length > 0) {
+    nwSummary.textContent = fmt(totalAssets) + " assets · " + fmt(totalLiab) + " liabilities";
   }
 
   // Trend vs last snapshot
@@ -4308,11 +5283,21 @@ function renderNetWorth() {
   const assetEl = document.getElementById("nwAssetsList");
   if (assetEl) {
     if (!assets.length) {
-      assetEl.innerHTML = `<p style="font-size:12px;color:var(--txt2);margin:0 0 8px">No assets added yet.</p>`;
+      assetEl.innerHTML = `<div style="font-size:12px;color:var(--txt2);padding:4px 0 8px">No assets added yet.</div>`;
     } else {
-      assetEl.innerHTML = assets.map(i => _nwRow(i, "asset")).join("") +
-        `<div style="display:flex;justify-content:space-between;padding:8px 12px;font-size:12px;font-weight:700;color:var(--suc);margin-bottom:4px">
-          <span>Total Assets</span><span>${fmt(totalAssets)}</span>
+      assetEl.innerHTML = assets.map(i => _finCard(i, {
+        module:      "asset",
+        accentColor: "var(--suc)",
+        accentLight: "var(--suc-l)",
+        tagLabel:    "Asset",
+        actionLabel: "+ Add Funds",
+        actionFn:    `openFinTxnModal(${i.id},'asset','fund')`,
+        balance:     i.amt,
+      })).join("") +
+        `<div style="display:flex;justify-content:space-between;padding:8px 12px;font-size:12px;
+                     font-weight:700;color:var(--suc);background:var(--suc-l);border-radius:8px;margin-top:4px">
+          <span>Total Assets</span>
+          <span style="font-family:'SF Mono',monospace">${fmt(totalAssets)}</span>
         </div>`;
     }
   }
@@ -4321,11 +5306,21 @@ function renderNetWorth() {
   const liabEl = document.getElementById("nwLiabilitiesList");
   if (liabEl) {
     if (!liabilities.length) {
-      liabEl.innerHTML = `<p style="font-size:12px;color:var(--txt2);margin:0 0 8px">No liabilities added yet.</p>`;
+      liabEl.innerHTML = `<div style="font-size:12px;color:var(--txt2);padding:4px 0 8px">No liabilities added yet.</div>`;
     } else {
-      liabEl.innerHTML = liabilities.map(i => _nwRow(i, "liability")).join("") +
-        `<div style="display:flex;justify-content:space-between;padding:8px 12px;font-size:12px;font-weight:700;color:var(--dan);margin-bottom:4px">
-          <span>Total Liabilities</span><span>${fmt(totalLiab)}</span>
+      liabEl.innerHTML = liabilities.map(i => _finCard(i, {
+        module:      "liability",
+        accentColor: "var(--dan)",
+        accentLight: "var(--dan-l)",
+        tagLabel:    "Liability",
+        actionLabel: "− Pay Down",
+        actionFn:    `openFinTxnModal(${i.id},'liability','pay')`,
+        balance:     i.amt,
+      })).join("") +
+        `<div style="display:flex;justify-content:space-between;padding:8px 12px;font-size:12px;
+                     font-weight:700;color:var(--dan);background:var(--dan-l);border-radius:8px;margin-top:4px">
+          <span>Total Liabilities</span>
+          <span style="font-family:'SF Mono',monospace">${fmt(totalLiab)}</span>
         </div>`;
     }
   }
@@ -4336,17 +5331,93 @@ function renderNetWorth() {
 }
 
 function _nwRow(item, type) {
-  const icon = type === "asset"
-    ? `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>`
-    : `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>`;
-  return `<div class="nw-row">
-    <div class="nw-row-icon ${type}">${icon}</div>
-    <div class="nw-row-name">${escHtml(item.name)}</div>
-    <input type="number" value="${item.amt}" onchange="updateNwAmt(${item.id},this.value)"
-      style="width:90px;padding:5px 8px;border:1.5px solid var(--brd);border-radius:8px;font-size:12px;font-weight:700;font-family:'SF Mono',monospace;color:var(--txt);background:var(--input-bg);outline:none;text-align:right">
-    <button onclick="deleteNwItem(${item.id})" style="background:none;border:none;color:var(--dan);cursor:pointer;padding:3px;border-radius:6px;line-height:0;display:flex;align-items:center" title="Remove"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+  const isAsset   = type === "asset";
+  const txns      = item.transactions || [];
+  const txCount   = txns.length;
+  const histId    = "_nwHist_" + item.id;
+  const accentCol = isAsset ? "var(--suc)" : "var(--dan)";
+  const accentLt  = isAsset ? "var(--suc-l)" : "var(--dan-l)";
+
+  const actionBtn = isAsset
+    ? `<button onclick="event.stopPropagation();openNwTxnModal(${item.id},'fund')"
+        style="font-size:10px;font-weight:700;padding:4px 9px;border-radius:7px;border:1.5px solid var(--suc);background:var(--suc-l);color:var(--suc);cursor:pointer;font-family:inherit;white-space:nowrap;transition:.15s"
+        onmouseover="this.style.background='var(--suc)';this.style.color='#fff'"
+        onmouseout="this.style.background='var(--suc-l)';this.style.color='var(--suc)'">+ Add Funds</button>`
+    : `<button onclick="event.stopPropagation();openNwTxnModal(${item.id},'pay')"
+        style="font-size:10px;font-weight:700;padding:4px 9px;border-radius:7px;border:1.5px solid var(--dan);background:var(--dan-l);color:var(--dan);cursor:pointer;font-family:inherit;white-space:nowrap;transition:.15s"
+        onmouseover="this.style.background='var(--dan)';this.style.color='#fff'"
+        onmouseout="this.style.background='var(--dan-l)';this.style.color='var(--dan)'">− Pay Down</button>`;
+
+  const histBtn = txCount > 0
+    ? `<button onclick="event.stopPropagation();_toggleNwHist('${histId}')"
+        style="font-size:10px;color:var(--txt2);background:none;border:none;cursor:pointer;padding:3px 4px;font-family:inherit;display:flex;align-items:center;gap:3px"
+        title="View history">
+        <svg id="${histId}_chev" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="transition:transform .2s"><polyline points="6 9 12 15 18 9"/></svg>
+        ${txCount}
+      </button>` : "";
+
+  // Build history rows
+  const histRows = txns.slice().reverse().map(t => {
+    const isIncrease = t.action === "fund" || t.action === "init";
+    return `<tr>
+      <td style="padding:5px 8px;font-size:11px;color:var(--txt2);white-space:nowrap">${t.date}</td>
+      <td style="padding:5px 8px;font-size:11px">
+        <span style="display:inline-flex;align-items:center;padding:1px 6px;border-radius:6px;font-size:9.5px;font-weight:700;
+          background:${isIncrease ? "var(--suc-l)" : "var(--dan-l)"};
+          color:${isIncrease ? "var(--suc)" : "var(--dan)"}">
+          ${t.action === "fund" ? "Funded" : t.action === "pay" ? "Paid" : "Initial"}
+        </span>
+      </td>
+      <td style="padding:5px 8px;font-size:11px;font-weight:700;font-family:'SF Mono',monospace;color:${isIncrease ? "var(--suc)" : "var(--dan)"};text-align:right;white-space:nowrap">
+        ${isIncrease ? "+" : "−"}${fmt(t.amount)}
+      </td>
+      <td style="padding:5px 8px;font-size:11px;color:var(--txt2);max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escHtml(t.note||"")}</td>
+      <td style="padding:5px 8px;font-size:11px;font-weight:700;font-family:'SF Mono',monospace;text-align:right;white-space:nowrap">${fmt(t.balance)}</td>
+    </tr>`;
+  }).join("");
+
+  const histSection = txCount > 0 ? `
+    <div id="${histId}" style="display:none;padding:8px 0 0">
+      <div style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.7px;color:var(--txt2);margin-bottom:6px">Transaction History</div>
+      <div style="overflow-x:auto;border-radius:8px;border:1px solid var(--brd)">
+        <table style="width:100%;border-collapse:collapse;min-width:380px">
+          <thead>
+            <tr style="background:var(--bg)">
+              <th style="padding:5px 8px;font-size:9.5px;font-weight:700;text-align:left;color:var(--txt2);text-transform:uppercase;letter-spacing:.5px">Date</th>
+              <th style="padding:5px 8px;font-size:9.5px;font-weight:700;text-align:left;color:var(--txt2);text-transform:uppercase;letter-spacing:.5px">Action</th>
+              <th style="padding:5px 8px;font-size:9.5px;font-weight:700;text-align:right;color:var(--txt2);text-transform:uppercase;letter-spacing:.5px">Amount</th>
+              <th style="padding:5px 8px;font-size:9.5px;font-weight:700;text-align:left;color:var(--txt2);text-transform:uppercase;letter-spacing:.5px">Notes</th>
+              <th style="padding:5px 8px;font-size:9.5px;font-weight:700;text-align:right;color:var(--txt2);text-transform:uppercase;letter-spacing:.5px">Balance</th>
+            </tr>
+          </thead>
+          <tbody>${histRows}</tbody>
+        </table>
+      </div>
+    </div>` : "";
+
+  return `<div class="nw-row-card" style="background:var(--bg);border:1.5px solid var(--brd);border-radius:10px;padding:10px 12px;margin-bottom:6px">
+    <div style="display:flex;align-items:center;gap:8px">
+      <div style="flex:1;min-width:0">
+        <div style="font-size:13px;font-weight:700;color:var(--txt)">${escHtml(item.name)}</div>
+        <div style="font-size:11px;font-weight:800;color:${accentCol};font-family:'SF Mono',monospace;margin-top:1px">${fmt(item.amt)}</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:6px;flex-shrink:0">
+        ${actionBtn}
+        ${histBtn}
+        <button onclick="event.stopPropagation();deleteNwItem(${item.id})"
+          style="background:none;border:none;color:var(--txt2);cursor:pointer;padding:3px;border-radius:6px;line-height:0;display:flex;align-items:center;opacity:.5;transition:.15s"
+          onmouseover="this.style.opacity='1';this.style.color='var(--dan)'"
+          onmouseout="this.style.opacity='.5';this.style.color='var(--txt2)'"
+          title="Remove">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+    </div>
+    ${histSection}
   </div>`;
 }
+
+function _toggleNwHist(id) { _toggleFinHist(id); }
 
 // ─── TABS ──────────────────────────────────────────────────
 function showTab(id, el) {
@@ -4358,7 +5429,7 @@ function showTab(id, el) {
   const tabEl = el || document.querySelector('[data-tab="' + id + '"]');
   if (tabEl) tabEl.classList.add("active");
   if (id === "history")  { renderHistory(); renderMonthChart(); }
-  if (id === "goals")    { renderNetWorth(); renderIncomeSourcesList(); _renderDashNetWorth(); renderFinanceOverview(); }
+  if (id === "goals")    { _migrateNwItems(); _migrateIncomeSources(); _migrateGoals(); renderNetWorth(); renderIncomeSourcesList(); _renderDashNetWorth(); renderFinanceOverview(); }
   if (id === "settings") { renderLearnedKeywords(); }
   if (id === "dashboard") updateDashboard();
   if (id === "expenses") { renderRecent(); renderBills(); _checkBillAlerts(); }
@@ -5499,27 +6570,39 @@ function deleteGoal(id) {
 
 function renderGoals() {
   const data = getData();
-  const el = document.getElementById("goalsList");
+  const el   = document.getElementById("goalsList");
   if (!el) return;
+
   if (data.goals.length === 0) {
-    el.innerHTML = `<div class="empty-state"><div class="empty-icon"><svg width='40' height='40' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.5'><circle cx='12' cy='12' r='10'/><circle cx='12' cy='12' r='6'/><circle cx='12' cy='12' r='2'/></svg></div><p>No savings goals yet</p><span>Add one below to start tracking!</span></div>`;
+    el.innerHTML = `<div class="empty-state">
+      <div class="empty-icon"><svg width="40" height="40" viewBox="0 0 24 24" fill="none"
+        stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/>
+        <circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></div>
+      <p>No savings goals yet</p><span>Add one below to start tracking!</span>
+    </div>`;
+    // Update accordion header
+    const goalsTotal   = document.getElementById("goalsAccTotal");
+    const goalsSummary = document.getElementById("goalsAccSummary");
+    if (goalsTotal)   goalsTotal.textContent   = "";
+    if (goalsSummary) goalsSummary.textContent = "No goals yet";
     return;
   }
 
-  // Tier 3: Calculate monthly savings rate from last 2 months of history
   const monthlySavingsRate = _calcMonthlySavingsRate(data);
 
   el.innerHTML = data.goals.map(g => {
-    const pct = g.target > 0 ? Math.min((g.saved / g.target) * 100, 100) : 0;
-    let statusClass, statusLabel;
-    if (pct >= 100)      { statusClass = "complete"; statusLabel = "Complete!"; }
-    else if (pct >= 75)  { statusClass = "almost";   statusLabel = "Almost there"; }
-    else if (pct >= 50)  { statusClass = "halfway";  statusLabel = "Halfway"; }
-    else if (pct >= 25)  { statusClass = "started";  statusLabel = "Good start"; }
-    else                 { statusClass = "started";  statusLabel = "Starting"; }
-
-    // Smart projection
+    const pct       = g.target > 0 ? Math.min((g.saved / g.target) * 100, 100) : 0;
     const remaining = Math.max(0, g.target - g.saved);
+
+    // Status label
+    let statusLabel;
+    if (pct >= 100)     statusLabel = "Complete!";
+    else if (pct >= 75) statusLabel = "Almost there";
+    else if (pct >= 50) statusLabel = "Halfway";
+    else if (pct >= 25) statusLabel = "Good start";
+    else                statusLabel = "Starting";
+
+    // Smart projection html (shown as extraHtml inside card)
     let projectionHtml = "";
     if (pct < 100 && remaining > 0) {
       if (monthlySavingsRate > 0) {
@@ -5527,60 +6610,53 @@ function renderGoals() {
         const projDate = new Date();
         projDate.setMonth(projDate.getMonth() + monthsNeeded);
         const projStr = projDate.toLocaleDateString("en-US", { month: "long", year: "numeric" });
-        projectionHtml = `<div style="margin-top:8px;padding:7px 10px;background:var(--pri-l);border-radius:8px;font-size:11.5px;color:var(--pri-d);font-weight:600;display:flex;align-items:center;gap:6px">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-          At your current rate (${fmtShort(monthlySavingsRate)}/mo) — reached by <strong>${projStr}</strong> · ${monthsNeeded} month${monthsNeeded!==1?"s":""}
+        projectionHtml = `<div style="margin-top:8px;padding:7px 10px;background:var(--pri-l);
+          border-radius:8px;font-size:11px;color:var(--pri-d);font-weight:600;
+          display:flex;align-items:center;gap:6px">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+          </svg>
+          At your current rate (${fmtShort(monthlySavingsRate)}/mo) — <strong>${projStr}</strong> · ${monthsNeeded} month${monthsNeeded!==1?"s":""}
         </div>`;
       } else {
-        projectionHtml = `<div style="margin-top:8px;padding:7px 10px;background:var(--bg);border-radius:8px;font-size:11.5px;color:var(--txt2);font-weight:600">
-          Log savings expenses to see your projected completion date
+        projectionHtml = `<div style="margin-top:8px;padding:7px 10px;background:var(--bg);
+          border-radius:8px;font-size:11px;color:var(--txt2);font-weight:600">
+          Log savings to see your projected completion date
         </div>`;
       }
     }
 
-    return `<div class="goal-card">
-      <div class="goal-header">
-        <div class="goal-name">${g.name}</div>
-        <div style="display:flex;align-items:center;gap:8px">
-          <span class="goal-status ${statusClass}">${statusLabel}</span>
-          <button class="btn-dan" onclick="deleteGoal(${g.id})" aria-label="Delete goal"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
-        </div>
-      </div>
-      <div class="prog-bar" style="margin-bottom:10px">
-        <div class="prog-fill fill-s" style="width:${pct}%">
-          <span class="prog-pct">${pct > 20 ? Math.round(pct) + "%" : ""}</span>
-        </div>
-      </div>
-      <div style="display:flex;justify-content:space-between;align-items:center;font-size:12px;flex-wrap:wrap;gap:8px">
-        <div style="display:flex;align-items:center;gap:6px;color:var(--txt2)">
-          Saved:
-          <input type="number" value="${g.saved}" onchange="updateGoalSaved(${g.id},this.value)"
-            style="width:88px;padding:6px 9px;border:1.5px solid var(--brd);border-radius:8px;font-weight:800;color:var(--txt);background:var(--input-bg);font-size:12px;outline:none">
-          / ${fmt(g.target)}
-        </div>
-        <div style="color:var(--txt2)">${fmtShort(remaining)} remaining</div>
-      </div>
-      ${projectionHtml}
-      <div style="display:flex;gap:8px;margin-top:10px">
-        <button onclick="addGoalContribution(${g.id})" style="flex:1;padding:7px 12px;border-radius:9px;background:var(--pri-l);border:1.5px solid var(--pri);color:var(--pri-d);font-size:12px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          Add contribution
-        </button>
-      </div>
-      ${g.contributions && g.contributions.length > 0 ? `<div style="margin-top:8px;border-top:1px solid var(--brd);padding-top:8px">
-        ${g.contributions.slice().reverse().map((c,ri) => {
-          const idx = g.contributions.length - 1 - ri;
-          return `<div style="display:flex;align-items:center;gap:8px;padding:4px 0;font-size:12px;color:var(--txt2)">
-            <span style="color:var(--suc);font-weight:700">${fmt(c.amt)}</span>
-            <span>${c.date}</span>
-            ${c.note ? `<span style="flex:1;color:var(--txt2)">${escHtml(c.note)}</span>` : '<span style="flex:1"></span>'}
-            <button onclick="editGoalContrib(${g.id},${idx})" style="background:none;border:none;color:var(--txt2);cursor:pointer;padding:2px;line-height:0" title="Edit"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
-            <button onclick="deleteGoalContrib(${g.id},${idx})" style="background:none;border:none;color:var(--dan);cursor:pointer;padding:2px;line-height:0" title="Delete"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
-          </div>`;
-        }).join("")}
-      </div>` : ""}
+    // Status badge as extra content above projection
+    const statusBadge = `<div style="margin-top:6px;font-size:10px;color:var(--txt2)">
+      <span style="font-weight:700">${statusLabel}</span> · ${fmt(remaining)} remaining
     </div>`;
+
+    return _finCard({
+      id:           g.id,
+      label:        g.name,
+      transactions: g.transactions || [],
+    }, {
+      module:      "goal",
+      accentColor: pct >= 100 ? "var(--suc)" : "var(--pri-d)",
+      accentLight: pct >= 100 ? "var(--suc-l)" : "var(--pri-l)",
+      tagLabel:    statusLabel,
+      actionLabel: "+ Add Contribution",
+      actionFn:    `openFinTxnModal(${g.id},'goal','contribution')`,
+      balance:     g.saved || 0,
+      target:      g.target,
+      extraHtml:   projectionHtml,
+    });
   }).join("");
+
+  // Update accordion header
+  const goalsTotal   = document.getElementById("goalsAccTotal");
+  const goalsSummary = document.getElementById("goalsAccSummary");
+  const totalSaved   = data.goals.reduce((s,g) => s + (g.saved||0), 0);
+  const totalTarget  = data.goals.reduce((s,g) => s + (g.target||0), 0);
+  const overallPct   = totalTarget > 0 ? Math.round(totalSaved/totalTarget*100) : 0;
+  if (goalsTotal)   goalsTotal.textContent   = fmt(totalSaved) + " saved";
+  if (goalsSummary) goalsSummary.textContent = data.goals.length + " goal" + (data.goals.length!==1?"s":"") + " · " + overallPct + "% funded";
 }
 
 // Helper: calculate average monthly savings from last 2 months of data
@@ -5688,54 +6764,13 @@ function _checkBillAlerts() {
 
 // ── Goal contribution log ─────────────────────────────────
 function addGoalContribution(goalId) {
-  const ex = document.getElementById("_contribModal");
-  if (ex) ex.remove();
-  const data = getData();
-  const g = data.goals.find(g => g.id === goalId);
-  if (!g) return;
-  const overlay = document.createElement("div");
-  overlay.id = "_contribModal";
-  overlay.style.cssText = "position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.5)";
-  overlay.innerHTML = `
-    <div style="background:var(--card);border-radius:16px;padding:22px 24px;min-width:280px;max-width:90vw;box-shadow:0 12px 40px rgba(0,0,0,.28)">
-      <div style="font-size:14px;font-weight:800;color:var(--txt);margin-bottom:14px">Add to: ${escHtml(g.name)}</div>
-      <div class="fg" style="margin-bottom:10px">
-        <label>Amount</label>
-        <input type="text" inputmode="decimal" id="_contribAmt" placeholder="0.00" oninput="formatNumberInput(this)"
-          style="width:100%;padding:9px 12px;border:1.5px solid var(--brd);border-radius:9px;font-size:15px;font-weight:800;color:var(--txt);background:var(--input-bg);outline:none;box-sizing:border-box">
-      </div>
-      <div class="fg" style="margin-bottom:16px">
-        <label>Note <span style="font-weight:400;color:var(--txt2)">(optional)</span></label>
-        <input type="text" id="_contribNote" placeholder="e.g. July salary savings"
-          style="width:100%;padding:9px 12px;border:1.5px solid var(--brd);border-radius:9px;font-size:13px;color:var(--txt);background:var(--input-bg);outline:none;box-sizing:border-box">
-      </div>
-      <div style="display:flex;gap:10px;justify-content:flex-end">
-        <button onclick="document.getElementById('_contribModal').remove()" style="padding:9px 16px;border-radius:9px;border:1.5px solid var(--brd);background:var(--bg);color:var(--txt2);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit">Cancel</button>
-        <button onclick="_saveGoalContribution(${goalId})" class="btn btn-pri" style="padding:9px 20px;border-radius:9px;font-size:13px;font-weight:700">Save</button>
-      </div>
-    </div>`;
-  document.body.appendChild(overlay);
-  overlay.addEventListener("click", e => { if(e.target===overlay) overlay.remove(); });
-  setTimeout(() => document.getElementById("_contribAmt")?.focus(), 60);
+  // Unified: delegate to openFinTxnModal
+  openFinTxnModal(goalId, "goal", "contribution");
 }
 
 function _saveGoalContribution(goalId) {
-  const amtRaw = (document.getElementById("_contribAmt")?.value || "").replace(/,/g,"");
-  const amt = parseFloat(amtRaw);
-  if (isNaN(amt) || amt <= 0) { toast("Enter a valid amount"); return; }
-  const note = document.getElementById("_contribNote")?.value.trim() || "";
-  const data = getData();
-  const g = data.goals.find(g => g.id === goalId);
-  if (!g) return;
-  if (!g.contributions) g.contributions = [];
-  g.contributions.push({ date: new Date().toISOString().split("T")[0], amt, note });
-  g.saved = (g.saved || 0) + amt;
-  saveData(data);
-  document.getElementById("_contribModal")?.remove();
-  renderGoals();
-  renderNetWorth();
-  _renderDashNetWorth();
-  toast("+" + fmt(amt) + " added to " + g.name + "!");
+  // Unified: delegate to saveFinTxn
+  saveFinTxn(goalId, "goal", "contribution");
 }
 
 function editGoalContrib(goalId, idx) {
@@ -5896,33 +6931,50 @@ function _syncIncomeSources() {
 }
 
 function renderIncomeSourcesList() {
-  const el  = document.getElementById("incomeSourcesList");
+  const el = document.getElementById("incomeSourcesList");
   if (!el) return;
-  const sources = getIncomeSources();
-  const monthly  = sources.filter(s=>!s.isWindfall);
-  const windfalls = sources.filter(s=>s.isWindfall);
-  const mTotal = monthly.reduce((s,src)=>s+src.amount,0);
+  const sources  = getIncomeSources();
+  const monthly  = sources.filter(s => !s.isWindfall);
+  const windfalls = sources.filter(s => s.isWindfall);
+  const mTotal   = monthly.reduce((s, src) => s + src.amount, 0);
+
+  // Update accordion header
   const lbl = document.getElementById("incomeSourcesTotalLabel");
-  if (lbl) lbl.textContent = mTotal>0 ? fmt(mTotal) : "—";
+  if (lbl) lbl.textContent = mTotal > 0 ? fmt(mTotal) : "—";
+
   if (!sources.length) {
-    el.innerHTML = '<p style="font-size:12px;color:var(--txt2);margin:0 0 8px">No income sources yet.</p>';
+    el.innerHTML = `<div style="font-size:12px;color:var(--txt2);padding:4px 0 8px;text-align:center">
+      No income sources yet. Add one below to set your monthly budget.
+    </div>`;
     return;
   }
-  const row = s => `<div style="display:flex;align-items:center;gap:10px;padding:9px 12px;background:var(--bg);border:1.5px solid var(--brd);border-radius:10px;margin-bottom:6px">
-    <div style="flex:1;min-width:0">
-      <div style="font-size:13px;font-weight:700;color:var(--txt)">${escHtml(s.label)}</div>
-      <div style="font-size:10.5px;color:var(--txt2)">${INCOME_TYPE_LABELS[s.type]||INCOME_WINDFALL_LABELS[s.type]||s.type}${s.date?" · "+s.date:""}</div>
-    </div>
-    <div style="font-size:14px;font-weight:800;color:${s.isWindfall?"var(--acc)":"var(--suc)"};white-space:nowrap;font-family:'SF Mono',monospace">${fmt(s.amount)}</div>
-    <button onclick="deleteIncomeSource(${s.id})" style="background:none;border:none;color:var(--dan);cursor:pointer;padding:3px;border-radius:5px;line-height:0;display:flex;align-items:center"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
-  </div>`;
+
+  const incomeCard = s => _finCard(s, {
+    module:      "income",
+    accentColor: s.isWindfall ? "var(--acc)" : "var(--suc)",
+    accentLight: s.isWindfall ? "var(--acc-l)" : "var(--suc-l)",
+    tagLabel:    INCOME_TYPE_LABELS[s.type] || INCOME_WINDFALL_LABELS[s.type] || s.type,
+    actionLabel: "+ Log Income",
+    actionFn:    `openFinTxnModal(${s.id},'income','log')`,
+    balance:     s.amount,
+  });
+
   let html2 = "";
   if (monthly.length) {
-    html2 += monthly.map(row).join("") +
-      `<div style="display:flex;justify-content:space-between;padding:7px 12px;font-size:12px;font-weight:700;color:var(--pri-d);background:var(--pri-l);border-radius:8px;margin-bottom:8px"><span>Monthly Total</span><span>${fmt(mTotal)}</span></div>`;
+    html2 += monthly.map(incomeCard).join("");
+    html2 += `<div style="display:flex;justify-content:space-between;padding:8px 12px;
+                font-size:12px;font-weight:700;color:var(--suc);
+                background:var(--suc-l);border-radius:8px;margin-top:4px;margin-bottom:8px">
+                <span>Monthly Total</span><span style="font-family:'SF Mono',monospace">${fmt(mTotal)}</span>
+              </div>`;
   }
   if (windfalls.length) {
-    html2 += `<div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:var(--acc);margin:4px 0 8px;display:flex;align-items:center;justify-content:space-between"><span>One-time / Windfall</span><span style="font-style:italic;font-weight:400">Added to Net Worth</span></div>` + windfalls.map(row).join("");
+    html2 += `<div style="font-size:9.5px;font-weight:800;text-transform:uppercase;
+                letter-spacing:.7px;color:var(--acc);margin:6px 0;
+                display:flex;align-items:center;justify-content:space-between">
+                <span>One-time / Windfall</span>
+                <span style="font-style:italic;font-weight:400;font-size:9px">Added to Net Worth</span>
+              </div>` + windfalls.map(incomeCard).join("");
   }
   el.innerHTML = html2;
 }
@@ -11489,5 +12541,5 @@ window.addEventListener('appinstalled', () => {
                 <button onclick="closeFeedBell();scrollToFeedSection()">See all articles →</button>
               </div>
             </div>
-</body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1c277eadb07a13e',t:'MTc4NDIyMDIzMw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
