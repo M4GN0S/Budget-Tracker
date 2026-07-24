@@ -1644,6 +1644,17 @@ footer .footer-links a:hover{color:var(--pri-d)}
 
 /* ─── Portal dropdowns show/hide ─── */
 #feedBellDropdown.show { display: flex !important; flex-direction: column; }
+@media(max-width:640px){
+  #feedBellDropdown.show{
+    position:fixed !important;
+    inset:auto 0 0 0 !important;
+    width:100% !important;
+    max-width:100% !important;
+    border-radius:20px 20px 0 0 !important;
+    max-height:80vh !important;
+    z-index:1200;
+  }
+}
 #insightsDropdown.open { display: flex !important; flex-direction: column; }
 
 /* ─── Finance Tab Accordions ──────────────────────────── */
@@ -1656,87 +1667,16 @@ footer .footer-links a:hover{color:var(--pri-d)}
 .fin-accordion.open .accordion-chevron{transform:rotate(180deg)}
 .fin-accordion .accordion-header:hover .accordion-chevron{color:var(--txt)}
 
-
 /* ─── NW Row Cards ─────────────────────────────────────── */
 .nw-row-card{transition:border-color .15s}
 .nw-row-card:hover{border-color:var(--pri) !important}
 
-
 /* ─── Budget Overview: Category Row ──────────────────────── */
-.fin-cat-row {
-  position: relative;
-  padding: 10px 12px;
-  border-radius: 10px;
-  border: 1.5px solid transparent;
-  cursor: pointer;
-  transition: background .15s, border-color .15s;
-  margin-bottom: 4px;
-}
-.fin-cat-row:hover {
-  background: var(--bg);
-  border-color: var(--brd);
-}
-.fin-cat-row .fin-cat-add {
-  /* always visible */
-}
-.fin-cat-add {
-  width: 24px;
-  height: 24px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--card);
-  border: 1.5px solid var(--brd);
-  border-radius: 7px;
-  padding: 0;
-  cursor: pointer;
-  flex-shrink: 0;
-  color: var(--txt2);
-  transition: background .15s, color .15s, border-color .15s, opacity .15s, transform .1s;
-}
-.fin-cat-add:hover {
-  background: var(--pri-l);
-  border-color: var(--pri);
-  color: var(--pri-d);
-  transform: scale(1.08);
-}
+
 /* Emphasized "left" amount */
-.fin-left-amt {
-  font-size: 13px;
-  font-weight: 900;
-  font-family: 'SF Mono', Consolas, monospace;
-}
-.fin-left-amt.over {
-  color: var(--dan);
-}
-.fin-left-amt.ok {
-  color: var(--txt2);
-}
+
 /* Summary container (Remaining + Windfall) */
-.fin-summary-box {
-  background: var(--bg);
-  border: 1px solid var(--brd);
-  border-radius: 12px;
-  padding: 10px 14px;
-  margin-top: 12px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-.fin-summary-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-}
-.fin-summary-label {
-  font-size: 12px;
-  font-weight: 700;
-  color: var(--txt2);
-  display: flex;
-  align-items: center;
-  gap: 5px;
-}
+
 .fin-summary-amt {
   font-size: 14px;
   font-weight: 900;
@@ -1807,7 +1747,6 @@ footer .footer-links a:hover{color:var(--pri-d)}
   display: block;
 }
 
-
 /* ─── Dashboard stat card: top-right corner + button ──── */
 .stat-corner-add {
   position: absolute;
@@ -1836,7 +1775,6 @@ footer .footer-links a:hover{color:var(--pri-d)}
 /* Keep tooltip bubbles from clipping inside stat cards */
 .stat { overflow: visible; }
 .stat .fin-tooltip-bubble { min-width: 180px; }
-
 
 /* ─── Unified Financial Card ─────────────────────────────── */
 .fin-card {
@@ -1873,7 +1811,6 @@ footer .footer-links a:hover{color:var(--pri-d)}
   .fin-card-balance { font-size: 14px; }
   .fin-card-name    { font-size: 14px; }
 }
-
 
 /* ─── Budget Overview — mobile-first ─────────────────────── */
 .fin-income-row {
@@ -5328,6 +5265,8 @@ function renderNetWorth() {
   // Save current as snapshot for next time
   localStorage.setItem("bt_nw_prev", String(netWorth));
   _renderDashNetWorth();
+  // Keep Finance/Budget tab overview in sync
+  if (document.querySelector('[data-tab="goals"]')?.classList.contains("active")) renderFinanceOverview();
 }
 
 function _nwRow(item, type) {
@@ -5430,7 +5369,6 @@ function showTab(id, el) {
   if (tabEl) tabEl.classList.add("active");
   if (id === "history")  { renderHistory(); renderMonthChart(); }
   if (id === "goals")    { _migrateNwItems(); _migrateIncomeSources(); _migrateGoals(); renderNetWorth(); renderIncomeSourcesList(); _renderDashNetWorth(); renderFinanceOverview(); }
-  if (id === "settings") { renderLearnedKeywords(); }
   if (id === "dashboard") updateDashboard();
   if (id === "expenses") { renderRecent(); renderBills(); _checkBillAlerts(); }
   if (id === "goals") renderGoals();
@@ -12541,5 +12479,5 @@ window.addEventListener('appinstalled', () => {
                 <button onclick="closeFeedBell();scrollToFeedSection()">See all articles →</button>
               </div>
             </div>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1c277eadb07a13e',t:'MTc4NDIyMDIzMw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a20076e0dadc7a89',t:'MTc4NDg3MDMwNw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
