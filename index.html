@@ -1913,6 +1913,128 @@ footer .footer-links a:hover{color:var(--pri-d)}
   .fin-income-total { font-size: 26px; }
 }
 
+
+/* ─── Note Modal: sticky footer above keyboard on mobile ─── */
+.note-modal {
+  display: flex;
+  flex-direction: column;
+  max-height: 92vh;
+}
+.note-modal-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0 24px 8px;
+}
+.note-modal-foot {
+  position: sticky;
+  bottom: 0;
+  background: var(--card);
+  border-top: 1px solid var(--brd);
+  padding: 10px 16px max(14px, env(safe-area-inset-bottom, 14px));
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  z-index: 10;
+}
+/* Editor toolbar also sticky */
+.editor-toolbar.compact {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  background: var(--card);
+  padding: 6px 0;
+  border-bottom: 1px solid var(--brd);
+}
+/* Checklist row in edit mode */
+.cl-edit-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--brd);
+}
+.cl-edit-check {
+  width: 18px; height: 18px;
+  border-radius: 4px;
+  border: 2px solid var(--brd);
+  cursor: pointer;
+  flex-shrink: 0;
+  accent-color: var(--pri);
+}
+.cl-edit-desc {
+  flex: 1;
+  border: none;
+  background: transparent;
+  color: var(--txt);
+  font-size: 13px;
+  font-family: inherit;
+  outline: none;
+  min-width: 0;
+}
+.cl-edit-qty {
+  width: 44px;
+  border: 1.5px solid var(--brd);
+  border-radius: 6px;
+  background: var(--input-bg);
+  color: var(--txt);
+  font-size: 12px;
+  font-family: inherit;
+  text-align: center;
+  padding: 3px 4px;
+  outline: none;
+}
+.cl-edit-qty:focus { border-color: var(--pri); }
+.cl-edit-amt {
+  width: 80px;
+  border: 1.5px solid var(--brd);
+  border-radius: 6px;
+  background: var(--input-bg);
+  color: var(--txt);
+  font-size: 12px;
+  font-family: "SF Mono", monospace;
+  text-align: right;
+  padding: 3px 6px;
+  outline: none;
+}
+.cl-edit-amt:focus { border-color: var(--pri); }
+.cl-edit-del {
+  background: none;
+  border: none;
+  color: var(--txt2);
+  cursor: pointer;
+  padding: 2px;
+  line-height: 0;
+  opacity: .4;
+  transition: opacity .15s, color .15s;
+  flex-shrink: 0;
+}
+.cl-edit-del:hover { opacity: 1; color: var(--dan); }
+.cl-edit-add-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 0 2px;
+}
+.cl-edit-add-btn {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--pri-d);
+  background: var(--pri-l);
+  border: 1.5px solid var(--pri);
+  border-radius: 8px;
+  padding: 5px 12px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background .15s;
+}
+.cl-edit-add-btn:hover { background: var(--pri); color: var(--on-pri); }
+/* Note modal scroll area */
+.note-modal-scroll { flex: 1; overflow-y: auto; }
+@media(max-width:640px) {
+  .note-modal { border-radius: 20px 20px 0 0; max-height: 96vh; }
+  .cl-edit-amt { width: 70px; }
+}
+
 </style>
 </head>
 <body>
@@ -9516,12 +9638,17 @@ function _parseChecklistItems(text) {
       const n = parseFloat(amtRaw.replace(/,/g, ""));
       if (!isNaN(n) && n > 0) amt = n;
     }
-    // Skip only if name is still the "Item N" placeholder AND price is 0/missing
-    // (i.e., a totally unfilled row). If user gave it a price or renamed it, include.
+    // Extract quantity from desc: "Eggs x12" or "Eggs ×12" or "Eggs (12)"
+    let qty = 1;
+    const qtyM = desc.match(/^(.*?)\s*[x×*](\d+)\s*$/i) ||
+                 desc.match(/^(.*?)\s*\((\d+)\)\s*$/);
+    if (qtyM) {
+      qty = parseInt(qtyM[2]) || 1;
+      desc = qtyM[1].trim();
+    }
     if (_PLACEHOLDER_NAME_RE.test(desc) && amt === null) continue;
-    // If name is still "Item N" but they gave it a price, use a generic label
     if (_PLACEHOLDER_NAME_RE.test(desc)) desc = "Item";
-    items.push({ line: i, checked, desc, amt });
+    items.push({ line: i, checked, desc, amt, qty });
   }
   return items;
 }
@@ -9595,21 +9722,31 @@ function _checkPriceListComplete(textareaId) {
 }
 
 // ─── PROMPT: ADD CHECKLIST ITEMS TO EXPENSES ──────────────────
-function _promptAddChecklistToExpenses(items, dismissKey) {
+function _promptAddChecklistToExpenses(items, noteOrKey, noteText) {
   if (!items || items.length === 0) return;
   const existing = document.getElementById('_plistExpOverlay');
   if (existing) return; // already showing
+  // Support legacy call signature (items, dismissKey string)
+  const noteObj    = (noteOrKey && typeof noteOrKey === 'object') ? noteOrKey : null;
+  const dismissKey = (noteOrKey && typeof noteOrKey === 'string') ? noteOrKey : null;
 
   const sym = getCurrency();
-  const total = items.reduce((s, it) => s + (it.amt || 0), 0);
-  const fmtAmt = n => sym + n.toFixed(2);
+  const total = items.reduce((s, it) => s + ((it.qty||1) * (it.amt || 0)), 0);
+  const fmtAmt = n => sym + ' ' + n.toLocaleString('en-US', {minimumFractionDigits:2,maximumFractionDigits:2});
 
-  const rows = items.map(it =>
-    '<div style="display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid var(--brd);font-size:13px;">' +
-      '<span style="color:var(--txt);flex:1;padding-right:8px;">' + escHtml(it.desc) + '</span>' +
-      '<span style="color:var(--txt2);white-space:nowrap;">' + fmtAmt(it.amt) + '</span>' +
-    '</div>'
-  ).join('');
+  const rows = items.map(it => {
+    const lineTotal = (it.qty || 1) * (it.amt || 0);
+    return '<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--brd);font-size:13px;">' +
+      '<span style="color:var(--txt);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + escHtml(it.desc) + '</span>' +
+      ((it.qty && it.qty > 1)
+        ? '<span style="font-size:11px;color:var(--txt2);white-space:nowrap;flex-shrink:0">×' + it.qty + '</span>'
+        : '') +
+      '<span style="font-size:11px;color:var(--txt2);white-space:nowrap;flex-shrink:0">' + fmtAmt(it.amt) + '</span>' +
+      ((it.qty && it.qty > 1)
+        ? '<span style="font-weight:700;color:var(--txt);white-space:nowrap;flex-shrink:0">' + fmtAmt(lineTotal) + '</span>'
+        : '') +
+    '</div>';
+  }).join('');
 
   const overlay = document.createElement('div');
   overlay.id = '_plistExpOverlay';
@@ -9630,8 +9767,8 @@ function _promptAddChecklistToExpenses(items, dismissKey) {
         '<select id="_plistSub" style="flex:1;padding:8px 10px;border-radius:10px;border:1.5px solid var(--brd);background:var(--input-bg);color:var(--txt);font-size:13px;">' + subOpts + '</select>' +
       '</div>' +
       '<div style="display:flex;gap:10px;">' +
-        '<button type="button" onclick="document.getElementById(\'_plistExpOverlay\').remove();sessionStorage.setItem(\'' + dismissKey + '\',\'1\');" style="flex:1;padding:10px;border-radius:10px;border:1.5px solid var(--brd);background:var(--bg);color:var(--txt2);font-size:13px;cursor:pointer;">Dismiss</button>' +
-        '<button type="button" id="_plistAddBtn" style="flex:2;padding:10px;border-radius:10px;border:none;background:var(--pri);color:var(--on-pri);font-size:13px;font-weight:700;cursor:pointer;">Add ' + items.length + ' item' + (items.length!==1?'s':'') + ' (' + fmtAmt(total) + ')</button>' +
+        '<button type="button" onclick="document.getElementById(\'_plistExpOverlay\').remove();" style="flex:1;padding:10px;border-radius:10px;border:1.5px solid var(--brd);background:var(--bg);color:var(--txt2);font-size:13px;cursor:pointer;font-family:inherit">Not now</button>' +
+        '<button type="button" id="_plistAddBtn" style="flex:2;padding:10px;border-radius:10px;border:none;background:var(--pri);color:var(--on-pri);font-size:13px;font-weight:700;cursor:pointer;font-family:inherit">Add ' + items.length + ' item' + (items.length!==1?'s':'') + ' (' + fmtAmt(total) + ')</button>' +
       '</div>' +
     '</div>';
 
@@ -9643,12 +9780,32 @@ function _promptAddChecklistToExpenses(items, dismissKey) {
     const cat  = document.getElementById('_plistCat').value;
     const sub  = document.getElementById('_plistSub').value;
     const today = new Date().toISOString().split('T')[0];
+    const data = getData();
     items.forEach(it => {
-      addExpense({ category: cat, subcategory: sub, description: it.desc, amount: it.amt, date: today });
+      const qty = it.qty || 1;
+      const lineAmt = qty * (it.amt || 0);
+      const desc = qty > 1 ? it.desc + ' ×' + qty : it.desc;
+      data.expenses.push({
+        id: Date.now() + Math.random(),
+        date: today, desc, cat, sub: sub, amt: lineAmt
+      });
     });
+    saveData(data);
+    // Mark items as saved on the note so they won't be offered again
+    if (noteObj) {
+      const allNotes = JSON.parse(localStorage.getItem('bt_notes') || '[]');
+      const n = allNotes.find(n => n.id === noteObj.id);
+      if (n) {
+        if (!n.savedItems) n.savedItems = [];
+        items.forEach(it => {
+          if (!n.savedItems.find(s => s.desc === it.desc && s.amt === it.amt)) {
+            n.savedItems.push({ desc: it.desc, amt: it.amt, date: today });
+          }
+        });
+        localStorage.setItem('bt_notes', JSON.stringify(allNotes));
+      }
+    }
     overlay.remove();
-    sessionStorage.setItem(dismissKey, '1');
-    saveData();
     updateDashboard();
     renderHistory();
     if (typeof renderRecent === 'function') renderRecent();
@@ -10136,6 +10293,160 @@ function closeNoteModal() {
   _noteModalEditing = false;
 }
 
+// ─── LIVE CHECKLIST EDITOR ──────────────────────────────────────
+// Converts a note's text to a live UI of checkbox rows with
+// desc / qty / price fields. Writes back to noteEditText on change.
+
+function _buildChecklistEditor(textareaId) {
+  const ta = document.getElementById(textareaId);
+  if (!ta) return;
+
+  // Parse existing text into checklist items + non-checklist lines
+  const allLines = ta.value.split("\n");
+  const sym = getCurrency();
+  const re  = _symRe();
+
+  // Separate checklist lines from other text
+  const checkLines = [];
+  const otherLines = [];
+  let hasChecklist = false;
+
+  allLines.forEach(ln => {
+    const m = ln.match(/^(\s*\[(x| )\]\s*)/i);
+    if (m) {
+      hasChecklist = true;
+      const rest = ln.slice(m[0].length);
+      // Parse qty and amt
+      const pM  = re.exec(ln);
+      const checked = /x/i.test(m[1]);
+      let desc = rest.trim();
+      let amt  = "";
+      let qty  = "1";
+      if (pM) {
+        desc = (pM[2] || "").trim();
+        if (pM[4]) amt = pM[4].replace(/,/g,"");
+        // qty from desc
+        const qM = desc.match(/^(.*?)\s*[x×*](\d+)\s*$/i);
+        if (qM) { qty = qM[2]; desc = qM[1].trim(); }
+      }
+      checkLines.push({ checked, desc, qty, amt });
+    } else {
+      otherLines.push(ln);
+    }
+  });
+
+  if (!hasChecklist) return; // no checklist — stay in raw textarea
+
+  // Build the editor UI
+  const wrap = document.getElementById("editorWrap_" + textareaId);
+  if (!wrap) return;
+
+  const editorId = "_clEditor_" + textareaId;
+  let existing = document.getElementById(editorId);
+  if (existing) { _syncChecklistToTextarea(textareaId); return; }
+
+  // Hide textarea, show visual editor
+  ta.style.display = "none";
+
+  const editor = document.createElement("div");
+  editor.id = editorId;
+  editor.style.cssText = "padding:12px 0 8px;";
+
+  // Other text (non-checklist) shown as read-only hint
+  const otherText = otherLines.join("\n").trim();
+
+  editor.innerHTML = `
+    ${otherText ? `<div style="font-size:12px;color:var(--txt2);margin-bottom:10px;white-space:pre-wrap">${escHtml(otherText)}</div>` : ""}
+    <div style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.7px;color:var(--txt2);margin-bottom:8px;display:flex;align-items:center;justify-content:space-between">
+      <span>Checklist</span>
+      <span style="color:var(--txt2);font-weight:400;text-transform:none;letter-spacing:0;font-size:11px">Desc &nbsp;·&nbsp; Qty &nbsp;·&nbsp; Price</span>
+    </div>
+    <div id="_clRows_${textareaId}"></div>
+    <div class="cl-edit-add-row">
+      <button class="cl-edit-add-btn" type="button"
+        onclick="_addChecklistRow('${textareaId}','',1,'')">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Add item
+      </button>
+    </div>`;
+
+  wrap.appendChild(editor);
+
+  // Populate rows
+  const rowsEl = document.getElementById("_clRows_" + textareaId);
+  checkLines.forEach((cl, idx) => {
+    rowsEl.appendChild(_makeChecklistRow(textareaId, cl.desc, cl.qty, cl.amt, cl.checked, idx));
+  });
+
+  // Sync to textarea on any change
+  _syncChecklistToTextarea(textareaId);
+}
+
+function _makeChecklistRow(taId, desc, qty, amt, checked, idx) {
+  const sym = getCurrency();
+  const row = document.createElement("div");
+  row.className = "cl-edit-row";
+  row.dataset.idx = idx;
+  row.innerHTML = `
+    <input type="checkbox" class="cl-edit-check" ${checked ? "checked" : ""}
+      onchange="_syncChecklistToTextarea('${taId}')">
+    <input type="text" class="cl-edit-desc" value="${escHtml(desc)}"
+      placeholder="Item name"
+      oninput="_syncChecklistToTextarea('${taId}')">
+    <input type="number" class="cl-edit-qty" value="${qty || 1}" min="1" max="999"
+      title="Quantity"
+      oninput="_syncChecklistToTextarea('${taId}')">
+    <span style="font-size:11px;color:var(--txt2);flex-shrink:0">${sym}</span>
+    <input type="text" inputmode="decimal" class="cl-edit-amt" value="${amt || ""}"
+      placeholder="0.00"
+      oninput="formatNumberInput(this);_syncChecklistToTextarea('${taId}')">
+    <button class="cl-edit-del" type="button"
+      onclick="_removeChecklistRow(this,'${taId}')" title="Remove">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+        <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+      </svg>
+    </button>`;
+  return row;
+}
+
+function _addChecklistRow(taId, desc, qty, amt) {
+  const rowsEl = document.getElementById("_clRows_" + taId);
+  if (!rowsEl) return;
+  const idx = rowsEl.children.length;
+  const row = _makeChecklistRow(taId, desc || "", qty || 1, amt || "", false, idx);
+  rowsEl.appendChild(row);
+  row.querySelector(".cl-edit-desc")?.focus();
+  _syncChecklistToTextarea(taId);
+}
+
+function _removeChecklistRow(btn, taId) {
+  btn.closest(".cl-edit-row")?.remove();
+  _syncChecklistToTextarea(taId);
+}
+
+function _syncChecklistToTextarea(taId) {
+  const ta      = document.getElementById(taId);
+  const rowsEl  = document.getElementById("_clRows_" + taId);
+  if (!ta || !rowsEl) return;
+  const sym = getCurrency();
+  const rows = Array.from(rowsEl.querySelectorAll(".cl-edit-row"));
+  const lines = rows.map(row => {
+    const checked = row.querySelector(".cl-edit-check")?.checked ? "x" : " ";
+    const desc    = (row.querySelector(".cl-edit-desc")?.value || "").trim();
+    const qty     = parseInt(row.querySelector(".cl-edit-qty")?.value) || 1;
+    const amtRaw  = (row.querySelector(".cl-edit-amt")?.value || "").replace(/,/g,"");
+    const amt     = parseFloat(amtRaw);
+    const descFull = qty > 1 ? desc + " x" + qty : desc;
+    if (!isNaN(amt) && amt > 0) {
+      return `[${checked}] ${descFull} — ${sym}${amt.toFixed(2)}`;
+    }
+    return `[${checked}] ${descFull}`;
+  });
+  ta.value = lines.join("\n");
+  autoGrowTextarea(ta);
+}
+
+
 function renderNoteModal() {
   const note = getNoteById(_openNoteId);
   if (!note) { closeNoteModal(); return; }
@@ -10170,7 +10481,7 @@ function renderNoteModal() {
           '<button type="button" class="tb-btn tb-i" onclick="tbWrap(\'noteEditText\',\'*\',\'*\')"><i>I</i></button>' +
           '<span class="tb-sep"></span>' +
           '<button type="button" class="tb-btn" onclick="tbInsertLine(\'noteEditText\',\'- \')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="9" y1="6" x2="21" y2="6"/><line x1="9" y1="12" x2="21" y2="12"/><line x1="9" y1="18" x2="21" y2="18"/><circle cx="4.5" cy="6" r="1.3" fill="currentColor"/><circle cx="4.5" cy="12" r="1.3" fill="currentColor"/><circle cx="4.5" cy="18" r="1.3" fill="currentColor"/></svg></button>' +
-          '<button type="button" class="tb-btn" onclick="tbInsertLine(\'noteEditText\',\'[ ] \')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="3"/></svg></button>' +
+          '<button type="button" class="tb-btn" onclick="tbInsertLine(\'noteEditText\',\'[ ] \');setTimeout(()=>_buildChecklistEditor(\'noteEditText\'),80)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="3"/></svg></button>' +
           '<button type="button" class="tb-btn" onclick="tbInsertLine(\'noteEditText\',\'1. \')" title="Numbered list"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><text x="2" y="10" font-size="7" font-weight="800" fill="currentColor" stroke="none">1</text><text x="2" y="17" font-size="7" font-weight="800" fill="currentColor" stroke="none">2</text><text x="2" y="23" font-size="7" font-weight="800" fill="currentColor" stroke="none">3</text><line x1="9" y1="7" x2="21" y2="7"/><line x1="9" y1="14" x2="21" y2="14"/><line x1="9" y1="21" x2="21" y2="21"/></svg></button>' +
           '<button type="button" class="tb-btn" onclick="tbInsertHeading(\'noteEditText\')" style="font-weight:900;font-size:14px">H</button>' +
           '<span class="tb-sep"></span>' +
@@ -10193,7 +10504,13 @@ function renderNoteModal() {
     const moodEditEl = document.getElementById("noteModalMood");
     if (moodEditEl) moodEditEl.style.display = "none";
     const ta = document.getElementById("noteEditText");
-    if (ta) { autoGrowTextarea(ta); ta.focus(); ta.setSelectionRange(ta.value.length, ta.value.length); }
+    if (ta) {
+      autoGrowTextarea(ta);
+      // Try to build live checklist UI if the note has checklist items
+      setTimeout(() => _buildChecklistEditor("noteEditText"), 50);
+      ta.focus();
+      ta.setSelectionRange(ta.value.length, ta.value.length);
+    }
     return;
   }
 
@@ -10370,13 +10687,28 @@ function saveNoteModalEdit() {
   }
   const newText = ta.value.trim();
   note.title = newTitle;
-  note.text = newText;
+  note.text  = newText;
   note.edited = new Date().toISOString();
   localStorage.setItem("bt_notes", JSON.stringify(notes));
   _noteModalEditing = false;
   renderNoteModal();
   renderNotes();
-  toast("Note updated!");
+  toast("Note saved!");
+
+  // ── Offer to log NEW priced checklist items to expenses ──────────
+  // "saved" = items already exported; only offer the ones that are NEW
+  const allPriced = _parseChecklistItems(newText).filter(it => it.amt !== null && it.amt > 0);
+  if (allPriced.length === 0) return;
+
+  // Build a fingerprint for each item (desc|amt)
+  const savedSet = new Set((note.savedItems || []).map(s => s.desc + "|" + s.amt));
+  const newItems = allPriced.filter(it => !savedSet.has(it.desc + "|" + it.amt));
+  if (newItems.length === 0) return; // nothing new to offer
+
+  // Show prompt for new items only
+  setTimeout(() => {
+    _promptAddChecklistToExpenses(newItems, note, newText);
+  }, 300);
 }
 
 function deleteNote(id) {
@@ -10644,16 +10976,7 @@ function toggleNoteCheck(noteId, checkbox) {
   // Refresh the compact list so the checklist progress badge stays accurate
   renderNotes();
 
-  // If this note has priced checklist items and the last unchecked one was just ticked,
-  // offer to add them all to expenses.
-  const priceItems = _parseChecklistItems(note.text).filter(it => it.amt !== null && it.amt > 0);
-  if (priceItems.length > 0 && priceItems.every(it => it.checked)) {
-    const key = "bt_plist_nagged_view_" + note.id + "_" + hashString(note.text);
-    if (!sessionStorage.getItem(key)) {
-      sessionStorage.setItem(key, "1");
-      setTimeout(() => _promptAddChecklistToExpenses(priceItems, null), 250);
-    }
-  }
+  // (prompt removed from here — save-to-expenses runs on Save only)
 }
 
 function renderNotes() {
@@ -12479,5 +12802,5 @@ window.addEventListener('appinstalled', () => {
                 <button onclick="closeFeedBell();scrollToFeedSection()">See all articles →</button>
               </div>
             </div>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a20076e0dadc7a89',t:'MTc4NDg3MDMwNw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</body>
 </html>
