@@ -956,14 +956,14 @@ tbody tr:hover td{background:var(--pri-l)}
 /* ─── Journal Entry Modal ─── */
 .note-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);backdrop-filter:blur(4px);z-index:1000;display:none;align-items:flex-start;justify-content:center;padding:24px 16px;overflow-y:auto}
 .note-overlay.show{display:flex}
-.note-modal{background:var(--card);border-radius:20px;max-width:560px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.25);animation:modalIn .3s cubic-bezier(.4,0,.2,1);margin:auto}
+.note-modal{background:var(--card);border-radius:20px;max-width:560px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.25);animation:modalIn .3s cubic-bezier(.4,0,.2,1);margin:auto;display:flex;flex-direction:column;max-height:90vh}
 .note-modal-head{padding:22px 24px 0;display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
 .note-modal-head .nm-meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .note-modal-head .close-modal{flex-shrink:0;background:var(--bg);color:var(--txt2);width:32px;height:32px;border-radius:8px;font-size:16px;display:flex;align-items:center;justify-content:center;transition:.2s;cursor:pointer;border:none}
 .note-modal-head .close-modal:hover{background:var(--dan-l);color:var(--dan)}
 .note-modal-title{font-size:21px;font-weight:900;line-height:1.3;padding:10px 24px 4px;color:var(--txt);letter-spacing:-.3px}
 .note-modal-date{font-size:11px;color:var(--txt2);padding:0 24px 8px}
-.note-modal-body{padding:8px 24px 8px;font-size:14px;color:var(--txt);line-height:1.7;word-wrap:break-word}
+.note-modal-body{padding:8px 24px 8px;font-size:14px;color:var(--txt);line-height:1.7;word-wrap:break-word;flex:1;overflow-y:auto;min-height:0}
 /* Structured body: paragraphs, bullet lists, checklists — all with clean indents */
 .note-modal-body .nb-p{margin:0 0 9px;line-height:1.7}
 .note-modal-body .nb-p:last-child{margin-bottom:0}
@@ -982,7 +982,7 @@ tbody tr:hover td{background:var(--pri-l)}
 .note-modal-body .note-check.checked span{text-decoration:line-through;opacity:.5}
 .note-modal-body strong{font-weight:700}
 .note-modal-body em{font-style:italic}
-.note-modal-foot{padding:14px 24px 22px;display:flex;gap:8px;flex-wrap:wrap;border-top:1px solid var(--brd);margin-top:8px}
+.note-modal-foot{padding:10px 24px 18px;display:flex;gap:8px;flex-wrap:wrap;border-top:1px solid var(--brd);flex-shrink:0;background:var(--card)}
 .note-modal-foot .nmf-spacer{flex:1}
 .note-modal-foot button{display:inline-flex;align-items:center;gap:6px;padding:9px 16px;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;border:1.5px solid var(--brd);background:var(--bg);color:var(--txt2);transition:.18s}
 .note-modal-foot button svg{width:14px;height:14px}
@@ -993,14 +993,32 @@ tbody tr:hover td{background:var(--pri-l)}
 .note-modal-hint{padding:4px 24px 0;font-size:11px;color:var(--txt2)}
 /* Full-screen modals on mobile for a uniform, native feel */
 @media(max-width:640px){
-  .note-overlay{padding:0;align-items:stretch}
-  .note-modal{border-radius:0;margin:0;width:100%;max-width:100%;min-height:100dvh;max-height:100dvh;display:flex;flex-direction:column;box-shadow:none;background:var(--card)}
-  .note-modal-head{padding:calc(14px + env(safe-area-inset-top,0px)) 18px 0}
-  .note-modal-title{font-size:18px;padding:10px 18px 4px}
-  .note-modal-date{padding:0 18px 6px}
-  .note-modal-hint{padding:4px 18px 0}
-  .note-modal-body{padding:10px 18px 12px;flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
-  .note-modal-foot{padding:14px 18px calc(18px + env(safe-area-inset-bottom,0px))}
+  .note-overlay{padding:0;align-items:stretch;justify-content:stretch}
+  .note-modal{
+    border-radius:0;margin:0;width:100%;max-width:100%;
+    height:100dvh;height:-webkit-fill-available;
+    display:flex;flex-direction:column;box-shadow:none;
+    background:var(--card);overflow:hidden
+  }
+  .note-modal-head{padding:calc(14px + env(safe-area-inset-top,0px)) 18px 0;flex-shrink:0}
+  .note-modal-title{font-size:18px;padding:10px 18px 4px;flex-shrink:0}
+  .note-modal-date{padding:0 18px 6px;flex-shrink:0}
+  .note-modal-hint{padding:4px 18px 0;flex-shrink:0}
+  .note-modal-body{
+    padding:10px 18px 8px;
+    flex:1;
+    overflow-y:auto;
+    -webkit-overflow-scrolling:touch;
+    overscroll-behavior:contain;
+    min-height:0
+  }
+  .note-modal-foot{
+    flex-shrink:0;
+    padding:10px 18px calc(14px + env(safe-area-inset-bottom,0px));
+    border-top:1px solid var(--brd);
+    background:var(--card);
+    z-index:10
+  }
   /* Install + newsletter popups also become bottom sheets */
   .modal-overlay{align-items:flex-end !important;padding:0 !important}
   .modal-overlay .modal{border-radius:18px 18px 0 0;margin:0;width:100%;max-width:100%;max-height:92dvh;overflow-y:auto;padding:22px 20px calc(22px + env(safe-area-inset-bottom,0px));animation:sheetUp .3s cubic-bezier(.4,0,.2,1)}
@@ -1082,7 +1100,7 @@ tbody tr:hover td{background:var(--pri-l)}
 
 /* ─── Journal Formatting Toolbar ─── */
 .editor-toolbar{display:flex;align-items:center;gap:2px;padding:6px;background:var(--bg);border:1.5px solid var(--brd);border-radius:10px;margin:-2px 0 0;flex-wrap:wrap}
-.editor-toolbar.compact{padding:4px;gap:1px}
+.editor-toolbar.compact{position:sticky;top:0;z-index:5;background:var(--card);flex-shrink:0}
 .tb-btn{display:inline-flex;align-items:center;justify-content:center;gap:3px;background:transparent;border:none;color:var(--txt2);width:32px;height:32px;border-radius:8px;cursor:pointer;font-weight:700;font-size:13px;transition:all .15s;font-family:inherit;padding:0;flex-shrink:0}
 .tb-btn:hover{background:var(--pri-l);color:var(--pri-d)}
 .tb-btn.on{background:var(--pri);color:var(--on-pri)}
@@ -1915,36 +1933,6 @@ footer .footer-links a:hover{color:var(--pri-d)}
 
 
 /* ─── Note Modal: sticky footer above keyboard on mobile ─── */
-.note-modal {
-  display: flex;
-  flex-direction: column;
-  max-height: 92vh;
-}
-.note-modal-body {
-  flex: 1;
-  overflow-y: auto;
-  padding: 0 24px 8px;
-}
-.note-modal-foot {
-  position: sticky;
-  bottom: 0;
-  background: var(--card);
-  border-top: 1px solid var(--brd);
-  padding: 10px 16px max(14px, env(safe-area-inset-bottom, 14px));
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-  z-index: 10;
-}
-/* Editor toolbar also sticky */
-.editor-toolbar.compact {
-  position: sticky;
-  top: 0;
-  z-index: 5;
-  background: var(--card);
-  padding: 6px 0;
-  border-bottom: 1px solid var(--brd);
-}
 /* Checklist row in edit mode */
 .cl-edit-row {
   display: flex;
@@ -2035,6 +2023,122 @@ footer .footer-links a:hover{color:var(--pri-d)}
   .cl-edit-amt { width: 70px; }
 }
 
+
+/* ─── Note view: inline price input ─────────────────────── */
+.nb-check-desc { flex: 1; min-width: 0; }
+.nb-check-price {
+  display: inline-flex;
+  align-items: center;
+  gap: 1px;
+  flex-shrink: 0;
+  margin-left: 8px;
+}
+.nb-price-input {
+  width: 72px;
+  padding: 2px 6px;
+  border: 1px solid var(--brd);
+  border-radius: 6px;
+  background: var(--input-bg);
+  color: var(--txt);
+  font-size: 12px;
+  font-weight: 700;
+  font-family: "SF Mono", Consolas, monospace;
+  text-align: right;
+  outline: none;
+  transition: border-color .15s;
+}
+.nb-price-input:focus { border-color: var(--pri); }
+.nb-check.checked .nb-price-input { opacity: .45; }
+/* Make checklist li flex so desc and price sit on same row */
+.nb-checklist li { display: flex; align-items: center; }
+.nb-checklist .note-check { flex: 1; min-width: 0; }
+
+
+/* ─── Note body heading styles ──────────────────────────── */
+.nb-h1 { font-size: 18px; font-weight: 900; color: var(--txt); margin: 10px 0 6px; letter-spacing: -.3px; line-height: 1.3; border-bottom: 2px solid var(--brd); padding-bottom: 4px; }
+.nb-h2 { font-size: 15px; font-weight: 800; color: var(--txt); margin: 8px 0 4px; letter-spacing: -.2px; line-height: 1.3; }
+.nb-h3 { font-size: 13px; font-weight: 800; color: var(--txt); margin: 6px 0 3px; line-height: 1.3; text-transform: uppercase; letter-spacing: .4px; }
+
+
+  .nb-qty-input   { width: 36px; }
+}
+
+
+
+/* Column widths */
+.nb-cl-table col.c-num   { width: 28px; }
+.nb-cl-table col.c-check { width: 30px; }
+.nb-cl-table col.c-desc  { width: auto; }
+.nb-cl-table col.c-qty   { width: 54px; }
+.nb-cl-table col.c-price { width: 90px; }
+.nb-cl-table col.c-total { width: 64px; }
+/* Header */
+.nb-cl-table thead tr { background: var(--bg); }
+.nb-cl-table th {
+  padding: 6px 6px;
+  font-size: 9.5px; font-weight: 800;
+  text-transform: uppercase; letter-spacing: .6px;
+  color: var(--txt2); border-bottom: 1px solid var(--brd);
+  white-space: nowrap; overflow: hidden;
+}
+.nb-cl-th-num   { text-align: center; }
+.nb-cl-th-check { text-align: center; }
+.nb-cl-th-desc  { text-align: left; padding-left: 8px; }
+.nb-cl-th-qty   { text-align: center; }
+.nb-cl-th-price { text-align: right; }
+.nb-cl-th-total { text-align: right; padding-right: 10px; }
+/* Body rows */
+.nb-cl-row { border-bottom: 1px solid var(--brd); transition: background .12s; }
+.nb-cl-row:last-child { border-bottom: none; }
+.nb-cl-row:hover { background: var(--bg); }
+.nb-cl-row.checked .nb-cl-desc { text-decoration: line-through; opacity: .45; }
+/* Cells */
+.nb-cl-td-num {
+  text-align: center; padding: 8px 4px;
+  font-size: 11px; font-weight: 700; color: var(--txt2);
+}
+.nb-cl-td-check { text-align: center; padding: 8px 4px; }
+.nb-check-box { width: 16px; height: 16px; accent-color: var(--pri); cursor: pointer; vertical-align: middle; }
+.nb-cl-td-desc  { padding: 8px 6px 8px 8px; color: var(--txt); overflow: hidden; text-overflow: ellipsis; }
+.nb-cl-td-qty   { padding: 6px 4px; text-align: center; }
+.nb-cl-td-price { padding: 6px 8px 6px 4px; text-align: right; }
+.nb-cl-td-total { padding: 6px 10px 6px 2px; text-align: right; white-space: nowrap; }
+/* Inputs */
+.nb-qty-input {
+  width: 42px; padding: 3px 4px;
+  border: 1px solid var(--brd); border-radius: 6px;
+  background: var(--input-bg); color: var(--txt);
+  font-size: 12px; font-weight: 700; text-align: center;
+  outline: none; font-family: inherit;
+  transition: border-color .15s;
+}
+.nb-qty-input:focus { border-color: var(--pri); }
+.nb-price-wrap {
+  display: inline-flex; align-items: center; gap: 1px; justify-content: flex-end;
+}
+.nb-price-sym { font-size: 10px; color: var(--txt2); flex-shrink: 0; }
+.nb-price-input {
+  width: 62px; padding: 3px 5px;
+  border: 1px solid var(--brd); border-radius: 6px;
+  background: var(--input-bg); color: var(--txt);
+  font-size: 12px; font-weight: 700; text-align: right;
+  outline: none; font-family: "SF Mono", Consolas, monospace;
+  transition: border-color .15s;
+}
+.nb-price-input:focus { border-color: var(--pri); }
+.nb-line-total { font-size: 11px; color: var(--txt2); font-family: "SF Mono", Consolas, monospace; }
+/* Total row */
+.nb-cl-total-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 8px 12px;
+  background: var(--bg);
+  border-top: 1.5px solid var(--brd);
+  font-size: 12px; font-weight: 800; color: var(--txt);
+}
+.nb-cl-grand-total {
+  font-size: 14px; font-weight: 900;
+  color: var(--pri-d); font-family: "SF Mono", Consolas, monospace;
+}
 </style>
 </head>
 <body>
@@ -3685,7 +3789,9 @@ function saveRollingBackup(data) {
   try {
     const now = Date.now();
     const backupKey = BACKUP_PREFIX + now;
-    const backup = { _ts: now, _count: data.expenses.length, data };
+    // Save full backup including all extended data
+    const fullBk = _buildFullBackup();
+    const backup = { _ts: now, _count: data.expenses.length, data, _full: fullBk };
     localStorage.setItem(backupKey, JSON.stringify(backup));
     // Clean old backups — keep only MAX_BACKUPS
     const allKeys = Object.keys(localStorage)
@@ -3779,29 +3885,15 @@ function recoverFromBackup() {
 
 // ─── LAYER 3: One-click clipboard backup ───────────────────
 function copyBackupToClipboard() {
-  const data = getData();
-  const backup = {
-    _app: "50/30/20 Budget Tracker",
-    _version: APP_VERSION,
-    _exported: new Date().toISOString(),
-    _expenseCount: data.expenses.length,
-    _goalCount: data.goals.length,
-    income: data.income,
-    expenses: data.expenses,
-    goals: data.goals
-  };
-  const json = JSON.stringify(backup, null, 2);
+  const backup = _buildFullBackup();
+  const json   = JSON.stringify(backup);
   navigator.clipboard.writeText(json).then(() => {
-    toast("Backup copied to clipboard! Paste into a note to save.");
+    toast("Full backup copied! Paste in a safe place to keep.");
   }).catch(() => {
-    // Fallback for older browsers
     const ta = document.createElement("textarea");
-    ta.value = json;
-    document.body.appendChild(ta);
-    ta.select();
-    document.execCommand("copy");
-    document.body.removeChild(ta);
-    toast("Backup copied to clipboard!");
+    ta.value = json; document.body.appendChild(ta); ta.select();
+    document.execCommand("copy"); document.body.removeChild(ta);
+    toast("Full backup copied to clipboard!");
   });
 }
 
@@ -3809,18 +3901,32 @@ function restoreFromClipboard() {
   navigator.clipboard.readText().then(text => {
     try {
       const backup = JSON.parse(text);
-      if (!backup.expenses || !Array.isArray(backup.expenses)) {
-        toast("Clipboard doesn't contain valid backup data");
-        return;
+      if (!backup.raw && (!backup.expenses || !Array.isArray(backup.expenses))) {
+        toast("Clipboard doesn't contain valid backup data"); return;
       }
-      if (!confirm("Restore from clipboard?\n\n" + backup.expenses.length + " expenses\n" + (backup.goals||[]).length + " goals\nIncome: " + getCurrency() + " " + Number(backup.income||0).toLocaleString() + "\n\nThis will REPLACE all current data.")) return;
-      const data = { income: backup.income||0, expenses: backup.expenses, goals: backup.goals||[] };
-      saveData(data);
-      setIncomeDisplay(data.income);
+      const c3b = backup._counts || {};
+      const expCnt  = c3b.expenses ?? (backup.expenses?.length || 0);
+      const noteCnt = c3b.notes    ?? (backup.notes?.length    || 0);
+      const billCnt = c3b.bills    ?? (backup.bills?.length    || 0);
+      const keyCnt2 = backup._keyCount || Object.keys(backup.raw||{}).length || "?";
+      if (!confirm(
+        "Restore from clipboard?\n\n" +
+        "  " + expCnt  + " expenses\n" +
+        "  " + noteCnt + " journal notes\n" +
+        "  " + billCnt + " bills\n" +
+        "  " + keyCnt2 + " settings/data keys\n\n" +
+        "This will REPLACE all current data."
+      )) return;
+      _restoreFullBackup(backup);
+      setIncomeDisplay((getData()).income);
+      loadTheme(); loadCurrency();
       updateDashboard(); renderHistory(); renderGoals();
-      toast("Restored " + data.expenses.length + " expenses from clipboard!");
+      renderNotes(); renderBills(); renderNetWorth();
+      renderIncomeSourcesList(); renderFinanceOverview();
+      _syncIncomeSources();
+      toast("Restored! " + expCnt + " expenses, " + noteCnt + " notes, " + billCnt + " bills.");
     } catch(e) {
-      toast("Couldn't parse clipboard content — make sure you copied a backup");
+      toast("Couldn't parse clipboard — make sure you copied a full backup");
     }
   }).catch(() => {
     toast("Clipboard access denied — try the JSON import instead");
@@ -7318,11 +7424,126 @@ function exportExcel() {
 
 // ─── EXPORT: JSON ──────────────────────────────────────────
 function exportJSON() {
-  const data = getData();
-  const backup = { _app:"50/30/20 Budget Tracker", _version:APP_VERSION, _exported:new Date().toISOString(), income:data.income, expenses:data.expenses, goals:data.goals };
+  const backup = _buildFullBackup();
   downloadFile(JSON.stringify(backup, null, 2), "budget-backup-" + dateStamp() + ".json", "application/json");
   markBackupDone();
-  toast("Full backup saved!");
+  const cnt = (backup.expenses||[]).length;
+  const b = _buildFullBackup();
+  const c = b._counts;
+  toast("Full backup saved! " + c.expenses + " expenses, " + c.notes + " notes, " + b._keyCount + " settings keys.");
+}
+
+// ─── SELF-DISCOVERING BACKUP SYSTEM ─────────────────────────────
+//
+// Instead of a hardcoded list, we scan localStorage at runtime.
+// Any key added to the app in future updates is automatically included.
+// Transient/session keys are excluded via the SKIP list.
+//
+// SKIP rules — never backup these:
+//   bt_backup_*      → the rolling backups themselves (circular)
+//   bt_feed_cache    → article feed, re-fetched from network
+//   bt_feed_read     → read-state, not worth migrating
+//   bt_chat_*        → AI conversation (transient, privacy)
+//   bt_messages      → transient
+//   bt_nl_*          → newsletter state (per-device)
+//   bt_personalize_* → onboarding flags (per-device)
+//   bt_client_id     → device UUID, must stay per-device
+//   bt_models_*      → cached model list, re-fetched
+//   bt_nw_prev       → last NW snapshot (derived, recalculated)
+//   pwa_dismissed    → PWA banner state (per-device)
+//   bt_reminder      → reminder session state
+
+const _BACKUP_SKIP = new Set([
+  "bt_feed_cache", "bt_feed_read",
+  "bt_chat_history", "bt_chat_html", "bt_messages",
+  "bt_nl_popup_shown", "bt_nl_subscribed", "bt_newsletter",
+  "bt_personalize_dismissed", "bt_personalize_done",
+  "bt_client_id",
+  "bt_nw_prev",
+  "pwa_dismissed",
+  "bt_reminder",
+  "bt_ai_usage",   // rate-limit counters reset naturally
+]);
+const _BACKUP_SKIP_PREFIXES = ["bt_backup_", "bt_models_"];
+
+function _isBackupWorthy(key) {
+  if (_BACKUP_SKIP.has(key)) return false;
+  if (_BACKUP_SKIP_PREFIXES.some(p => key.startsWith(p))) return false;
+  // Only backup bt_* and budget_* keys (app keys)
+  if (!key.startsWith("bt_") && !key.startsWith("budget_")) return false;
+  return true;
+}
+
+// Build a complete, self-discovering backup of all worthy localStorage keys
+function _buildFullBackup() {
+  // Snapshot every backup-worthy key as raw strings
+  const raw = {};
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i);
+    if (_isBackupWorthy(key)) {
+      raw[key] = localStorage.getItem(key); // store as raw string
+    }
+  }
+
+  // Parse counts for the summary
+  let expCnt = 0, noteCnt = 0, billCnt = 0, goalCnt = 0;
+  try { expCnt  = JSON.parse(raw["budget_tracker_503020"] || "{}").expenses?.length || 0; } catch(e){}
+  try { noteCnt = JSON.parse(raw["bt_notes"] || "[]").length; } catch(e){}
+  try { billCnt = JSON.parse(raw["bt_bills"] || "[]").length; } catch(e){}
+  try { goalCnt = JSON.parse(raw["budget_tracker_503020"] || "{}").goals?.length || 0; } catch(e){}
+
+  return {
+    _app:      "50/30/20 Budget Tracker",
+    _version:  APP_VERSION,
+    _exported: new Date().toISOString(),
+    _schema:   3,   // v3 = self-discovering full backup
+    _counts:   { expenses: expCnt, notes: noteCnt, bills: billCnt, goals: goalCnt },
+    _keyCount: Object.keys(raw).length,
+    raw,         // all keys as raw JSON strings — forward-compatible
+  };
+}
+
+// Restore: writes all raw strings back to localStorage, then re-parses core data
+function _restoreFullBackup(backup) {
+  if (!backup) return;
+
+  if (backup._schema === 3 && backup.raw) {
+    // v3 self-discovering restore
+    Object.entries(backup.raw).forEach(([key, val]) => {
+      if (val !== null && val !== undefined) {
+        localStorage.setItem(key, val); // restore raw string directly
+      }
+    });
+    return;
+  }
+
+  // v2 legacy restore (named fields)
+  const set = (k, v) => {
+    if (v === null || v === undefined) return;
+    localStorage.setItem(k, typeof v === "string" ? v : JSON.stringify(v));
+  };
+  const data = { income: backup.income||0, expenses: backup.expenses||[], goals: backup.goals||[] };
+  saveData(data);
+  if (backup.bills)            set("bt_bills",            backup.bills);
+  if (backup.networth)         set("bt_networth",         backup.networth);
+  if (backup.incomeSources)    set("bt_income_sources",   backup.incomeSources);
+  if (backup.recurring)        set("bt_recurring",        backup.recurring);
+  if (backup.notes)            set("bt_notes",            backup.notes);
+  if (backup.customQA)         set("bt_custom_qa",        backup.customQA);
+  if (backup.learnedKeywords)  set("bt_learned_keywords", backup.learnedKeywords);
+  if (backup.currency)         set("bt_currency",         backup.currency);
+  if (backup.userName)         set("bt_user_name",        backup.userName);
+  if (backup.theme)            set("budget_theme",         backup.theme);
+  if (backup.botName)          set("bt_bot_name",          backup.botName);
+  if (backup.customPrompt)     set("bt_custom_prompt",     backup.customPrompt);
+  if (backup.ppEnabled)        set("bt_pp_enabled",        backup.ppEnabled);
+  if (backup.ppFreq)           set("bt_pp_freq",           backup.ppFreq);
+  if (backup.ppDay)            set("bt_pp_day",            backup.ppDay);
+  if (backup.alertEnabled)     set("bt_alert_enabled",     backup.alertEnabled);
+  if (backup.alertThreshold)   set("bt_alert_threshold",   backup.alertThreshold);
+  if (backup.billAlerts)       set("bt_bill_alerts",       backup.billAlerts);
+  if (backup.streakBest)       set("bt_streak_best",       backup.streakBest);
+  if (backup.failover)         set("bt_failover",          backup.failover);
 }
 
 // ─── IMPORT: CSV ───────────────────────────────────────────
@@ -7382,13 +7603,31 @@ function importJSON(event) {
   reader.onload = function(e) {
     try {
       const backup = JSON.parse(e.target.result);
-      if (!backup.expenses || !Array.isArray(backup.expenses)) { toast("Invalid backup file"); return; }
-      if (!confirm("Restore this backup?\n\n" + backup.expenses.length + " expenses\n" + (backup.goals||[]).length + " goals\nIncome: " + getCurrency() + " " + Number(backup.income||0).toLocaleString() + "\n\nThis will REPLACE all current data.")) return;
-      const data = { income:backup.income||0, expenses:backup.expenses||[], goals:backup.goals||[] };
-      saveData(data);
-      setIncomeDisplay(data.income);
+      if (!backup.raw && (!backup.expenses || !Array.isArray(backup.expenses))) { toast("Invalid backup file"); return; }
+      // Support both v3 (raw) and v2 (named fields)
+      const c3 = backup._counts || {};
+      let expCnt  = c3.expenses  ?? (backup.expenses?.length  || 0);
+      let noteCnt = c3.notes     ?? (backup.notes?.length     || 0);
+      let billCnt = c3.bills     ?? (backup.bills?.length     || 0);
+      let goalCnt = c3.goals     ?? (backup.goals?.length     || 0);
+      const keyCnt = backup._keyCount || Object.keys(backup.raw||{}).length || "?";
+      if (!confirm(
+        "Restore this backup?\n\n" +
+        "  " + expCnt  + " expenses\n" +
+        "  " + goalCnt + " goals\n" +
+        "  " + noteCnt + " journal notes\n" +
+        "  " + billCnt + " bills\n" +
+        "  " + keyCnt  + " settings/data keys\n\n" +
+        "This will REPLACE all current data."
+      )) return;
+      _restoreFullBackup(backup);
+      setIncomeDisplay((getData()).income);
+      loadTheme(); loadCurrency();
       updateDashboard(); renderHistory(); renderGoals();
-      toast("Backup restored! " + data.expenses.length + " expenses loaded");
+      renderNotes(); renderBills(); renderNetWorth();
+      renderIncomeSourcesList(); renderFinanceOverview();
+      _syncIncomeSources();
+      toast("Restored! " + expCnt + " expenses, " + noteCnt + " notes, " + billCnt + " bills loaded.");
     } catch(err) { toast("Error reading backup: " + err.message); }
   };
   reader.readAsText(file);
@@ -9265,14 +9504,25 @@ function tbInsertLine(textareaId, prefix) {
   const ta = _tbEl(textareaId); if (!ta) return;
   ta.focus();
   const start = ta.selectionStart;
-  const val = ta.value;
-  let before = val.substring(0, start);
-  const after  = val.substring(start);
-  // If we're at start or the previous char is a newline, just prepend prefix.
+  const val   = ta.value;
+  let before  = val.substring(0, start);
+  const after = val.substring(start);
+
+  // Smart numbered list: detect "N. " prefix and auto-increment
+  let actualPrefix = prefix;
+  if (/^\d+\.\s/.test(prefix)) {
+    // Look at the line just before cursor for a numbered list item
+    const prevLines  = before.split("\n");
+    const prevLine   = prevLines[prevLines.length - 1] || "";
+    const prevNumM   = prevLine.match(/^(\d+)\./);
+    const nextNum    = prevNumM ? parseInt(prevNumM[1]) + 1 : 1;
+    actualPrefix = nextNum + ". ";
+  }
+
   if (before.length === 0 || before.endsWith("\n")) {
-    before = before + prefix;
+    before = before + actualPrefix;
   } else {
-    before = before + "\n" + prefix;
+    before = before + "\n" + actualPrefix;
   }
   ta.value = before + after;
   const pos = before.length;
@@ -9573,6 +9823,47 @@ function onTextareaKeydown(e, textareaId) {
     return;
   }
   if (e.key === "Enter" && !e.shiftKey) {
+    const curPos  = ta.selectionStart;
+    const before2 = ta.value.substring(0, curPos);
+    const lines2  = before2.split("\n");
+    const curLn   = lines2[lines2.length - 1] || "";
+
+    // Auto-continue numbered list
+    const numM2 = curLn.match(/^(\d+)\.\s(.*)$/);
+    if (numM2) {
+      e.preventDefault();
+      if (numM2[2].trim() === "") {
+        // Empty line → exit list
+        const ls = curPos - curLn.length;
+        ta.value = ta.value.substring(0, ls) + "\n" + ta.value.substring(curPos);
+        ta.setSelectionRange(ls + 1, ls + 1);
+      } else {
+        const ins = "\n" + (parseInt(numM2[1]) + 1) + ". ";
+        ta.value  = ta.value.substring(0, curPos) + ins + ta.value.substring(curPos);
+        ta.setSelectionRange(curPos + ins.length, curPos + ins.length);
+      }
+      ta.dispatchEvent(new Event("input", { bubbles: true }));
+      return;
+    }
+
+    // Auto-continue bullet list (- item)
+    const bulletM2 = curLn.match(/^([-•])\s(.*)$/);
+    if (bulletM2) {
+      e.preventDefault();
+      if (bulletM2[2].trim() === "") {
+        const ls = curPos - curLn.length;
+        ta.value = ta.value.substring(0, ls) + "\n" + ta.value.substring(curPos);
+        ta.setSelectionRange(ls + 1, ls + 1);
+      } else {
+        const ins = "\n" + bulletM2[1] + " ";
+        ta.value  = ta.value.substring(0, curPos) + ins + ta.value.substring(curPos);
+        ta.setSelectionRange(curPos + ins.length, curPos + ins.length);
+      }
+      ta.dispatchEvent(new Event("input", { bubbles: true }));
+      return;
+    }
+
+    // Existing: price-list Enter
     const { line } = _currentLine(ta, ta.selectionStart);
     if (_symRe().test(line) || _CHECKLIST_RE.test(line)) {
       e.preventDefault();
@@ -10297,154 +10588,22 @@ function closeNoteModal() {
 // Converts a note's text to a live UI of checkbox rows with
 // desc / qty / price fields. Writes back to noteEditText on change.
 
-function _buildChecklistEditor(textareaId) {
-  const ta = document.getElementById(textareaId);
-  if (!ta) return;
 
-  // Parse existing text into checklist items + non-checklist lines
-  const allLines = ta.value.split("\n");
-  const sym = getCurrency();
-  const re  = _symRe();
 
-  // Separate checklist lines from other text
-  const checkLines = [];
-  const otherLines = [];
-  let hasChecklist = false;
 
-  allLines.forEach(ln => {
-    const m = ln.match(/^(\s*\[(x| )\]\s*)/i);
-    if (m) {
-      hasChecklist = true;
-      const rest = ln.slice(m[0].length);
-      // Parse qty and amt
-      const pM  = re.exec(ln);
-      const checked = /x/i.test(m[1]);
-      let desc = rest.trim();
-      let amt  = "";
-      let qty  = "1";
-      if (pM) {
-        desc = (pM[2] || "").trim();
-        if (pM[4]) amt = pM[4].replace(/,/g,"");
-        // qty from desc
-        const qM = desc.match(/^(.*?)\s*[x×*](\d+)\s*$/i);
-        if (qM) { qty = qM[2]; desc = qM[1].trim(); }
-      }
-      checkLines.push({ checked, desc, qty, amt });
-    } else {
-      otherLines.push(ln);
-    }
-  });
+// ═══════════════════════════════════════════════════════════════════
+// BLOCK-BASED NOTE EDITOR
+// Parses the note text into typed blocks (heading / paragraph /
+// bullet / numbered / pricelist) and renders each with its own UI.
+// On save, serialises all blocks back to the raw text format.
 
-  if (!hasChecklist) return; // no checklist — stay in raw textarea
-
-  // Build the editor UI
-  const wrap = document.getElementById("editorWrap_" + textareaId);
-  if (!wrap) return;
-
-  const editorId = "_clEditor_" + textareaId;
-  let existing = document.getElementById(editorId);
-  if (existing) { _syncChecklistToTextarea(textareaId); return; }
-
-  // Hide textarea, show visual editor
-  ta.style.display = "none";
-
-  const editor = document.createElement("div");
-  editor.id = editorId;
-  editor.style.cssText = "padding:12px 0 8px;";
-
-  // Other text (non-checklist) shown as read-only hint
-  const otherText = otherLines.join("\n").trim();
-
-  editor.innerHTML = `
-    ${otherText ? `<div style="font-size:12px;color:var(--txt2);margin-bottom:10px;white-space:pre-wrap">${escHtml(otherText)}</div>` : ""}
-    <div style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.7px;color:var(--txt2);margin-bottom:8px;display:flex;align-items:center;justify-content:space-between">
-      <span>Checklist</span>
-      <span style="color:var(--txt2);font-weight:400;text-transform:none;letter-spacing:0;font-size:11px">Desc &nbsp;·&nbsp; Qty &nbsp;·&nbsp; Price</span>
-    </div>
-    <div id="_clRows_${textareaId}"></div>
-    <div class="cl-edit-add-row">
-      <button class="cl-edit-add-btn" type="button"
-        onclick="_addChecklistRow('${textareaId}','',1,'')">
-        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        Add item
-      </button>
-    </div>`;
-
-  wrap.appendChild(editor);
-
-  // Populate rows
-  const rowsEl = document.getElementById("_clRows_" + textareaId);
-  checkLines.forEach((cl, idx) => {
-    rowsEl.appendChild(_makeChecklistRow(textareaId, cl.desc, cl.qty, cl.amt, cl.checked, idx));
-  });
-
-  // Sync to textarea on any change
-  _syncChecklistToTextarea(textareaId);
-}
-
-function _makeChecklistRow(taId, desc, qty, amt, checked, idx) {
-  const sym = getCurrency();
-  const row = document.createElement("div");
-  row.className = "cl-edit-row";
-  row.dataset.idx = idx;
-  row.innerHTML = `
-    <input type="checkbox" class="cl-edit-check" ${checked ? "checked" : ""}
-      onchange="_syncChecklistToTextarea('${taId}')">
-    <input type="text" class="cl-edit-desc" value="${escHtml(desc)}"
-      placeholder="Item name"
-      oninput="_syncChecklistToTextarea('${taId}')">
-    <input type="number" class="cl-edit-qty" value="${qty || 1}" min="1" max="999"
-      title="Quantity"
-      oninput="_syncChecklistToTextarea('${taId}')">
-    <span style="font-size:11px;color:var(--txt2);flex-shrink:0">${sym}</span>
-    <input type="text" inputmode="decimal" class="cl-edit-amt" value="${amt || ""}"
-      placeholder="0.00"
-      oninput="formatNumberInput(this);_syncChecklistToTextarea('${taId}')">
-    <button class="cl-edit-del" type="button"
-      onclick="_removeChecklistRow(this,'${taId}')" title="Remove">
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
-        <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
-      </svg>
-    </button>`;
-  return row;
-}
-
-function _addChecklistRow(taId, desc, qty, amt) {
-  const rowsEl = document.getElementById("_clRows_" + taId);
-  if (!rowsEl) return;
-  const idx = rowsEl.children.length;
-  const row = _makeChecklistRow(taId, desc || "", qty || 1, amt || "", false, idx);
-  rowsEl.appendChild(row);
-  row.querySelector(".cl-edit-desc")?.focus();
-  _syncChecklistToTextarea(taId);
-}
 
 function _removeChecklistRow(btn, taId) {
   btn.closest(".cl-edit-row")?.remove();
   _syncChecklistToTextarea(taId);
 }
 
-function _syncChecklistToTextarea(taId) {
-  const ta      = document.getElementById(taId);
-  const rowsEl  = document.getElementById("_clRows_" + taId);
-  if (!ta || !rowsEl) return;
-  const sym = getCurrency();
-  const rows = Array.from(rowsEl.querySelectorAll(".cl-edit-row"));
-  const lines = rows.map(row => {
-    const checked = row.querySelector(".cl-edit-check")?.checked ? "x" : " ";
-    const desc    = (row.querySelector(".cl-edit-desc")?.value || "").trim();
-    const qty     = parseInt(row.querySelector(".cl-edit-qty")?.value) || 1;
-    const amtRaw  = (row.querySelector(".cl-edit-amt")?.value || "").replace(/,/g,"");
-    const amt     = parseFloat(amtRaw);
-    const descFull = qty > 1 ? desc + " x" + qty : desc;
-    if (!isNaN(amt) && amt > 0) {
-      return `[${checked}] ${descFull} — ${sym}${amt.toFixed(2)}`;
-    }
-    return `[${checked}] ${descFull}`;
-  });
-  ta.value = lines.join("\n");
-  autoGrowTextarea(ta);
-}
+
 
 
 function renderNoteModal() {
@@ -10481,7 +10640,7 @@ function renderNoteModal() {
           '<button type="button" class="tb-btn tb-i" onclick="tbWrap(\'noteEditText\',\'*\',\'*\')"><i>I</i></button>' +
           '<span class="tb-sep"></span>' +
           '<button type="button" class="tb-btn" onclick="tbInsertLine(\'noteEditText\',\'- \')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="9" y1="6" x2="21" y2="6"/><line x1="9" y1="12" x2="21" y2="12"/><line x1="9" y1="18" x2="21" y2="18"/><circle cx="4.5" cy="6" r="1.3" fill="currentColor"/><circle cx="4.5" cy="12" r="1.3" fill="currentColor"/><circle cx="4.5" cy="18" r="1.3" fill="currentColor"/></svg></button>' +
-          '<button type="button" class="tb-btn" onclick="tbInsertLine(\'noteEditText\',\'[ ] \');setTimeout(()=>_buildChecklistEditor(\'noteEditText\'),80)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="3"/></svg></button>' +
+          '<button type="button" class="tb-btn" onclick="tbInsertLine(\'noteEditText\',\'[ ] \')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="3"/></svg></button>' +
           '<button type="button" class="tb-btn" onclick="tbInsertLine(\'noteEditText\',\'1. \')" title="Numbered list"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><text x="2" y="10" font-size="7" font-weight="800" fill="currentColor" stroke="none">1</text><text x="2" y="17" font-size="7" font-weight="800" fill="currentColor" stroke="none">2</text><text x="2" y="23" font-size="7" font-weight="800" fill="currentColor" stroke="none">3</text><line x1="9" y1="7" x2="21" y2="7"/><line x1="9" y1="14" x2="21" y2="14"/><line x1="9" y1="21" x2="21" y2="21"/></svg></button>' +
           '<button type="button" class="tb-btn" onclick="tbInsertHeading(\'noteEditText\')" style="font-weight:900;font-size:14px">H</button>' +
           '<span class="tb-sep"></span>' +
@@ -10507,7 +10666,6 @@ function renderNoteModal() {
     if (ta) {
       autoGrowTextarea(ta);
       // Try to build live checklist UI if the note has checklist items
-      setTimeout(() => _buildChecklistEditor("noteEditText"), 50);
       ta.focus();
       ta.setSelectionRange(ta.value.length, ta.value.length);
     }
@@ -10881,37 +11039,287 @@ function formatInline(s) {
 // Render a note body into clean, properly-indented HTML. Bullets and checkboxes
 // become structured rows with hanging indent (wrapped text aligns under the text,
 // not under the marker). Plain lines become paragraphs; blank lines add spacing.
+// Save an inline price edit made directly in view mode
+// Thin wrappers for inline note item edits — with confirmation
+function _nbQtyChange(el) {
+  const row    = el.closest("tr");
+  const descEl = row ? row.querySelector(".nb-cl-td-desc") : null;
+  const name   = descEl ? descEl.textContent.trim() : "this item";
+  const newQty = parseInt(el.value) || 1;
+  if (!confirm("Update quantity for \"" + name + "\" to " + newQty + "?")) {
+    // Revert to stored value
+    const notes = JSON.parse(localStorage.getItem("bt_notes") || "[]");
+    const note  = notes.find(n => n.id === parseInt(el.dataset.nid));
+    if (note) {
+      const idx2   = parseInt(el.dataset.idx);
+      let count    = 0;
+      const lines  = note.text.split("\n");
+      for (const ln of lines) {
+        if (/^\s*\[[ xX]\]\s/i.test(ln)) {
+          if (count === idx2) {
+            const qM = ln.match(/\s*[x×](\d+)\s*(?=\s*[-\u2013\u2014]|$)/i);
+            el.value = qM ? qM[1] : "1";
+            break;
+          }
+          count++;
+        }
+      }
+    }
+    return;
+  }
+  updateNoteItemQty(parseInt(el.dataset.nid), parseInt(el.dataset.idx), el.value, el.dataset.lid);
+}
+function _nbPriceChange(el) {
+  const row    = el.closest("tr");
+  const descEl = row ? row.querySelector(".nb-cl-td-desc") : null;
+  const name   = descEl ? descEl.textContent.trim() : "this item";
+  const sym    = getCurrency();
+  if (!confirm("Update price for \"" + name + "\" to " + sym + " " + (parseFloat(el.value)||0).toFixed(2) + "?")) {
+    // Revert
+    const notes = JSON.parse(localStorage.getItem("bt_notes") || "[]");
+    const note  = notes.find(n => n.id === parseInt(el.dataset.nid));
+    if (note) {
+      const idx2  = parseInt(el.dataset.idx);
+      let count   = 0;
+      const lines = note.text.split("\n");
+      for (const ln of lines) {
+        if (/^\s*\[[ xX]\]\s/i.test(ln)) {
+          if (count === idx2) {
+            const amtM = ln.match(/[-\u2013\u2014]+\s*[^\d\s]*(\d[\d,]*(?:\.\d{1,2})?)\s*$/);
+            el.value = amtM ? amtM[1] : "";
+            break;
+          }
+          count++;
+        }
+      }
+    }
+    return;
+  }
+  updateNoteItemPrice(parseInt(el.dataset.nid), parseInt(el.dataset.idx), el.value, el.dataset.lid);
+}
+
+
+function updateNoteItemPrice(noteId, itemIndex, newVal, tableId) {
+  const notes = JSON.parse(localStorage.getItem("bt_notes") || "[]");
+  const note  = notes.find(n => n.id === noteId);
+  if (!note) return;
+
+  const lines  = note.text.split("\n");
+  const sym    = getCurrency();
+  const parsed = parseFloat((newVal || "").replace(/,/g,""));
+  if (isNaN(parsed) || parsed < 0) return;
+
+  let checkCount = 0;
+  for (let i = 0; i < lines.length; i++) {
+    if (/^\s*\[[ xX]\]\s/i.test(lines[i])) {
+      if (checkCount === itemIndex) {
+        const stripped = lines[i].replace(/\s*[-\u2013\u2014]+\s*[^\d\s]*\d[\d,.]*\s*$/, "").trimEnd();
+        lines[i] = stripped + " — " + sym + parsed.toFixed(2);
+        break;
+      }
+      checkCount++;
+    }
+  }
+  note.text   = lines.join("\n");
+  note.edited = new Date().toISOString();
+  localStorage.setItem("bt_notes", JSON.stringify(notes));
+  renderNotes();
+  _refreshClTotal(tableId, noteId);
+}
+
+function updateNoteItemQty(noteId, itemIndex, newQty, tableId) {
+  const notes = JSON.parse(localStorage.getItem("bt_notes") || "[]");
+  const note  = notes.find(n => n.id === noteId);
+  if (!note) return;
+
+  const qty = Math.max(1, parseInt(newQty) || 1);
+  const lines = note.text.split("\n");
+  let checkCount = 0;
+  for (let i = 0; i < lines.length; i++) {
+    if (/^\s*\[[ xX]\]\s/i.test(lines[i])) {
+      if (checkCount === itemIndex) {
+        // Remove existing qty (x2) from desc part, insert new qty
+        // Line: "[ ] Item 1 x2 — ₱4.00" or "[ ] Item 1 — ₱4.00"
+        const prefixM = lines[i].match(/^(\s*\[[ xX]\]\s*)/i);
+        const prefix  = prefixM ? prefixM[1] : "[ ] ";
+        let rest = lines[i].slice(prefix.length);
+        // Strip amount first
+        const amtM = rest.match(/^(.*?)\s*[-\u2013\u2014]+\s*[^\d\s]*\d[\d,.]*\s*$/);
+        let amtSuffix = "";
+        if (amtM) { amtSuffix = rest.slice(amtM[1].length); rest = amtM[1].trim(); }
+        // Strip old qty
+        rest = rest.replace(/\s*[x×]\d+\s*$/i, "").trim();
+        // Append new qty (only if > 1)
+        const newDesc = qty > 1 ? rest + " x" + qty : rest;
+        lines[i] = prefix + newDesc + amtSuffix;
+        break;
+      }
+      checkCount++;
+    }
+  }
+  note.text   = lines.join("\n");
+  note.edited = new Date().toISOString();
+  localStorage.setItem("bt_notes", JSON.stringify(notes));
+  renderNotes();
+  _refreshClTotal(tableId, noteId);
+}
+
+// Recalculate and update the total row without full re-render
+function _refreshClTotal(tableId, noteId) {
+  if (!tableId) return;
+  const table    = document.getElementById(tableId);
+  const totalRow = document.getElementById(tableId + "_total");
+  if (!table || !totalRow) return;
+
+  let grandTotal = 0;
+  let hasAmt = false;
+  const rows = table.querySelectorAll("tbody tr");
+  rows.forEach(row => {
+    const qtyEl   = row.querySelector(".nb-qty-input");
+    const priceEl = row.querySelector(".nb-price-input");
+    if (priceEl && priceEl.value) {
+      const qty    = parseInt(qtyEl?.value || "1") || 1;
+      const price  = parseFloat(priceEl.value.replace(/,/g,"")) || 0;
+      grandTotal  += qty * price;
+      hasAmt = true;
+      // Update line total cell
+      const totalCell = row.querySelector(".nb-cl-td-total");
+      if (totalCell && qty > 1) {
+        totalCell.innerHTML = '<span class="nb-line-total">' + getCurrency() + (qty * price).toFixed(2) + '</span>';
+      } else if (totalCell) {
+        totalCell.innerHTML = "";
+      }
+    }
+  });
+
+  if (hasAmt) {
+    totalRow.innerHTML = '<span>Total</span><span class="nb-cl-grand-total">' + getCurrency() + ' ' + grandTotal.toFixed(2) + '</span>';
+  }
+}
+
+
 function formatNoteBody(text, noteId) {
   const escaped = (text || "")
     .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
   const lines = escaped.split("\n");
+  const sym   = getCurrency();
   let html = "";
   let i = 0;
-  while (i < lines.length) {
-    const raw = lines[i];
-    const line = raw.replace(/\s+$/, "");
-    const checkM = line.match(/^\s*\[(x| )\]\s+(.*)$/i);
-    const bulletM = line.match(/^\s*[-•]\s+(.*)$/);
+  let checkItemIndex = 0; // global index for price-edit targeting
 
+  // Parse price from a checklist item text: "cake — $ 0.00" → {desc:"cake", amt:"0.00"}
+  function splitCheckItem(raw) {
+    // Strip amount: "— $ 0.00" or "— ₱300" etc.
+    const amtM = raw.match(/^(.*?)\s*[-\u2013\u2014]+\s*[^\d\s]*(\d[\d,]*(?:\.\d{1,2})?)\s*$/);
+    if (amtM) return { desc: amtM[1].trim(), amt: amtM[2].replace(/,/g,"") };
+    return { desc: raw.trim(), amt: null };
+  }
+
+  while (i < lines.length) {
+    const raw  = lines[i];
+    const line = raw.replace(/\s+$/, "");
+
+    // ── Headings: ### ## # ──────────────────────────────────────
+    const hM = line.match(/^(#{1,3})\s+(.+)$/);
+    if (hM) {
+      const level = hM[1].length;
+      html += '<div class="nb-h' + level + '">' + formatInline(hM[2]) + '</div>';
+      i++; continue;
+    }
+
+    // ── Checklist items ─────────────────────────────────────────
+    const checkM = line.match(/^\s*\[(x| )\]\s+(.*)$/i);
     if (checkM) {
-      // group consecutive checkboxes into one list
-      html += '<ul class="nb-list nb-checklist">';
+      // Collect all consecutive checklist lines first
+      const clItems = [];
       while (i < lines.length) {
         const m = lines[i].replace(/\s+$/, "").match(/^\s*\[(x| )\]\s+(.*)$/i);
         if (!m) break;
-        const checked = m[1].toLowerCase() === "x";
-        html += '<li class="nb-check' + (checked ? ' checked' : '') + '">' +
-          '<label class="note-check' + (checked ? ' checked' : '') + '">' +
-            '<input type="checkbox"' + (checked ? " checked" : "") +
-              ' onchange="toggleNoteCheck(' + noteId + ',this)">' +
-            '<span>' + formatInline(m[2]) + '</span>' +
-          '</label></li>';
+        const checked  = m[1].toLowerCase() === "x";
+        const itemIdx  = checkItemIndex++;
+        const { desc: rawDesc, amt } = splitCheckItem(m[2]);
+        // Extract qty from desc: "Item 1 x2" → desc="Item 1", qty=2
+        let desc = rawDesc, qty = null;
+        const qM = rawDesc.match(/^(.*?)\s*[x×](\d+)\s*$/i);
+        if (qM) { desc = qM[1].trim(); qty = parseInt(qM[2]); }
+        clItems.push({ checked, itemIdx, desc, qty, amt });
         i++;
       }
-      html += '</ul>';
+
+      // Build table-style checklist
+      const listId = "_cl_" + noteId + "_" + checkItemIndex;
+      let rows = "";
+      let rowNum = 0;
+      for (const it of clItems) {
+        rowNum++;
+        const lineAmt  = (it.qty || 1) * (parseFloat(it.amt) || 0);
+        const nid = noteId, iidx = it.itemIdx, lid = listId;
+        const qtyHtml = '<input type="number" min="1" max="999" value="' + (it.qty || 1) + '"' +
+          ' class="nb-qty-input"' +
+          ' data-nid="' + nid + '" data-idx="' + iidx + '" data-lid="' + lid + '"' +
+          ' onclick="event.stopPropagation()"' +
+          ' onchange="_nbQtyChange(this)"' +
+          ' title="Tap to edit quantity">';
+        const priceHtml = '<div class="nb-price-wrap">' +
+          '<span class="nb-price-sym">' + sym + '</span>' +
+          '<input type="text" inputmode="decimal" value="' + (it.amt !== null ? it.amt : "") + '"' +
+          ' class="nb-price-input"' +
+          ' placeholder="0.00"' +
+          ' data-nid="' + nid + '" data-idx="' + iidx + '" data-lid="' + lid + '"' +
+          ' onclick="event.stopPropagation()"' +
+          ' onchange="_nbPriceChange(this)"' +
+          ' title="Tap to edit price">' +
+          '</div>';
+        const lineTotalHtml = it.amt !== null && it.qty && it.qty > 1
+          ? '<span class="nb-line-total">' + sym + (lineAmt).toFixed(2) + '</span>'
+          : '';
+        rows += '<tr class="nb-cl-row' + (it.checked ? ' checked' : '') + '">' +
+          '<td class="nb-cl-td-num">'  + rowNum + '</td>' +
+          '<td class="nb-cl-td-check"><input type="checkbox"' + (it.checked ? " checked" : "") +
+            ' onchange="toggleNoteCheck(' + noteId + ',this)" class="nb-check-box"></td>' +
+          '<td class="nb-cl-td-desc">' + formatInline(it.desc) + '</td>' +
+          '<td class="nb-cl-td-qty">'  + qtyHtml + '</td>' +
+          '<td class="nb-cl-td-price">' + priceHtml + '</td>' +
+          '<td class="nb-cl-td-total">' + lineTotalHtml + '</td>' +
+          '</tr>';
+      }
+      html += '<div class="nb-checklist-wrap">' +
+        '<table class="nb-cl-table" id="' + listId + '">' +
+        '<colgroup>' +
+          '<col class="c-num"><col class="c-check"><col class="c-desc">' +
+          '<col class="c-qty"><col class="c-price"><col class="c-total">' +
+        '</colgroup>' +
+        '<thead><tr>' +
+          '<th class="nb-cl-th-num">#</th>' +
+          '<th class="nb-cl-th-check"></th>' +
+          '<th class="nb-cl-th-desc">Item</th>' +
+          '<th class="nb-cl-th-qty">Qty</th>' +
+          '<th class="nb-cl-th-price">Price</th>' +
+          '<th class="nb-cl-th-total">Total</th>' +
+        '</tr></thead>' +
+        '<tbody>' + rows + '</tbody>' +
+        '</table>' +
+        '<div class="nb-cl-total-row" id="' + listId + '_total"><!-- total --></div>' +
+        '</div>';
+
+      // Compute and inject total immediately (pure string-level)
+      let grandTotal = 0;
+      for (const it of clItems) {
+        if (it.amt !== null) grandTotal += (it.qty || 1) * (parseFloat(it.amt) || 0);
+      }
+      const hasAmt = clItems.some(it => it.amt !== null);
+      if (hasAmt) {
+        html = html.replace(
+          '<!-- total -->',
+          '<span>Total</span><span class="nb-cl-grand-total">' + sym + ' ' + grandTotal.toFixed(2) + '</span>'
+        );
+      }
+
       continue;
     }
 
+    // ── Bullet list ─────────────────────────────────────────────
+    const bulletM = line.match(/^\s*[-•]\s+(.*)$/);
     if (bulletM) {
       html += '<ul class="nb-list nb-bullets">';
       while (i < lines.length) {
@@ -10924,10 +11332,26 @@ function formatNoteBody(text, noteId) {
       continue;
     }
 
+    // ── Numbered list ───────────────────────────────────────────
+    const numM = line.match(/^\s*(\d+)\.\s+(.*)$/);
+    if (numM) {
+      let numCounter = 1;
+      html += '<ol class="nb-list nb-numbered" style="padding-left:20px;margin:4px 0 12px">';
+      while (i < lines.length) {
+        const m = lines[i].replace(/\s+$/, "").match(/^\s*(\d+)\.\s+(.*)$/);
+        if (!m) break;
+        // Always render sequential numbers (ignores whatever number was typed)
+        html += '<li value="' + numCounter + '" style="margin-bottom:4px">' + formatInline(m[2]) + '</li>';
+        numCounter++;
+        i++;
+      }
+      html += '</ol>';
+      continue;
+    }
+
     if (line.trim() === "") {
       html += '<div class="nb-gap"></div>';
-      i++;
-      continue;
+      i++; continue;
     }
 
     html += '<p class="nb-p">' + formatInline(line) + '</p>';
