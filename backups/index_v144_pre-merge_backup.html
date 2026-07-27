@@ -458,7 +458,7 @@ input[type="number"]::-webkit-inner-spin-button,
 input[type="number"]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
 
 /* ─── Stats Grid ─── */
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:18px}
 .stat{
   background:var(--card);border-radius:var(--rad);
   padding:20px 18px;box-shadow:var(--sh);
@@ -484,17 +484,6 @@ input[type="number"]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0
 .stat.needs .amt{color:var(--pri-d)}
 .stat.wants .amt{color:var(--acc)}
 .stat.savings .amt{color:var(--suc)}
-/* Savings Efficiency stat card — fixed dark gradient for both light & dark modes */
-.stat.savings-eff{background:linear-gradient(135deg,#4E6F62,#7E9A8E);color:#fff;border:1px solid #4E6F62;display:flex;flex-direction:column;justify-content:center}
-.stat.savings-eff .stat-icon{color:rgba(255,255,255,.85)}
-.stat.savings-eff .lbl{color:rgba(255,255,255,.8);font-size:11px;text-transform:uppercase;letter-spacing:.8px;font-weight:800}
-.stat.savings-eff .amt{color:#fff;font-size:24px;font-weight:900;line-height:1.2}
-.stat.savings-eff .sub{color:rgba(255,255,255,.6);font-size:11px}
-.stat.savings-eff .eff-bar{height:6px;background:rgba(255,255,255,.2);border-radius:99px;margin-top:8px;overflow:hidden}
-.stat.savings-eff .eff-bar-fill{height:100%;background:rgba(255,255,255,.85);border-radius:99px;transition:width .6s cubic-bezier(.4,0,.2,1)}
-.stat.savings-eff .stat-corner-add{color:var(--pri-d);background:rgba(255,255,255,.9)}
-.stat.savings-eff .fin-tooltip-icon{color:var(--pri-d);background:rgba(255,255,255,.9)}
-
 .stat .sub{font-size:11px;color:var(--txt2);line-height:1.4}
 
 /* ─── Progress ─── */
@@ -643,14 +632,6 @@ tbody tr:hover td{background:var(--pri-l)}
   background:var(--pri-l);color:var(--pri-d);
   border-color:var(--pri);transform:translateY(-1px);
   box-shadow:0 4px 10px rgba(108,154,139,.2);
-}
-.quick-pill.freq{
-  font-weight:700;
-  box-shadow:0 2px 6px rgba(0,0,0,.06);
-}
-.quick-pill.freq:hover{
-  transform:translateY(-2px);
-  box-shadow:0 4px 12px rgba(0,0,0,.1);
 }
 
 /* ─── Quick Add + Button ─── */
@@ -1815,30 +1796,40 @@ footer .footer-links a:hover{color:var(--pri-d)}
 .stat .fin-tooltip-bubble { min-width: 180px; }
 
 /* ─── Unified Financial Card ─────────────────────────────── */
-/* ─── Financial Cards (Target Track style) ─── */
-.fin-card-grid{display:grid;grid-template-columns:1fr;gap:10px}
-@media(min-width:600px){.fin-card-grid{grid-template-columns:repeat(2,1fr)}}
-@media(min-width:900px){.fin-card-grid{grid-template-columns:repeat(3,1fr)}}
-.fin-card{background:var(--card);border:1.5px solid var(--brd);border-radius:12px;padding:14px 16px;transition:border-color .15s}
-.fin-card:hover{border-color:var(--pri)}
-.fin-card-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
-.fin-card-title{font-size:13px;font-weight:800;color:var(--txt);display:flex;align-items:center;gap:6px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.fin-card-title .fin-card-icon{width:20px;height:20px;display:flex;align-items:center;justify-content:center;flex-shrink:0;border-radius:6px}
-.fin-card-actions{display:flex;align-items:center;gap:4px;flex-shrink:0;margin-left:8px}
-.fin-card-actions button{background:none;border:none;color:var(--txt2);cursor:pointer;padding:3px;border-radius:5px;line-height:0;display:flex;align-items:center;opacity:.4;transition:.15s}
-.fin-card-actions button:hover{opacity:1;color:var(--pri-d)}
-.fin-card-actions .fc-del:hover{color:var(--dan)!important}
-.fin-card-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
-.fin-card-label{font-size:11px;color:var(--txt2);font-weight:600}
-.fin-card-value{font-size:13px;font-weight:900;font-family:'SF Mono',Consolas,monospace;color:var(--txt);letter-spacing:-.3px}
-.fin-card-bar{height:6px;background:var(--bg);border-radius:99px;overflow:hidden;margin-bottom:6px}
-.fin-card-bar-fill{height:100%;border-radius:99px;transition:width .5s cubic-bezier(.4,0,.2,1)}
-.fin-card-status{display:flex;align-items:center;justify-content:space-between;font-size:10.5px}
-.fin-card-status-text{display:flex;align-items:center;gap:4px;font-weight:600}
-.fin-card-status-remain{font-weight:700;color:var(--txt2)}
-.fin-card-tag{font-size:9.5px;font-weight:700;padding:2px 8px;border-radius:10px;white-space:nowrap}
-/* On wider screens */
-@media(min-width:480px){.fin-card-value{font-size:14px}.fin-card-title{font-size:14px}}
+.fin-card {
+  background: var(--bg);
+  border: 1.5px solid var(--brd);
+  border-radius: 12px;
+  padding: 13px 14px;
+  margin-bottom: 8px;
+  transition: border-color .15s;
+}
+.fin-card-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--txt);
+  line-height: 1.35;
+  word-break: break-word;
+}
+.fin-card-balance {
+  font-size: 13px;
+  font-weight: 900;
+  font-family: 'SF Mono', Consolas, monospace;
+  white-space: nowrap;
+  letter-spacing: -.3px;
+}
+.fin-card-tag {
+  font-size: 9.5px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 10px;
+  white-space: nowrap;
+}
+/* On wider screens balance can be slightly larger */
+@media (min-width: 480px) {
+  .fin-card-balance { font-size: 14px; }
+  .fin-card-name    { font-size: 14px; }
+}
 
 /* ─── Budget Overview — mobile-first ─────────────────────── */
 .fin-income-row {
@@ -2209,6 +2200,9 @@ footer .footer-links a:hover{color:var(--pri-d)}
       <div class="tab" data-tab="goals" data-priority="secondary" onclick="showTab('goals',this)">
         <span class="tab-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12V8H6a2 2 0 01-2-2c0-1.1.9-2 2-2h12v4"/><path d="M4 6v12a2 2 0 002 2h14v-4"/><path d="M18 12a2 2 0 000 4h4v-4z"/></svg></span><span class="tab-label">Budget</span>
       </div>
+      <div class="tab" data-tab="networth" data-priority="secondary" onclick="showTab('networth',this)">
+        <span class="tab-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></span><span class="tab-label">Net Worth</span>
+      </div>
       <div class="tab" data-tab="history" data-priority="secondary" onclick="showTab('history',this)">
         <span class="tab-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></span><span class="tab-label">History</span>
       </div>
@@ -2321,7 +2315,7 @@ footer .footer-links a:hover{color:var(--pri-d)}
     </div>
 
     <!-- Net Worth mini card (shown when NW items exist) -->
-    <div class="nw-dash" id="dashNwCard" onclick="showTab('goals',document.querySelector('[data-tab=goals]'))" title="View full Net Worth details" style="display:none">
+    <div class="nw-dash" id="dashNwCard" onclick="showTab('networth',document.querySelector('[data-tab=networth]'))" title="View full Net Worth details" style="display:none">
       <div>
         <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--txt2);margin-bottom:3px">NET WORTH</div>
         <div class="nw-dash-val" id="dashNwVal">—</div>
@@ -2329,7 +2323,7 @@ footer .footer-links a:hover{color:var(--pri-d)}
       </div>
       <div style="text-align:right;flex-shrink:0">
         <div style="font-size:10px;color:var(--txt2);margin-bottom:4px" id="dashNwBreakdown"></div>
-        <button onclick="showTab('goals',document.querySelector('[data-tab=goals]'))" style="font-size:10px;color:var(--pri-d);font-weight:700;background:none;border:none;cursor:pointer;padding:0;font-family:inherit">View details →</button>
+        <button onclick="showTab('networth',document.querySelector('[data-tab=networth]'))" style="font-size:10px;color:var(--pri-d);font-weight:700;background:none;border:none;cursor:pointer;padding:0;font-family:inherit">View details →</button>
       </div>
     </div>
 
@@ -2379,14 +2373,6 @@ footer .footer-links a:hover{color:var(--pri-d)}
         <button class="stat-corner-add" onclick="quickAdd('','','Savings',0)" title="Add Savings expense">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
         </button>
-      </div>
-      <!-- Savings Efficiency card -->
-      <div class="stat savings-eff" id="savingsEffCard">
-        <div class="stat-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg></div>
-        <div class="lbl">Savings Efficiency</div>
-        <div class="amt" id="savingsEffPct">0%</div>
-        <div class="sub" id="savingsEffSub">Of income remaining</div>
-        <div class="eff-bar"><div class="eff-bar-fill" id="savingsEffBar" style="width:0%"></div></div>
       </div>
     </div>
 
@@ -2549,10 +2535,6 @@ footer .footer-links a:hover{color:var(--pri-d)}
         <!-- Quick Add -->
     <div class="card">
       <h3><span class="icon-wrap"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></span> Quick Add</h3>
-      <div id="frequentlyAdded" style="display:none;margin-bottom:12px">
-        <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:var(--txt2);margin-bottom:8px">Frequently Added</div>
-        <div id="freqChipList" style="display:flex;flex-wrap:wrap;gap:6px"></div>
-      </div>
       <div id="quickAddList">
         <div style="margin-bottom:10px">
           <div class="section-label">Needs</div>
@@ -2823,81 +2805,104 @@ footer .footer-links a:hover{color:var(--pri-d)}
       <div class="accordion-content" style="padding:0 16px 16px">
         <div id="goalsList"></div>
         <div class="section-label" style="margin-top:8px">Add New Goal</div>
-        <button onclick="event.stopPropagation();openGoalModal()" style="width:100%;padding:8px;border:1.5px dashed var(--brd);border-radius:10px;background:transparent;color:var(--txt2);font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;transition:.15s;margin-top:4px" onmouseover="this.style.borderColor='var(--pri)';this.style.color='var(--pri-d)'" onmouseout="this.style.borderColor='var(--brd)';this.style.color='var(--txt2)'">+ Add Goal</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- ── NET WORTH SECTION ─────────────────────────────── -->
-  <!-- NW Header Card -->
-  <div class="card" style="margin-bottom:10px;text-align:center;padding:22px 18px 18px">
-    <div style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:1.4px;color:var(--txt2);margin-bottom:6px">Your Net Worth</div>
-    <div id="nwTotal" style="font-size:clamp(26px,5vw,34px);font-weight:900;font-family:'SF Mono',monospace;letter-spacing:-1px;color:var(--suc);line-height:1.2">—</div>
-    <div id="nwAccSummary" style="font-size:11px;color:var(--txt2);margin-top:4px">Assets minus Liabilities</div>
-    <div id="nwTrend" style="margin-top:6px;font-size:12px"></div>
-  </div>
-
-  <!-- Tip Banner -->
-  <div style="display:flex;align-items:flex-start;gap:8px;padding:10px 12px;background:var(--pri-l);border-radius:10px;border:1px solid var(--brd);margin-bottom:14px">
-    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--pri-d)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:1px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
-    <span style="font-size:11.5px;color:var(--pri-d);line-height:1.55"><strong>Track everything you own and owe.</strong> Your net worth updates automatically as you add assets, pay down debts, and hit savings goals.</span>
-  </div>
-
-  <!-- Assets Section -->
-  <div class="accordion fin-accordion" onclick="toggleFinAccordion(this)" style="margin-bottom:10px">
-    <div class="accordion-header" style="padding:14px 16px">
-      <div class="acc-left">
-        <div class="acc-icon" style="background:var(--suc-l)">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--suc)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+        <div class="goals-form" style="display:grid;grid-template-columns:2fr 1fr 1fr auto;gap:10px;align-items:end">
+          <div class="fg">
+            <label>Goal Name</label>
+            <input type="text" id="goalName" placeholder="e.g. Vacation Fund" onclick="event.stopPropagation()">
+          </div>
+          <div class="fg">
+            <label>Target</label>
+            <input type="number" id="goalTarget" placeholder="1000" step="100" onclick="event.stopPropagation()">
+          </div>
+          <div class="fg">
+            <label>Saved So Far</label>
+            <input type="number" id="goalSaved" placeholder="0" step="50" onclick="event.stopPropagation()">
+          </div>
+          <div class="fg">
+            <label>&nbsp;</label>
+            <button class="btn btn-pri" onclick="event.stopPropagation();addGoal()">+ Add</button>
+          </div>
         </div>
-        <div>
-          <div style="font-size:13px;font-weight:800;color:var(--txt)">Assets</div>
-          <div style="font-size:10.5px;color:var(--txt2)" id="nwAssetsAccLabel">What you own</div>
-        </div>
-      </div>
-      <div style="display:flex;align-items:center;gap:10px">
-        <span id="nwAssetsTotal" style="font-size:13px;font-weight:800;color:var(--suc);font-family:'SF Mono',monospace">—</span>
-        <svg class="accordion-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-      </div>
-    </div>
-    <div class="accordion-body">
-      <div class="accordion-content" style="padding:0 16px 16px">
-        <div id="nwAssetsList"></div>
-        <button onclick="event.stopPropagation();addNwItem('asset')" style="width:100%;padding:8px;border:1.5px dashed var(--brd);border-radius:10px;background:transparent;color:var(--txt2);font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;transition:.15s;margin-top:4px" onmouseover="this.style.borderColor='var(--suc)';this.style.color='var(--suc)'" onmouseout="this.style.borderColor='var(--brd)';this.style.color='var(--txt2)'">+ Add Asset</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Liabilities Section -->
-  <div class="accordion fin-accordion" onclick="toggleFinAccordion(this)">
-    <div class="accordion-header" style="padding:14px 16px">
-      <div class="acc-left">
-        <div class="acc-icon" style="background:var(--dan-l)">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--dan)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 18 13.5 8.5 8.5 13.5 1 6"/><polyline points="17 18 23 18 23 12"/></svg>
-        </div>
-        <div>
-          <div style="font-size:13px;font-weight:800;color:var(--txt)">Liabilities</div>
-          <div style="font-size:10.5px;color:var(--txt2)" id="nwLiabAccLabel">What you owe</div>
-        </div>
-      </div>
-      <div style="display:flex;align-items:center;gap:10px">
-        <span id="nwLiabTotal" style="font-size:13px;font-weight:800;color:var(--dan);font-family:'SF Mono',monospace">—</span>
-        <svg class="accordion-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-      </div>
-    </div>
-    <div class="accordion-body">
-      <div class="accordion-content" style="padding:0 16px 16px">
-        <div style="display:flex;align-items:flex-start;gap:7px;padding:8px 10px;background:var(--bg);border-radius:8px;border:1px solid var(--brd);margin-bottom:8px">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--txt2)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:1px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-          <span style="font-size:11px;color:var(--txt2);line-height:1.5"><strong style="color:var(--txt)">Tip:</strong> Paying off liabilities increases your net worth and can be tracked via your monthly Savings goals.</span>
-        </div>
-        <div id="nwLiabilitiesList"></div>
-        <button onclick="event.stopPropagation();addNwItem('liability')" style="width:100%;padding:8px;border:1.5px dashed var(--brd);border-radius:10px;background:transparent;color:var(--txt2);font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;transition:.15s;margin-top:4px" onmouseover="this.style.borderColor='var(--dan)';this.style.color='var(--dan)'" onmouseout="this.style.borderColor='var(--brd)';this.style.color='var(--txt2)'">+ Add Liability</button>
       </div>
     </div>
   </div>
 
 </div>
+
+  <!-- ─────────────────────────────────────── -->
+  <!-- NET WORTH PANEL                         -->
+  <!-- ─────────────────────────────────────── -->
+  <div id="tab-networth" class="panel">
+
+    <!-- NW Header Card -->
+    <div class="card" style="margin-bottom:10px;text-align:center;padding:22px 18px 18px">
+      <div style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:1.4px;color:var(--txt2);margin-bottom:6px">Your Net Worth</div>
+      <div id="nwTotal" style="font-size:clamp(26px,5vw,34px);font-weight:900;font-family:'SF Mono',monospace;letter-spacing:-1px;color:var(--suc);line-height:1.2">—</div>
+      <div id="nwAccSummary" style="font-size:11px;color:var(--txt2);margin-top:4px">Assets minus Liabilities</div>
+      <div id="nwTrend" style="margin-top:6px;font-size:12px"></div>
+    </div>
+
+    <!-- Tip Banner -->
+    <div style="display:flex;align-items:flex-start;gap:8px;padding:10px 12px;background:var(--pri-l);border-radius:10px;border:1px solid var(--brd);margin-bottom:14px">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--pri-d)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:1px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+      <span style="font-size:11.5px;color:var(--pri-d);line-height:1.55"><strong>Track everything you own and owe.</strong> Your net worth updates automatically as you add assets, pay down debts, and hit savings goals.</span>
+    </div>
+
+    <!-- Assets Section -->
+    <div class="accordion fin-accordion" onclick="toggleFinAccordion(this)" style="margin-bottom:10px">
+      <div class="accordion-header" style="padding:14px 16px">
+        <div class="acc-left">
+          <div class="acc-icon" style="background:var(--suc-l)">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--suc)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+          </div>
+          <div>
+            <div style="font-size:13px;font-weight:800;color:var(--txt)">Assets</div>
+            <div style="font-size:10.5px;color:var(--txt2)" id="nwAssetsAccLabel">What you own</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <span id="nwAssetsTotal" style="font-size:13px;font-weight:800;color:var(--suc);font-family:'SF Mono',monospace">—</span>
+          <svg class="accordion-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+      </div>
+      <div class="accordion-body">
+        <div class="accordion-content" style="padding:0 16px 16px">
+          <div id="nwAssetsList"></div>
+          <button onclick="event.stopPropagation();addNwItem('asset')" style="width:100%;padding:8px;border:1.5px dashed var(--brd);border-radius:10px;background:transparent;color:var(--txt2);font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;transition:.15s;margin-top:4px" onmouseover="this.style.borderColor='var(--suc)';this.style.color='var(--suc)'" onmouseout="this.style.borderColor='var(--brd)';this.style.color='var(--txt2)'">+ Add Asset</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Liabilities Section -->
+    <div class="accordion fin-accordion" onclick="toggleFinAccordion(this)">
+      <div class="accordion-header" style="padding:14px 16px">
+        <div class="acc-left">
+          <div class="acc-icon" style="background:var(--dan-l)">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--dan)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 18 13.5 8.5 8.5 13.5 1 6"/><polyline points="17 18 23 18 23 12"/></svg>
+          </div>
+          <div>
+            <div style="font-size:13px;font-weight:800;color:var(--txt)">Liabilities</div>
+            <div style="font-size:10.5px;color:var(--txt2)" id="nwLiabAccLabel">What you owe</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <span id="nwLiabTotal" style="font-size:13px;font-weight:800;color:var(--dan);font-family:'SF Mono',monospace">—</span>
+          <svg class="accordion-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+      </div>
+      <div class="accordion-body">
+        <div class="accordion-content" style="padding:0 16px 16px">
+          <div style="display:flex;align-items:flex-start;gap:7px;padding:8px 10px;background:var(--bg);border-radius:8px;border:1px solid var(--brd);margin-bottom:8px">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--txt2)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:1px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            <span style="font-size:11px;color:var(--txt2);line-height:1.5"><strong style="color:var(--txt)">Tip:</strong> Paying off liabilities increases your net worth and can be tracked via your monthly Savings goals.</span>
+          </div>
+          <div id="nwLiabilitiesList"></div>
+          <button onclick="event.stopPropagation();addNwItem('liability')" style="width:100%;padding:8px;border:1.5px dashed var(--brd);border-radius:10px;background:transparent;color:var(--txt2);font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;transition:.15s;margin-top:4px" onmouseover="this.style.borderColor='var(--dan)';this.style.color='var(--dan)'" onmouseout="this.style.borderColor='var(--brd)';this.style.color='var(--txt2)'">+ Add Liability</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
 
   <div id="tab-notes" class="panel">
 
@@ -5004,97 +5009,178 @@ function _migrateNwItems() {
 function _finCard(item, cfg) {
   const txns    = item.transactions || [];
   const txCount = txns.length;
-  const histId  = '_finHist_' + cfg.module + '_' + item.id;
+  const histId  = "_finHist_" + cfg.module + "_" + item.id;
 
-  // Delete fn
-  const delFn = cfg.module === 'income'
-    ? 'deleteIncomeSource(' + item.id + ')'
-    : cfg.module === 'goal'
-    ? 'deleteGoal(' + item.id + ')'
-    : 'deleteNwItem(' + item.id + ')';
+  // ── Delete button (icon only) ──
+  const delFn = cfg.module === "income"
+    ? `deleteIncomeSource(${item.id})`
+    : cfg.module === "goal"
+    ? `deleteGoal(${item.id})`
+    : `deleteNwItem(${item.id})`;
 
-  // Card icon
-  const iconMap = {
-    income: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="' + cfg.accentColor + '" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>',
-    goal: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="' + cfg.accentColor + '" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>',
-    asset: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="' + cfg.accentColor + '" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>',
-    liability:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="' + cfg.accentColor + '" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 18 13.5 8.5 8.5 13.5 1 6"/><polyline points="17 18 23 18 23 12"/></svg>'
-  };
-  const cardIcon = iconMap[cfg.module] || iconMap.income;
+  const delBtn = `<button onclick="event.stopPropagation();${delFn}"
+    style="background:none;border:none;color:var(--txt2);cursor:pointer;
+           padding:4px;border-radius:6px;line-height:0;display:flex;
+           align-items:center;opacity:.45;transition:.15s;flex-shrink:0"
+    onmouseover="this.style.opacity='1';this.style.color='var(--dan)'"
+    onmouseout="this.style.opacity='.45';this.style.color='var(--txt2)'"
+    title="Remove">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2.5" stroke-linecap="round">
+      <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+    </svg>
+  </button>`;
 
-  // Progress bar & status
-  var progressHtml = '';
-  var statusText = '';
-  var statusColor = 'var(--txt2)';
-  var remainText = '';
+  // ── History toggle (compact) ──
+  const histBtn = txCount > 0 ? `<button
+    onclick="event.stopPropagation();_toggleFinHist('${histId}')"
+    style="font-size:10px;color:var(--txt2);background:var(--card);
+           border:1px solid var(--brd);border-radius:6px;cursor:pointer;
+           padding:3px 7px;font-family:inherit;display:flex;align-items:center;
+           gap:3px;transition:.15s;flex-shrink:0;line-height:1.4"
+    onmouseover="this.style.borderColor='var(--pri)';this.style.color='var(--pri-d)'"
+    onmouseout="this.style.borderColor='var(--brd)';this.style.color='var(--txt2)'"
+    title="View history">
+    <svg id="${histId}_chev" width="10" height="10" viewBox="0 0 24 24" fill="none"
+      stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+      style="transition:transform .2s"><polyline points="6 9 12 15 18 9"/></svg>
+    ${txCount}
+  </button>` : "";
 
-  if (cfg.module === 'goal' && cfg.target > 0) {
-    var pct = Math.min((cfg.balance / cfg.target) * 100, 100);
-    var left = Math.max(0, cfg.target - cfg.balance);
-    var statusLabel, statusSvg;
-    if (pct >= 100) {
-      statusLabel = 'Complete!';
-      statusColor = 'var(--suc)';
-      statusSvg = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--suc)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
-      remainText = '$0 to go';
-    } else if (pct >= 80) {
-      statusLabel = 'Almost there (' + Math.round(pct) + '%)';
-      statusColor = 'var(--acc)';
-      statusSvg = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--acc)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>';
-      remainText = fmt(left) + ' to go';
-    } else if (pct >= 50) {
-      statusLabel = 'Control optimal (' + Math.round(pct) + '%)';
-      statusColor = 'var(--suc)';
-      statusSvg = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--suc)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
-      remainText = fmt(left) + ' to go';
-    } else {
-      statusLabel = 'Early stage (' + Math.round(pct) + '%)';
-      statusColor = 'var(--txt2)';
-      statusSvg = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--txt2)" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/></svg>';
-      remainText = fmt(left) + ' to go';
-    }
-    var barColor = pct >= 100 ? 'var(--suc)' : pct >= 80 ? 'var(--acc)' : pct >= 50 ? 'var(--pri)' : 'var(--acc)';
-    progressHtml = '<div class="fin-card-bar"><div class="fin-card-bar-fill" style="width:' + pct + '%;background:' + barColor + '"></div></div>';
-    statusText = '<div class="fin-card-status-text" style="color:' + statusColor + '">' + statusSvg + ' ' + statusLabel + '</div>';
-  } else {
-    progressHtml = '<div class="fin-card-bar"><div class="fin-card-bar-fill" style="width:100%;background:' + cfg.accentColor + ';opacity:.35"></div></div>';
-    statusText = '<div class="fin-card-status-text" style="color:' + cfg.accentColor + '">' + cfg.tagLabel + '</div>';
-    remainText = '';
+  // ── Action button ──
+  const actionBtn = `<button
+    onclick="event.stopPropagation();${cfg.actionFn}"
+    style="font-size:11px;font-weight:700;padding:5px 12px;border-radius:8px;
+           border:1.5px solid ${cfg.accentColor};background:${cfg.accentLight};
+           color:${cfg.accentColor};cursor:pointer;font-family:inherit;
+           white-space:nowrap;transition:.15s;flex:1;justify-content:center;
+           display:flex;align-items:center;gap:5px"
+    onmouseover="this.style.background='${cfg.accentColor}';this.style.color='#fff'"
+    onmouseout="this.style.background='${cfg.accentLight}';this.style.color='${cfg.accentColor}'">
+    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="3" stroke-linecap="round">
+      <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+    </svg>
+    ${cfg.actionLabel}
+  </button>`;
+
+  // ── Progress bar (goals only) ──
+  let progressHtml = "";
+  if (cfg.target > 0) {
+    const pct = Math.min((cfg.balance / cfg.target) * 100, 100);
+    const barColor = pct >= 100 ? "var(--suc)" : pct >= 50 ? "var(--pri)" : "var(--acc)";
+    progressHtml = `
+      <div style="margin:10px 0 2px">
+        <div style="height:5px;background:var(--card);border-radius:99px;overflow:hidden">
+          <div style="height:100%;width:${pct}%;background:${barColor};
+                      border-radius:99px;transition:width .4s ease"></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-top:5px;
+                    font-size:10.5px;color:var(--txt2)">
+          <span>${fmt(cfg.balance)} saved</span>
+          <span>${Math.round(pct)}% of ${fmt(cfg.target)}</span>
+        </div>
+      </div>`;
   }
 
-  // Action button
-  var actionBtn = '<button onclick="event.stopPropagation();' + cfg.actionFn + '" style="font-size:11px;font-weight:700;padding:5px 12px;border-radius:8px;border:1.5px solid ' + cfg.accentColor + ';background:' + cfg.accentLight + ';color:' + cfg.accentColor + ';cursor:pointer;font-family:inherit;white-space:nowrap;transition:.15s;display:flex;align-items:center;gap:5px" onmouseover="this.style.background=\'' + cfg.accentColor + '\';this.style.color=\'#fff\'" onmouseout="this.style.background=\'' + cfg.accentLight + '\';this.style.color=\'' + cfg.accentColor + '\'"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>' + cfg.actionLabel + '</button>';
+  // ── Transaction history table ──
+  const histRows = txns.slice().reverse().map(t => {
+    const isPositive = ["fund","log","contribution","init"].includes(t.action);
+    const actionLabels = {
+      fund:"Funded", log:"Logged", contribution:"Contributed", pay:"Paid", init:"Initial"
+    };
+    const col   = isPositive ? "var(--suc)" : "var(--dan)";
+    const ltCol = isPositive ? "var(--suc-l)" : "var(--dan-l)";
+    return `<tr>
+      <td style="padding:5px 8px;font-size:11px;color:var(--txt2);white-space:nowrap">${t.date}</td>
+      <td style="padding:5px 8px">
+        <span style="display:inline-flex;padding:1px 7px;border-radius:6px;font-size:9.5px;
+                     font-weight:700;background:${ltCol};color:${col}">
+          ${actionLabels[t.action] || t.action}
+        </span>
+      </td>
+      <td style="padding:5px 8px;font-size:11px;font-weight:700;font-family:'SF Mono',monospace;
+                 color:${col};text-align:right;white-space:nowrap">
+        ${isPositive ? "+" : "−"}${fmt(t.amount)}
+      </td>
+      <td style="padding:5px 8px;font-size:11px;color:var(--txt2);max-width:100px;
+                 overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escHtml(t.note||"")}</td>
+      <td style="padding:5px 8px;font-size:11px;font-weight:700;font-family:'SF Mono',monospace;
+                 text-align:right;white-space:nowrap">${fmt(t.balance)}</td>
+    </tr>`;
+  }).join("");
 
-  // History toggle
-  var histBtn = txCount > 0 ? '<button onclick="event.stopPropagation();_toggleFinHist(\'' + histId + '\')" style="font-size:10px;color:var(--txt2);background:var(--card);border:1px solid var(--brd);border-radius:6px;cursor:pointer;padding:3px 7px;font-family:inherit;display:flex;align-items:center;gap:3px;transition:.15s;flex-shrink:0;line-height:1.4" onmouseover="this.style.borderColor=\'var(--pri)\';this.style.color=\'var(--pri-d)\'" onmouseout="this.style.borderColor=\'var(--brd)\';this.style.color=\'var(--txt2)\'" title="View history"><svg id="' + histId + '_chev" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="transition:transform .2s"><polyline points="6 9 12 15 18 9"/></svg>' + txCount + '</button>' : '';
+  const histSection = txCount > 0 ? `
+    <div id="${histId}" style="display:none;padding-top:10px">
+      <div style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.7px;
+                  color:var(--txt2);margin-bottom:6px;display:flex;align-items:center;gap:5px">
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="2.5"><circle cx="12" cy="12" r="10"/>
+          <polyline points="12 6 12 12 16 14"/></svg>
+        Transaction History
+      </div>
+      <div style="overflow-x:auto;border-radius:8px;border:1px solid var(--brd)">
+        <table style="width:100%;border-collapse:collapse;min-width:320px">
+          <thead>
+            <tr style="background:var(--bg)">
+              ${["Date","Action","Amount","Notes","Balance"].map(h =>
+                `<th style="padding:5px 8px;font-size:9px;font-weight:700;
+                   text-align:${h==="Amount"||h==="Balance"?"right":"left"};
+                   color:var(--txt2);text-transform:uppercase;letter-spacing:.5px">${h}</th>`
+              ).join("")}
+            </tr>
+          </thead>
+          <tbody>${histRows}</tbody>
+        </table>
+      </div>
+    </div>` : "";
 
-  // History table
-  var histRows = txns.slice().reverse().map(function(t) {
-    var isPos = ['fund','log','contribution','init'].indexOf(t.action) !== -1;
-    var labels = {fund:'Funded',log:'Logged',contribution:'Contributed',pay:'Paid',init:'Initial'};
-    var col = isPos ? 'var(--suc)' : 'var(--dan)';
-    var ltCol = isPos ? 'var(--suc-l)' : 'var(--dan-l)';
-    return '<tr><td style="padding:5px 8px;font-size:11px;color:var(--txt2);white-space:nowrap">' + t.date + '</td><td style="padding:5px 8px"><span style="display:inline-flex;padding:1px 7px;border-radius:6px;font-size:9.5px;font-weight:700;background:' + ltCol + ';color:' + col + '">' + (labels[t.action] || t.action) + '</span></td><td style="padding:5px 8px;font-size:11px;font-weight:700;font-family:\'SF Mono\',monospace;color:' + col + ';text-align:right;white-space:nowrap">' + (isPos ? '+' : '\u2212') + fmt(t.amount) + '</td><td style="padding:5px 8px;font-size:11px;color:var(--txt2);max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + escHtml(t.note||'') + '</td><td style="padding:5px 8px;font-size:11px;font-weight:700;font-family:\'SF Mono\',monospace;text-align:right;white-space:nowrap">' + fmt(t.balance) + '</td></tr>';
-  }).join('');
+  // ══════════════════════════════════════════════════════
+  // CARD LAYOUT — mobile-first, 3-row structure:
+  //
+  //  Row 1: [Name (truncated)]        [Balance]  [×]
+  //  Row 2: [Tag badge] [Target?]
+  //  Row 3: [Action button (full width)]  [History btn]
+  //  Row 4: Progress bar (goals only)
+  //  Row 5: Extra html (projection etc)
+  //  Row 6: History drawer
+  // ══════════════════════════════════════════════════════
+  return `<div class="fin-card"
+    onmouseover="this.style.borderColor='${cfg.accentColor}'"
+    onmouseout="this.style.borderColor='var(--brd)'">
 
-  var histSection = txCount > 0 ? '<div id="' + histId + '" style="display:none;padding-top:10px"><div style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.7px;color:var(--txt2);margin-bottom:6px;display:flex;align-items:center;gap:5px"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Transaction History</div><div style="overflow-x:auto;border-radius:8px;border:1px solid var(--brd)"><table style="width:100%;border-collapse:collapse;min-width:320px"><thead><tr style="background:var(--bg)">' + ['Date','Action','Amount','Notes','Balance'].map(function(h) { return '<th style="padding:5px 8px;font-size:9px;font-weight:700;text-align:' + (h==='Amount'||h==='Balance'?'right':'left') + ';color:var(--txt2);text-transform:uppercase;letter-spacing:.5px">' + h + '</th>'; }).join('') + '</tr></thead><tbody>' + histRows + '</tbody></table></div></div>' : '';
+    <!-- Row 1: Name + Balance + Delete -->
+    <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:6px">
+      <div style="flex:1;min-width:0">
+        <div class="fin-card-name">${escHtml(item.label||item.name)}</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:6px;flex-shrink:0">
+        <div class="fin-card-balance" style="color:${cfg.accentColor}">${fmt(cfg.balance)}</div>
+        ${delBtn}
+      </div>
+    </div>
 
-  // Card header
-  var hdrLabel = cfg.module === 'goal' ? 'Saved' : cfg.module === 'income' ? 'Monthly' : 'Balance';
-  var limitVal = cfg.target > 0 ? 'Target: ' + fmt(cfg.target) : (cfg.module === 'income' ? '/month' : '');
+    <!-- Row 2: Tag + Target -->
+    <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:10px">
+      <span class="fin-card-tag" style="background:${cfg.accentLight};color:${cfg.accentColor}">
+        ${cfg.tagLabel}
+      </span>
+      ${cfg.target > 0
+        ? `<span style="font-size:10px;color:var(--txt2)">Target: ${fmt(cfg.target)}</span>`
+        : ""}
+    </div>
 
-  return '<div class="fin-card">'
-    + '<div class="fin-card-top">'
-      + '<div class="fin-card-title"><span class="fin-card-icon" style="background:' + cfg.accentLight + '">' + cardIcon + '</span>' + escHtml(item.label||item.name) + '</div>'
-      + '<div class="fin-card-actions"><button onclick="event.stopPropagation();' + cfg.actionFn + '" title="' + cfg.actionLabel + '" style="opacity:.5" onmouseover="this.style.opacity=\'1\'" onmouseout="this.style.opacity=\'.5\'"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06A1.65 1.65 0 009 4.6a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg></button><button class="fc-del" onclick="event.stopPropagation();' + delFn + '" title="Remove"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>'
-    + '</div>'
-    + '<div class="fin-card-row"><span class="fin-card-label">' + hdrLabel + ': <strong style="color:var(--txt)">' + fmt(cfg.balance) + '</strong></span>' + (limitVal ? '<span class="fin-card-label">' + limitVal + '</span>' : '') + '</div>'
-    + progressHtml
-    + '<div class="fin-card-status">' + statusText + (remainText ? '<span class="fin-card-status-remain">' + remainText + '</span>' : '') + '</div>'
-    + (cfg.extraHtml || '')
-    + '<div style="display:flex;align-items:center;gap:6px;margin-top:8px">' + actionBtn + histBtn + '</div>'
-    + histSection
-    + '</div>';
+    <!-- Row 3: Action + History toggle -->
+    <div style="display:flex;align-items:center;gap:6px">
+      ${actionBtn}
+      ${histBtn}
+    </div>
+
+    <!-- Row 4+: Progress, extra content, history -->
+    ${progressHtml}
+    ${cfg.extraHtml || ""}
+    ${histSection}
+  </div>`;
 }
 
 function _toggleFinHist(id) {
@@ -5421,7 +5507,7 @@ function renderNetWorth() {
     if (!assets.length) {
       assetEl.innerHTML = `<div style="font-size:12px;color:var(--txt2);padding:4px 0 8px">No assets added yet.</div>`;
     } else {
-      assetEl.innerHTML = `<div class="fin-card-grid">` + assets.map(i => _finCard(i, {
+      assetEl.innerHTML = assets.map(i => _finCard(i, {
         module:      "asset",
         accentColor: "var(--suc)",
         accentLight: "var(--suc-l)",
@@ -5429,7 +5515,7 @@ function renderNetWorth() {
         actionLabel: "+ Add Funds",
         actionFn:    `openFinTxnModal(${i.id},'asset','fund')`,
         balance:     i.amt,
-      })).join("") + `</div>` +
+      })).join("") +
         `<div style="display:flex;justify-content:space-between;padding:8px 12px;font-size:12px;
                      font-weight:700;color:var(--suc);background:var(--suc-l);border-radius:8px;margin-top:4px">
           <span>Total Assets</span>
@@ -5444,7 +5530,7 @@ function renderNetWorth() {
     if (!liabilities.length) {
       liabEl.innerHTML = `<div style="font-size:12px;color:var(--txt2);padding:4px 0 8px">No liabilities added yet.</div>`;
     } else {
-      liabEl.innerHTML = `<div class="fin-card-grid">` + liabilities.map(i => _finCard(i, {
+      liabEl.innerHTML = liabilities.map(i => _finCard(i, {
         module:      "liability",
         accentColor: "var(--dan)",
         accentLight: "var(--dan-l)",
@@ -5452,7 +5538,7 @@ function renderNetWorth() {
         actionLabel: "− Pay Down",
         actionFn:    `openFinTxnModal(${i.id},'liability','pay')`,
         balance:     i.amt,
-      })).join("") + `</div>` +
+      })).join("") +
         `<div style="display:flex;justify-content:space-between;padding:8px 12px;font-size:12px;
                      font-weight:700;color:var(--dan);background:var(--dan-l);border-radius:8px;margin-top:4px">
           <span>Total Liabilities</span>
@@ -5567,9 +5653,10 @@ function showTab(id, el) {
   const tabEl = el || document.querySelector('[data-tab="' + id + '"]');
   if (tabEl) tabEl.classList.add("active");
   if (id === "history")  { renderHistory(); renderMonthChart(); }
-  if (id === "goals")    { _migrateNwItems(); _migrateIncomeSources(); _migrateGoals(); renderIncomeSourcesList(); renderNetWorth(); _renderDashNetWorth(); renderFinanceOverview(); }
+  if (id === "goals")    { _migrateNwItems(); _migrateIncomeSources(); _migrateGoals(); renderIncomeSourcesList(); _renderDashNetWorth(); renderFinanceOverview(); }
+  if (id === "networth") { renderNetWorth(); }
   if (id === "dashboard") updateDashboard();
-  if (id === "expenses") { renderRecent(); renderFrequentlyAdded(); renderBills(); _checkBillAlerts(); }
+  if (id === "expenses") { renderRecent(); renderBills(); _checkBillAlerts(); }
   if (id === "goals") renderGoals();
   if (id === "notes") renderNotes();
   if (id === "ai") initAiChat();
@@ -6510,15 +6597,6 @@ function updateDashboard() {
   document.getElementById("savingsSub").innerHTML =
     `Budget: ${fmtShort(savingsBudget)} &nbsp;•&nbsp; <span style="color:${savingsSpent >= savingsBudget ? 'var(--suc)' : 'var(--acc)'}">${savingsSpent >= savingsBudget ? 'Goal met' : fmtShort(savingsBudget - savingsSpent) + ' to go'}</span>`;
 
-  // ── Savings Efficiency card ──
-  const savingsEffPct = income > 0 ? Math.max(0, ((income - totalSpent) / income) * 100) : 0;
-  const effPctEl = document.getElementById("savingsEffPct");
-  const effSubEl = document.getElementById("savingsEffSub");
-  const effBarEl = document.getElementById("savingsEffBar");
-  if (effPctEl) effPctEl.textContent = Math.round(savingsEffPct) + "%";
-  if (effSubEl) effSubEl.textContent = income > 0 ? "Of income remaining" : "Set income first";
-  if (effBarEl) effBarEl.style.width = Math.min(savingsEffPct, 100) + "%";
-
   // Progress bars
   updateProgress("needs",   needsSpent,   needsBudget,   "n");
   updateProgress("wants",   wantsSpent,   wantsBudget,   "w");
@@ -6542,7 +6620,6 @@ function updateDashboard() {
   _renderDashNetWorth();
 }
 
-// ── Financial Health (inside savings-eff card) ──
 function updateProgress(name, spent, budget, cls) {
   const pct = budget > 0 ? Math.min((spent / budget) * 100, 100) : 0;
   const bar  = document.getElementById(name + "Bar");
@@ -6551,10 +6628,7 @@ function updateProgress(name, spent, budget, cls) {
   bar.style.width = pct + "%";
   if (pctEl) pctEl.textContent = pct > 20 ? Math.round(pct) + "%" : "";
   bar.className = "prog-fill " + (spent > budget ? "fill-over" : "fill-" + cls);
-  const progEl = document.getElementById(name + "Prog");
-  const statusColor = spent > budget ? "var(--dan)" : pct >= 80 ? "var(--acc)" : "var(--suc)";
-  if (progEl) progEl.innerHTML = fmt(spent) + " / " + fmt(budget) +
-    ' <span style="color:' + statusColor + ';font-weight:700;margin-left:4px">' + Math.round(pct) + '% used</span>';
+  document.getElementById(name + "Prog").textContent = fmt(spent) + " / " + fmt(budget);
 }
 
 function updateDonut(n, w, s) {
@@ -6601,47 +6675,7 @@ function renderRecent() {
   }).join("");
 }
 
-// ── Frequently Added chips (on Expenses tab) ─────────────
-function renderFrequentlyAdded() {
-  const container = document.getElementById("frequentlyAdded");
-  const chipList  = document.getElementById("freqChipList");
-  if (!container || !chipList) return;
-
-  const data = getData();
-  const expenses = data.expenses || [];
-  if (expenses.length < 3) { container.style.display = "none"; return; }
-
-  // Count description frequency (case-insensitive)
-  const freq = {};
-  expenses.forEach(e => {
-    const key = (e.desc || "").trim();
-    if (!key) return;
-    freq[key] = (freq[key] || 0) + 1;
-  });
-
-  // Top 6 most frequent, min 2 occurrences
-  const sorted = Object.entries(freq)
-    .filter(([k, v]) => v >= 2)
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, 6);
-
-  if (sorted.length === 0) { container.style.display = "none"; return; }
-
-  container.style.display = "block";
-  chipList.innerHTML = sorted.map(([desc, count]) => {
-    // Find the matching expense to get its category
-    const match = expenses.find(e => (e.desc || "").trim().toLowerCase() === desc.toLowerCase());
-    const cat   = match ? match.cat : "Needs";
-    const color = cat === "Needs" ? "var(--pri)" : cat === "Wants" ? "var(--acc)" : "var(--suc)";
-    const safeDesc = escHtml(desc);
-    const safeCat  = escHtml(cat);
-    return `<button class="quick-pill" onclick="quickAdd('${safeDesc}','${safeDesc}','${safeCat}')" style="border-color:${color};background:${color}10;color:${color}">
-      ${safeDesc} <span style="opacity:.5;font-size:10px">×${count}</span>
-    </button>`;
-  }).join("");
-}
-
-// ─── HISTORY ──────────────────────────────────────────────
+// ─── HISTORY ───────────────────────────────────────────────
 function isMobileView() { return window.innerWidth <= 640; }
 
 function renderHistoryEmpty(container, colspanForTable) {
@@ -6728,46 +6762,18 @@ function renderHistory() {
 }
 
 // ─── SAVINGS GOALS ─────────────────────────────────────────
-function openGoalModal() {
-  const ex = document.getElementById("_goalModal");
-  if (ex) ex.remove();
-  const overlay = document.createElement("div");
-  overlay.id = "_goalModal";
-  overlay.style.cssText = "position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.5)";
-  overlay.innerHTML = `
-    <div style="background:var(--card);border-radius:16px;padding:22px 24px;min-width:280px;max-width:90vw;box-shadow:0 12px 40px rgba(0,0,0,.28)">
-      <div style="font-size:14px;font-weight:800;color:var(--txt);margin-bottom:14px">Add Savings Goal</div>
-      <div class="fg" style="margin-bottom:10px">
-        <label>Goal Name</label>
-        <input type="text" id="_goalName" placeholder="e.g. Vacation Fund, Emergency Fund" style="width:100%;padding:9px 12px;border:1.5px solid var(--brd);border-radius:9px;font-size:13px;color:var(--txt);background:var(--input-bg);outline:none;box-sizing:border-box">
-      </div>
-      <div class="fg" style="margin-bottom:10px">
-        <label>Target Amount</label>
-        <input type="text" inputmode="decimal" id="_goalTarget" placeholder="0.00" oninput="formatNumberInput(this)" style="width:100%;padding:9px 12px;border:1.5px solid var(--brd);border-radius:9px;font-size:15px;font-weight:800;color:var(--txt);background:var(--input-bg);outline:none;box-sizing:border-box">
-      </div>
-      <div class="fg" style="margin-bottom:16px">
-        <label>Saved So Far <span style="font-weight:400;color:var(--txt2)">(optional)</span></label>
-        <input type="text" inputmode="decimal" id="_goalSaved" placeholder="0.00" oninput="formatNumberInput(this)" style="width:100%;padding:9px 12px;border:1.5px solid var(--brd);border-radius:9px;font-size:13px;color:var(--txt);background:var(--input-bg);outline:none;box-sizing:border-box">
-      </div>
-      <div style="display:flex;gap:10px;justify-content:flex-end">
-        <button onclick="document.getElementById('_goalModal').remove()" style="padding:9px 16px;border-radius:9px;border:1.5px solid var(--brd);background:var(--bg);color:var(--txt2);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit">Cancel</button>
-        <button onclick="_saveGoal()" class="btn btn-pri" style="padding:9px 20px;border-radius:9px;font-size:13px;font-weight:700">Save</button>
-      </div>
-    </div>`;
-  document.body.appendChild(overlay);
-  overlay.addEventListener("click", e=>{ if(e.target===overlay) overlay.remove(); });
-  setTimeout(()=>document.getElementById("_goalName")?.focus(), 60);
-}
-
-function _saveGoal() {
-  const name   = document.getElementById("_goalName")?.value.trim();
-  const target = parseFloat((document.getElementById("_goalTarget")?.value||"").replace(/,/g,""));
-  const saved  = parseFloat((document.getElementById("_goalSaved")?.value||"").replace(/,/g,"")) || 0;
+function addGoal() {
+  const name   = document.getElementById("goalName").value.trim();
+  const target = parseFloat(document.getElementById("goalTarget").value);
+  const saved  = parseFloat(document.getElementById("goalSaved").value) || 0;
   if (!name || !target) { toast("Enter goal name and target amount"); return; }
+
   const data = getData();
   data.goals.push({ id: Date.now(), name, target, saved });
   saveData(data);
-  document.getElementById("_goalModal")?.remove();
+  document.getElementById("goalName").value = "";
+  document.getElementById("goalTarget").value = "";
+  document.getElementById("goalSaved").value = "";
   toast("Goal '" + name + "' added!");
   renderGoals();
 }
@@ -6866,8 +6872,6 @@ function renderGoals() {
       extraHtml:   projectionHtml,
     });
   }).join("");
-  // Wrap in grid
-  el.innerHTML = '<div class="fin-card-grid">' + el.innerHTML + '</div>';
 
   // Update accordion header
   const goalsTotal   = document.getElementById("goalsAccTotal");
@@ -7181,7 +7185,7 @@ function renderIncomeSourcesList() {
 
   let html2 = "";
   if (monthly.length) {
-    html2 += `<div class="fin-card-grid">` + monthly.map(incomeCard).join("") + `</div>`;
+    html2 += monthly.map(incomeCard).join("");
     html2 += `<div style="display:flex;justify-content:space-between;padding:8px 12px;
                 font-size:12px;font-weight:700;color:var(--suc);
                 background:var(--suc-l);border-radius:8px;margin-top:4px;margin-bottom:8px">
@@ -7194,7 +7198,7 @@ function renderIncomeSourcesList() {
                 display:flex;align-items:center;justify-content:space-between">
                 <span>One-time / Windfall</span>
                 <span style="font-style:italic;font-weight:400;font-size:9px">Added to Net Worth</span>
-              </div><div class="fin-card-grid">` + windfalls.map(incomeCard).join("") + `</div>`;
+              </div>` + windfalls.map(incomeCard).join("");
   }
   el.innerHTML = html2;
 }
@@ -8045,7 +8049,7 @@ function renderInsights() {
   const iconBtn   = document.getElementById("insightsIconBtn");
   const iconBadge = document.getElementById("insightsIconBadge");
   if (!list) return;
-  if (data.expenses.length < 1) {
+  if (data.expenses.length < 3) {
     if (iconBtn) iconBtn.style.display = "none";
     return;
   }
@@ -8073,29 +8077,6 @@ function renderInsights() {
       title: fmt(Math.abs(remaining)) + (remaining >= 0 ? " remaining" : " over budget"),
       body: daysLeft > 0 ? "That's about " + fmt(perDay) + "/day for the next " + daysLeft + " days." : "Last day of the month!"
     });
-  }
-
-  // Savings rate / financial health
-  if (income > 0) {
-    const effPct = Math.max(0, Math.round(remaining / income * 100));
-    const svgSpark = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg>';
-    if (effPct >= 40) {
-      insights.push({ id:"health_great", icon: svgSpark, cls: "up",
-        title: "Spectacular Financial Health!",
-        body: "You saved " + effPct + "% of your income. Investing this surplus in index funds or an emergency deposit is a smart move." });
-    } else if (effPct >= 20) {
-      insights.push({ id:"health_good", icon: svgSpark, cls: "up",
-        title: "Solid Financial Standing",
-        body: "Your savings rate of " + effPct + "% is healthy. Keep building your emergency fund." });
-    } else if (effPct >= 10) {
-      insights.push({ id:"health_warn", icon: svgSpark, cls: "info",
-        title: "Room to Grow",
-        body: "You saved " + effPct + "% of income. Try trimming wants by 5–10% to boost your savings rate." });
-    } else if (effPct > 0) {
-      insights.push({ id:"health_risk", icon: svgSpark, cls: "down",
-        title: "Needs Attention",
-        body: "Only " + effPct + "% of income is left. Review your spending — even small cuts to wants can make a big difference." });
-    }
   }
 
   // Needs/Wants/Savings vs budget
@@ -13276,7 +13257,7 @@ window.addEventListener('appinstalled', () => {
 </script>
 <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a19e8b232efc3947',t:'MTc4Mzg0MzUzMw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
 <!-- Insights Dropdown Portal -->
-<div id="insightsDropdown" style="display:none;position:fixed;width:320px;max-height:520px;background:var(--card);border-radius:16px;box-shadow:0 16px 48px rgba(0,0,0,.22);border:1px solid var(--brd);z-index:2000;display:none;flex-direction:column;overflow:hidden;animation:fadeUp .2s ease;text-align:left">
+<div id="insightsDropdown" style="display:none;position:fixed;width:320px;max-height:420px;background:var(--card);border-radius:16px;box-shadow:0 16px 48px rgba(0,0,0,.22);border:1px solid var(--brd);z-index:2000;flex-direction:column;overflow:hidden;animation:fadeUp .2s ease;text-align:left">
               <div class="fbd-head">
                 <span>Insights</span>
                 <div style="display:flex;align-items:center;gap:8px">
@@ -13284,7 +13265,7 @@ window.addEventListener('appinstalled', () => {
                   <button onclick="toggleInsightsDropdown()" aria-label="Close" style="background:var(--bg);border:1px solid var(--brd);color:var(--txt2);width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;font-size:16px;line-height:1">×</button>
                 </div>
               </div>
-              <div style="overflow-y:auto;overflow-x:hidden;flex:1;min-height:0;padding:4px 6px" id="insightsList"></div>
+              <div style="overflow-y:auto;flex:1;padding:4px 6px;min-height:0" id="insightsList"></div>
             </div>
 
 <!-- Bell Dropdown Portal -->
