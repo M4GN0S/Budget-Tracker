@@ -1815,40 +1815,30 @@ footer .footer-links a:hover{color:var(--pri-d)}
 .stat .fin-tooltip-bubble { min-width: 180px; }
 
 /* ─── Unified Financial Card ─────────────────────────────── */
-.fin-card {
-  background: var(--bg);
-  border: 1.5px solid var(--brd);
-  border-radius: 12px;
-  padding: 13px 14px;
-  margin-bottom: 8px;
-  transition: border-color .15s;
-}
-.fin-card-name {
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--txt);
-  line-height: 1.35;
-  word-break: break-word;
-}
-.fin-card-balance {
-  font-size: 13px;
-  font-weight: 900;
-  font-family: 'SF Mono', Consolas, monospace;
-  white-space: nowrap;
-  letter-spacing: -.3px;
-}
-.fin-card-tag {
-  font-size: 9.5px;
-  font-weight: 700;
-  padding: 2px 8px;
-  border-radius: 10px;
-  white-space: nowrap;
-}
-/* On wider screens balance can be slightly larger */
-@media (min-width: 480px) {
-  .fin-card-balance { font-size: 14px; }
-  .fin-card-name    { font-size: 14px; }
-}
+/* ─── Financial Cards (Target Track style) ─── */
+.fin-card-grid{display:grid;grid-template-columns:1fr;gap:10px}
+@media(min-width:600px){.fin-card-grid{grid-template-columns:repeat(2,1fr)}}
+@media(min-width:900px){.fin-card-grid{grid-template-columns:repeat(3,1fr)}}
+.fin-card{background:var(--card);border:1.5px solid var(--brd);border-radius:12px;padding:14px 16px;transition:border-color .15s}
+.fin-card:hover{border-color:var(--pri)}
+.fin-card-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.fin-card-title{font-size:13px;font-weight:800;color:var(--txt);display:flex;align-items:center;gap:6px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fin-card-title .fin-card-icon{width:20px;height:20px;display:flex;align-items:center;justify-content:center;flex-shrink:0;border-radius:6px}
+.fin-card-actions{display:flex;align-items:center;gap:4px;flex-shrink:0;margin-left:8px}
+.fin-card-actions button{background:none;border:none;color:var(--txt2);cursor:pointer;padding:3px;border-radius:5px;line-height:0;display:flex;align-items:center;opacity:.4;transition:.15s}
+.fin-card-actions button:hover{opacity:1;color:var(--pri-d)}
+.fin-card-actions .fc-del:hover{color:var(--dan)!important}
+.fin-card-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.fin-card-label{font-size:11px;color:var(--txt2);font-weight:600}
+.fin-card-value{font-size:13px;font-weight:900;font-family:'SF Mono',Consolas,monospace;color:var(--txt);letter-spacing:-.3px}
+.fin-card-bar{height:6px;background:var(--bg);border-radius:99px;overflow:hidden;margin-bottom:6px}
+.fin-card-bar-fill{height:100%;border-radius:99px;transition:width .5s cubic-bezier(.4,0,.2,1)}
+.fin-card-status{display:flex;align-items:center;justify-content:space-between;font-size:10.5px}
+.fin-card-status-text{display:flex;align-items:center;gap:4px;font-weight:600}
+.fin-card-status-remain{font-weight:700;color:var(--txt2)}
+.fin-card-tag{font-size:9.5px;font-weight:700;padding:2px 8px;border-radius:10px;white-space:nowrap}
+/* On wider screens */
+@media(min-width:480px){.fin-card-value{font-size:14px}.fin-card-title{font-size:14px}}
 
 /* ─── Budget Overview — mobile-first ─────────────────────── */
 .fin-income-row {
@@ -5040,178 +5030,97 @@ function _migrateNwItems() {
 function _finCard(item, cfg) {
   const txns    = item.transactions || [];
   const txCount = txns.length;
-  const histId  = "_finHist_" + cfg.module + "_" + item.id;
+  const histId  = '_finHist_' + cfg.module + '_' + item.id;
 
-  // ── Delete button (icon only) ──
-  const delFn = cfg.module === "income"
-    ? `deleteIncomeSource(${item.id})`
-    : cfg.module === "goal"
-    ? `deleteGoal(${item.id})`
-    : `deleteNwItem(${item.id})`;
+  // Delete fn
+  const delFn = cfg.module === 'income'
+    ? 'deleteIncomeSource(' + item.id + ')'
+    : cfg.module === 'goal'
+    ? 'deleteGoal(' + item.id + ')'
+    : 'deleteNwItem(' + item.id + ')';
 
-  const delBtn = `<button onclick="event.stopPropagation();${delFn}"
-    style="background:none;border:none;color:var(--txt2);cursor:pointer;
-           padding:4px;border-radius:6px;line-height:0;display:flex;
-           align-items:center;opacity:.45;transition:.15s;flex-shrink:0"
-    onmouseover="this.style.opacity='1';this.style.color='var(--dan)'"
-    onmouseout="this.style.opacity='.45';this.style.color='var(--txt2)'"
-    title="Remove">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      stroke-width="2.5" stroke-linecap="round">
-      <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
-    </svg>
-  </button>`;
+  // Card icon
+  const iconMap = {
+    income: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="' + cfg.accentColor + '" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>',
+    goal: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="' + cfg.accentColor + '" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>',
+    asset: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="' + cfg.accentColor + '" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>',
+    liability:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="' + cfg.accentColor + '" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 18 13.5 8.5 8.5 13.5 1 6"/><polyline points="17 18 23 18 23 12"/></svg>'
+  };
+  const cardIcon = iconMap[cfg.module] || iconMap.income;
 
-  // ── History toggle (compact) ──
-  const histBtn = txCount > 0 ? `<button
-    onclick="event.stopPropagation();_toggleFinHist('${histId}')"
-    style="font-size:10px;color:var(--txt2);background:var(--card);
-           border:1px solid var(--brd);border-radius:6px;cursor:pointer;
-           padding:3px 7px;font-family:inherit;display:flex;align-items:center;
-           gap:3px;transition:.15s;flex-shrink:0;line-height:1.4"
-    onmouseover="this.style.borderColor='var(--pri)';this.style.color='var(--pri-d)'"
-    onmouseout="this.style.borderColor='var(--brd)';this.style.color='var(--txt2)'"
-    title="View history">
-    <svg id="${histId}_chev" width="10" height="10" viewBox="0 0 24 24" fill="none"
-      stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
-      style="transition:transform .2s"><polyline points="6 9 12 15 18 9"/></svg>
-    ${txCount}
-  </button>` : "";
+  // Progress bar & status
+  var progressHtml = '';
+  var statusText = '';
+  var statusColor = 'var(--txt2)';
+  var remainText = '';
 
-  // ── Action button ──
-  const actionBtn = `<button
-    onclick="event.stopPropagation();${cfg.actionFn}"
-    style="font-size:11px;font-weight:700;padding:5px 12px;border-radius:8px;
-           border:1.5px solid ${cfg.accentColor};background:${cfg.accentLight};
-           color:${cfg.accentColor};cursor:pointer;font-family:inherit;
-           white-space:nowrap;transition:.15s;flex:1;justify-content:center;
-           display:flex;align-items:center;gap:5px"
-    onmouseover="this.style.background='${cfg.accentColor}';this.style.color='#fff'"
-    onmouseout="this.style.background='${cfg.accentLight}';this.style.color='${cfg.accentColor}'">
-    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      stroke-width="3" stroke-linecap="round">
-      <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
-    </svg>
-    ${cfg.actionLabel}
-  </button>`;
-
-  // ── Progress bar (goals only) ──
-  let progressHtml = "";
-  if (cfg.target > 0) {
-    const pct = Math.min((cfg.balance / cfg.target) * 100, 100);
-    const barColor = pct >= 100 ? "var(--suc)" : pct >= 50 ? "var(--pri)" : "var(--acc)";
-    progressHtml = `
-      <div style="margin:10px 0 2px">
-        <div style="height:5px;background:var(--card);border-radius:99px;overflow:hidden">
-          <div style="height:100%;width:${pct}%;background:${barColor};
-                      border-radius:99px;transition:width .4s ease"></div>
-        </div>
-        <div style="display:flex;justify-content:space-between;margin-top:5px;
-                    font-size:10.5px;color:var(--txt2)">
-          <span>${fmt(cfg.balance)} saved</span>
-          <span>${Math.round(pct)}% of ${fmt(cfg.target)}</span>
-        </div>
-      </div>`;
+  if (cfg.module === 'goal' && cfg.target > 0) {
+    var pct = Math.min((cfg.balance / cfg.target) * 100, 100);
+    var left = Math.max(0, cfg.target - cfg.balance);
+    var statusLabel, statusSvg;
+    if (pct >= 100) {
+      statusLabel = 'Complete!';
+      statusColor = 'var(--suc)';
+      statusSvg = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--suc)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+      remainText = '$0 to go';
+    } else if (pct >= 80) {
+      statusLabel = 'Almost there (' + Math.round(pct) + '%)';
+      statusColor = 'var(--acc)';
+      statusSvg = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--acc)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>';
+      remainText = fmt(left) + ' to go';
+    } else if (pct >= 50) {
+      statusLabel = 'Control optimal (' + Math.round(pct) + '%)';
+      statusColor = 'var(--suc)';
+      statusSvg = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--suc)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+      remainText = fmt(left) + ' to go';
+    } else {
+      statusLabel = 'Early stage (' + Math.round(pct) + '%)';
+      statusColor = 'var(--txt2)';
+      statusSvg = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--txt2)" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/></svg>';
+      remainText = fmt(left) + ' to go';
+    }
+    var barColor = pct >= 100 ? 'var(--suc)' : pct >= 80 ? 'var(--acc)' : pct >= 50 ? 'var(--pri)' : 'var(--acc)';
+    progressHtml = '<div class="fin-card-bar"><div class="fin-card-bar-fill" style="width:' + pct + '%;background:' + barColor + '"></div></div>';
+    statusText = '<div class="fin-card-status-text" style="color:' + statusColor + '">' + statusSvg + ' ' + statusLabel + '</div>';
+  } else {
+    progressHtml = '<div class="fin-card-bar"><div class="fin-card-bar-fill" style="width:100%;background:' + cfg.accentColor + ';opacity:.35"></div></div>';
+    statusText = '<div class="fin-card-status-text" style="color:' + cfg.accentColor + '">' + cfg.tagLabel + '</div>';
+    remainText = '';
   }
 
-  // ── Transaction history table ──
-  const histRows = txns.slice().reverse().map(t => {
-    const isPositive = ["fund","log","contribution","init"].includes(t.action);
-    const actionLabels = {
-      fund:"Funded", log:"Logged", contribution:"Contributed", pay:"Paid", init:"Initial"
-    };
-    const col   = isPositive ? "var(--suc)" : "var(--dan)";
-    const ltCol = isPositive ? "var(--suc-l)" : "var(--dan-l)";
-    return `<tr>
-      <td style="padding:5px 8px;font-size:11px;color:var(--txt2);white-space:nowrap">${t.date}</td>
-      <td style="padding:5px 8px">
-        <span style="display:inline-flex;padding:1px 7px;border-radius:6px;font-size:9.5px;
-                     font-weight:700;background:${ltCol};color:${col}">
-          ${actionLabels[t.action] || t.action}
-        </span>
-      </td>
-      <td style="padding:5px 8px;font-size:11px;font-weight:700;font-family:'SF Mono',monospace;
-                 color:${col};text-align:right;white-space:nowrap">
-        ${isPositive ? "+" : "−"}${fmt(t.amount)}
-      </td>
-      <td style="padding:5px 8px;font-size:11px;color:var(--txt2);max-width:100px;
-                 overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escHtml(t.note||"")}</td>
-      <td style="padding:5px 8px;font-size:11px;font-weight:700;font-family:'SF Mono',monospace;
-                 text-align:right;white-space:nowrap">${fmt(t.balance)}</td>
-    </tr>`;
-  }).join("");
+  // Action button
+  var actionBtn = '<button onclick="event.stopPropagation();' + cfg.actionFn + '" style="font-size:11px;font-weight:700;padding:5px 12px;border-radius:8px;border:1.5px solid ' + cfg.accentColor + ';background:' + cfg.accentLight + ';color:' + cfg.accentColor + ';cursor:pointer;font-family:inherit;white-space:nowrap;transition:.15s;display:flex;align-items:center;gap:5px" onmouseover="this.style.background=\'' + cfg.accentColor + '\';this.style.color=\'#fff\'" onmouseout="this.style.background=\'' + cfg.accentLight + '\';this.style.color=\'' + cfg.accentColor + '\'"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>' + cfg.actionLabel + '</button>';
 
-  const histSection = txCount > 0 ? `
-    <div id="${histId}" style="display:none;padding-top:10px">
-      <div style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.7px;
-                  color:var(--txt2);margin-bottom:6px;display:flex;align-items:center;gap:5px">
-        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-          stroke-width="2.5"><circle cx="12" cy="12" r="10"/>
-          <polyline points="12 6 12 12 16 14"/></svg>
-        Transaction History
-      </div>
-      <div style="overflow-x:auto;border-radius:8px;border:1px solid var(--brd)">
-        <table style="width:100%;border-collapse:collapse;min-width:320px">
-          <thead>
-            <tr style="background:var(--bg)">
-              ${["Date","Action","Amount","Notes","Balance"].map(h =>
-                `<th style="padding:5px 8px;font-size:9px;font-weight:700;
-                   text-align:${h==="Amount"||h==="Balance"?"right":"left"};
-                   color:var(--txt2);text-transform:uppercase;letter-spacing:.5px">${h}</th>`
-              ).join("")}
-            </tr>
-          </thead>
-          <tbody>${histRows}</tbody>
-        </table>
-      </div>
-    </div>` : "";
+  // History toggle
+  var histBtn = txCount > 0 ? '<button onclick="event.stopPropagation();_toggleFinHist(\'' + histId + '\')" style="font-size:10px;color:var(--txt2);background:var(--card);border:1px solid var(--brd);border-radius:6px;cursor:pointer;padding:3px 7px;font-family:inherit;display:flex;align-items:center;gap:3px;transition:.15s;flex-shrink:0;line-height:1.4" onmouseover="this.style.borderColor=\'var(--pri)\';this.style.color=\'var(--pri-d)\'" onmouseout="this.style.borderColor=\'var(--brd)\';this.style.color=\'var(--txt2)\'" title="View history"><svg id="' + histId + '_chev" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="transition:transform .2s"><polyline points="6 9 12 15 18 9"/></svg>' + txCount + '</button>' : '';
 
-  // ══════════════════════════════════════════════════════
-  // CARD LAYOUT — mobile-first, 3-row structure:
-  //
-  //  Row 1: [Name (truncated)]        [Balance]  [×]
-  //  Row 2: [Tag badge] [Target?]
-  //  Row 3: [Action button (full width)]  [History btn]
-  //  Row 4: Progress bar (goals only)
-  //  Row 5: Extra html (projection etc)
-  //  Row 6: History drawer
-  // ══════════════════════════════════════════════════════
-  return `<div class="fin-card"
-    onmouseover="this.style.borderColor='${cfg.accentColor}'"
-    onmouseout="this.style.borderColor='var(--brd)'">
+  // History table
+  var histRows = txns.slice().reverse().map(function(t) {
+    var isPos = ['fund','log','contribution','init'].indexOf(t.action) !== -1;
+    var labels = {fund:'Funded',log:'Logged',contribution:'Contributed',pay:'Paid',init:'Initial'};
+    var col = isPos ? 'var(--suc)' : 'var(--dan)';
+    var ltCol = isPos ? 'var(--suc-l)' : 'var(--dan-l)';
+    return '<tr><td style="padding:5px 8px;font-size:11px;color:var(--txt2);white-space:nowrap">' + t.date + '</td><td style="padding:5px 8px"><span style="display:inline-flex;padding:1px 7px;border-radius:6px;font-size:9.5px;font-weight:700;background:' + ltCol + ';color:' + col + '">' + (labels[t.action] || t.action) + '</span></td><td style="padding:5px 8px;font-size:11px;font-weight:700;font-family:\'SF Mono\',monospace;color:' + col + ';text-align:right;white-space:nowrap">' + (isPos ? '+' : '\u2212') + fmt(t.amount) + '</td><td style="padding:5px 8px;font-size:11px;color:var(--txt2);max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + escHtml(t.note||'') + '</td><td style="padding:5px 8px;font-size:11px;font-weight:700;font-family:\'SF Mono\',monospace;text-align:right;white-space:nowrap">' + fmt(t.balance) + '</td></tr>';
+  }).join('');
 
-    <!-- Row 1: Name + Balance + Delete -->
-    <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:6px">
-      <div style="flex:1;min-width:0">
-        <div class="fin-card-name">${escHtml(item.label||item.name)}</div>
-      </div>
-      <div style="display:flex;align-items:center;gap:6px;flex-shrink:0">
-        <div class="fin-card-balance" style="color:${cfg.accentColor}">${fmt(cfg.balance)}</div>
-        ${delBtn}
-      </div>
-    </div>
+  var histSection = txCount > 0 ? '<div id="' + histId + '" style="display:none;padding-top:10px"><div style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.7px;color:var(--txt2);margin-bottom:6px;display:flex;align-items:center;gap:5px"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Transaction History</div><div style="overflow-x:auto;border-radius:8px;border:1px solid var(--brd)"><table style="width:100%;border-collapse:collapse;min-width:320px"><thead><tr style="background:var(--bg)">' + ['Date','Action','Amount','Notes','Balance'].map(function(h) { return '<th style="padding:5px 8px;font-size:9px;font-weight:700;text-align:' + (h==='Amount'||h==='Balance'?'right':'left') + ';color:var(--txt2);text-transform:uppercase;letter-spacing:.5px">' + h + '</th>'; }).join('') + '</tr></thead><tbody>' + histRows + '</tbody></table></div></div>' : '';
 
-    <!-- Row 2: Tag + Target -->
-    <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:10px">
-      <span class="fin-card-tag" style="background:${cfg.accentLight};color:${cfg.accentColor}">
-        ${cfg.tagLabel}
-      </span>
-      ${cfg.target > 0
-        ? `<span style="font-size:10px;color:var(--txt2)">Target: ${fmt(cfg.target)}</span>`
-        : ""}
-    </div>
+  // Card header
+  var hdrLabel = cfg.module === 'goal' ? 'Saved' : cfg.module === 'income' ? 'Monthly' : 'Balance';
+  var limitVal = cfg.target > 0 ? 'Target: ' + fmt(cfg.target) : (cfg.module === 'income' ? '/month' : '');
 
-    <!-- Row 3: Action + History toggle -->
-    <div style="display:flex;align-items:center;gap:6px">
-      ${actionBtn}
-      ${histBtn}
-    </div>
-
-    <!-- Row 4+: Progress, extra content, history -->
-    ${progressHtml}
-    ${cfg.extraHtml || ""}
-    ${histSection}
-  </div>`;
+  return '<div class="fin-card">'
+    + '<div class="fin-card-top">'
+      + '<div class="fin-card-title"><span class="fin-card-icon" style="background:' + cfg.accentLight + '">' + cardIcon + '</span>' + escHtml(item.label||item.name) + '</div>'
+      + '<div class="fin-card-actions"><button onclick="event.stopPropagation();' + cfg.actionFn + '" title="' + cfg.actionLabel + '" style="opacity:.5" onmouseover="this.style.opacity=\'1\'" onmouseout="this.style.opacity=\'.5\'"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06A1.65 1.65 0 009 4.6a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg></button><button class="fc-del" onclick="event.stopPropagation();' + delFn + '" title="Remove"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>'
+    + '</div>'
+    + '<div class="fin-card-row"><span class="fin-card-label">' + hdrLabel + ': <strong style="color:var(--txt)">' + fmt(cfg.balance) + '</strong></span>' + (limitVal ? '<span class="fin-card-label">' + limitVal + '</span>' : '') + '</div>'
+    + progressHtml
+    + '<div class="fin-card-status">' + statusText + (remainText ? '<span class="fin-card-status-remain">' + remainText + '</span>' : '') + '</div>'
+    + (cfg.extraHtml || '')
+    + '<div style="display:flex;align-items:center;gap:6px;margin-top:8px">' + actionBtn + histBtn + '</div>'
+    + histSection
+    + '</div>';
 }
 
 function _toggleFinHist(id) {
@@ -5538,7 +5447,7 @@ function renderNetWorth() {
     if (!assets.length) {
       assetEl.innerHTML = `<div style="font-size:12px;color:var(--txt2);padding:4px 0 8px">No assets added yet.</div>`;
     } else {
-      assetEl.innerHTML = assets.map(i => _finCard(i, {
+      assetEl.innerHTML = `<div class="fin-card-grid">` + assets.map(i => _finCard(i, {
         module:      "asset",
         accentColor: "var(--suc)",
         accentLight: "var(--suc-l)",
@@ -5546,7 +5455,7 @@ function renderNetWorth() {
         actionLabel: "+ Add Funds",
         actionFn:    `openFinTxnModal(${i.id},'asset','fund')`,
         balance:     i.amt,
-      })).join("") +
+      })).join("") + `</div>` +
         `<div style="display:flex;justify-content:space-between;padding:8px 12px;font-size:12px;
                      font-weight:700;color:var(--suc);background:var(--suc-l);border-radius:8px;margin-top:4px">
           <span>Total Assets</span>
@@ -5561,7 +5470,7 @@ function renderNetWorth() {
     if (!liabilities.length) {
       liabEl.innerHTML = `<div style="font-size:12px;color:var(--txt2);padding:4px 0 8px">No liabilities added yet.</div>`;
     } else {
-      liabEl.innerHTML = liabilities.map(i => _finCard(i, {
+      liabEl.innerHTML = `<div class="fin-card-grid">` + liabilities.map(i => _finCard(i, {
         module:      "liability",
         accentColor: "var(--dan)",
         accentLight: "var(--dan-l)",
@@ -5569,7 +5478,7 @@ function renderNetWorth() {
         actionLabel: "− Pay Down",
         actionFn:    `openFinTxnModal(${i.id},'liability','pay')`,
         balance:     i.amt,
-      })).join("") +
+      })).join("") + `</div>` +
         `<div style="display:flex;justify-content:space-between;padding:8px 12px;font-size:12px;
                      font-weight:700;color:var(--dan);background:var(--dan-l);border-radius:8px;margin-top:4px">
           <span>Total Liabilities</span>
@@ -6956,6 +6865,8 @@ function renderGoals() {
       extraHtml:   projectionHtml,
     });
   }).join("");
+  // Wrap in grid
+  el.innerHTML = '<div class="fin-card-grid">' + el.innerHTML + '</div>';
 
   // Update accordion header
   const goalsTotal   = document.getElementById("goalsAccTotal");
@@ -7269,7 +7180,7 @@ function renderIncomeSourcesList() {
 
   let html2 = "";
   if (monthly.length) {
-    html2 += monthly.map(incomeCard).join("");
+    html2 += `<div class="fin-card-grid">` + monthly.map(incomeCard).join("") + `</div>`;
     html2 += `<div style="display:flex;justify-content:space-between;padding:8px 12px;
                 font-size:12px;font-weight:700;color:var(--suc);
                 background:var(--suc-l);border-radius:8px;margin-top:4px;margin-bottom:8px">
@@ -7282,7 +7193,7 @@ function renderIncomeSourcesList() {
                 display:flex;align-items:center;justify-content:space-between">
                 <span>One-time / Windfall</span>
                 <span style="font-style:italic;font-weight:400;font-size:9px">Added to Net Worth</span>
-              </div>` + windfalls.map(incomeCard).join("");
+              </div><div class="fin-card-grid">` + windfalls.map(incomeCard).join("") + `</div>`;
   }
   el.innerHTML = html2;
 }
