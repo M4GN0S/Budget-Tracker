@@ -466,11 +466,6 @@ input[type="number"]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0
   .budget-grid{grid-template-columns:1fr !important}
   .spending-grid{grid-template-columns:1fr !important}
   .spending-grid > div:first-child{margin:0 auto 12px}
-  .fin-accordion .accordion-header{padding:10px 12px !important}
-  .fin-accordion .accordion-content{padding:0 12px 12px !important}
-  .fin-card{padding:10px 12px !important}
-  .card{padding:12px !important}
-  .stat{padding:14px 12px !important}
 }
 
 .stat{
@@ -2833,41 +2828,12 @@ footer .footer-links a:hover{color:var(--pri-d)}
 
     <!-- ROW 2: Net Worth + Accordions (full width) -->
     <div style="grid-column:1/-1;display:flex;flex-direction:column;gap:10px">
-      <!-- ─── NET WORTH (ENHANCED) ─── -->
-      <div class="card" style="padding:16px">
-        <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:1.2px;color:var(--txt2);margin-bottom:6px;text-align:center">Your Net Worth</div>
-        <div id="nwTotal" style="font-size:clamp(24px,5vw,32px);font-weight:900;font-family:'SF Mono',monospace;letter-spacing:-1px;color:var(--suc);line-height:1.2;text-align:center">—</div>
-        <div id="nwTrend" style="margin-top:4px;font-size:11px;text-align:center"></div>
-        
-        <!-- Assets vs Liabilities Visual Bar -->
-        <div style="margin-top:14px">
-          <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--txt2);margin-bottom:4px">
-            <span id="nwAssetsCount">0 assets</span>
-            <span id="nwLiabCount">0 liabilities</span>
-          </div>
-          <div style="display:flex;height:8px;border-radius:99px;overflow:hidden;background:var(--bg)">
-            <div id="nwAssetsBar" style="background:var(--suc);transition:width .5s ease;width:50%"></div>
-            <div id="nwLiabBar" style="background:var(--dan);transition:width .5s ease;width:50%"></div>
-          </div>
-          <div style="display:flex;justify-content:space-between;margin-top:6px;font-size:11px;font-weight:700">
-            <span id="nwAssetsTotal2" style="color:var(--suc)">$0</span>
-            <span id="nwLiabTotal2" style="color:var(--dan)">$0</span>
-          </div>
-        </div>
-        
-        <!-- Quick Stats Row -->
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px">
-          <div style="background:var(--suc-l);border-radius:8px;padding:10px;text-align:center">
-            <div style="font-size:9px;font-weight:700;color:var(--suc);text-transform:uppercase;letter-spacing:.5px">Total Assets</div>
-            <div id="nwAssetsQuick" style="font-size:14px;font-weight:800;color:var(--suc);font-family:'SF Mono',monospace;margin-top:2px">$0</div>
-          </div>
-          <div style="background:var(--dan-l);border-radius:8px;padding:10px;text-align:center">
-            <div style="font-size:9px;font-weight:700;color:var(--dan);text-transform:uppercase;letter-spacing:.5px">Total Liabilities</div>
-            <div id="nwLiabQuick" style="font-size:14px;font-weight:800;color:var(--dan);font-family:'SF Mono',monospace;margin-top:2px">$0</div>
-          </div>
-        </div>
-        
-        <div id="nwAccSummary" style="font-size:10px;color:var(--txt2);margin-top:8px;text-align:center">Assets minus Liabilities</div>
+      <!-- ─── NET WORTH (COMPACT) ─── -->
+      <div class="card" style="padding:14px 16px;text-align:center">
+        <div style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:1.2px;color:var(--txt2);margin-bottom:4px">Your Net Worth</div>
+        <div id="nwTotal" style="font-size:clamp(22px,4vw,28px);font-weight:900;font-family:'SF Mono',monospace;letter-spacing:-1px;color:var(--suc);line-height:1.2">—</div>
+        <div id="nwAccSummary" style="font-size:10px;color:var(--txt2);margin-top:3px">Assets minus Liabilities</div>
+        <div id="nwTrend" style="margin-top:5px;font-size:11px"></div>
       </div>
 
       <!-- ─── INCOME SOURCES (COMPACT ACCORDION) ─── -->
@@ -5629,31 +5595,9 @@ function renderNetWorth() {
     } else {
       const dir = diff > 0 ? "up" : "down";
       const arrow = diff > 0 ? "↑" : "↓";
-      const pct = prev > 0 ? Math.round(Math.abs(diff) / prev * 100) : 0;
-      trendEl.innerHTML = `<span class="nw-trend ${dir}">${arrow} ${fmt(Math.abs(diff))}${pct > 0 ? ' (' + pct + '%)' : ''} vs last snapshot</span>`;
+      trendEl.innerHTML = `<span class="nw-trend ${dir}">${arrow} ${fmt(Math.abs(diff))} vs last snapshot</span>`;
     }
   }
-
-  // Update new Net Worth visual elements
-  const assetsBar = document.getElementById("nwAssetsBar");
-  const liabBar = document.getElementById("nwLiabBar");
-  const total = totalAssets + totalLiab;
-  if (assetsBar && liabBar) {
-    if (total > 0) {
-      assetsBar.style.width = (totalAssets / total * 100) + "%";
-      liabBar.style.width = (totalLiab / total * 100) + "%";
-    } else {
-      assetsBar.style.width = "50%";
-      liabBar.style.width = "50%";
-    }
-  }
-  const setEl = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
-  setEl("nwAssetsCount", assets.length + (assets.length === 1 ? " asset" : " assets"));
-  setEl("nwLiabCount", liabilities.length + (liabilities.length === 1 ? " liability" : " liabilities"));
-  setEl("nwAssetsTotal2", fmt(totalAssets));
-  setEl("nwLiabTotal2", fmt(totalLiab));
-  setEl("nwAssetsQuick", fmt(totalAssets));
-  setEl("nwLiabQuick", fmt(totalLiab));
 
   // Render assets
   const assetEl = document.getElementById("nwAssetsList");
