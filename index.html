@@ -5599,11 +5599,9 @@ function renderNetWorth() {
     nwEl.textContent = (netWorth < 0 ? "-" : "") + absStr;
     nwEl.style.color = netWorth >= 0 ? "var(--suc)" : "var(--dan)";
   }
-  // Accordion sub-label
+  // Accordion sub-label (hidden - redundant with visual bar)
   const nwSummary = document.getElementById("nwAccSummary");
-  if (nwSummary && items.length > 0) {
-    nwSummary.textContent = fmt(totalAssets) + " assets · " + fmt(totalLiab) + " liabilities";
-  }
+  if (nwSummary) nwSummary.style.display = "none";
 
   // Assets accordion header totals
   const nwAssetsTotalEl = document.getElementById("nwAssetsTotal");
@@ -7371,8 +7369,30 @@ function _saveIncomeSource() {
   saveIncomeSources(list);
   document.getElementById("_incSrcModal")?.remove();
   if (!isWindfall) _syncIncomeSources();
+  
+  // Auto-add windfall to net worth as an asset
+  if (isWindfall) {
+    const nwItems = getNwItems();
+    nwItems.push({
+      id: Date.now(),
+      type: "asset",
+      label: label + " (Windfall)",
+      amt: amt,
+      transactions: [{
+        id: Date.now(),
+        date: new Date().toISOString().split("T")[0],
+        action: "init",
+        amount: amt,
+        note: "Windfall income",
+        balance: amt
+      }]
+    });
+    saveNwItems(nwItems);
+    renderNetWorth();
+  }
+  
   renderIncomeSourcesList();
-  toast((isWindfall?"Windfall":"Income source")+" added!");
+  toast((isWindfall?"Windfall added to Net Worth ✓":"Income source")+" added!");
 }
 
 function deleteIncomeSource(id) {
