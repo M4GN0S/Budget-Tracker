@@ -1,14 +1,29 @@
 # DEVLOG — L'Atelier de Luz | 50/30/20 Budget Tracker PWA
 
-## Current State: v144
+## Current State: v145
 
 | Metric | Value |
 |---|---|
-| SW cache | `budget-tracker-v144` |
-| File | `webapp/index.html` (13,288 lines) + `webapp/sw.js` |
-| JS | 436,420 chars, 9,462 lines |
+| SW cache | `budget-tracker-v145` |
+| File | `webapp/index.html` (13,393 lines) + `webapp/sw.js` |
+| JS | 441,667 chars, 9,567 lines |
 | Panels | 8 (dashboard, expenses, history, goals, networth, notes, ai, data) |
 | Duplicate functions | None |
+
+---
+
+## v145 Changelog (from v144)
+
+### Aura-Inspired Dashboard Enhancements
+- **Savings Efficiency stat card** — 4th stat card showing % of income remaining, with mini progress bar
+- **Smart Financial Health banner** — Dynamic messaging based on savings rate:
+  - ≥40%: "Spectacular Financial Health!" (green)
+  - 20–39%: "Solid Financial Standing" (sage)
+  - 10–19%: "Room to Grow" (gold)
+  - <10%: "Needs Attention" (red)
+- **Frequently Added chips** — Expenses tab now shows top 6 most-used expense descriptions as one-tap quick-add buttons (min 2 occurrences)
+- **Progress bar "% used"** — Each budget progress bar now shows "X% used" with color coding (green/amber/red based on threshold)
+- Stats grid expanded from 3 → 4 columns (responsive: 2 cols on tablet, 1 col on mobile)
 
 ---
 
