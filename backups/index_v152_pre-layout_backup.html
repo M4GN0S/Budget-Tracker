@@ -461,7 +461,6 @@ input[type="number"]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0
 .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px}
 @media(min-width:768px){
   .budget-grid{grid-template-columns:1fr 1fr !important}
-@media(max-width:767px){.budget-grid{grid-template-columns:1fr !important}}
 }
 
 .stat{
@@ -2756,10 +2755,12 @@ footer .footer-links a:hover{color:var(--pri-d)}
   <div id="tab-goals" class="panel">
 
   <!-- ── 2-COLUMN LAYOUT ─── -->
-  <div class="budget-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+  <div class="budget-grid" style="display:grid;grid-template-columns:1fr;gap:10px">
 
-    <!-- ROW 1: Budget Overview + Where is my money going? (side by side) -->
-    <!-- ── BUDGET OVERVIEW (ULTRA COMPACT) ─── -->
+    <!-- LEFT COLUMN: Budget Overview + Where is my money going? -->
+    <div style="display:flex;flex-direction:column;gap:10px">
+
+      <!-- ── BUDGET OVERVIEW (ULTRA COMPACT) ─── -->
       <div class="card" style="padding:12px 14px">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
           <h3 style="margin:0;font-size:12px;font-weight:800"><span class="icon-wrap"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></span> Budget Overview</h3>
@@ -2781,7 +2782,7 @@ footer .footer-links a:hover{color:var(--pri-d)}
         <div id="financeSummaryBox" class="fin-summary-box" style="display:none"></div>
       </div>
 
-    <!-- ─── WHERE IS MY MONEY GOING? (COMPACT) ─── -->
+      <!-- ─── WHERE IS MY MONEY GOING? (COMPACT) ─── -->
       <div class="card" style="padding:14px">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:6px">
           <div>
@@ -2823,9 +2824,11 @@ footer .footer-links a:hover{color:var(--pri-d)}
           <div id="spendingCategoryList" style="display:flex;flex-direction:column;gap:6px;max-height:280px;overflow-y:auto"></div>
         </div>
       </div>
+    </div>
 
-    <!-- ROW 2: Net Worth + Accordions (full width) -->
-    <div style="grid-column:1/-1;display:flex;flex-direction:column;gap:10px">
+    <!-- RIGHT COLUMN: Net Worth + Income + Goals + Assets + Liabilities -->
+    <div style="display:flex;flex-direction:column;gap:10px">
+
       <!-- ─── NET WORTH (COMPACT) ─── -->
       <div class="card" style="padding:14px 16px;text-align:center">
         <div style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:1.2px;color:var(--txt2);margin-bottom:4px">Your Net Worth</div>
@@ -2939,8 +2942,8 @@ footer .footer-links a:hover{color:var(--pri-d)}
         </div>
       </div>
     </div>
-
   </div>
+
 </div>
 
   <div id="tab-notes" class="panel">
