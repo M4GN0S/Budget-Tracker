@@ -2795,7 +2795,7 @@ footer .footer-links a:hover{color:var(--pri-d)}
             </h3>
             <div style="font-size:10px;color:var(--txt2);margin-top:1px">Spending distribution</div>
           </div>
-          <button onclick="showTab('data',document.querySelector('[data-tab=data]'))" style="font-size:10px;font-weight:700;color:var(--pri-d);background:none;border:none;cursor:pointer;padding:3px 6px;font-family:inherit;border-radius:5px" onmouseover="this.style.background='var(--pri-l)'" onmouseout="this.style.background='none'">Set Limits →</button>
+
         </div>
 
         <!-- Health Banner -->
@@ -2812,15 +2812,13 @@ footer .footer-links a:hover{color:var(--pri-d)}
         <!-- Donut Chart + Category List (side by side) -->
         <div class="spending-grid" style="display:grid;grid-template-columns:140px 1fr;gap:16px;align-items:start">
           <!-- Donut Chart -->
-          <div style="position:relative;width:140px;height:140px;margin:0 auto">
-            <svg id="spendingDonut" viewBox="0 0 200 200" style="width:100%;height:100%;transform:rotate(-90deg)">
+          <div style="text-align:center">
+            <svg id="spendingDonut" viewBox="0 0 200 200" style="width:140px;height:140px;transform:rotate(-90deg)">
               <circle cx="100" cy="100" r="70" fill="none" stroke="var(--brd)" stroke-width="24" opacity=".3"/>
             </svg>
-            <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center">
-              <div id="donutCenterLabel" style="font-size:9px;color:var(--txt2);font-weight:600;text-transform:uppercase;letter-spacing:.5px">Total</div>
-              <div id="donutCenterValue" style="font-size:16px;font-weight:900;color:var(--txt);font-family:'SF Mono',monospace;margin-top:2px">$0</div>
-              <div id="donutCenterSub" style="font-size:9px;color:var(--txt2);margin-top:1px">spent</div>
-            </div>
+            <div id="donutCenterLabel" style="font-size:9px;color:var(--txt2);font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-top:8px">Total</div>
+            <div id="donutCenterValue" style="font-size:16px;font-weight:900;color:var(--txt);font-family:'SF Mono',monospace;margin-top:2px">$0</div>
+            <div id="donutCenterSub" style="font-size:9px;color:var(--txt2);margin-top:1px">spent</div>
           </div>
 
           <!-- Category List -->
