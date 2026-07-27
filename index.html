@@ -484,30 +484,18 @@ input[type="number"]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0
 .stat.needs .amt{color:var(--pri-d)}
 .stat.wants .amt{color:var(--acc)}
 .stat.savings .amt{color:var(--suc)}
-/* Savings Efficiency stat card */
-.stat.savings-eff{background:linear-gradient(135deg,var(--pri-d),var(--pri));color:#fff;border:1px solid var(--pri-d)}
+/* Savings Efficiency stat card — fixed dark gradient for both light & dark modes */
+.stat.savings-eff{background:linear-gradient(135deg,#4E6F62,#7E9A8E);color:#fff;border:1px solid #4E6F62;display:flex;flex-direction:column;justify-content:center}
 .stat.savings-eff .stat-icon{color:rgba(255,255,255,.85)}
-.stat.savings-eff .lbl{color:rgba(255,255,255,.8);font-size:11px}
-.stat.savings-eff .amt{color:#fff;font-size:22px}
-.stat.savings-eff .sub{color:rgba(255,255,255,.65)}
+.stat.savings-eff .lbl{color:rgba(255,255,255,.8);font-size:11px;text-transform:uppercase;letter-spacing:.8px;font-weight:800}
+.stat.savings-eff .amt{color:#fff;font-size:24px;font-weight:900;line-height:1.2}
+.stat.savings-eff .sub{color:rgba(255,255,255,.6);font-size:11px}
 .stat.savings-eff .eff-bar{height:6px;background:rgba(255,255,255,.2);border-radius:99px;margin-top:8px;overflow:hidden}
 .stat.savings-eff .eff-bar-fill{height:100%;background:rgba(255,255,255,.85);border-radius:99px;transition:width .6s cubic-bezier(.4,0,.2,1)}
 .stat.savings-eff .stat-corner-add{color:var(--pri-d);background:rgba(255,255,255,.9)}
 .stat.savings-eff .fin-tooltip-icon{color:var(--pri-d);background:rgba(255,255,255,.9)}
-
-/* ── Financial Health Banner ─── */
-.fh-banner{border-radius:var(--rad);padding:16px 18px;margin-bottom:18px;display:flex;align-items:flex-start;gap:12px;line-height:1.5;box-shadow:var(--sh);border:1px solid var(--brd)}
-.fh-banner.fh-great{background:linear-gradient(135deg,var(--suc-l),#fff);border-color:var(--suc)}
-.fh-banner.fh-good{background:linear-gradient(135deg,var(--pri-l),#fff);border-color:var(--pri)}
-.fh-banner.fh-warn{background:linear-gradient(135deg,var(--acc-l),#fff);border-color:var(--acc)}
-.fh-banner.fh-risk{background:linear-gradient(135deg,var(--dan-l),#fff);border-color:var(--dan)}
-.fh-icon{width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.fh-banner.fh-great .fh-icon{background:var(--suc)}
-.fh-banner.fh-good .fh-icon{background:var(--pri)}
-.fh-banner.fh-warn .fh-icon{background:var(--acc)}
-.fh-banner.fh-risk .fh-icon{background:var(--dan)}
-.fh-title{font-size:13px;font-weight:800;color:var(--txt);margin-bottom:2px}
-.fh-body{font-size:12px;color:var(--txt2);line-height:1.55}
+/* Health message inside savings-eff card */
+.eff-health{font-size:11px;color:#fff;background:rgba(255,255,255,.15);border-radius:8px;padding:6px 8px;margin-top:6px;line-height:1.4}
 
 .stat .sub{font-size:11px;color:var(--txt2);line-height:1.4}
 
@@ -2407,26 +2395,14 @@ footer .footer-links a:hover{color:var(--pri-d)}
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
         </button>
       </div>
-      <!-- Savings Efficiency card -->
-      <div class="stat savings-eff">
+      <!-- Savings Efficiency card (includes health message) -->
+      <div class="stat savings-eff" id="savingsEffCard">
         <div class="stat-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg></div>
-        <div class="lbl" style="display:flex;align-items:center;gap:5px">
-          Savings Efficiency
-        </div>
+        <div class="lbl">Savings Efficiency</div>
         <div class="amt" id="savingsEffPct">0%</div>
-        <div class="sub" id="savingsEffSub">Of income saved</div>
+        <div class="sub" id="savingsEffSub">Of income remaining</div>
         <div class="eff-bar"><div class="eff-bar-fill" id="savingsEffBar" style="width:0%"></div></div>
-      </div>
-    </div>
-
-    <!-- Financial Health Banner -->
-    <div class="fh-banner" id="fhBanner" style="display:none">
-      <div class="fh-icon" id="fhIcon">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5a3 3 0 10-5.997.125 4 4 0 00-2.526 5.77 4 4 0 00.556 6.588A4 4 0 1012 18z"/><path d="M12 5a3 3 0 115.997.125 4 4 0 012.526 5.77 4 4 0 01-.556 6.588A4 4 0 1112 18z"/><path d="M15 13a4.5 4.5 0 01-3-4 4.5 4.5 0 01-3 4"/></svg>
-      </div>
-      <div style="flex:1;min-width:0">
-        <div class="fh-title" id="fhTitle">—</div>
-        <div class="fh-body" id="fhBody">—</div>
+        <div class="eff-health" id="effHealthMsg" style="display:none"></div>
       </div>
     </div>
 
@@ -6664,7 +6640,7 @@ function updateDashboard() {
   if (effSubEl) effSubEl.textContent = income > 0 ? "Of income remaining" : "Set income first";
   if (effBarEl) effBarEl.style.width = Math.min(savingsEffPct, 100) + "%";
 
-  // ── Financial Health Banner ──
+  // ── Financial Health (inside savings-eff card) ──
   renderFinancialHealth(savingsEffPct, income, needsSpent, wantsSpent, savingsSpent, needsBudget, wantsBudget, savingsBudget);
 
   // Progress bars
@@ -6690,54 +6666,26 @@ function updateDashboard() {
   _renderDashNetWorth();
 }
 
-// ── Financial Health Banner ──
+// ── Financial Health (inside savings-eff card) ──
 function renderFinancialHealth(effPct, income, nSpent, wSpent, sSpent, nBudget, wBudget, sBudget) {
-  const banner = document.getElementById("fhBanner");
-  const title  = document.getElementById("fhTitle");
-  const body   = document.getElementById("fhBody");
-  if (!banner || !title || !body) return;
+  const healthEl = document.getElementById("effHealthMsg");
+  if (!healthEl) return;
 
-  if (income <= 0) { banner.style.display = "none"; return; }
+  if (income <= 0) { healthEl.style.display = "none"; return; }
 
-  banner.style.display = "flex";
-
-  // Determine health tier
-  let tier, titleText, bodyText;
-  const needsOk  = nSpent <= nBudget;
-  const wantsOk  = wSpent <= wBudget;
-  const savingsOk = sSpent >= sBudget;
-
+  let msg;
   if (effPct >= 40) {
-    tier = "fh-great";
-    titleText = "Spectacular Financial Health!";
-    bodyText = "You saved " + Math.round(effPct) + "% of your income. Investing this surplus in index funds or an emergency deposit is a smart move.";
+    msg = "Spectacular! You saved " + Math.round(effPct) + "% of income. Investing this surplus in index funds or an emergency deposit is a smart move.";
   } else if (effPct >= 20) {
-    tier = "fh-good";
-    titleText = "Solid Financial Standing";
-    bodyText = "You're on track! Your savings rate of " + Math.round(effPct) + "% is healthy. Keep building your emergency fund.";
+    msg = "Solid standing! Your " + Math.round(effPct) + "% savings rate is healthy. Keep building your emergency fund.";
   } else if (effPct >= 10) {
-    tier = "fh-warn";
-    titleText = "Room to Grow";
-    bodyText = "You saved " + Math.round(effPct) + "% of income. Try trimming wants by 5–10% to boost your savings rate.";
+    msg = "Room to grow. You saved " + Math.round(effPct) + "% of income. Try trimming wants by 5–10%.";
   } else {
-    tier = "fh-risk";
-    titleText = "Needs Attention";
-    bodyText = "Only " + Math.round(effPct) + "% of income is left. Review your spending — even small cuts to wants can make a big difference.";
+    msg = "Needs attention. Only " + Math.round(effPct) + "% of income left. Review your spending — small cuts to wants make a big difference.";
   }
 
-  banner.className = "fh-banner " + tier;
-
-  // Icon based on tier
-  const iconMap = {
-    "fh-great": '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>',
-    "fh-good":  '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg>',
-    "fh-warn":  '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/></svg>',
-    "fh-risk":  '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>'
-  };
-  document.getElementById("fhIcon").innerHTML = iconMap[tier] || iconMap["fh-risk"];
-
-  title.textContent = titleText;
-  body.textContent  = bodyText;
+  healthEl.style.display = "block";
+  healthEl.textContent = msg;
 }
 
 function updateProgress(name, spent, budget, cls) {
