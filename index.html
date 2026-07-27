@@ -461,7 +461,11 @@ input[type="number"]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0
 .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px}
 @media(min-width:768px){
   .budget-grid{grid-template-columns:1fr 1fr !important}
-@media(max-width:767px){.budget-grid{grid-template-columns:1fr !important}}
+}
+@media(max-width:767px){
+  .budget-grid{grid-template-columns:1fr !important}
+  .spending-grid{grid-template-columns:1fr !important}
+  .spending-grid > div:first-child{margin:0 auto 12px}
 }
 
 .stat{
@@ -2756,7 +2760,7 @@ footer .footer-links a:hover{color:var(--pri-d)}
   <div id="tab-goals" class="panel">
 
   <!-- ── 2-COLUMN LAYOUT ─── -->
-  <div class="budget-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+  <div class="budget-grid" style="display:grid;gap:10px">
 
     <!-- ROW 1: Budget Overview + Where is my money going? (side by side) -->
     <!-- ── BUDGET OVERVIEW (ULTRA COMPACT) ─── -->
@@ -2806,7 +2810,7 @@ footer .footer-links a:hover{color:var(--pri-d)}
         </div>
 
         <!-- Donut Chart + Category List (side by side) -->
-        <div style="display:grid;grid-template-columns:140px 1fr;gap:16px;align-items:start">
+        <div class="spending-grid" style="display:grid;grid-template-columns:140px 1fr;gap:16px;align-items:start">
           <!-- Donut Chart -->
           <div style="position:relative;width:140px;height:140px;margin:0 auto">
             <svg id="spendingDonut" viewBox="0 0 200 200" style="width:100%;height:100%;transform:rotate(-90deg)">
