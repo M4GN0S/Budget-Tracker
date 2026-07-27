@@ -2657,7 +2657,7 @@ footer .footer-links a:hover{color:var(--pri-d)}
         </div>
         <div class="fg">
           <label>&nbsp;</label>
-          <button class="btn btn-pri" onclick="addBill()">Add Bill</button>
+          <button class="btn btn-pri" onclick="addBill()">+ Add</button>
         </div>
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:8px">
@@ -2898,7 +2898,7 @@ footer .footer-links a:hover{color:var(--pri-d)}
         </div>
         
         <!-- Quick Add Button -->
-        <button onclick="openNwQuickAdd()" style="width:100%;margin-top:12px;padding:8px;border:1.5px dashed var(--brd);border-radius:8px;background:transparent;color:var(--txt2);font-size:11px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .15s" onmouseover="this.style.borderColor='var(--pri)';this.style.color='var(--pri-d)'" onmouseout="this.style.borderColor='var(--brd)';this.style.color='var(--txt2)'">Quick Add Asset / Liability</button>
+        <button onclick="openNwQuickAdd()" style="width:100%;margin-top:12px;padding:8px;border:1.5px dashed var(--brd);border-radius:8px;background:transparent;color:var(--txt2);font-size:11px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .15s" onmouseover="this.style.borderColor='var(--pri)';this.style.color='var(--pri-d)'" onmouseout="this.style.borderColor='var(--brd)';this.style.color='var(--txt2)'">+ Quick Add Asset / Liability</button>
       </div>
 
       <!-- ─── INCOME SOURCES (COMPACT ACCORDION) ─── -->
@@ -2922,7 +2922,7 @@ footer .footer-links a:hover{color:var(--pri-d)}
           <div class="accordion-content" style="padding:0 14px 14px">
             <p style="font-size:11px;color:var(--txt2);margin-bottom:8px">Add every income stream — salary, freelance, side income.</p>
             <div id="incomeSourcesList"></div>
-            <button onclick="event.stopPropagation();addIncomeSource()" style="width:100%;padding:7px;border:1.5px dashed var(--brd);border-radius:8px;background:transparent;color:var(--txt2);font-size:11px;font-weight:600;cursor:pointer;font-family:inherit;transition:.15s;margin-top:3px" onmouseover="this.style.borderColor='var(--suc)';this.style.color='var(--suc)'" onmouseout="this.style.borderColor='var(--brd)';this.style.color='var(--txt2)'">Add Income Source</button>
+            <button onclick="event.stopPropagation();addIncomeSource()" style="width:100%;padding:7px;border:1.5px dashed var(--brd);border-radius:8px;background:transparent;color:var(--txt2);font-size:11px;font-weight:600;cursor:pointer;font-family:inherit;transition:.15s;margin-top:3px" onmouseover="this.style.borderColor='var(--suc)';this.style.color='var(--suc)'" onmouseout="this.style.borderColor='var(--brd)';this.style.color='var(--txt2)'">+ Add Income Source</button>
           </div>
         </div>
       </div>
@@ -2947,7 +2947,7 @@ footer .footer-links a:hover{color:var(--pri-d)}
         <div class="accordion-body">
           <div class="accordion-content" style="padding:0 14px 14px">
             <div id="goalsList"></div>
-            <button onclick="event.stopPropagation();openGoalModal()" style="width:100%;padding:7px;border:1.5px dashed var(--brd);border-radius:8px;background:transparent;color:var(--txt2);font-size:11px;font-weight:600;cursor:pointer;font-family:inherit;transition:.15s;margin-top:3px" onmouseover="this.style.borderColor='var(--pri)';this.style.color='var(--pri-d)'" onmouseout="this.style.borderColor='var(--brd)';this.style.color='var(--txt2)'">Add Goal</button>
+            <button onclick="event.stopPropagation();openGoalModal()" style="width:100%;padding:7px;border:1.5px dashed var(--brd);border-radius:8px;background:transparent;color:var(--txt2);font-size:11px;font-weight:600;cursor:pointer;font-family:inherit;transition:.15s;margin-top:3px" onmouseover="this.style.borderColor='var(--pri)';this.style.color='var(--pri-d)'" onmouseout="this.style.borderColor='var(--brd)';this.style.color='var(--txt2)'">+ Add Goal</button>
           </div>
         </div>
       </div>
@@ -2972,7 +2972,7 @@ footer .footer-links a:hover{color:var(--pri-d)}
         <div class="accordion-body">
           <div class="accordion-content" style="padding:0 14px 14px">
             <div id="nwAssetsList"></div>
-            <button onclick="event.stopPropagation();addNwItem('asset')" style="width:100%;padding:7px;border:1.5px dashed var(--brd);border-radius:8px;background:transparent;color:var(--txt2);font-size:11px;font-weight:600;cursor:pointer;font-family:inherit;transition:.15s;margin-top:3px" onmouseover="this.style.borderColor='var(--suc)';this.style.color='var(--suc)'" onmouseout="this.style.borderColor='var(--brd)';this.style.color='var(--txt2)'">Add Asset</button>
+            <button onclick="event.stopPropagation();addNwItem('asset')" style="width:100%;padding:7px;border:1.5px dashed var(--brd);border-radius:8px;background:transparent;color:var(--txt2);font-size:11px;font-weight:600;cursor:pointer;font-family:inherit;transition:.15s;margin-top:3px" onmouseover="this.style.borderColor='var(--suc)';this.style.color='var(--suc)'" onmouseout="this.style.borderColor='var(--brd)';this.style.color='var(--txt2)'">+ Add Asset</button>
           </div>
         </div>
       </div>
@@ -3001,7 +3001,7 @@ footer .footer-links a:hover{color:var(--pri-d)}
               <span style="font-size:10px;color:var(--txt2);line-height:1.4"><strong style="color:var(--txt)">Tip:</strong> Paying off liabilities increases your net worth.</span>
             </div>
             <div id="nwLiabilitiesList"></div>
-            <button onclick="event.stopPropagation();addNwItem('liability')" style="width:100%;padding:7px;border:1.5px dashed var(--brd);border-radius:8px;background:transparent;color:var(--txt2);font-size:11px;font-weight:600;cursor:pointer;font-family:inherit;transition:.15s;margin-top:3px" onmouseover="this.style.borderColor='var(--dan)';this.style.color='var(--dan)'" onmouseout="this.style.borderColor='var(--brd)';this.style.color='var(--txt2)'">Add Liability</button>
+            <button onclick="event.stopPropagation();addNwItem('liability')" style="width:100%;padding:7px;border:1.5px dashed var(--brd);border-radius:8px;background:transparent;color:var(--txt2);font-size:11px;font-weight:600;cursor:pointer;font-family:inherit;transition:.15s;margin-top:3px" onmouseover="this.style.borderColor='var(--dan)';this.style.color='var(--dan)'" onmouseout="this.style.borderColor='var(--brd)';this.style.color='var(--txt2)'">+ Add Liability</button>
           </div>
         </div>
       </div>
@@ -3878,7 +3878,7 @@ footer .footer-links a:hover{color:var(--pri-d)}
       <div class="exp-cat-hint" id="expCatHint" style="display:none"></div>
       <div style="display:flex;gap:10px;justify-content:flex-end;padding-top:4px;border-top:1px solid var(--brd)">
         <button onclick="closeExpenseModal()" style="padding:10px 18px;border-radius:10px;border:1.5px solid var(--brd);background:var(--bg);color:var(--txt2);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit">Cancel</button>
-        <button onclick="addExpense()" class="btn btn-pri" style="padding:10px 24px;font-size:13px;font-weight:700;border-radius:10px">Add Expense</button>
+        <button onclick="addExpense()" class="btn btn-pri" style="padding:10px 24px;font-size:13px;font-weight:700;border-radius:10px">+ Add Expense</button>
       </div>
     </div>
   </div>
@@ -5695,7 +5695,7 @@ function renderNetWorth() {
         accentColor: "var(--suc)",
         accentLight: "var(--suc-l)",
         tagLabel:    "Asset",
-        actionLabel: "Add Funds",
+        actionLabel: "+ Add Funds",
         actionFn:    `openFinTxnModal(${i.id},'asset','fund')`,
         balance:     i.amt,
       })).join("") + `</div>` +
@@ -5891,11 +5891,11 @@ function _nwRow(item, type) {
     ? `<button onclick="event.stopPropagation();openNwTxnModal(${item.id},'fund')"
         style="font-size:10px;font-weight:700;padding:4px 9px;border-radius:7px;border:1.5px solid var(--suc);background:var(--suc-l);color:var(--suc);cursor:pointer;font-family:inherit;white-space:nowrap;transition:.15s"
         onmouseover="this.style.background='var(--suc)';this.style.color='#fff'"
-        onmouseout="this.style.background='var(--suc-l)';this.style.color='var(--suc)'">Add Funds</button>`
+        onmouseout="this.style.background='var(--suc-l)';this.style.color='var(--suc)'">+ Add Funds</button>`
     : `<button onclick="event.stopPropagation();openNwTxnModal(${item.id},'pay')"
         style="font-size:10px;font-weight:700;padding:4px 9px;border-radius:7px;border:1.5px solid var(--dan);background:var(--dan-l);color:var(--dan);cursor:pointer;font-family:inherit;white-space:nowrap;transition:.15s"
         onmouseover="this.style.background='var(--dan)';this.style.color='#fff'"
-        onmouseout="this.style.background='var(--dan-l)';this.style.color='var(--dan)'">Pay Down</button>`;
+        onmouseout="this.style.background='var(--dan-l)';this.style.color='var(--dan)'">− Pay Down</button>`;
 
   const histBtn = txCount > 0
     ? `<button onclick="event.stopPropagation();_toggleNwHist('${histId}')"
@@ -7270,7 +7270,7 @@ function renderGoals() {
       accentColor: pct >= 100 ? "var(--suc)" : "var(--pri-d)",
       accentLight: pct >= 100 ? "var(--suc-l)" : "var(--pri-l)",
       tagLabel:    statusLabel,
-      actionLabel: "Add Contribution",
+      actionLabel: "+ Add Contribution",
       actionFn:    `openFinTxnModal(${g.id},'goal','contribution')`,
       balance:     g.saved || 0,
       target:      g.target,
@@ -7570,20 +7570,17 @@ function _saveIncomeSource() {
 
 function deleteIncomeSource(id) {
   saveIncomeSources(getIncomeSources().filter(s=>s.id!==id));
-  _syncIncomeSources();
-  renderIncomeSourcesList();
-  renderNetWorth();
-  updateDashboard();
-  renderFinanceOverview();
+  _syncIncomeSources(); renderIncomeSourcesList();
 }
 
 function _syncIncomeSources() {
   const sources = getIncomeSources().filter(s=>!s.isWindfall);
+  if (!sources.length) return;
   const total = sources.reduce((s,src)=>s+src.amount,0);
   const el = document.getElementById("incomeInput");
-  if (el) { el.value = total > 0 ? total.toLocaleString("en-US") : ""; updateDashboard(); setIncomeDisplay(total); }
+  if (el) { el.value = total.toLocaleString("en-US"); updateDashboard(); setIncomeDisplay(total); }
   const lbl = document.getElementById("incomeSourcesTotalLabel");
-  if (lbl) lbl.textContent = total > 0 ? fmt(total) : "—";
+  if (lbl) lbl.textContent = fmt(total);
 }
 
 function renderIncomeSourcesList() {
@@ -7610,7 +7607,7 @@ function renderIncomeSourcesList() {
     accentColor: s.isWindfall ? "var(--acc)" : "var(--suc)",
     accentLight: s.isWindfall ? "var(--acc-l)" : "var(--suc-l)",
     tagLabel:    INCOME_TYPE_LABELS[s.type] || INCOME_WINDFALL_LABELS[s.type] || s.type,
-    actionLabel: "Log Income",
+    actionLabel: "+ Log Income",
     actionFn:    `openFinTxnModal(${s.id},'income','log')`,
     balance:     s.amount,
   });
