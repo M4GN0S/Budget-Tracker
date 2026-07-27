@@ -2750,30 +2750,69 @@ footer .footer-links a:hover{color:var(--pri-d)}
   <!-- ─────────────────────────────────────── -->
   <div id="tab-goals" class="panel">
 
-  <!-- ─── BUDGET OVERVIEW (hero card — always open) ─── -->
-  <div class="card" style="margin-bottom:10px">
-    <!-- Header: title + month label -->
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;gap:8px">
-      <h3 style="margin:0;font-size:14px"><span class="icon-wrap"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></span> Budget Overview</h3>
-      <span id="financeMonthLabel" style="font-size:10.5px;color:var(--txt2);font-weight:600;white-space:nowrap;flex-shrink:0"></span>
+  <!-- ─── BUDGET OVERVIEW (compact card) ─── -->
+  <div class="card" style="margin-bottom:10px;padding:14px 16px">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;gap:8px">
+      <h3 style="margin:0;font-size:13px"><span class="icon-wrap"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></span> Budget Overview</h3>
+      <span id="financeMonthLabel" style="font-size:10px;color:var(--txt2);font-weight:600;white-space:nowrap;flex-shrink:0"></span>
     </div>
-    <!-- Income total — stacked on mobile, inline on wider -->
     <div class="fin-income-row">
       <span class="fin-income-label">Monthly Income</span>
       <span id="financeIncomeTotal" class="fin-income-total">—</span>
     </div>
-    <div id="financeSplitBar" style="display:flex;height:10px;border-radius:99px;overflow:hidden;gap:2px;margin-bottom:10px">
+    <div id="financeSplitBar" style="display:flex;height:8px;border-radius:99px;overflow:hidden;gap:2px;margin-bottom:8px">
       <div id="fsNeeds"   style="background:var(--pri);border-radius:99px;transition:width .4s ease;width:0%"></div>
       <div id="fsWants"   style="background:var(--acc);border-radius:99px;transition:width .4s ease;width:0%"></div>
       <div id="fsSavings" style="background:var(--suc);border-radius:99px;transition:width .4s ease;width:0%"></div>
       <div id="fsUnused"  style="background:var(--brd);border-radius:99px;transition:width .4s ease;width:100%"></div>
     </div>
-    <div id="financeCatRows" style="display:flex;flex-direction:column;gap:8px;margin-bottom:10px"></div>
-    <!-- Legacy IDs kept for backward compat (hidden by JS) -->
+    <div id="financeCatRows" style="display:flex;flex-direction:column;gap:6px"></div>
     <div id="financeUnallocated" style="display:none"></div>
     <div id="financeWindfallRow" style="display:none"></div>
-    <!-- Unified summary box -->
     <div id="financeSummaryBox" class="fin-summary-box" style="display:none"></div>
+  </div>
+
+  <!-- ─── WHERE IS MY MONEY GOING? ─── -->
+  <div class="card" style="margin-bottom:10px">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px">
+      <div>
+        <h3 style="margin:0;font-size:14px;font-weight:800;color:var(--txt);display:flex;align-items:center;gap:8px">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--pri-d)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg>
+          Where is my money going?
+        </h3>
+        <div style="font-size:11px;color:var(--txt2);margin-top:2px">Interactive visual distribution of your expenses</div>
+      </div>
+      <button onclick="showTab('data',document.querySelector('[data-tab=data]'))" style="font-size:11px;font-weight:700;color:var(--pri-d);background:none;border:none;cursor:pointer;padding:4px 8px;font-family:inherit;border-radius:6px;transition:.15s" onmouseover="this.style.background='var(--pri-l)'" onmouseout="this.style.background='none'">Set Category Limits →</button>
+    </div>
+
+    <!-- Health Banner -->
+    <div id="budgetHealthBanner" style="display:none;padding:12px 14px;border-radius:10px;margin-bottom:16px;font-size:12px;line-height:1.5">
+      <div style="display:flex;align-items:flex-start;gap:10px">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:1px"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        <div>
+          <div id="budgetHealthTitle" style="font-weight:800;margin-bottom:2px"></div>
+          <div id="budgetHealthBody" style="opacity:.85"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Donut Chart + Category Breakdown -->
+    <div style="display:grid;grid-template-columns:180px 1fr;gap:20px;align-items:start">
+      <!-- Donut Chart -->
+      <div style="position:relative;width:180px;height:180px;margin:0 auto">
+        <svg id="spendingDonut" viewBox="0 0 200 200" style="width:100%;height:100%;transform:rotate(-90deg)">
+          <circle cx="100" cy="100" r="70" fill="none" stroke="var(--brd)" stroke-width="24" opacity=".3"/>
+        </svg>
+        <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center">
+          <div id="donutCenterLabel" style="font-size:10px;color:var(--txt2);font-weight:600;text-transform:uppercase;letter-spacing:.5px">Total</div>
+          <div id="donutCenterValue" style="font-size:20px;font-weight:900;color:var(--txt);font-family:'SF Mono',monospace;margin-top:2px">$0</div>
+          <div id="donutCenterSub" style="font-size:10px;color:var(--txt2);margin-top:2px">spent</div>
+        </div>
+      </div>
+
+      <!-- Category List -->
+      <div id="spendingCategoryList" style="display:flex;flex-direction:column;gap:10px"></div>
+    </div>
   </div>
 
   <!-- ─── INCOME SOURCES accordion ─────────────────── -->
@@ -4924,6 +4963,144 @@ function renderFinanceOverview() {
   if (legacyUnalloc) legacyUnalloc.style.display = "none";
   const legacyWf = document.getElementById("financeWindfallRow");
   if (legacyWf) legacyWf.style.display = "none";
+
+  // Render new "Where is my money going?" section
+  renderSpendingBreakdown();
+}
+
+// ── Where is my money going? — donut chart + category list ──
+function renderSpendingBreakdown() {
+  const data = getData();
+  const expenses = data.expenses || [];
+  const total = expenses.reduce((s, e) => s + e.amt, 0);
+
+  // Group by sub-category (or cat if no sub)
+  const catMap = {};
+  expenses.forEach(e => {
+    const key = e.sub && e.sub.trim() ? e.sub.trim() : e.cat;
+    if (!catMap[key]) catMap[key] = { cat: e.cat, sub: e.sub, total: 0, count: 0 };
+    catMap[key].total += e.amt;
+    catMap[key].count++;
+  });
+
+  const cats = Object.entries(catMap)
+    .map(([name, d]) => ({ name, ...d }))
+    .sort((a, b) => b.total - a.total);
+
+  // Update donut center
+  const centerValue = document.getElementById("donutCenterValue");
+  const centerSub = document.getElementById("donutCenterSub");
+  if (centerValue) centerValue.textContent = total > 0 ? fmt(total) : "$0";
+  if (centerSub) centerSub.textContent = total > 0 ? cats.length + " categories" : "spent";
+
+  // Render donut SVG
+  const svg = document.getElementById("spendingDonut");
+  if (svg) {
+    // Keep background circle, remove old segments
+    svg.innerHTML = '<circle cx="100" cy="100" r="70" fill="none" stroke="var(--brd)" stroke-width="24" opacity=".3"/>';
+
+    const colors = ["var(--pri)", "var(--acc)", "var(--suc)", "var(--dan)", "#8B5CF6", "#EC4899", "#F59E0B", "#10B981"];
+    const circumference = 2 * Math.PI * 70; // ~439.82
+    let offset = 0;
+
+    cats.forEach((c, i) => {
+      if (total <= 0 || c.total <= 0) return;
+      const pct = c.total / total;
+      const dashLen = pct * circumference;
+      const dashGap = circumference - dashLen;
+      const color = colors[i % colors.length];
+
+      const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+      circle.setAttribute("cx", "100");
+      circle.setAttribute("cy", "100");
+      circle.setAttribute("r", "70");
+      circle.setAttribute("fill", "none");
+      circle.setAttribute("stroke", color);
+      circle.setAttribute("stroke-width", "24");
+      circle.setAttribute("stroke-dasharray", dashLen + " " + dashGap);
+      circle.setAttribute("stroke-dashoffset", -offset);
+      circle.style.transition = "stroke-dasharray .6s ease, stroke-dashoffset .6s ease";
+      svg.appendChild(circle);
+
+      offset += dashLen;
+    });
+  }
+
+  // Render category list
+  const listEl = document.getElementById("spendingCategoryList");
+  if (listEl) {
+    if (cats.length === 0) {
+      listEl.innerHTML = '<div style="font-size:12px;color:var(--txt2);padding:20px 0;text-align:center">No expenses yet. Add your first expense to see the breakdown.</div>';
+    } else {
+      const catIcons = {
+        Needs: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--pri-d)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>',
+        Wants: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--acc)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>',
+        Savings: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--suc)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>'
+      };
+      const defaultIcon = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--txt2)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/></svg>';
+
+      listEl.innerHTML = cats.map((c, i) => {
+        const pct = total > 0 ? Math.round(c.total / total * 100) : 0;
+        const icon = catIcons[c.cat] || defaultIcon;
+        const colors = ["var(--pri)", "var(--acc)", "var(--suc)", "var(--dan)", "#8B5CF6", "#EC4899", "#F59E0B", "#10B981"];
+        const color = colors[i % colors.length];
+
+        return '<div style="display:flex;align-items:center;gap:12px;padding:8px 10px;border-radius:10px;transition:background .15s;cursor:default" onmouseover="this.style.background=\'var(--bg)\'" onmouseout="this.style.background=\'none\'">' +
+          '<div style="width:36px;height:36px;border-radius:10px;background:' + color + '18;display:flex;align-items:center;justify-content:center;flex-shrink:0">' + icon + '</div>' +
+          '<div style="flex:1;min-width:0">' +
+            '<div style="font-size:12px;font-weight:700;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + escHtml(c.name) + '</div>' +
+            '<div style="font-size:10px;color:var(--txt2);margin-top:1px">' + c.count + ' transaction' + (c.count !== 1 ? 's' : '') + ' · ' + c.cat + '</div>' +
+          '</div>' +
+          '<div style="text-align:right;flex-shrink:0">' +
+            '<div style="font-size:12px;font-weight:800;color:var(--txt);font-family:\'SF Mono\',monospace">' + fmt(c.total) + '</div>' +
+            '<div style="font-size:10px;font-weight:700;color:' + color + ';margin-top:1px">' + pct + '%</div>' +
+          '</div>' +
+        '</div>';
+      }).join("");
+    }
+  }
+
+  // Update health banner
+  renderBudgetHealthBanner(total);
+}
+
+function renderBudgetHealthBanner(totalSpent) {
+  const data = getData();
+  const income = data.income || 0;
+  const banner = document.getElementById("budgetHealthBanner");
+  const title = document.getElementById("budgetHealthTitle");
+  const body = document.getElementById("budgetHealthBody");
+  if (!banner || !title || !body) return;
+
+  if (income <= 0) { banner.style.display = "none"; return; }
+
+  const effPct = Math.max(0, Math.round((income - totalSpent) / income * 100));
+  let color, bg, iconColor, titleText, bodyText;
+
+  if (effPct >= 40) {
+    color = "var(--suc)"; bg = "var(--suc-l)"; iconColor = "var(--suc)";
+    titleText = "Spectacular Financial Health!";
+    bodyText = "You saved " + effPct + "% of your income. Investing this extra capital in index funds or an emergency deposit is a professional choice.";
+  } else if (effPct >= 20) {
+    color = "var(--pri)"; bg = "var(--pri-l)"; iconColor = "var(--pri-d)";
+    titleText = "Solid Financial Standing";
+    bodyText = "Your savings rate of " + effPct + "% is healthy. Keep building your emergency fund.";
+  } else if (effPct >= 10) {
+    color = "var(--acc)"; bg = "var(--acc-l)"; iconColor = "var(--acc)";
+    titleText = "Room to Grow";
+    bodyText = "You saved " + effPct + "% of income. Try trimming wants by 5–10% to boost your savings rate.";
+  } else {
+    color = "var(--dan)"; bg = "var(--dan-l)"; iconColor = "var(--dan)";
+    titleText = "Needs Attention";
+    bodyText = "Only " + effPct + "% of income is left. Review your spending — even small cuts to wants can make a big difference.";
+  }
+
+  banner.style.display = "block";
+  banner.style.background = bg;
+  banner.style.color = color;
+  banner.querySelector("svg").setAttribute("stroke", iconColor);
+  title.textContent = titleText;
+  body.textContent = bodyText;
 }
 
 
