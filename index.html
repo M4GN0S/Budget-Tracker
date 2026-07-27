@@ -969,6 +969,7 @@ tbody tr:hover td{background:var(--pri-l)}
 .note-modal-body .nb-p:last-child{margin-bottom:0}
 .note-modal-body .nb-gap{height:8px}
 .note-modal-body .nb-list{list-style:none;margin:4px 0 12px;padding:0}
+.note-modal-body .nb-numbered{list-style:decimal}
 .note-modal-body .nb-list:last-child{margin-bottom:0}
 /* Bullets: real hanging indent so wrapped lines align under the text */
 .note-modal-body .nb-bullets li{position:relative;padding-left:20px;margin-bottom:6px;line-height:1.6}
@@ -2199,6 +2200,9 @@ footer .footer-links a:hover{color:var(--pri-d)}
       <div class="tab" data-tab="goals" data-priority="secondary" onclick="showTab('goals',this)">
         <span class="tab-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12V8H6a2 2 0 01-2-2c0-1.1.9-2 2-2h12v4"/><path d="M4 6v12a2 2 0 002 2h14v-4"/><path d="M18 12a2 2 0 000 4h4v-4z"/></svg></span><span class="tab-label">Budget</span>
       </div>
+      <div class="tab" data-tab="networth" data-priority="secondary" onclick="showTab('networth',this)">
+        <span class="tab-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></span><span class="tab-label">Net Worth</span>
+      </div>
       <div class="tab" data-tab="history" data-priority="secondary" onclick="showTab('history',this)">
         <span class="tab-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></span><span class="tab-label">History</span>
       </div>
@@ -2311,7 +2315,7 @@ footer .footer-links a:hover{color:var(--pri-d)}
     </div>
 
     <!-- Net Worth mini card (shown when NW items exist) -->
-    <div class="nw-dash" id="dashNwCard" onclick="showTab('goals',document.querySelector('[data-tab=goals]'))" title="View full Net Worth details" style="display:none">
+    <div class="nw-dash" id="dashNwCard" onclick="showTab('networth',document.querySelector('[data-tab=networth]'))" title="View full Net Worth details" style="display:none">
       <div>
         <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--txt2);margin-bottom:3px">NET WORTH</div>
         <div class="nw-dash-val" id="dashNwVal">—</div>
@@ -2319,7 +2323,7 @@ footer .footer-links a:hover{color:var(--pri-d)}
       </div>
       <div style="text-align:right;flex-shrink:0">
         <div style="font-size:10px;color:var(--txt2);margin-bottom:4px" id="dashNwBreakdown"></div>
-        <button onclick="showTab('goals',document.querySelector('[data-tab=goals]'))" style="font-size:10px;color:var(--pri-d);font-weight:700;background:none;border:none;cursor:pointer;padding:0;font-family:inherit">View details →</button>
+        <button onclick="showTab('networth',document.querySelector('[data-tab=networth]'))" style="font-size:10px;color:var(--pri-d);font-weight:700;background:none;border:none;cursor:pointer;padding:0;font-family:inherit">View details →</button>
       </div>
     </div>
 
@@ -2823,41 +2827,82 @@ footer .footer-links a:hover{color:var(--pri-d)}
     </div>
   </div>
 
-  <!-- ─── NET WORTH accordion ──────────────────────── -->
-  <div class="accordion fin-accordion" onclick="toggleFinAccordion(this)">
-    <div class="accordion-header" style="padding:14px 16px">
-      <div class="acc-left">
-        <div class="acc-icon" style="background:var(--bg)">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--txt)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
-        </div>
-        <div>
-          <div style="font-size:13px;font-weight:800;color:var(--txt)">Net Worth</div>
-          <div style="font-size:10.5px;color:var(--txt2)" id="nwAccSummary">Assets minus Liabilities</div>
-        </div>
-      </div>
-      <div style="display:flex;align-items:center;gap:10px">
-        <span id="nwTotal" style="font-size:13px;font-weight:800;font-family:'SF Mono',monospace">—</span>
-        <svg class="accordion-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-      </div>
-    </div>
-    <div class="accordion-body">
-      <div class="accordion-content" style="padding:0 16px 16px">
-        <div id="nwTrend" style="margin-bottom:10px;font-size:12px"></div>
-        <div class="nw-section-label">Assets</div>
-        <div id="nwAssetsList"></div>
-        <button onclick="event.stopPropagation();addNwItem('asset')" style="width:100%;padding:8px;border:1.5px dashed var(--brd);border-radius:10px;background:transparent;color:var(--txt2);font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;margin-bottom:14px;transition:.15s" onmouseover="this.style.borderColor='var(--suc)';this.style.color='var(--suc)'" onmouseout="this.style.borderColor='var(--brd)';this.style.color='var(--txt2)'">+ Add Asset</button>
-        <div class="nw-section-label">Liabilities</div>
-        <div style="display:flex;align-items:flex-start;gap:7px;padding:8px 10px;background:var(--bg);border-radius:8px;border:1px solid var(--brd);margin-bottom:8px">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--txt2)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:1px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-          <span style="font-size:11px;color:var(--txt2);line-height:1.5"><strong style="color:var(--txt)">Tip:</strong> Paying off liabilities increases your net worth and can be tracked via your monthly Savings goals.</span>
-        </div>
-        <div id="nwLiabilitiesList"></div>
-        <button onclick="event.stopPropagation();addNwItem('liability')" style="width:100%;padding:8px;border:1.5px dashed var(--brd);border-radius:10px;background:transparent;color:var(--txt2);font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;transition:.15s" onmouseover="this.style.borderColor='var(--dan)';this.style.color='var(--dan)'" onmouseout="this.style.borderColor='var(--brd)';this.style.color='var(--txt2)'">+ Add Liability</button>
-      </div>
-    </div>
-  </div>
-
 </div>
+
+  <!-- ─────────────────────────────────────── -->
+  <!-- NET WORTH PANEL                         -->
+  <!-- ─────────────────────────────────────── -->
+  <div id="tab-networth" class="panel">
+
+    <!-- NW Header Card -->
+    <div class="card" style="margin-bottom:10px;text-align:center;padding:22px 18px 18px">
+      <div style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:1.4px;color:var(--txt2);margin-bottom:6px">Your Net Worth</div>
+      <div id="nwTotal" style="font-size:clamp(26px,5vw,34px);font-weight:900;font-family:'SF Mono',monospace;letter-spacing:-1px;color:var(--suc);line-height:1.2">—</div>
+      <div id="nwAccSummary" style="font-size:11px;color:var(--txt2);margin-top:4px">Assets minus Liabilities</div>
+      <div id="nwTrend" style="margin-top:6px;font-size:12px"></div>
+    </div>
+
+    <!-- Tip Banner -->
+    <div style="display:flex;align-items:flex-start;gap:8px;padding:10px 12px;background:var(--pri-l);border-radius:10px;border:1px solid var(--brd);margin-bottom:14px">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--pri-d)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:1px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+      <span style="font-size:11.5px;color:var(--pri-d);line-height:1.55"><strong>Track everything you own and owe.</strong> Your net worth updates automatically as you add assets, pay down debts, and hit savings goals.</span>
+    </div>
+
+    <!-- Assets Section -->
+    <div class="accordion fin-accordion" onclick="toggleFinAccordion(this)" style="margin-bottom:10px">
+      <div class="accordion-header" style="padding:14px 16px">
+        <div class="acc-left">
+          <div class="acc-icon" style="background:var(--suc-l)">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--suc)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+          </div>
+          <div>
+            <div style="font-size:13px;font-weight:800;color:var(--txt)">Assets</div>
+            <div style="font-size:10.5px;color:var(--txt2)" id="nwAssetsAccLabel">What you own</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <span id="nwAssetsTotal" style="font-size:13px;font-weight:800;color:var(--suc);font-family:'SF Mono',monospace">—</span>
+          <svg class="accordion-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+      </div>
+      <div class="accordion-body">
+        <div class="accordion-content" style="padding:0 16px 16px">
+          <div id="nwAssetsList"></div>
+          <button onclick="event.stopPropagation();addNwItem('asset')" style="width:100%;padding:8px;border:1.5px dashed var(--brd);border-radius:10px;background:transparent;color:var(--txt2);font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;transition:.15s;margin-top:4px" onmouseover="this.style.borderColor='var(--suc)';this.style.color='var(--suc)'" onmouseout="this.style.borderColor='var(--brd)';this.style.color='var(--txt2)'">+ Add Asset</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Liabilities Section -->
+    <div class="accordion fin-accordion" onclick="toggleFinAccordion(this)">
+      <div class="accordion-header" style="padding:14px 16px">
+        <div class="acc-left">
+          <div class="acc-icon" style="background:var(--dan-l)">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--dan)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 18 13.5 8.5 8.5 13.5 1 6"/><polyline points="17 18 23 18 23 12"/></svg>
+          </div>
+          <div>
+            <div style="font-size:13px;font-weight:800;color:var(--txt)">Liabilities</div>
+            <div style="font-size:10.5px;color:var(--txt2)" id="nwLiabAccLabel">What you owe</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <span id="nwLiabTotal" style="font-size:13px;font-weight:800;color:var(--dan);font-family:'SF Mono',monospace">—</span>
+          <svg class="accordion-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+      </div>
+      <div class="accordion-body">
+        <div class="accordion-content" style="padding:0 16px 16px">
+          <div style="display:flex;align-items:flex-start;gap:7px;padding:8px 10px;background:var(--bg);border-radius:8px;border:1px solid var(--brd);margin-bottom:8px">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--txt2)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:1px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            <span style="font-size:11px;color:var(--txt2);line-height:1.5"><strong style="color:var(--txt)">Tip:</strong> Paying off liabilities increases your net worth and can be tracked via your monthly Savings goals.</span>
+          </div>
+          <div id="nwLiabilitiesList"></div>
+          <button onclick="event.stopPropagation();addNwItem('liability')" style="width:100%;padding:8px;border:1.5px dashed var(--brd);border-radius:10px;background:transparent;color:var(--txt2);font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;transition:.15s;margin-top:4px" onmouseover="this.style.borderColor='var(--dan)';this.style.color='var(--dan)'" onmouseout="this.style.borderColor='var(--brd)';this.style.color='var(--txt2)'">+ Add Liability</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
 
   <div id="tab-notes" class="panel">
 
@@ -5428,6 +5473,18 @@ function renderNetWorth() {
     nwSummary.textContent = fmt(totalAssets) + " assets · " + fmt(totalLiab) + " liabilities";
   }
 
+  // Assets accordion header totals
+  const nwAssetsTotalEl = document.getElementById("nwAssetsTotal");
+  if (nwAssetsTotalEl) nwAssetsTotalEl.textContent = fmt(totalAssets);
+  const nwAssetsLabel = document.getElementById("nwAssetsAccLabel");
+  if (nwAssetsLabel) nwAssetsLabel.textContent = assets.length + (assets.length === 1 ? " item" : " items");
+
+  // Liabilities accordion header totals
+  const nwLiabTotalEl = document.getElementById("nwLiabTotal");
+  if (nwLiabTotalEl) nwLiabTotalEl.textContent = fmt(totalLiab);
+  const nwLiabLabel = document.getElementById("nwLiabAccLabel");
+  if (nwLiabLabel) nwLiabLabel.textContent = liabilities.length + (liabilities.length === 1 ? " item" : " items");
+
   // Trend vs last snapshot
   const trendEl = document.getElementById("nwTrend");
   if (trendEl) {
@@ -5596,7 +5653,8 @@ function showTab(id, el) {
   const tabEl = el || document.querySelector('[data-tab="' + id + '"]');
   if (tabEl) tabEl.classList.add("active");
   if (id === "history")  { renderHistory(); renderMonthChart(); }
-  if (id === "goals")    { _migrateNwItems(); _migrateIncomeSources(); _migrateGoals(); renderNetWorth(); renderIncomeSourcesList(); _renderDashNetWorth(); renderFinanceOverview(); }
+  if (id === "goals")    { _migrateNwItems(); _migrateIncomeSources(); _migrateGoals(); renderIncomeSourcesList(); _renderDashNetWorth(); renderFinanceOverview(); }
+  if (id === "networth") { renderNetWorth(); }
   if (id === "dashboard") updateDashboard();
   if (id === "expenses") { renderRecent(); renderBills(); _checkBillAlerts(); }
   if (id === "goals") renderGoals();
