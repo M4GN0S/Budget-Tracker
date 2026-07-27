@@ -494,8 +494,6 @@ input[type="number"]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0
 .stat.savings-eff .eff-bar-fill{height:100%;background:rgba(255,255,255,.85);border-radius:99px;transition:width .6s cubic-bezier(.4,0,.2,1)}
 .stat.savings-eff .stat-corner-add{color:var(--pri-d);background:rgba(255,255,255,.9)}
 .stat.savings-eff .fin-tooltip-icon{color:var(--pri-d);background:rgba(255,255,255,.9)}
-/* Health message inside savings-eff card */
-.eff-health{font-size:11px;color:#fff;background:rgba(255,255,255,.15);border-radius:8px;padding:6px 8px;margin-top:6px;line-height:1.4}
 
 .stat .sub{font-size:11px;color:var(--txt2);line-height:1.4}
 
@@ -2395,14 +2393,13 @@ footer .footer-links a:hover{color:var(--pri-d)}
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
         </button>
       </div>
-      <!-- Savings Efficiency card (includes health message) -->
+      <!-- Savings Efficiency card -->
       <div class="stat savings-eff" id="savingsEffCard">
         <div class="stat-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg></div>
         <div class="lbl">Savings Efficiency</div>
         <div class="amt" id="savingsEffPct">0%</div>
         <div class="sub" id="savingsEffSub">Of income remaining</div>
         <div class="eff-bar"><div class="eff-bar-fill" id="savingsEffBar" style="width:0%"></div></div>
-        <div class="eff-health" id="effHealthMsg" style="display:none"></div>
       </div>
     </div>
 
@@ -6640,9 +6637,6 @@ function updateDashboard() {
   if (effSubEl) effSubEl.textContent = income > 0 ? "Of income remaining" : "Set income first";
   if (effBarEl) effBarEl.style.width = Math.min(savingsEffPct, 100) + "%";
 
-  // ── Financial Health (inside savings-eff card) ──
-  renderFinancialHealth(savingsEffPct, income, needsSpent, wantsSpent, savingsSpent, needsBudget, wantsBudget, savingsBudget);
-
   // Progress bars
   updateProgress("needs",   needsSpent,   needsBudget,   "n");
   updateProgress("wants",   wantsSpent,   wantsBudget,   "w");
@@ -6667,27 +6661,6 @@ function updateDashboard() {
 }
 
 // ── Financial Health (inside savings-eff card) ──
-function renderFinancialHealth(effPct, income, nSpent, wSpent, sSpent, nBudget, wBudget, sBudget) {
-  const healthEl = document.getElementById("effHealthMsg");
-  if (!healthEl) return;
-
-  if (income <= 0) { healthEl.style.display = "none"; return; }
-
-  let msg;
-  if (effPct >= 40) {
-    msg = "Spectacular! You saved " + Math.round(effPct) + "% of income. Investing this surplus in index funds or an emergency deposit is a smart move.";
-  } else if (effPct >= 20) {
-    msg = "Solid standing! Your " + Math.round(effPct) + "% savings rate is healthy. Keep building your emergency fund.";
-  } else if (effPct >= 10) {
-    msg = "Room to grow. You saved " + Math.round(effPct) + "% of income. Try trimming wants by 5–10%.";
-  } else {
-    msg = "Needs attention. Only " + Math.round(effPct) + "% of income left. Review your spending — small cuts to wants make a big difference.";
-  }
-
-  healthEl.style.display = "block";
-  healthEl.textContent = msg;
-}
-
 function updateProgress(name, spent, budget, cls) {
   const pct = budget > 0 ? Math.min((spent / budget) * 100, 100) : 0;
   const bar  = document.getElementById(name + "Bar");
@@ -8160,7 +8133,7 @@ function renderInsights() {
   const iconBtn   = document.getElementById("insightsIconBtn");
   const iconBadge = document.getElementById("insightsIconBadge");
   if (!list) return;
-  if (data.expenses.length < 3) {
+  if (data.expenses.length < 1) {
     if (iconBtn) iconBtn.style.display = "none";
     return;
   }
@@ -8188,6 +8161,29 @@ function renderInsights() {
       title: fmt(Math.abs(remaining)) + (remaining >= 0 ? " remaining" : " over budget"),
       body: daysLeft > 0 ? "That's about " + fmt(perDay) + "/day for the next " + daysLeft + " days." : "Last day of the month!"
     });
+  }
+
+  // Savings rate / financial health
+  if (income > 0) {
+    const effPct = Math.max(0, Math.round(remaining / income * 100));
+    const svgSpark = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg>';
+    if (effPct >= 40) {
+      insights.push({ id:"health_great", icon: svgSpark, cls: "up",
+        title: "Spectacular Financial Health!",
+        body: "You saved " + effPct + "% of your income. Investing this surplus in index funds or an emergency deposit is a smart move." });
+    } else if (effPct >= 20) {
+      insights.push({ id:"health_good", icon: svgSpark, cls: "up",
+        title: "Solid Financial Standing",
+        body: "Your savings rate of " + effPct + "% is healthy. Keep building your emergency fund." });
+    } else if (effPct >= 10) {
+      insights.push({ id:"health_warn", icon: svgSpark, cls: "info",
+        title: "Room to Grow",
+        body: "You saved " + effPct + "% of income. Try trimming wants by 5–10% to boost your savings rate." });
+    } else if (effPct > 0) {
+      insights.push({ id:"health_risk", icon: svgSpark, cls: "down",
+        title: "Needs Attention",
+        body: "Only " + effPct + "% of income is left. Review your spending — even small cuts to wants can make a big difference." });
+    }
   }
 
   // Needs/Wants/Savings vs budget
