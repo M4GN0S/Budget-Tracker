@@ -10377,18 +10377,9 @@ function _selectPlaceholderAtCursor(ta) {
     return;
   }
   const { itemStart, itemEnd, priceStart, priceEnd } = _checklistRanges(m, lineStart);
-  if (pos >= itemStart && pos <= itemEnd && _PLACEHOLDER_NAME_RE.test(m[2].trim())) {
-    // Item name placeholder — select it so user can just start typing
-    _setInputMode(ta, "text");
-    ta.setSelectionRange(itemStart, itemEnd);
-  } else if (pos >= priceStart && pos <= priceEnd) {
-    // Price zone — switch to decimal keyboard, select the number
+  if (pos >= priceStart && pos <= priceEnd) {
+    // Price zone — switch to decimal keyboard
     _setInputMode(ta, "decimal");
-    if (!ta._selectingPrice) {
-      ta._selectingPrice = true;
-      ta.setSelectionRange(priceStart, priceEnd);
-      setTimeout(() => { ta._selectingPrice = false; }, 400);
-    }
   } else {
     _setInputMode(ta, "text");
   }
