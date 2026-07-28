@@ -990,16 +990,16 @@ tbody tr:hover td{background:var(--pri-l)}
 .note-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);backdrop-filter:blur(4px);z-index:1000;display:none;align-items:flex-start;justify-content:center;padding:24px 16px;overflow-y:auto}
 .note-overlay.show{display:flex}
 .note-modal{background:var(--card);border-radius:20px;max-width:560px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.25);animation:modalIn .3s cubic-bezier(.4,0,.2,1);margin:auto;display:flex;flex-direction:column;max-height:90vh}
-.note-modal.fullview .note-modal-head{display:none}
-.note-modal.fullview .note-modal-title{display:none}
-.note-modal.fullview .note-modal-date{display:none}
-.note-modal.fullview .note-tldr{display:none}
-.note-modal.fullview .note-mood{display:none}
-.note-modal.fullview .note-related{display:none}
-.note-modal.fullview .note-modal-body{padding:16px 24px}
-.note-modal.fullview{max-width:100%;max-height:100vh;border-radius:0;height:100vh}
-.note-modal.fullview .note-modal-body{max-height:none}
-.note-overlay.fullview{padding:0}
+.note-modal.fullview .note-modal-head{display:none!important}
+.note-modal.fullview .note-modal-title{display:none!important}
+.note-modal.fullview .note-modal-date{display:none!important}
+.note-modal.fullview .note-tldr{display:none!important}
+.note-modal.fullview .note-mood{display:none!important}
+.note-modal.fullview .note-related{display:none!important}
+.note-modal.fullview .note-modal-body{padding:16px 24px!important}
+.note-modal.fullview{max-width:100%!important;max-height:100vh!important;border-radius:0!important;height:100vh!important}
+.note-modal.fullview .note-modal-body{max-height:none!important}
+.note-overlay.fullview{padding:0!important}
 .note-modal-head{padding:22px 24px 0;display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
 .note-modal-head .nm-meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .note-modal-head .close-modal{flex-shrink:0;background:var(--bg);color:var(--txt2);width:32px;height:32px;border-radius:8px;font-size:16px;display:flex;align-items:center;justify-content:center;transition:.2s;cursor:pointer;border:none}
