@@ -11760,8 +11760,8 @@ function formatNoteBody(text, noteId) {
 
   // Parse price from a checklist item text: "cake — $ 0.00" → {desc:"cake", amt:"0.00"}
   function splitCheckItem(raw) {
-    // Strip amount: "— $ 0.00" or "— ₱300" etc. (with optional "x2" qty suffix)
-    const amtM = raw.match(/^(.*?)\s*[-\u2013\u2014]+\s*[^\d\s]*(\d[\d,]*(?:\.\d{1,2})?)(?:\s*[x×]\d+(?:\.\d+)?)?\s*$/i);
+    // Strip amount: "— $ 0.00" or "— ₱ 300" etc. (with optional "x2" qty suffix)
+    const amtM = raw.match(/^(.*?)\s*[-\u2013\u2014]+\s*[^\d\s]*\s*(\d[\d,]*(?:\.\d{1,2})?)(?:\s*[x×]\d+(?:\.\d+)?)?\s*$/i);
     if (amtM) {
       const amt = amtM[2].replace(/,/g,"");
       const desc = amtM[1].trim();
