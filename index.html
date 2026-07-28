@@ -11664,7 +11664,7 @@ function updateNoteItemPrice(noteId, itemIndex, newVal, tableId) {
   for (let i = 0; i < lines.length; i++) {
     if (/^\s*\[[ xX]\]\s/i.test(lines[i])) {
       if (checkCount === itemIndex) {
-        const stripped = lines[i].replace(/\s*[-\u2013\u2014]+\s*[^\d\s]*\d[\d,.]*\s*$/, "").trimEnd();
+        const stripped = lines[i].replace(/\s*[-\u2013\u2014]+\s*[^\d\s]*\s*\d[\d,.]*\s*$/, "").trimEnd();
         lines[i] = stripped + " — " + sym + parsed.toFixed(2);
         break;
       }
@@ -11695,7 +11695,7 @@ function updateNoteItemQty(noteId, itemIndex, newQty, tableId) {
         const prefix  = prefixM ? prefixM[1] : "[ ] ";
         let rest = lines[i].slice(prefix.length);
         // Strip amount first
-        const amtM = rest.match(/^(.*?)\s*[-\u2013\u2014]+\s*[^\d\s]*\d[\d,.]*\s*$/);
+        const amtM = rest.match(/^(.*?)\s*[-\u2013\u2014]+\s*[^\d\s]*\s*\d[\d,.]*\s*$/);
         let amtSuffix = "";
         if (amtM) { amtSuffix = rest.slice(amtM[1].length); rest = amtM[1].trim(); }
         // Strip old qty
