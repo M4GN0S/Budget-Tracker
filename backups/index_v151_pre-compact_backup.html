@@ -459,20 +459,6 @@ input[type="number"]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0
 
 /* ─── Stats Grid ─── */
 .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px}
-@media(min-width:768px){
-  .budget-grid{grid-template-columns:1fr 1fr !important}
-}
-@media(max-width:767px){
-  .budget-grid{grid-template-columns:1fr !important}
-  .spending-grid{grid-template-columns:1fr !important}
-  .spending-grid > div:first-child{margin:0 auto 12px}
-  .fin-accordion .accordion-header{padding:10px 12px !important}
-  .fin-accordion .accordion-content{padding:0 12px 12px !important}
-  .fin-card{padding:10px 12px !important}
-  .card{padding:12px !important}
-  .stat{padding:14px 12px !important}
-}
-
 .stat{
   background:var(--card);border-radius:var(--rad);
   padding:20px 18px;box-shadow:var(--sh);
@@ -1109,17 +1095,9 @@ tbody tr:hover td{background:var(--pri-l)}
 .note-dup-warn .dup-btn-pri{background:var(--acc);color:var(--card);border-color:var(--acc)}
 .note-dup-warn .dup-btn-pri:hover{filter:brightness(1.06)}
 /* Auto-summary TL;DR banner (inside journal modal) */
-.note-tldr{margin:2px 24px 6px;padding:11px 14px;background:var(--acc-l);border:1px solid var(--acc);border-left:3px solid var(--acc);border-radius:10px;display:flex;flex-direction:column;gap:5px;position:relative}
+.note-tldr{margin:2px 24px 6px;padding:11px 14px;background:var(--acc-l);border:1px solid var(--acc);border-left:3px solid var(--acc);border-radius:10px;display:flex;flex-direction:column;gap:5px}
 .note-tldr .tldr-label{font-size:10px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;color:var(--acc);display:flex;align-items:center;gap:6px}
 .note-tldr .tldr-text{font-size:13.5px;line-height:1.5;color:var(--txt);font-style:italic}
-.note-tldr .tldr-collapse{position:absolute;top:8px;right:8px;background:none;border:none;color:var(--acc);cursor:pointer;padding:4px;border-radius:4px;display:flex;align-items:center;justify-content:center;transition:.15s}
-.note-tldr .tldr-collapse:hover{background:var(--acc);color:#fff}
-.note-tldr .tldr-collapse .chev-down{display:block}
-.note-tldr .tldr-collapse .chev-up{display:none}
-.note-tldr.collapsed .tldr-text{display:none}
-.note-tldr.collapsed{padding-bottom:8px}
-.note-tldr.collapsed .tldr-collapse .chev-down{display:none}
-.note-tldr.collapsed .tldr-collapse .chev-up{display:block}
 /* Supportive sentiment nudge (inside journal modal) */
 .note-mood{margin:10px 24px 4px;padding:14px 16px;background:linear-gradient(135deg,var(--pri-l,rgba(126,154,142,.12)),rgba(126,154,142,.06));border:1px solid color-mix(in srgb, var(--pri) 35%, var(--brd));border-left:3px solid var(--pri);border-radius:12px}
 .note-mood .mood-head{display:flex;align-items:center;gap:7px;font-size:11px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;color:var(--pri);margin-bottom:7px}
@@ -1182,7 +1160,7 @@ tbody tr:hover td{background:var(--pri-l)}
 .count-prompt-val{min-width:40px;text-align:center;font-size:22px;font-weight:900;color:var(--txt)}
 .count-prompt-sub{font-size:11px;color:var(--txt2);text-align:center;margin-bottom:14px}
 /* Related notes (inside journal modal) */
-.note-related{padding:14px 24px 4px;border-top:1px solid var(--brd);margin-top:6px;position:relative}
+.note-related{padding:14px 24px 4px;border-top:1px solid var(--brd);margin-top:6px}
 .note-related-label{font-size:10px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;color:var(--txt2);margin-bottom:10px;display:flex;align-items:center;gap:6px}
 .note-related-item{display:flex;align-items:center;gap:10px;padding:9px 11px;border:1px solid var(--brd);border-radius:10px;margin-bottom:7px;cursor:pointer;transition:.15s;background:var(--bg)}
 .note-related-item:hover{border-color:var(--pri);box-shadow:var(--sh)}
@@ -1196,14 +1174,6 @@ tbody tr:hover td{background:var(--pri-l)}
 .note-related-item .nri-tag.tip{background:var(--acc-l);color:var(--acc)}
 .note-related-item .nri-chev{flex-shrink:0;color:var(--txt2);opacity:.5;display:flex}
 @media(max-width:600px){.note-related{padding-left:18px;padding-right:18px}}
-.note-related .rel-collapse{position:absolute;top:10px;right:16px;background:none;border:none;color:var(--txt2);cursor:pointer;padding:4px;border-radius:4px;display:flex;align-items:center;justify-content:center;transition:.15s}
-.note-related .rel-collapse:hover{background:var(--bg);color:var(--txt)}
-.note-related .rel-collapse .chev-down{display:block}
-.note-related .rel-collapse .chev-up{display:none}
-.note-related.collapsed .note-related-item{display:none}
-.note-related.collapsed{padding-bottom:8px}
-.note-related.collapsed .rel-collapse .chev-down{display:none}
-.note-related.collapsed .rel-collapse .chev-up{display:block}
 .tag-filters{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:12px}
 .tag-filter{padding:4px 12px;border-radius:16px;font-size:11px;font-weight:600;background:var(--bg);color:var(--txt2);border:1.5px solid var(--brd);cursor:pointer;transition:.2s}
 .tag-filter:hover,.tag-filter.active{background:var(--pri-l);color:var(--pri-d);border-color:var(--pri)}
@@ -2164,21 +2134,8 @@ footer .footer-links a:hover{color:var(--pri-d)}
   font-size: 12px; font-weight: 700; text-align: right;
   outline: none; font-family: "SF Mono", Consolas, monospace;
   transition: border-color .15s;
-  -webkit-user-select: text;
-  user-select: text;
 }
 .nb-price-input:focus { border-color: var(--pri); }
-.nb-qty-input {
-  width: 36px; padding: 3px 4px;
-  border: 1px solid var(--brd); border-radius: 6px;
-  background: var(--input-bg); color: var(--txt);
-  font-size: 12px; font-weight: 700; text-align: center;
-  outline: none; font-family: "SF Mono", Consolas, monospace;
-  transition: border-color .15s;
-  -webkit-user-select: text;
-  user-select: text;
-}
-.nb-qty-input:focus { border-color: var(--pri); }
 .nb-line-total { font-size: 11px; color: var(--txt2); font-family: "SF Mono", Consolas, monospace; }
 /* Total row */
 .nb-cl-total-row {
@@ -2686,7 +2643,7 @@ footer .footer-links a:hover{color:var(--pri-d)}
         </div>
         <div class="fg">
           <label>&nbsp;</label>
-          <button class="btn btn-pri" onclick="addBill()">Add Bill</button>
+          <button class="btn btn-pri" onclick="addBill()">+ Add</button>
         </div>
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:8px">
@@ -2793,259 +2750,192 @@ footer .footer-links a:hover{color:var(--pri-d)}
   <!-- ─────────────────────────────────────── -->
   <div id="tab-goals" class="panel">
 
-  <!-- ── 2-COLUMN LAYOUT ─── -->
-  <div class="budget-grid" style="display:grid;gap:10px">
+  <!-- ─── BUDGET OVERVIEW (compact card) ─── -->
+  <div class="card" style="margin-bottom:10px;padding:14px 16px">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;gap:8px">
+      <h3 style="margin:0;font-size:13px"><span class="icon-wrap"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></span> Budget Overview</h3>
+      <span id="financeMonthLabel" style="font-size:10px;color:var(--txt2);font-weight:600;white-space:nowrap;flex-shrink:0"></span>
+    </div>
+    <div class="fin-income-row">
+      <span class="fin-income-label">Monthly Income</span>
+      <span id="financeIncomeTotal" class="fin-income-total">—</span>
+    </div>
+    <div id="financeSplitBar" style="display:flex;height:8px;border-radius:99px;overflow:hidden;gap:2px;margin-bottom:8px">
+      <div id="fsNeeds"   style="background:var(--pri);border-radius:99px;transition:width .4s ease;width:0%"></div>
+      <div id="fsWants"   style="background:var(--acc);border-radius:99px;transition:width .4s ease;width:0%"></div>
+      <div id="fsSavings" style="background:var(--suc);border-radius:99px;transition:width .4s ease;width:0%"></div>
+      <div id="fsUnused"  style="background:var(--brd);border-radius:99px;transition:width .4s ease;width:100%"></div>
+    </div>
+    <div id="financeCatRows" style="display:flex;flex-direction:column;gap:6px"></div>
+    <div id="financeUnallocated" style="display:none"></div>
+    <div id="financeWindfallRow" style="display:none"></div>
+    <div id="financeSummaryBox" class="fin-summary-box" style="display:none"></div>
+  </div>
 
-    <!-- ROW 1: Budget Overview + Where is my money going? (side by side) -->
-    <!-- ── BUDGET OVERVIEW (ULTRA COMPACT) ─── -->
-      <div class="card" style="padding:12px 14px">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
-          <h3 style="margin:0;font-size:12px;font-weight:800"><span class="icon-wrap"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></span> Budget Overview</h3>
-          <span id="financeMonthLabel" style="font-size:9px;color:var(--txt2);font-weight:600"></span>
-        </div>
-        <div class="fin-income-row" style="margin-bottom:6px">
-          <span class="fin-income-label" style="font-size:10px">Income</span>
-          <span id="financeIncomeTotal" class="fin-income-total" style="font-size:13px">—</span>
-        </div>
-        <div id="financeSplitBar" style="display:flex;height:6px;border-radius:99px;overflow:hidden;gap:1px;margin-bottom:6px">
-          <div id="fsNeeds"   style="background:var(--pri);border-radius:99px;transition:width .4s ease;width:0%"></div>
-          <div id="fsWants"   style="background:var(--acc);border-radius:99px;transition:width .4s ease;width:0%"></div>
-          <div id="fsSavings" style="background:var(--suc);border-radius:99px;transition:width .4s ease;width:0%"></div>
-          <div id="fsUnused"  style="background:var(--brd);border-radius:99px;transition:width .4s ease;width:100%"></div>
-        </div>
-        <div id="financeCatRows" style="display:flex;flex-direction:column;gap:4px"></div>
-        <div id="financeUnallocated" style="display:none"></div>
-        <div id="financeWindfallRow" style="display:none"></div>
-        <div id="financeSummaryBox" class="fin-summary-box" style="display:none"></div>
+  <!-- ─── WHERE IS MY MONEY GOING? ─── -->
+  <div class="card" style="margin-bottom:10px">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px">
+      <div>
+        <h3 style="margin:0;font-size:14px;font-weight:800;color:var(--txt);display:flex;align-items:center;gap:8px">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--pri-d)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg>
+          Where is my money going?
+        </h3>
+        <div style="font-size:11px;color:var(--txt2);margin-top:2px">Interactive visual distribution of your expenses</div>
       </div>
+      <button onclick="showTab('data',document.querySelector('[data-tab=data]'))" style="font-size:11px;font-weight:700;color:var(--pri-d);background:none;border:none;cursor:pointer;padding:4px 8px;font-family:inherit;border-radius:6px;transition:.15s" onmouseover="this.style.background='var(--pri-l)'" onmouseout="this.style.background='none'">Set Category Limits →</button>
+    </div>
 
-    <!-- ─── WHERE IS MY MONEY GOING? (COMPACT) ─── -->
-      <div class="card" style="padding:14px">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:6px">
-          <div>
-            <h3 style="margin:0;font-size:13px;font-weight:800;color:var(--txt);display:flex;align-items:center;gap:6px">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--pri-d)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg>
-              Where is my money going?
-            </h3>
-            <div style="font-size:10px;color:var(--txt2);margin-top:1px">Spending distribution</div>
-          </div>
-
-        </div>
-
-        <!-- Health Banner -->
-        <div id="budgetHealthBanner" style="display:none;padding:10px 12px;border-radius:8px;margin-bottom:12px;font-size:11px;line-height:1.4">
-          <div style="display:flex;align-items:flex-start;gap:8px">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:1px"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-            <div>
-              <div id="budgetHealthTitle" style="font-weight:800;margin-bottom:1px"></div>
-              <div id="budgetHealthBody" style="opacity:.85"></div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Donut Chart + Category List (side by side) -->
-        <div class="spending-grid" style="display:grid;grid-template-columns:140px 1fr;gap:16px;align-items:start">
-          <!-- Donut Chart -->
-          <div style="text-align:center">
-            <svg id="spendingDonut" viewBox="0 0 200 200" style="width:140px;height:140px;transform:rotate(-90deg)">
-              <circle cx="100" cy="100" r="70" fill="none" stroke="var(--brd)" stroke-width="24" opacity=".3"/>
-            </svg>
-            <div id="donutCenterLabel" style="font-size:9px;color:var(--txt2);font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-top:8px">Total</div>
-            <div id="donutCenterValue" style="font-size:16px;font-weight:900;color:var(--txt);font-family:'SF Mono',monospace;margin-top:2px">$0</div>
-            <div id="donutCenterSub" style="font-size:9px;color:var(--txt2);margin-top:1px">spent</div>
-          </div>
-
-          <!-- Category List -->
-          <div id="spendingCategoryList" style="display:flex;flex-direction:column;gap:6px;max-height:280px;overflow-y:auto"></div>
-        </div>
-      </div>
-
-    <!-- ROW 2: Net Worth + Accordions (full width) -->
-    <div style="grid-column:1/-1;display:flex;flex-direction:column;gap:10px">
-      <!-- ─── NET WORTH (COMPACT DASHBOARD) ─── -->
-      <div class="card" style="padding:14px;position:relative">
-        <!-- Quick Add Button (top-right corner) -->
-        <button onclick="openNwQuickAdd()" style="position:absolute;top:12px;right:12px;width:32px;height:32px;border-radius:8px;border:1.5px solid var(--brd);background:var(--card);color:var(--txt2);font-size:16px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s" onmouseover="this.style.borderColor='var(--pri)';this.style.color='var(--pri-d)';this.style.background='var(--pri-l)'" onmouseout="this.style.borderColor='var(--brd)';this.style.color='var(--txt2)';this.style.background='var(--card)'" title="Quick Add">+</button>
-        
-        <!-- Main Grid: Left (Net Worth + Trend + Ratio) | Right (Assets/Liab cards) -->
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:start">
-          
-          <!-- LEFT: Net Worth Total + Trend + Ratio -->
-          <div>
-            <div style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--txt2);margin-bottom:4px">Your Net Worth</div>
-            <div id="nwTotal" style="font-size:clamp(22px,4vw,28px);font-weight:900;font-family:'SF Mono',monospace;letter-spacing:-1px;color:var(--suc);line-height:1.1">—</div>
-            <div id="nwTrend" style="margin-top:4px;font-size:10px"></div>
-            <div id="nwMonthlyChange" style="margin-top:3px;font-size:10px;font-weight:700"></div>
-            
-            <!-- Mini Sparkline (last 6 months) -->
-            <svg id="nwSparkline" width="100%" height="32" style="margin-top:6px" preserveAspectRatio="none">
-              <path id="nwSparkPath" fill="none" stroke="var(--pri)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-            
-            <!-- Debt-to-Asset Ratio (compact) -->
-            <div style="margin-top:8px;padding:6px 8px;background:var(--bg);border-radius:6px;display:inline-flex;align-items:baseline;gap:6px">
-              <div>
-                <div style="font-size:8px;font-weight:700;color:var(--txt2);text-transform:uppercase;letter-spacing:.4px">Debt Ratio</div>
-                <div id="nwDebtRatio" style="font-size:14px;font-weight:800;color:var(--txt);font-family:'SF Mono',monospace">0.00</div>
-              </div>
-              <div id="nwDebtRatioBadge" style="font-size:8px;font-weight:700;padding:2px 5px;border-radius:4px;background:var(--suc-l);color:var(--suc)">Healthy</div>
-            </div>
-          </div>
-          
-          <!-- RIGHT: Assets/Liabilities Cards (compact) -->
-          <div style="display:flex;flex-direction:column;gap:6px">
-            <div style="background:var(--suc-l);border-radius:6px;padding:6px 8px">
-              <div style="font-size:8px;font-weight:700;color:var(--suc);text-transform:uppercase;letter-spacing:.4px">Total Assets</div>
-              <div id="nwAssetsQuick" style="font-size:13px;font-weight:800;color:var(--suc);font-family:'SF Mono',monospace">$0</div>
-            </div>
-            <div style="background:var(--dan-l);border-radius:6px;padding:6px 8px">
-              <div style="font-size:8px;font-weight:700;color:var(--dan);text-transform:uppercase;letter-spacing:.4px">Total Liabilities</div>
-              <div id="nwLiabQuick" style="font-size:13px;font-weight:800;color:var(--dan);font-family:'SF Mono',monospace">$0</div>
-            </div>
-          </div>
-        </div>
-        
-        <!-- Assets vs Liabilities Visual Bar (full width, compact) -->
-        <div style="margin-top:12px">
-          <div style="display:flex;justify-content:space-between;font-size:9px;color:var(--txt2);margin-bottom:3px">
-            <span id="nwAssetsCount">0 assets</span>
-            <span id="nwLiabCount">0 liabilities</span>
-          </div>
-          <div style="display:flex;height:6px;border-radius:99px;overflow:hidden;background:var(--bg)">
-            <div id="nwAssetsBar" style="background:var(--suc);transition:width .5s ease;width:50%"></div>
-            <div id="nwLiabBar" style="background:var(--dan);transition:width .5s ease;width:50%"></div>
-          </div>
-          <div style="display:flex;justify-content:space-between;margin-top:4px;font-size:10px;font-weight:700">
-            <span id="nwAssetsTotal2" style="color:var(--suc)">$0</span>
-            <span id="nwLiabTotal2" style="color:var(--dan)">$0</span>
-          </div>
-        </div>
-        
-        <!-- Top 3 Assets/Liabilities Preview -->
-        <div id="nwTopItems" style="margin-top:10px;display:none">
-          <div style="font-size:9px;font-weight:700;color:var(--txt2);text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px">Top Items</div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
-            <div id="nwTopAssets" style="font-size:10px"></div>
-            <div id="nwTopLiabilities" style="font-size:10px"></div>
-          </div>
-        </div>
-        
-        <!-- Milestone Badges -->
-        <div id="nwMilestones" style="margin-top:10px;display:none">
-          <div style="font-size:9px;font-weight:700;color:var(--txt2);text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px">Milestones</div>
-          <div id="nwMilestoneBadges" style="display:flex;flex-wrap:wrap;gap:4px"></div>
-        </div>
-        
-        <div id="nwAccSummary" style="font-size:10px;color:var(--txt2);margin-top:6px;text-align:center;display:none">Assets minus Liabilities</div>
-      </div>
-
-      <!-- ─── INCOME SOURCES (COMPACT ACCORDION) ─── -->
-      <div class="accordion fin-accordion" id="incomeSrcAnchor" onclick="toggleFinAccordion(this)">
-        <div class="accordion-header" style="padding:12px 14px">
-          <div class="acc-left">
-            <div class="acc-icon" style="background:var(--suc-l)">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--suc)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
-            </div>
-            <div>
-              <div style="font-size:12px;font-weight:800;color:var(--txt)">Income Sources</div>
-              <div style="font-size:9.5px;color:var(--txt2)">Monthly recurring income</div>
-            </div>
-          </div>
-          <div style="display:flex;align-items:center;gap:8px">
-            <span id="incomeSourcesTotalLabel" style="font-size:12px;font-weight:800;color:var(--suc);font-family:'SF Mono',monospace">—</span>
-            <svg class="accordion-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-          </div>
-        </div>
-        <div class="accordion-body">
-          <div class="accordion-content" style="padding:0 14px 14px">
-            <p style="font-size:11px;color:var(--txt2);margin-bottom:8px">Add every income stream — salary, freelance, side income.</p>
-            <div id="incomeSourcesList"></div>
-            <button onclick="event.stopPropagation();addIncomeSource()" style="width:100%;padding:7px;border:1.5px dashed var(--brd);border-radius:8px;background:transparent;color:var(--txt2);font-size:11px;font-weight:600;cursor:pointer;font-family:inherit;transition:.15s;margin-top:3px" onmouseover="this.style.borderColor='var(--suc)';this.style.color='var(--suc)'" onmouseout="this.style.borderColor='var(--brd)';this.style.color='var(--txt2)'">Add Income Source</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- ─── SAVINGS GOALS (COMPACT ACCORDION) ── -->
-      <div class="accordion fin-accordion" onclick="toggleFinAccordion(this)">
-        <div class="accordion-header" style="padding:12px 14px">
-          <div class="acc-left">
-            <div class="acc-icon" style="background:var(--pri-l)">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--pri-d)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
-            </div>
-            <div>
-              <div style="font-size:12px;font-weight:800;color:var(--txt)">Savings Goals</div>
-              <div style="font-size:9.5px;color:var(--txt2)" id="goalsAccSummary">No goals yet</div>
-            </div>
-          </div>
-          <div style="display:flex;align-items:center;gap:8px">
-            <span id="goalsAccTotal" style="font-size:12px;font-weight:800;color:var(--pri-d);font-family:'SF Mono',monospace"></span>
-            <svg class="accordion-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-          </div>
-        </div>
-        <div class="accordion-body">
-          <div class="accordion-content" style="padding:0 14px 14px">
-            <div id="goalsList"></div>
-            <button onclick="event.stopPropagation();openGoalModal()" style="width:100%;padding:7px;border:1.5px dashed var(--brd);border-radius:8px;background:transparent;color:var(--txt2);font-size:11px;font-weight:600;cursor:pointer;font-family:inherit;transition:.15s;margin-top:3px" onmouseover="this.style.borderColor='var(--pri)';this.style.color='var(--pri-d)'" onmouseout="this.style.borderColor='var(--brd)';this.style.color='var(--txt2)'">Add Goal</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- ─── ASSETS (COMPACT ACCORDION) ─── -->
-      <div class="accordion fin-accordion" onclick="toggleFinAccordion(this)">
-        <div class="accordion-header" style="padding:12px 14px">
-          <div class="acc-left">
-            <div class="acc-icon" style="background:var(--suc-l)">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--suc)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
-            </div>
-            <div>
-              <div style="font-size:12px;font-weight:800;color:var(--txt)">Assets</div>
-              <div style="font-size:9.5px;color:var(--txt2)" id="nwAssetsAccLabel">What you own</div>
-            </div>
-          </div>
-          <div style="display:flex;align-items:center;gap:8px">
-            <span id="nwAssetsTotal" style="font-size:12px;font-weight:800;color:var(--suc);font-family:'SF Mono',monospace">—</span>
-            <svg class="accordion-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-          </div>
-        </div>
-        <div class="accordion-body">
-          <div class="accordion-content" style="padding:0 14px 14px">
-            <div id="nwAssetsList"></div>
-            <button onclick="event.stopPropagation();addNwItem('asset')" style="width:100%;padding:7px;border:1.5px dashed var(--brd);border-radius:8px;background:transparent;color:var(--txt2);font-size:11px;font-weight:600;cursor:pointer;font-family:inherit;transition:.15s;margin-top:3px" onmouseover="this.style.borderColor='var(--suc)';this.style.color='var(--suc)'" onmouseout="this.style.borderColor='var(--brd)';this.style.color='var(--txt2)'">Add Asset</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- ─── LIABILITIES (COMPACT ACCORDION) ─── -->
-      <div class="accordion fin-accordion" onclick="toggleFinAccordion(this)">
-        <div class="accordion-header" style="padding:12px 14px">
-          <div class="acc-left">
-            <div class="acc-icon" style="background:var(--dan-l)">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--dan)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 18 13.5 8.5 8.5 13.5 1 6"/><polyline points="17 18 23 18 23 12"/></svg>
-            </div>
-            <div>
-              <div style="font-size:12px;font-weight:800;color:var(--txt)">Liabilities</div>
-              <div style="font-size:9.5px;color:var(--txt2)" id="nwLiabAccLabel">What you owe</div>
-            </div>
-          </div>
-          <div style="display:flex;align-items:center;gap:8px">
-            <span id="nwLiabTotal" style="font-size:12px;font-weight:800;color:var(--dan);font-family:'SF Mono',monospace">—</span>
-            <svg class="accordion-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-          </div>
-        </div>
-        <div class="accordion-body">
-          <div class="accordion-content" style="padding:0 14px 14px">
-            <div style="display:flex;align-items:flex-start;gap:6px;padding:6px 8px;background:var(--bg);border-radius:6px;border:1px solid var(--brd);margin-bottom:6px">
-              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="var(--txt2)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:1px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-              <span style="font-size:10px;color:var(--txt2);line-height:1.4"><strong style="color:var(--txt)">Tip:</strong> Paying off liabilities increases your net worth.</span>
-            </div>
-            <div id="nwLiabilitiesList"></div>
-            <button onclick="event.stopPropagation();addNwItem('liability')" style="width:100%;padding:7px;border:1.5px dashed var(--brd);border-radius:8px;background:transparent;color:var(--txt2);font-size:11px;font-weight:600;cursor:pointer;font-family:inherit;transition:.15s;margin-top:3px" onmouseover="this.style.borderColor='var(--dan)';this.style.color='var(--dan)'" onmouseout="this.style.borderColor='var(--brd)';this.style.color='var(--txt2)'">Add Liability</button>
-          </div>
+    <!-- Health Banner -->
+    <div id="budgetHealthBanner" style="display:none;padding:12px 14px;border-radius:10px;margin-bottom:16px;font-size:12px;line-height:1.5">
+      <div style="display:flex;align-items:flex-start;gap:10px">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:1px"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        <div>
+          <div id="budgetHealthTitle" style="font-weight:800;margin-bottom:2px"></div>
+          <div id="budgetHealthBody" style="opacity:.85"></div>
         </div>
       </div>
     </div>
 
+    <!-- Donut Chart + Category Breakdown -->
+    <div style="display:grid;grid-template-columns:180px 1fr;gap:20px;align-items:start">
+      <!-- Donut Chart -->
+      <div style="position:relative;width:180px;height:180px;margin:0 auto">
+        <svg id="spendingDonut" viewBox="0 0 200 200" style="width:100%;height:100%;transform:rotate(-90deg)">
+          <circle cx="100" cy="100" r="70" fill="none" stroke="var(--brd)" stroke-width="24" opacity=".3"/>
+        </svg>
+        <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center">
+          <div id="donutCenterLabel" style="font-size:10px;color:var(--txt2);font-weight:600;text-transform:uppercase;letter-spacing:.5px">Total</div>
+          <div id="donutCenterValue" style="font-size:20px;font-weight:900;color:var(--txt);font-family:'SF Mono',monospace;margin-top:2px">$0</div>
+          <div id="donutCenterSub" style="font-size:10px;color:var(--txt2);margin-top:2px">spent</div>
+        </div>
+      </div>
+
+      <!-- Category List -->
+      <div id="spendingCategoryList" style="display:flex;flex-direction:column;gap:10px"></div>
+    </div>
   </div>
+
+  <!-- ─── INCOME SOURCES accordion ─────────────────── -->
+  <div class="accordion fin-accordion" id="incomeSrcAnchor" onclick="toggleFinAccordion(this)">
+    <div class="accordion-header" style="padding:14px 16px">
+      <div class="acc-left">
+        <div class="acc-icon" style="background:var(--suc-l)">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--suc)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+        </div>
+        <div>
+          <div style="font-size:13px;font-weight:800;color:var(--txt)">Income Sources</div>
+          <div style="font-size:10.5px;color:var(--txt2)">Monthly recurring income</div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <span id="incomeSourcesTotalLabel" style="font-size:13px;font-weight:800;color:var(--suc);font-family:'SF Mono',monospace">—</span>
+        <svg class="accordion-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+    </div>
+    <div class="accordion-body">
+      <div class="accordion-content" style="padding:0 16px 16px">
+        <p style="font-size:12px;color:var(--txt2);margin-bottom:10px">Add every income stream — salary, freelance, side income. The total auto-sets your monthly budget.</p>
+        <div id="incomeSourcesList"></div>
+        <button onclick="event.stopPropagation();addIncomeSource()" style="width:100%;padding:8px;border:1.5px dashed var(--brd);border-radius:10px;background:transparent;color:var(--txt2);font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;transition:.15s;margin-top:4px" onmouseover="this.style.borderColor='var(--suc)';this.style.color='var(--suc)'" onmouseout="this.style.borderColor='var(--brd)';this.style.color='var(--txt2)'">+ Add Income Source</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── SAVINGS GOALS accordion ──────────────────── -->
+  <div class="accordion fin-accordion" onclick="toggleFinAccordion(this)">
+    <div class="accordion-header" style="padding:14px 16px">
+      <div class="acc-left">
+        <div class="acc-icon" style="background:var(--pri-l)">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--pri-d)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+        </div>
+        <div>
+          <div style="font-size:13px;font-weight:800;color:var(--txt)">Savings Goals</div>
+          <div style="font-size:10.5px;color:var(--txt2)" id="goalsAccSummary">No goals yet</div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <span id="goalsAccTotal" style="font-size:13px;font-weight:800;color:var(--pri-d);font-family:'SF Mono',monospace"></span>
+        <svg class="accordion-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+    </div>
+    <div class="accordion-body">
+      <div class="accordion-content" style="padding:0 16px 16px">
+        <div id="goalsList"></div>
+        <div class="section-label" style="margin-top:8px">Add New Goal</div>
+        <button onclick="event.stopPropagation();openGoalModal()" style="width:100%;padding:8px;border:1.5px dashed var(--brd);border-radius:10px;background:transparent;color:var(--txt2);font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;transition:.15s;margin-top:4px" onmouseover="this.style.borderColor='var(--pri)';this.style.color='var(--pri-d)'" onmouseout="this.style.borderColor='var(--brd)';this.style.color='var(--txt2)'">+ Add Goal</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── NET WORTH SECTION ─────────────────────────────── -->
+  <!-- NW Header Card -->
+  <div class="card" style="margin-bottom:10px;text-align:center;padding:22px 18px 18px">
+    <div style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:1.4px;color:var(--txt2);margin-bottom:6px">Your Net Worth</div>
+    <div id="nwTotal" style="font-size:clamp(26px,5vw,34px);font-weight:900;font-family:'SF Mono',monospace;letter-spacing:-1px;color:var(--suc);line-height:1.2">—</div>
+    <div id="nwAccSummary" style="font-size:11px;color:var(--txt2);margin-top:4px">Assets minus Liabilities</div>
+    <div id="nwTrend" style="margin-top:6px;font-size:12px"></div>
+  </div>
+
+  <!-- Tip Banner -->
+  <div style="display:flex;align-items:flex-start;gap:8px;padding:10px 12px;background:var(--pri-l);border-radius:10px;border:1px solid var(--brd);margin-bottom:14px">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--pri-d)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:1px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+    <span style="font-size:11.5px;color:var(--pri-d);line-height:1.55"><strong>Track everything you own and owe.</strong> Your net worth updates automatically as you add assets, pay down debts, and hit savings goals.</span>
+  </div>
+
+  <!-- Assets Section -->
+  <div class="accordion fin-accordion" onclick="toggleFinAccordion(this)" style="margin-bottom:10px">
+    <div class="accordion-header" style="padding:14px 16px">
+      <div class="acc-left">
+        <div class="acc-icon" style="background:var(--suc-l)">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--suc)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+        </div>
+        <div>
+          <div style="font-size:13px;font-weight:800;color:var(--txt)">Assets</div>
+          <div style="font-size:10.5px;color:var(--txt2)" id="nwAssetsAccLabel">What you own</div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <span id="nwAssetsTotal" style="font-size:13px;font-weight:800;color:var(--suc);font-family:'SF Mono',monospace">—</span>
+        <svg class="accordion-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+    </div>
+    <div class="accordion-body">
+      <div class="accordion-content" style="padding:0 16px 16px">
+        <div id="nwAssetsList"></div>
+        <button onclick="event.stopPropagation();addNwItem('asset')" style="width:100%;padding:8px;border:1.5px dashed var(--brd);border-radius:10px;background:transparent;color:var(--txt2);font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;transition:.15s;margin-top:4px" onmouseover="this.style.borderColor='var(--suc)';this.style.color='var(--suc)'" onmouseout="this.style.borderColor='var(--brd)';this.style.color='var(--txt2)'">+ Add Asset</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Liabilities Section -->
+  <div class="accordion fin-accordion" onclick="toggleFinAccordion(this)">
+    <div class="accordion-header" style="padding:14px 16px">
+      <div class="acc-left">
+        <div class="acc-icon" style="background:var(--dan-l)">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--dan)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 18 13.5 8.5 8.5 13.5 1 6"/><polyline points="17 18 23 18 23 12"/></svg>
+        </div>
+        <div>
+          <div style="font-size:13px;font-weight:800;color:var(--txt)">Liabilities</div>
+          <div style="font-size:10.5px;color:var(--txt2)" id="nwLiabAccLabel">What you owe</div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <span id="nwLiabTotal" style="font-size:13px;font-weight:800;color:var(--dan);font-family:'SF Mono',monospace">—</span>
+        <svg class="accordion-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+    </div>
+    <div class="accordion-body">
+      <div class="accordion-content" style="padding:0 16px 16px">
+        <div style="display:flex;align-items:flex-start;gap:7px;padding:8px 10px;background:var(--bg);border-radius:8px;border:1px solid var(--brd);margin-bottom:8px">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--txt2)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:1px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <span style="font-size:11px;color:var(--txt2);line-height:1.5"><strong style="color:var(--txt)">Tip:</strong> Paying off liabilities increases your net worth and can be tracked via your monthly Savings goals.</span>
+        </div>
+        <div id="nwLiabilitiesList"></div>
+        <button onclick="event.stopPropagation();addNwItem('liability')" style="width:100%;padding:8px;border:1.5px dashed var(--brd);border-radius:10px;background:transparent;color:var(--txt2);font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;transition:.15s;margin-top:4px" onmouseover="this.style.borderColor='var(--dan)';this.style.color='var(--dan)'" onmouseout="this.style.borderColor='var(--brd)';this.style.color='var(--txt2)'">+ Add Liability</button>
+      </div>
+    </div>
+  </div>
+
 </div>
 
   <div id="tab-notes" class="panel">
@@ -3916,7 +3806,7 @@ footer .footer-links a:hover{color:var(--pri-d)}
       <div class="exp-cat-hint" id="expCatHint" style="display:none"></div>
       <div style="display:flex;gap:10px;justify-content:flex-end;padding-top:4px;border-top:1px solid var(--brd)">
         <button onclick="closeExpenseModal()" style="padding:10px 18px;border-radius:10px;border:1.5px solid var(--brd);background:var(--bg);color:var(--txt2);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit">Cancel</button>
-        <button onclick="addExpense()" class="btn btn-pri" style="padding:10px 24px;font-size:13px;font-weight:700;border-radius:10px">Add Expense</button>
+        <button onclick="addExpense()" class="btn btn-pri" style="padding:10px 24px;font-size:13px;font-weight:700;border-radius:10px">+ Add Expense</button>
       </div>
     </div>
   </div>
@@ -5668,9 +5558,11 @@ function renderNetWorth() {
     nwEl.textContent = (netWorth < 0 ? "-" : "") + absStr;
     nwEl.style.color = netWorth >= 0 ? "var(--suc)" : "var(--dan)";
   }
-  // Accordion sub-label (hidden - redundant with visual bar)
+  // Accordion sub-label
   const nwSummary = document.getElementById("nwAccSummary");
-  if (nwSummary) nwSummary.style.display = "none";
+  if (nwSummary && items.length > 0) {
+    nwSummary.textContent = fmt(totalAssets) + " assets · " + fmt(totalLiab) + " liabilities";
+  }
 
   // Assets accordion header totals
   const nwAssetsTotalEl = document.getElementById("nwAssetsTotal");
@@ -5696,112 +5588,8 @@ function renderNetWorth() {
     } else {
       const dir = diff > 0 ? "up" : "down";
       const arrow = diff > 0 ? "↑" : "↓";
-      const pct = prev > 0 ? Math.round(Math.abs(diff) / prev * 100) : 0;
-      trendEl.innerHTML = `<span class="nw-trend ${dir}">${arrow} ${fmt(Math.abs(diff))}${pct > 0 ? ' (' + pct + '%)' : ''} vs last snapshot</span>`;
+      trendEl.innerHTML = `<span class="nw-trend ${dir}">${arrow} ${fmt(Math.abs(diff))} vs last snapshot</span>`;
     }
-  }
-
-  // Monthly change indicator
-  const monthlyEl = document.getElementById("nwMonthlyChange");
-  if (monthlyEl) {
-    const history = JSON.parse(localStorage.getItem("bt_nw_history") || "[]");
-    const now = new Date();
-    const currentMonth = now.getFullYear() + "-" + String(now.getMonth() + 1).padStart(2, "0");
-    
-    // Find last month's value
-    let lastMonthVal = null;
-    for (let i = history.length - 1; i >= 0; i--) {
-      if (history[i].month !== currentMonth) {
-        lastMonthVal = history[i].value;
-        break;
-      }
-    }
-    
-    if (lastMonthVal !== null && items.length > 0) {
-      const monthDiff = netWorth - lastMonthVal;
-      const monthPct = lastMonthVal > 0 ? Math.round(Math.abs(monthDiff) / Math.abs(lastMonthVal) * 100) : 0;
-      const color = monthDiff >= 0 ? "var(--suc)" : "var(--dan)";
-      const arrow = monthDiff >= 0 ? "↑" : "↓";
-      monthlyEl.innerHTML = `<span style="color:${color}">${arrow} ${fmt(Math.abs(monthDiff))} (${monthPct}%) this month</span>`;
-    } else {
-      monthlyEl.innerHTML = "";
-    }
-    
-    // Save current month snapshot
-    const existingIdx = history.findIndex(h => h.month === currentMonth);
-    if (existingIdx >= 0) {
-      history[existingIdx].value = netWorth;
-    } else {
-      history.push({ month: currentMonth, value: netWorth });
-    }
-    // Keep only last 6 months
-    while (history.length > 6) history.shift();
-    localStorage.setItem("bt_nw_history", JSON.stringify(history));
-    
-    // Render sparkline
-    renderNwSparkline(history);
-  }
-
-  // Update new Net Worth visual elements
-  const assetsBar = document.getElementById("nwAssetsBar");
-  const liabBar = document.getElementById("nwLiabBar");
-  const total = totalAssets + totalLiab;
-  if (assetsBar && liabBar) {
-    if (total > 0) {
-      assetsBar.style.width = (totalAssets / total * 100) + "%";
-      liabBar.style.width = (totalLiab / total * 100) + "%";
-    } else {
-      assetsBar.style.width = "50%";
-      liabBar.style.width = "50%";
-    }
-  }
-  const setEl = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
-  setEl("nwAssetsCount", assets.length + (assets.length === 1 ? " asset" : " assets"));
-  setEl("nwLiabCount", liabilities.length + (liabilities.length === 1 ? " liability" : " liabilities"));
-  setEl("nwAssetsTotal2", fmt(totalAssets));
-  setEl("nwLiabTotal2", fmt(totalLiab));
-  setEl("nwAssetsQuick", fmt(totalAssets));
-  setEl("nwLiabQuick", fmt(totalLiab));
-
-  // Top 3 preview
-  const topItemsEl = document.getElementById("nwTopItems");
-  const topAssetsEl = document.getElementById("nwTopAssets");
-  const topLiabEl = document.getElementById("nwTopLiabilities");
-  if (topItemsEl && topAssetsEl && topLiabEl) {
-    if (assets.length > 0 || liabilities.length > 0) {
-      topItemsEl.style.display = "block";
-      // Top 3 assets (sorted by amount desc)
-      const top3Assets = assets.slice().sort((a, b) => b.amt - a.amt).slice(0, 3);
-      topAssetsEl.innerHTML = '<div style="font-size:8px;font-weight:700;color:var(--suc);margin-bottom:2px">ASSETS</div>' +
-        top3Assets.map(a => '<div style="display:flex;justify-content:space-between;gap:4px;margin-bottom:1px"><span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;opacity:.85">' + escHtml(a.label || a.name) + '</span><span style="font-weight:700;font-family:\'SF Mono\',monospace">' + fmt(a.amt) + '</span></div>').join("");
-      // Top 3 liabilities (sorted by amount desc)
-      const top3Liab = liabilities.slice().sort((a, b) => b.amt - a.amt).slice(0, 3);
-      topLiabEl.innerHTML = '<div style="font-size:8px;font-weight:700;color:var(--dan);margin-bottom:2px">LIABILITIES</div>' +
-        top3Liab.map(l => '<div style="display:flex;justify-content:space-between;gap:4px;margin-bottom:1px"><span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;opacity:.85">' + escHtml(l.label || l.name) + '</span><span style="font-weight:700;font-family:\'SF Mono\',monospace">' + fmt(l.amt) + '</span></div>').join("");
-    } else {
-      topItemsEl.style.display = "none";
-    }
-  }
-
-  // Milestone badges
-  const milestonesEl = document.getElementById("nwMilestones");
-  const badgesEl = document.getElementById("nwMilestoneBadges");
-  if (milestonesEl && badgesEl) {
-    const milestoneValues = [100000, 500000, 1000000, 5000000, 10000000];
-    const milestoneLabels = ["₱100K", "500K", "₱1M", "₱5M", "₱10M"];
-    const badges = [];
-    for (let i = 0; i < milestoneValues.length; i++) {
-      const reached = netWorth >= milestoneValues[i];
-      const progress = Math.min(100, (netWorth / milestoneValues[i]) * 100);
-      badges.push('<div style="font-size:9px;font-weight:700;padding:3px 6px;border-radius:4px;background:' +
-        (reached ? 'var(--suc-l)' : 'var(--bg)') + ';color:' +
-        (reached ? 'var(--suc)' : 'var(--txt2)') + ';border:1px solid ' +
-        (reached ? 'var(--suc)' : 'var(--brd)') + '">' +
-        milestoneLabels[i] + (reached ? ' ✓' : ' ' + Math.round(progress) + '%') +
-        '</div>');
-    }
-    badgesEl.innerHTML = badges.join("");
-    milestonesEl.style.display = "block";
   }
 
   // Render assets
@@ -5815,7 +5603,7 @@ function renderNetWorth() {
         accentColor: "var(--suc)",
         accentLight: "var(--suc-l)",
         tagLabel:    "Asset",
-        actionLabel: "Add Funds",
+        actionLabel: "+ Add Funds",
         actionFn:    `openFinTxnModal(${i.id},'asset','fund')`,
         balance:     i.amt,
       })).join("") + `</div>` +
@@ -5853,120 +5641,8 @@ function renderNetWorth() {
   // Save current as snapshot for next time
   localStorage.setItem("bt_nw_prev", String(netWorth));
   _renderDashNetWorth();
-  
-  // Update debt-to-asset ratio
-  renderNwDebtRatio(totalAssets, totalLiab);
-  
   // Keep Finance/Budget tab overview in sync
   if (document.querySelector('[data-tab="goals"]')?.classList.contains("active")) renderFinanceOverview();
-}
-
-// ── Debt-to-Asset Ratio ───────────────────────────────────
-function renderNwDebtRatio(totalAssets, totalLiab) {
-  const ratioEl = document.getElementById("nwDebtRatio");
-  const badgeEl = document.getElementById("nwDebtRatioBadge");
-  if (!ratioEl || !badgeEl) return;
-  
-  const ratio = totalAssets > 0 ? totalLiab / totalAssets : 0;
-  ratioEl.textContent = ratio.toFixed(2);
-  
-  let label, color, bg;
-  if (ratio === 0) { label = "No Debt"; color = "var(--suc)"; bg = "var(--suc-l)"; }
-  else if (ratio < 0.3) { label = "Excellent"; color = "var(--suc)"; bg = "var(--suc-l)"; }
-  else if (ratio < 0.5) { label = "Healthy"; color = "var(--pri-d)"; bg = "var(--pri-l)"; }
-  else if (ratio < 0.7) { label = "Moderate"; color = "var(--acc)"; bg = "var(--acc-l)"; }
-  else { label = "High Risk"; color = "var(--dan)"; bg = "var(--dan-l)"; }
-  
-  badgeEl.textContent = label;
-  badgeEl.style.color = color;
-  badgeEl.style.background = bg;
-}
-
-// ── Mini Sparkline ─────────────────────────────────────────
-function renderNwSparkline(history) {
-  const pathEl = document.getElementById("nwSparkPath");
-  if (!pathEl) return;
-  
-  if (history.length < 2) {
-    pathEl.setAttribute("d", "");
-    return;
-  }
-  
-  const values = history.map(h => h.value);
-  const min = Math.min(...values);
-  const max = Math.max(...values);
-  const range = max - min || 1;
-  
-  const width = 200; // SVG viewBox width
-  const height = 32;
-  const padding = 2;
-  
-  const points = values.map((v, i) => {
-    const x = padding + (i / (values.length - 1)) * (width - padding * 2);
-    const y = height - padding - ((v - min) / range) * (height - padding * 2);
-    return `${x},${y}`;
-  });
-  
-  pathEl.setAttribute("d", "M" + points.join(" L"));
-  
-  // Color based on trend
-  const isUp = values[values.length - 1] >= values[0];
-  pathEl.setAttribute("stroke", isUp ? "var(--suc)" : "var(--dan)");
-}
-
-// ── Quick Add Modal ────────────────────────────────────────
-function openNwQuickAdd() {
-  const ex = document.getElementById("_nwQuickAddModal");
-  if (ex) ex.remove();
-  const overlay = document.createElement("div");
-  overlay.id = "_nwQuickAddModal";
-  overlay.style.cssText = "position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.5)";
-  overlay.innerHTML = `
-    <div style="background:var(--card);border-radius:16px;padding:22px 24px;min-width:280px;max-width:90vw;box-shadow:0 12px 40px rgba(0,0,0,.28)">
-      <div style="font-size:14px;font-weight:800;color:var(--txt);margin-bottom:14px">Quick Add</div>
-      <div class="fg" style="margin-bottom:10px">
-        <label>Type</label>
-        <select id="_nwQuickType" style="width:100%;padding:9px 12px;border:1.5px solid var(--brd);border-radius:9px;font-size:13px;font-family:inherit;background:var(--input-bg);color:var(--txt);outline:none;box-sizing:border-box">
-          <option value="asset">Asset</option>
-          <option value="liability">Liability</option>
-        </select>
-      </div>
-      <div class="fg" style="margin-bottom:10px">
-        <label>Name</label>
-        <input type="text" id="_nwQuickName" placeholder="e.g. Cash, Car Loan" style="width:100%;padding:9px 12px;border:1.5px solid var(--brd);border-radius:9px;font-size:13px;color:var(--txt);background:var(--input-bg);outline:none;box-sizing:border-box">
-      </div>
-      <div class="fg" style="margin-bottom:16px">
-        <label>Amount</label>
-        <input type="text" inputmode="decimal" id="_nwQuickAmt" placeholder="0.00" oninput="formatNumberInput(this)" style="width:100%;padding:9px 12px;border:1.5px solid var(--brd);border-radius:9px;font-size:15px;font-weight:800;color:var(--txt);background:var(--input-bg);outline:none;box-sizing:border-box">
-      </div>
-      <div style="display:flex;gap:10px;justify-content:flex-end">
-        <button onclick="document.getElementById('_nwQuickAddModal').remove()" style="padding:9px 16px;border-radius:9px;border:1.5px solid var(--brd);background:var(--bg);color:var(--txt2);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit">Cancel</button>
-        <button onclick="_saveNwQuickAdd()" class="btn btn-pri" style="padding:9px 20px;border-radius:9px;font-size:13px;font-weight:700">Save</button>
-      </div>
-    </div>`;
-  document.body.appendChild(overlay);
-  overlay.addEventListener("click", e=>{ if(e.target===overlay) overlay.remove(); });
-  setTimeout(()=>document.getElementById("_nwQuickName")?.focus(), 60);
-}
-
-function _saveNwQuickAdd() {
-  const type = document.getElementById("_nwQuickType")?.value || "asset";
-  const name = document.getElementById("_nwQuickName")?.value.trim();
-  const amt = parseFloat((document.getElementById("_nwQuickAmt")?.value||"").replace(/,/g,""));
-  if (!name || !amt || amt <= 0) { toast("Enter name and amount"); return; }
-  
-  const list = getNwItems();
-  list.push({
-    id: Date.now(),
-    type,
-    label: name,
-    amt,
-    transactions: [{ id: Date.now(), date: new Date().toISOString().split("T")[0], action: "init", amount: amt, note: "Initial", balance: amt }]
-  });
-  saveNwItems(list);
-  document.getElementById("_nwQuickAddModal")?.remove();
-  toast((type === "asset" ? "Asset" : "Liability") + " added!");
-  renderNetWorth();
 }
 
 function _nwRow(item, type) {
@@ -5981,11 +5657,11 @@ function _nwRow(item, type) {
     ? `<button onclick="event.stopPropagation();openNwTxnModal(${item.id},'fund')"
         style="font-size:10px;font-weight:700;padding:4px 9px;border-radius:7px;border:1.5px solid var(--suc);background:var(--suc-l);color:var(--suc);cursor:pointer;font-family:inherit;white-space:nowrap;transition:.15s"
         onmouseover="this.style.background='var(--suc)';this.style.color='#fff'"
-        onmouseout="this.style.background='var(--suc-l)';this.style.color='var(--suc)'">Add Funds</button>`
+        onmouseout="this.style.background='var(--suc-l)';this.style.color='var(--suc)'">+ Add Funds</button>`
     : `<button onclick="event.stopPropagation();openNwTxnModal(${item.id},'pay')"
         style="font-size:10px;font-weight:700;padding:4px 9px;border-radius:7px;border:1.5px solid var(--dan);background:var(--dan-l);color:var(--dan);cursor:pointer;font-family:inherit;white-space:nowrap;transition:.15s"
         onmouseover="this.style.background='var(--dan)';this.style.color='#fff'"
-        onmouseout="this.style.background='var(--dan-l)';this.style.color='var(--dan)'">Pay Down</button>`;
+        onmouseout="this.style.background='var(--dan-l)';this.style.color='var(--dan)'">− Pay Down</button>`;
 
   const histBtn = txCount > 0
     ? `<button onclick="event.stopPropagation();_toggleNwHist('${histId}')"
@@ -7360,7 +7036,7 @@ function renderGoals() {
       accentColor: pct >= 100 ? "var(--suc)" : "var(--pri-d)",
       accentLight: pct >= 100 ? "var(--suc-l)" : "var(--pri-l)",
       tagLabel:    statusLabel,
-      actionLabel: "Add Contribution",
+      actionLabel: "+ Add Contribution",
       actionFn:    `openFinTxnModal(${g.id},'goal','contribution')`,
       balance:     g.saved || 0,
       target:      g.target,
@@ -7632,48 +7308,23 @@ function _saveIncomeSource() {
   saveIncomeSources(list);
   document.getElementById("_incSrcModal")?.remove();
   if (!isWindfall) _syncIncomeSources();
-  
-  // Auto-add windfall to net worth as an asset
-  if (isWindfall) {
-    const nwItems = getNwItems();
-    nwItems.push({
-      id: Date.now(),
-      type: "asset",
-      label: label + " (Windfall)",
-      amt: amt,
-      transactions: [{
-        id: Date.now(),
-        date: new Date().toISOString().split("T")[0],
-        action: "init",
-        amount: amt,
-        note: "Windfall income",
-        balance: amt
-      }]
-    });
-    saveNwItems(nwItems);
-    renderNetWorth();
-  }
-  
   renderIncomeSourcesList();
-  toast((isWindfall?"Windfall added to Net Worth ✓":"Income source")+" added!");
+  toast((isWindfall?"Windfall":"Income source")+" added!");
 }
 
 function deleteIncomeSource(id) {
   saveIncomeSources(getIncomeSources().filter(s=>s.id!==id));
-  _syncIncomeSources();
-  renderIncomeSourcesList();
-  renderNetWorth();
-  updateDashboard();
-  renderFinanceOverview();
+  _syncIncomeSources(); renderIncomeSourcesList();
 }
 
 function _syncIncomeSources() {
   const sources = getIncomeSources().filter(s=>!s.isWindfall);
+  if (!sources.length) return;
   const total = sources.reduce((s,src)=>s+src.amount,0);
   const el = document.getElementById("incomeInput");
-  if (el) { el.value = total > 0 ? total.toLocaleString("en-US") : ""; updateDashboard(); setIncomeDisplay(total); }
+  if (el) { el.value = total.toLocaleString("en-US"); updateDashboard(); setIncomeDisplay(total); }
   const lbl = document.getElementById("incomeSourcesTotalLabel");
-  if (lbl) lbl.textContent = total > 0 ? fmt(total) : "—";
+  if (lbl) lbl.textContent = fmt(total);
 }
 
 function renderIncomeSourcesList() {
@@ -7700,7 +7351,7 @@ function renderIncomeSourcesList() {
     accentColor: s.isWindfall ? "var(--acc)" : "var(--suc)",
     accentLight: s.isWindfall ? "var(--acc-l)" : "var(--suc-l)",
     tagLabel:    INCOME_TYPE_LABELS[s.type] || INCOME_WINDFALL_LABELS[s.type] || s.type,
-    actionLabel: "Log Income",
+    actionLabel: "+ Log Income",
     actionFn:    `openFinTxnModal(${s.id},'income','log')`,
     balance:     s.amount,
   });
@@ -10999,13 +10650,13 @@ function findDuplicateNote(draftTitle, draftBody, threshold) {
 function summaryStripText(raw) {
   return (raw || "")
     .replace(/\[(x| )\]/gi, " ")          // checkbox markers
-    .replace(/\s*[-\u2013\u2014]+\s*[^\d\s]*\d[\d,]*(?:\.\d{1,2})?\s*$/gm, "")  // price portions from checklist items
     .replace(/^[\s>]*[-•*]\s+/gm, "")        // leading bullets
     .replace(/\*\*(.*?)\*\*/g, "$1")          // bold
     .replace(/\*(.*?)\*/g, "$1")              // italic
     .replace(/`+/g, " ")
     .replace(/https?:\/\/\S+/g, " ");        // urls
 }
+
 // Split text into sentence-like units (also treats line breaks as boundaries).
 function splitSentences(text) {
   return (text || "")
@@ -11304,14 +10955,10 @@ function renderNoteModal() {
   if (tldrEl) {
     const summary = summarizeText(getNoteTitle(note) + ". " + bodyText);
     const tldrIcon = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="14" y2="12"/><line x1="4" y1="18" x2="10" y2="18"/></svg>';
-    const chevDown = '<svg class="chev-down" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>';
-    const chevUp = '<svg class="chev-up" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="18 15 12 9 6 15"/></svg>';
     if (summary) {
       tldrEl.innerHTML = '<span class="tldr-label">' + tldrIcon + 'Summary</span>' +
-        '<span class="tldr-text">' + escHtml(summary) + '</span>' +
-        '<button class="tldr-collapse" onclick="this.closest(\'.note-tldr\').classList.toggle(\'collapsed\')" title="Minimize">' + chevDown + chevUp + '</button>';
+        '<span class="tldr-text">' + escHtml(summary) + '</span>';
       tldrEl.style.display = "flex";
-      tldrEl.classList.remove("collapsed");
     } else {
       tldrEl.style.display = "none";
       tldrEl.innerHTML = "";
@@ -11339,11 +10986,8 @@ function renderRelatedNotes(note) {
   if (!related.length) { wrap.style.display = "none"; wrap.innerHTML = ""; return; }
   const chev = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>';
   const linkIcon = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>';
-  const chevDown = '<svg class="chev-down" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>';
-  const chevUp = '<svg class="chev-up" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="18 15 12 9 6 15"/></svg>';
   wrap.innerHTML =
     '<div class="note-related-label">' + linkIcon + 'Related notes</div>' +
-    '<button class="rel-collapse" onclick="this.closest(\'.note-related\').classList.toggle(\'collapsed\')" title="Minimize">' + chevDown + chevUp + '</button>' +
     related.map(r =>
       '<div class="note-related-item" onclick="openNoteModal(' + r.id + ')">' +
         '<span class="nri-title">' + escHtml(getNoteTitle(r)) + '</span>' +
@@ -11352,7 +10996,6 @@ function renderRelatedNotes(note) {
       '</div>'
     ).join("");
   wrap.style.display = "block";
-  wrap.classList.remove("collapsed");
 }
 
 // Supportive nudge shown when a journal note reads as financially stressed.
@@ -11653,11 +11296,59 @@ function formatInline(s) {
 // Save an inline price edit made directly in view mode
 // Thin wrappers for inline note item edits — with confirmation
 function _nbQtyChange(el) {
+  const row    = el.closest("tr");
+  const descEl = row ? row.querySelector(".nb-cl-td-desc") : null;
+  const name   = descEl ? descEl.textContent.trim() : "this item";
   const newQty = parseInt(el.value) || 1;
+  if (!confirm("Update quantity for \"" + name + "\" to " + newQty + "?")) {
+    // Revert to stored value
+    const notes = JSON.parse(localStorage.getItem("bt_notes") || "[]");
+    const note  = notes.find(n => n.id === parseInt(el.dataset.nid));
+    if (note) {
+      const idx2   = parseInt(el.dataset.idx);
+      let count    = 0;
+      const lines  = note.text.split("\n");
+      for (const ln of lines) {
+        if (/^\s*\[[ xX]\]\s/i.test(ln)) {
+          if (count === idx2) {
+            const qM = ln.match(/\s*[x×](\d+)\s*(?=\s*[-\u2013\u2014]|$)/i);
+            el.value = qM ? qM[1] : "1";
+            break;
+          }
+          count++;
+        }
+      }
+    }
+    return;
+  }
   updateNoteItemQty(parseInt(el.dataset.nid), parseInt(el.dataset.idx), el.value, el.dataset.lid);
 }
-
 function _nbPriceChange(el) {
+  const row    = el.closest("tr");
+  const descEl = row ? row.querySelector(".nb-cl-td-desc") : null;
+  const name   = descEl ? descEl.textContent.trim() : "this item";
+  const sym    = getCurrency();
+  if (!confirm("Update price for \"" + name + "\" to " + sym + " " + (parseFloat(el.value)||0).toFixed(2) + "?")) {
+    // Revert
+    const notes = JSON.parse(localStorage.getItem("bt_notes") || "[]");
+    const note  = notes.find(n => n.id === parseInt(el.dataset.nid));
+    if (note) {
+      const idx2  = parseInt(el.dataset.idx);
+      let count   = 0;
+      const lines = note.text.split("\n");
+      for (const ln of lines) {
+        if (/^\s*\[[ xX]\]\s/i.test(ln)) {
+          if (count === idx2) {
+            const amtM = ln.match(/[-\u2013\u2014]+\s*[^\d\s]*(\d[\d,]*(?:\.\d{1,2})?)\s*$/);
+            el.value = amtM ? amtM[1] : "";
+            break;
+          }
+          count++;
+        }
+      }
+    }
+    return;
+  }
   updateNoteItemPrice(parseInt(el.dataset.nid), parseInt(el.dataset.idx), el.value, el.dataset.lid);
 }
 
@@ -11740,7 +11431,7 @@ function _refreshClTotal(tableId, noteId) {
   rows.forEach(row => {
     const qtyEl   = row.querySelector(".nb-qty-input");
     const priceEl = row.querySelector(".nb-price-input");
-    if (priceEl && priceEl.value && priceEl.value !== "0" && priceEl.value !== "0.00") {
+    if (priceEl && priceEl.value) {
       const qty    = parseInt(qtyEl?.value || "1") || 1;
       const price  = parseFloat(priceEl.value.replace(/,/g,"")) || 0;
       grandTotal  += qty * price;
@@ -11774,14 +11465,7 @@ function formatNoteBody(text, noteId) {
   function splitCheckItem(raw) {
     // Strip amount: "— $ 0.00" or "— ₱300" etc.
     const amtM = raw.match(/^(.*?)\s*[-\u2013\u2014]+\s*[^\d\s]*(\d[\d,]*(?:\.\d{1,2})?)\s*$/);
-    if (amtM) {
-      const amt = amtM[2].replace(/,/g,"");
-      // Treat "0" or "0.00" as no price set
-      if (amt === "0" || amt === "0.00" || amt === "0.0") {
-        return { desc: raw.trim(), amt: null };
-      }
-      return { desc: amtM[1].trim(), amt: amt };
-    }
+    if (amtM) return { desc: amtM[1].trim(), amt: amtM[2].replace(/,/g,"") };
     return { desc: raw.trim(), amt: null };
   }
 
@@ -11875,11 +11559,9 @@ function formatNoteBody(text, noteId) {
       // Compute and inject total immediately (pure string-level)
       let grandTotal = 0;
       for (const it of clItems) {
-        if (it.amt !== null && it.amt !== "0" && it.amt !== "0.00") {
-          grandTotal += (it.qty || 1) * (parseFloat(it.amt) || 0);
-        }
+        if (it.amt !== null) grandTotal += (it.qty || 1) * (parseFloat(it.amt) || 0);
       }
-      const hasAmt = clItems.some(it => it.amt !== null && it.amt !== "0" && it.amt !== "0.00");
+      const hasAmt = clItems.some(it => it.amt !== null);
       if (hasAmt) {
         html = html.replace(
           '<!-- total -->',
