@@ -10068,11 +10068,9 @@ function onNoteInput(el) {
     }
     autoApplyNoteTag();
     scheduleComposeMoodNudge();
-    checkPriceListAfterToggle("noteInput");
     _showAddItemChip("noteInput");
   } else if (el.id === "noteEditText") {
     _showAddItemChip("noteEditText");
-    checkPriceListAfterToggle("noteEditText");
   }
 }
 
@@ -10593,20 +10591,7 @@ function hashString(s) {
   return (h >>> 0).toString(36);
 }
 
-// ─── CHECK IF ALL PRICED ITEMS ARE CHECKED ─────────────────────
-function _checkPriceListComplete(textareaId) {
-  const ta = _tbEl(textareaId); if (!ta) return null;
-  const items = _parseChecklistItems(ta.value);
-  const priced = items.filter(it => it.amt !== null);
-  if (priced.length === 0) return null;
-  const allChecked = priced.every(it => it.checked);
-  if (!allChecked) return null;
-  const dismissKey = 'bt_plist_nagged_' + (textareaId === 'noteInput' ? 'compose' : 'edit') + '_' + hashString(ta.value);
-  if (sessionStorage.getItem(dismissKey)) return null;
-  return { items: priced, dismissKey };
-}
-
-// ─── PROMPT: ADD CHECKLIST ITEMS TO EXPENSES ──────────────────
+// ─── PROMPT: ADD CHECKLIST ITEMS TO EXPENSES (Save-only) ───────
 function _promptAddChecklistToExpenses(items, noteOrKey, noteText) {
   if (!items || items.length === 0) return;
   const existing = document.getElementById('_plistExpOverlay');
@@ -10697,13 +10682,6 @@ function _promptAddChecklistToExpenses(items, noteOrKey, noteText) {
     if (typeof renderInsights === 'function') renderInsights();
     toast(items.length + ' item' + (items.length!==1?'s':'') + ' added to Expenses!');
   });
-}
-
-function checkPriceListAfterToggle(textareaId) {
-  setTimeout(() => {
-    const info = _checkPriceListComplete(textareaId);
-    if (info) _promptAddChecklistToExpenses(info.items, info.dismissKey);
-  }, 350);
 }
 
 // Fired when the title field changes — refine the auto-tag
