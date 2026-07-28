@@ -1114,8 +1114,12 @@ tbody tr:hover td{background:var(--pri-l)}
 .note-tldr .tldr-text{font-size:13.5px;line-height:1.5;color:var(--txt);font-style:italic}
 .note-tldr .tldr-collapse{position:absolute;top:8px;right:8px;background:none;border:none;color:var(--acc);cursor:pointer;padding:4px;border-radius:4px;display:flex;align-items:center;justify-content:center;transition:.15s}
 .note-tldr .tldr-collapse:hover{background:var(--acc);color:#fff}
+.note-tldr .tldr-collapse .chev-down{display:block}
+.note-tldr .tldr-collapse .chev-up{display:none}
 .note-tldr.collapsed .tldr-text{display:none}
 .note-tldr.collapsed{padding-bottom:8px}
+.note-tldr.collapsed .tldr-collapse .chev-down{display:none}
+.note-tldr.collapsed .tldr-collapse .chev-up{display:block}
 /* Supportive sentiment nudge (inside journal modal) */
 .note-mood{margin:10px 24px 4px;padding:14px 16px;background:linear-gradient(135deg,var(--pri-l,rgba(126,154,142,.12)),rgba(126,154,142,.06));border:1px solid color-mix(in srgb, var(--pri) 35%, var(--brd));border-left:3px solid var(--pri);border-radius:12px}
 .note-mood .mood-head{display:flex;align-items:center;gap:7px;font-size:11px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;color:var(--pri);margin-bottom:7px}
@@ -1194,8 +1198,12 @@ tbody tr:hover td{background:var(--pri-l)}
 @media(max-width:600px){.note-related{padding-left:18px;padding-right:18px}}
 .note-related .rel-collapse{position:absolute;top:10px;right:16px;background:none;border:none;color:var(--txt2);cursor:pointer;padding:4px;border-radius:4px;display:flex;align-items:center;justify-content:center;transition:.15s}
 .note-related .rel-collapse:hover{background:var(--bg);color:var(--txt)}
+.note-related .rel-collapse .chev-down{display:block}
+.note-related .rel-collapse .chev-up{display:none}
 .note-related.collapsed .note-related-item{display:none}
 .note-related.collapsed{padding-bottom:8px}
+.note-related.collapsed .rel-collapse .chev-down{display:none}
+.note-related.collapsed .rel-collapse .chev-up{display:block}
 .tag-filters{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:12px}
 .tag-filter{padding:4px 12px;border-radius:16px;font-size:11px;font-weight:600;background:var(--bg);color:var(--txt2);border:1.5px solid var(--brd);cursor:pointer;transition:.2s}
 .tag-filter:hover,.tag-filter.active{background:var(--pri-l);color:var(--pri-d);border-color:var(--pri)}
@@ -11257,11 +11265,12 @@ function renderNoteModal() {
   if (tldrEl) {
     const summary = summarizeText(getNoteTitle(note) + ". " + bodyText);
     const tldrIcon = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="14" y2="12"/><line x1="4" y1="18" x2="10" y2="18"/></svg>';
-    const collapseIcon = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>';
+    const chevDown = '<svg class="chev-down" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>';
+    const chevUp = '<svg class="chev-up" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="18 15 12 9 6 15"/></svg>';
     if (summary) {
       tldrEl.innerHTML = '<span class="tldr-label">' + tldrIcon + 'Summary</span>' +
         '<span class="tldr-text">' + escHtml(summary) + '</span>' +
-        '<button class="tldr-collapse" onclick="this.closest(\'.note-tldr\').classList.toggle(\'collapsed\')" title="Collapse">' + collapseIcon + '</button>';
+        '<button class="tldr-collapse" onclick="this.closest(\'.note-tldr\').classList.toggle(\'collapsed\')" title="Minimize">' + chevDown + chevUp + '</button>';
       tldrEl.style.display = "flex";
       tldrEl.classList.remove("collapsed");
     } else {
@@ -11291,10 +11300,11 @@ function renderRelatedNotes(note) {
   if (!related.length) { wrap.style.display = "none"; wrap.innerHTML = ""; return; }
   const chev = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>';
   const linkIcon = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>';
-  const collapseIcon = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>';
+  const chevDown = '<svg class="chev-down" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>';
+  const chevUp = '<svg class="chev-up" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="18 15 12 9 6 15"/></svg>';
   wrap.innerHTML =
     '<div class="note-related-label">' + linkIcon + 'Related notes</div>' +
-    '<button class="rel-collapse" onclick="this.closest(\'.note-related\').classList.toggle(\'collapsed\')" title="Collapse">' + collapseIcon + '</button>' +
+    '<button class="rel-collapse" onclick="this.closest(\'.note-related\').classList.toggle(\'collapsed\')" title="Minimize">' + chevDown + chevUp + '</button>' +
     related.map(r =>
       '<div class="note-related-item" onclick="openNoteModal(' + r.id + ')">' +
         '<span class="nri-title">' + escHtml(getNoteTitle(r)) + '</span>' +
