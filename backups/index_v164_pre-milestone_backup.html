@@ -2917,12 +2917,6 @@ footer .footer-links a:hover{color:var(--pri-d)}
           </div>
         </div>
         
-        <!-- Milestone Badges -->
-        <div id="nwMilestones" style="margin-top:10px;display:none">
-          <div style="font-size:9px;font-weight:700;color:var(--txt2);text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px">Milestones</div>
-          <div id="nwMilestoneBadges" style="display:flex;flex-wrap:wrap;gap:4px"></div>
-        </div>
-        
         <div id="nwAccSummary" style="font-size:10px;color:var(--txt2);margin-top:6px;text-align:center;display:none">Assets minus Liabilities</div>
       </div>
 
@@ -5768,27 +5762,6 @@ function renderNetWorth() {
     } else {
       topItemsEl.style.display = "none";
     }
-  }
-
-  // Milestone badges
-  const milestonesEl = document.getElementById("nwMilestones");
-  const badgesEl = document.getElementById("nwMilestoneBadges");
-  if (milestonesEl && badgesEl) {
-    const milestoneValues = [100000, 500000, 1000000, 5000000, 10000000];
-    const milestoneLabels = ["₱100K", "500K", "₱1M", "₱5M", "₱10M"];
-    const badges = [];
-    for (let i = 0; i < milestoneValues.length; i++) {
-      const reached = netWorth >= milestoneValues[i];
-      const progress = Math.min(100, (netWorth / milestoneValues[i]) * 100);
-      badges.push('<div style="font-size:9px;font-weight:700;padding:3px 6px;border-radius:4px;background:' +
-        (reached ? 'var(--suc-l)' : 'var(--bg)') + ';color:' +
-        (reached ? 'var(--suc)' : 'var(--txt2)') + ';border:1px solid ' +
-        (reached ? 'var(--suc)' : 'var(--brd)') + '">' +
-        milestoneLabels[i] + (reached ? ' ✓' : ' ' + Math.round(progress) + '%') +
-        '</div>');
-    }
-    badgesEl.innerHTML = badges.join("");
-    milestonesEl.style.display = "block";
   }
 
   // Render assets
