@@ -2164,21 +2164,8 @@ footer .footer-links a:hover{color:var(--pri-d)}
   font-size: 12px; font-weight: 700; text-align: right;
   outline: none; font-family: "SF Mono", Consolas, monospace;
   transition: border-color .15s;
-  -webkit-user-select: text;
-  user-select: text;
 }
 .nb-price-input:focus { border-color: var(--pri); }
-.nb-qty-input {
-  width: 36px; padding: 3px 4px;
-  border: 1px solid var(--brd); border-radius: 6px;
-  background: var(--input-bg); color: var(--txt);
-  font-size: 12px; font-weight: 700; text-align: center;
-  outline: none; font-family: "SF Mono", Consolas, monospace;
-  transition: border-color .15s;
-  -webkit-user-select: text;
-  user-select: text;
-}
-.nb-qty-input:focus { border-color: var(--pri); }
 .nb-line-total { font-size: 11px; color: var(--txt2); font-family: "SF Mono", Consolas, monospace; }
 /* Total row */
 .nb-cl-total-row {
@@ -11006,6 +10993,7 @@ function summaryStripText(raw) {
     .replace(/`+/g, " ")
     .replace(/https?:\/\/\S+/g, " ");        // urls
 }
+
 // Split text into sentence-like units (also treats line breaks as boundaries).
 function splitSentences(text) {
   return (text || "")
@@ -11653,11 +11641,59 @@ function formatInline(s) {
 // Save an inline price edit made directly in view mode
 // Thin wrappers for inline note item edits — with confirmation
 function _nbQtyChange(el) {
+  const row    = el.closest("tr");
+  const descEl = row ? row.querySelector(".nb-cl-td-desc") : null;
+  const name   = descEl ? descEl.textContent.trim() : "this item";
   const newQty = parseInt(el.value) || 1;
+  if (!confirm("Update quantity for \"" + name + "\" to " + newQty + "?")) {
+    // Revert to stored value
+    const notes = JSON.parse(localStorage.getItem("bt_notes") || "[]");
+    const note  = notes.find(n => n.id === parseInt(el.dataset.nid));
+    if (note) {
+      const idx2   = parseInt(el.dataset.idx);
+      let count    = 0;
+      const lines  = note.text.split("\n");
+      for (const ln of lines) {
+        if (/^\s*\[[ xX]\]\s/i.test(ln)) {
+          if (count === idx2) {
+            const qM = ln.match(/\s*[x×](\d+)\s*(?=\s*[-\u2013\u2014]|$)/i);
+            el.value = qM ? qM[1] : "1";
+            break;
+          }
+          count++;
+        }
+      }
+    }
+    return;
+  }
   updateNoteItemQty(parseInt(el.dataset.nid), parseInt(el.dataset.idx), el.value, el.dataset.lid);
 }
-
 function _nbPriceChange(el) {
+  const row    = el.closest("tr");
+  const descEl = row ? row.querySelector(".nb-cl-td-desc") : null;
+  const name   = descEl ? descEl.textContent.trim() : "this item";
+  const sym    = getCurrency();
+  if (!confirm("Update price for \"" + name + "\" to " + sym + " " + (parseFloat(el.value)||0).toFixed(2) + "?")) {
+    // Revert
+    const notes = JSON.parse(localStorage.getItem("bt_notes") || "[]");
+    const note  = notes.find(n => n.id === parseInt(el.dataset.nid));
+    if (note) {
+      const idx2  = parseInt(el.dataset.idx);
+      let count   = 0;
+      const lines = note.text.split("\n");
+      for (const ln of lines) {
+        if (/^\s*\[[ xX]\]\s/i.test(ln)) {
+          if (count === idx2) {
+            const amtM = ln.match(/[-\u2013\u2014]+\s*[^\d\s]*(\d[\d,]*(?:\.\d{1,2})?)\s*$/);
+            el.value = amtM ? amtM[1] : "";
+            break;
+          }
+          count++;
+        }
+      }
+    }
+    return;
+  }
   updateNoteItemPrice(parseInt(el.dataset.nid), parseInt(el.dataset.idx), el.value, el.dataset.lid);
 }
 
@@ -11740,7 +11776,7 @@ function _refreshClTotal(tableId, noteId) {
   rows.forEach(row => {
     const qtyEl   = row.querySelector(".nb-qty-input");
     const priceEl = row.querySelector(".nb-price-input");
-    if (priceEl && priceEl.value && priceEl.value !== "0" && priceEl.value !== "0.00") {
+    if (priceEl && priceEl.value) {
       const qty    = parseInt(qtyEl?.value || "1") || 1;
       const price  = parseFloat(priceEl.value.replace(/,/g,"")) || 0;
       grandTotal  += qty * price;
@@ -11774,14 +11810,7 @@ function formatNoteBody(text, noteId) {
   function splitCheckItem(raw) {
     // Strip amount: "— $ 0.00" or "— ₱300" etc.
     const amtM = raw.match(/^(.*?)\s*[-\u2013\u2014]+\s*[^\d\s]*(\d[\d,]*(?:\.\d{1,2})?)\s*$/);
-    if (amtM) {
-      const amt = amtM[2].replace(/,/g,"");
-      // Treat "0" or "0.00" as no price set
-      if (amt === "0" || amt === "0.00" || amt === "0.0") {
-        return { desc: raw.trim(), amt: null };
-      }
-      return { desc: amtM[1].trim(), amt: amt };
-    }
+    if (amtM) return { desc: amtM[1].trim(), amt: amtM[2].replace(/,/g,"") };
     return { desc: raw.trim(), amt: null };
   }
 
@@ -11875,11 +11904,9 @@ function formatNoteBody(text, noteId) {
       // Compute and inject total immediately (pure string-level)
       let grandTotal = 0;
       for (const it of clItems) {
-        if (it.amt !== null && it.amt !== "0" && it.amt !== "0.00") {
-          grandTotal += (it.qty || 1) * (parseFloat(it.amt) || 0);
-        }
+        if (it.amt !== null) grandTotal += (it.qty || 1) * (parseFloat(it.amt) || 0);
       }
-      const hasAmt = clItems.some(it => it.amt !== null && it.amt !== "0" && it.amt !== "0.00");
+      const hasAmt = clItems.some(it => it.amt !== null);
       if (hasAmt) {
         html = html.replace(
           '<!-- total -->',
