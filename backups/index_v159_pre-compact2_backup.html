@@ -2833,60 +2833,53 @@ footer .footer-links a:hover{color:var(--pri-d)}
 
     <!-- ROW 2: Net Worth + Accordions (full width) -->
     <div style="grid-column:1/-1;display:flex;flex-direction:column;gap:10px">
-      <!-- ─── NET WORTH (COMPACT DASHBOARD) ─── -->
-      <div class="card" style="padding:14px;position:relative">
-        <!-- Quick Add Button (top-right corner) -->
-        <button onclick="openNwQuickAdd()" style="position:absolute;top:12px;right:12px;width:32px;height:32px;border-radius:8px;border:1.5px solid var(--brd);background:var(--card);color:var(--txt2);font-size:16px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s" onmouseover="this.style.borderColor='var(--pri)';this.style.color='var(--pri-d)';this.style.background='var(--pri-l)'" onmouseout="this.style.borderColor='var(--brd)';this.style.color='var(--txt2)';this.style.background='var(--card)'" title="Quick Add">+</button>
+      <!-- ─── NET WORTH (ENHANCED) ─── -->
+      <div class="card" style="padding:16px">
+        <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:1.2px;color:var(--txt2);margin-bottom:6px;text-align:center">Your Net Worth</div>
+        <div id="nwTotal" style="font-size:clamp(24px,5vw,32px);font-weight:900;font-family:'SF Mono',monospace;letter-spacing:-1px;color:var(--suc);line-height:1.2;text-align:center">—</div>
+        <div id="nwTrend" style="margin-top:4px;font-size:11px;text-align:center"></div>
         
-        <!-- Main Grid: Left (Net Worth + Trend + Ratio) | Right (Assets/Liab cards) -->
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:start">
-          
-          <!-- LEFT: Net Worth Total + Trend + Ratio -->
-          <div>
-            <div style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--txt2);margin-bottom:4px">Your Net Worth</div>
-            <div id="nwTotal" style="font-size:clamp(22px,4vw,28px);font-weight:900;font-family:'SF Mono',monospace;letter-spacing:-1px;color:var(--suc);line-height:1.1">—</div>
-            <div id="nwTrend" style="margin-top:4px;font-size:10px"></div>
-            
-            <!-- Debt-to-Asset Ratio (compact) -->
-            <div style="margin-top:10px;padding:6px 8px;background:var(--bg);border-radius:6px;display:inline-flex;align-items:baseline;gap:6px">
-              <div>
-                <div style="font-size:8px;font-weight:700;color:var(--txt2);text-transform:uppercase;letter-spacing:.4px">Debt Ratio</div>
-                <div id="nwDebtRatio" style="font-size:14px;font-weight:800;color:var(--txt);font-family:'SF Mono',monospace">0.00</div>
-              </div>
-              <div id="nwDebtRatioBadge" style="font-size:8px;font-weight:700;padding:2px 5px;border-radius:4px;background:var(--suc-l);color:var(--suc)">Healthy</div>
-            </div>
-          </div>
-          
-          <!-- RIGHT: Assets/Liabilities Cards (compact) -->
-          <div style="display:flex;flex-direction:column;gap:6px">
-            <div style="background:var(--suc-l);border-radius:6px;padding:6px 8px">
-              <div style="font-size:8px;font-weight:700;color:var(--suc);text-transform:uppercase;letter-spacing:.4px">Total Assets</div>
-              <div id="nwAssetsQuick" style="font-size:13px;font-weight:800;color:var(--suc);font-family:'SF Mono',monospace">$0</div>
-            </div>
-            <div style="background:var(--dan-l);border-radius:6px;padding:6px 8px">
-              <div style="font-size:8px;font-weight:700;color:var(--dan);text-transform:uppercase;letter-spacing:.4px">Total Liabilities</div>
-              <div id="nwLiabQuick" style="font-size:13px;font-weight:800;color:var(--dan);font-family:'SF Mono',monospace">$0</div>
-            </div>
-          </div>
-        </div>
-        
-        <!-- Assets vs Liabilities Visual Bar (full width, compact) -->
-        <div style="margin-top:12px">
-          <div style="display:flex;justify-content:space-between;font-size:9px;color:var(--txt2);margin-bottom:3px">
+        <!-- Assets vs Liabilities Visual Bar -->
+        <div style="margin-top:14px">
+          <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--txt2);margin-bottom:4px">
             <span id="nwAssetsCount">0 assets</span>
             <span id="nwLiabCount">0 liabilities</span>
           </div>
-          <div style="display:flex;height:6px;border-radius:99px;overflow:hidden;background:var(--bg)">
+          <div style="display:flex;height:8px;border-radius:99px;overflow:hidden;background:var(--bg)">
             <div id="nwAssetsBar" style="background:var(--suc);transition:width .5s ease;width:50%"></div>
             <div id="nwLiabBar" style="background:var(--dan);transition:width .5s ease;width:50%"></div>
           </div>
-          <div style="display:flex;justify-content:space-between;margin-top:4px;font-size:10px;font-weight:700">
+          <div style="display:flex;justify-content:space-between;margin-top:6px;font-size:11px;font-weight:700">
             <span id="nwAssetsTotal2" style="color:var(--suc)">$0</span>
             <span id="nwLiabTotal2" style="color:var(--dan)">$0</span>
           </div>
         </div>
         
-        <div id="nwAccSummary" style="font-size:10px;color:var(--txt2);margin-top:6px;text-align:center;display:none">Assets minus Liabilities</div>
+        <!-- Quick Stats Row -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px">
+          <div style="background:var(--suc-l);border-radius:8px;padding:10px;text-align:center">
+            <div style="font-size:9px;font-weight:700;color:var(--suc);text-transform:uppercase;letter-spacing:.5px">Total Assets</div>
+            <div id="nwAssetsQuick" style="font-size:14px;font-weight:800;color:var(--suc);font-family:'SF Mono',monospace;margin-top:2px">$0</div>
+          </div>
+          <div style="background:var(--dan-l);border-radius:8px;padding:10px;text-align:center">
+            <div style="font-size:9px;font-weight:700;color:var(--dan);text-transform:uppercase;letter-spacing:.5px">Total Liabilities</div>
+            <div id="nwLiabQuick" style="font-size:14px;font-weight:800;color:var(--dan);font-family:'SF Mono',monospace;margin-top:2px">$0</div>
+          </div>
+        </div>
+        
+        <div id="nwAccSummary" style="font-size:10px;color:var(--txt2);margin-top:8px;text-align:center;display:none">Assets minus Liabilities</div>
+        
+        <!-- Debt-to-Asset Ratio + Quick Add -->
+        <div style="margin-top:12px;display:flex;align-items:center;justify-content:space-between;gap:8px">
+          <div style="flex:1;padding:8px 10px;background:var(--bg);border-radius:8px">
+            <div style="font-size:9px;font-weight:700;color:var(--txt2);text-transform:uppercase;letter-spacing:.5px">Debt-to-Asset Ratio</div>
+            <div style="display:flex;align-items:baseline;gap:8px;margin-top:2px">
+              <div id="nwDebtRatio" style="font-size:16px;font-weight:800;color:var(--txt);font-family:'SF Mono',monospace">0.00</div>
+              <div id="nwDebtRatioBadge" style="font-size:9px;font-weight:700;padding:2px 6px;border-radius:4px;background:var(--suc-l);color:var(--suc)">Healthy</div>
+            </div>
+          </div>
+          <button onclick="openNwQuickAdd()" style="width:36px;height:36px;border-radius:8px;border:1.5px solid var(--brd);background:var(--card);color:var(--txt2);font-size:18px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s" onmouseover="this.style.borderColor='var(--pri)';this.style.color='var(--pri-d)';this.style.background='var(--pri-l)'" onmouseout="this.style.borderColor='var(--brd)';this.style.color='var(--txt2)';this.style.background='var(--card)'" title="Quick Add">+</button>
+        </div>
       </div>
 
       <!-- ─── INCOME SOURCES (COMPACT ACCORDION) ─── -->
