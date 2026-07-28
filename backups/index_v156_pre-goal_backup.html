@@ -2657,7 +2657,7 @@ footer .footer-links a:hover{color:var(--pri-d)}
         </div>
         <div class="fg">
           <label>&nbsp;</label>
-          <button class="btn btn-pri" onclick="addBill()">Add Bill</button>
+          <button class="btn btn-pri" onclick="addBill()">+ Add</button>
         </div>
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:8px">
@@ -2867,19 +2867,7 @@ footer .footer-links a:hover{color:var(--pri-d)}
           </div>
         </div>
         
-        <div id="nwAccSummary" style="font-size:10px;color:var(--txt2);margin-top:8px;text-align:center;display:none">Assets minus Liabilities</div>
-        
-        <!-- Debt-to-Asset Ratio + Quick Add -->
-        <div style="margin-top:12px;display:flex;align-items:center;justify-content:space-between;gap:8px">
-          <div style="flex:1;padding:8px 10px;background:var(--bg);border-radius:8px">
-            <div style="font-size:9px;font-weight:700;color:var(--txt2);text-transform:uppercase;letter-spacing:.5px">Debt-to-Asset Ratio</div>
-            <div style="display:flex;align-items:baseline;gap:8px;margin-top:2px">
-              <div id="nwDebtRatio" style="font-size:16px;font-weight:800;color:var(--txt);font-family:'SF Mono',monospace">0.00</div>
-              <div id="nwDebtRatioBadge" style="font-size:9px;font-weight:700;padding:2px 6px;border-radius:4px;background:var(--suc-l);color:var(--suc)">Healthy</div>
-            </div>
-          </div>
-          <button onclick="openNwQuickAdd()" style="width:36px;height:36px;border-radius:8px;border:1.5px solid var(--brd);background:var(--card);color:var(--txt2);font-size:18px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s" onmouseover="this.style.borderColor='var(--pri)';this.style.color='var(--pri-d)';this.style.background='var(--pri-l)'" onmouseout="this.style.borderColor='var(--brd)';this.style.color='var(--txt2)';this.style.background='var(--card)'" title="Quick Add">+</button>
-        </div>
+        <div id="nwAccSummary" style="font-size:10px;color:var(--txt2);margin-top:8px;text-align:center">Assets minus Liabilities</div>
       </div>
 
       <!-- ─── INCOME SOURCES (COMPACT ACCORDION) ─── -->
@@ -2903,7 +2891,7 @@ footer .footer-links a:hover{color:var(--pri-d)}
           <div class="accordion-content" style="padding:0 14px 14px">
             <p style="font-size:11px;color:var(--txt2);margin-bottom:8px">Add every income stream — salary, freelance, side income.</p>
             <div id="incomeSourcesList"></div>
-            <button onclick="event.stopPropagation();addIncomeSource()" style="width:100%;padding:7px;border:1.5px dashed var(--brd);border-radius:8px;background:transparent;color:var(--txt2);font-size:11px;font-weight:600;cursor:pointer;font-family:inherit;transition:.15s;margin-top:3px" onmouseover="this.style.borderColor='var(--suc)';this.style.color='var(--suc)'" onmouseout="this.style.borderColor='var(--brd)';this.style.color='var(--txt2)'">Add Income Source</button>
+            <button onclick="event.stopPropagation();addIncomeSource()" style="width:100%;padding:7px;border:1.5px dashed var(--brd);border-radius:8px;background:transparent;color:var(--txt2);font-size:11px;font-weight:600;cursor:pointer;font-family:inherit;transition:.15s;margin-top:3px" onmouseover="this.style.borderColor='var(--suc)';this.style.color='var(--suc)'" onmouseout="this.style.borderColor='var(--brd)';this.style.color='var(--txt2)'">+ Add Income Source</button>
           </div>
         </div>
       </div>
@@ -2928,7 +2916,7 @@ footer .footer-links a:hover{color:var(--pri-d)}
         <div class="accordion-body">
           <div class="accordion-content" style="padding:0 14px 14px">
             <div id="goalsList"></div>
-            <button onclick="event.stopPropagation();openGoalModal()" style="width:100%;padding:7px;border:1.5px dashed var(--brd);border-radius:8px;background:transparent;color:var(--txt2);font-size:11px;font-weight:600;cursor:pointer;font-family:inherit;transition:.15s;margin-top:3px" onmouseover="this.style.borderColor='var(--pri)';this.style.color='var(--pri-d)'" onmouseout="this.style.borderColor='var(--brd)';this.style.color='var(--txt2)'">Add Goal</button>
+            <button onclick="event.stopPropagation();openGoalModal()" style="width:100%;padding:7px;border:1.5px dashed var(--brd);border-radius:8px;background:transparent;color:var(--txt2);font-size:11px;font-weight:600;cursor:pointer;font-family:inherit;transition:.15s;margin-top:3px" onmouseover="this.style.borderColor='var(--pri)';this.style.color='var(--pri-d)'" onmouseout="this.style.borderColor='var(--brd)';this.style.color='var(--txt2)'">+ Add Goal</button>
           </div>
         </div>
       </div>
@@ -2953,7 +2941,7 @@ footer .footer-links a:hover{color:var(--pri-d)}
         <div class="accordion-body">
           <div class="accordion-content" style="padding:0 14px 14px">
             <div id="nwAssetsList"></div>
-            <button onclick="event.stopPropagation();addNwItem('asset')" style="width:100%;padding:7px;border:1.5px dashed var(--brd);border-radius:8px;background:transparent;color:var(--txt2);font-size:11px;font-weight:600;cursor:pointer;font-family:inherit;transition:.15s;margin-top:3px" onmouseover="this.style.borderColor='var(--suc)';this.style.color='var(--suc)'" onmouseout="this.style.borderColor='var(--brd)';this.style.color='var(--txt2)'">Add Asset</button>
+            <button onclick="event.stopPropagation();addNwItem('asset')" style="width:100%;padding:7px;border:1.5px dashed var(--brd);border-radius:8px;background:transparent;color:var(--txt2);font-size:11px;font-weight:600;cursor:pointer;font-family:inherit;transition:.15s;margin-top:3px" onmouseover="this.style.borderColor='var(--suc)';this.style.color='var(--suc)'" onmouseout="this.style.borderColor='var(--brd)';this.style.color='var(--txt2)'">+ Add Asset</button>
           </div>
         </div>
       </div>
@@ -2982,7 +2970,7 @@ footer .footer-links a:hover{color:var(--pri-d)}
               <span style="font-size:10px;color:var(--txt2);line-height:1.4"><strong style="color:var(--txt)">Tip:</strong> Paying off liabilities increases your net worth.</span>
             </div>
             <div id="nwLiabilitiesList"></div>
-            <button onclick="event.stopPropagation();addNwItem('liability')" style="width:100%;padding:7px;border:1.5px dashed var(--brd);border-radius:8px;background:transparent;color:var(--txt2);font-size:11px;font-weight:600;cursor:pointer;font-family:inherit;transition:.15s;margin-top:3px" onmouseover="this.style.borderColor='var(--dan)';this.style.color='var(--dan)'" onmouseout="this.style.borderColor='var(--brd)';this.style.color='var(--txt2)'">Add Liability</button>
+            <button onclick="event.stopPropagation();addNwItem('liability')" style="width:100%;padding:7px;border:1.5px dashed var(--brd);border-radius:8px;background:transparent;color:var(--txt2);font-size:11px;font-weight:600;cursor:pointer;font-family:inherit;transition:.15s;margin-top:3px" onmouseover="this.style.borderColor='var(--dan)';this.style.color='var(--dan)'" onmouseout="this.style.borderColor='var(--brd)';this.style.color='var(--txt2)'">+ Add Liability</button>
           </div>
         </div>
       </div>
@@ -3859,7 +3847,7 @@ footer .footer-links a:hover{color:var(--pri-d)}
       <div class="exp-cat-hint" id="expCatHint" style="display:none"></div>
       <div style="display:flex;gap:10px;justify-content:flex-end;padding-top:4px;border-top:1px solid var(--brd)">
         <button onclick="closeExpenseModal()" style="padding:10px 18px;border-radius:10px;border:1.5px solid var(--brd);background:var(--bg);color:var(--txt2);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit">Cancel</button>
-        <button onclick="addExpense()" class="btn btn-pri" style="padding:10px 24px;font-size:13px;font-weight:700;border-radius:10px">Add Expense</button>
+        <button onclick="addExpense()" class="btn btn-pri" style="padding:10px 24px;font-size:13px;font-weight:700;border-radius:10px">+ Add Expense</button>
       </div>
     </div>
   </div>
@@ -5676,7 +5664,7 @@ function renderNetWorth() {
         accentColor: "var(--suc)",
         accentLight: "var(--suc-l)",
         tagLabel:    "Asset",
-        actionLabel: "Add Funds",
+        actionLabel: "+ Add Funds",
         actionFn:    `openFinTxnModal(${i.id},'asset','fund')`,
         balance:     i.amt,
       })).join("") + `</div>` +
@@ -5714,88 +5702,8 @@ function renderNetWorth() {
   // Save current as snapshot for next time
   localStorage.setItem("bt_nw_prev", String(netWorth));
   _renderDashNetWorth();
-  
-  // Update debt-to-asset ratio
-  renderNwDebtRatio(totalAssets, totalLiab);
-  
   // Keep Finance/Budget tab overview in sync
   if (document.querySelector('[data-tab="goals"]')?.classList.contains("active")) renderFinanceOverview();
-}
-
-// ── Debt-to-Asset Ratio ───────────────────────────────────
-function renderNwDebtRatio(totalAssets, totalLiab) {
-  const ratioEl = document.getElementById("nwDebtRatio");
-  const badgeEl = document.getElementById("nwDebtRatioBadge");
-  if (!ratioEl || !badgeEl) return;
-  
-  const ratio = totalAssets > 0 ? totalLiab / totalAssets : 0;
-  ratioEl.textContent = ratio.toFixed(2);
-  
-  let label, color, bg;
-  if (ratio === 0) { label = "No Debt"; color = "var(--suc)"; bg = "var(--suc-l)"; }
-  else if (ratio < 0.3) { label = "Excellent"; color = "var(--suc)"; bg = "var(--suc-l)"; }
-  else if (ratio < 0.5) { label = "Healthy"; color = "var(--pri-d)"; bg = "var(--pri-l)"; }
-  else if (ratio < 0.7) { label = "Moderate"; color = "var(--acc)"; bg = "var(--acc-l)"; }
-  else { label = "High Risk"; color = "var(--dan)"; bg = "var(--dan-l)"; }
-  
-  badgeEl.textContent = label;
-  badgeEl.style.color = color;
-  badgeEl.style.background = bg;
-}
-
-// ── Quick Add Modal ────────────────────────────────────────
-function openNwQuickAdd() {
-  const ex = document.getElementById("_nwQuickAddModal");
-  if (ex) ex.remove();
-  const overlay = document.createElement("div");
-  overlay.id = "_nwQuickAddModal";
-  overlay.style.cssText = "position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.5)";
-  overlay.innerHTML = `
-    <div style="background:var(--card);border-radius:16px;padding:22px 24px;min-width:280px;max-width:90vw;box-shadow:0 12px 40px rgba(0,0,0,.28)">
-      <div style="font-size:14px;font-weight:800;color:var(--txt);margin-bottom:14px">Quick Add</div>
-      <div class="fg" style="margin-bottom:10px">
-        <label>Type</label>
-        <select id="_nwQuickType" style="width:100%;padding:9px 12px;border:1.5px solid var(--brd);border-radius:9px;font-size:13px;font-family:inherit;background:var(--input-bg);color:var(--txt);outline:none;box-sizing:border-box">
-          <option value="asset">Asset</option>
-          <option value="liability">Liability</option>
-        </select>
-      </div>
-      <div class="fg" style="margin-bottom:10px">
-        <label>Name</label>
-        <input type="text" id="_nwQuickName" placeholder="e.g. Cash, Car Loan" style="width:100%;padding:9px 12px;border:1.5px solid var(--brd);border-radius:9px;font-size:13px;color:var(--txt);background:var(--input-bg);outline:none;box-sizing:border-box">
-      </div>
-      <div class="fg" style="margin-bottom:16px">
-        <label>Amount</label>
-        <input type="text" inputmode="decimal" id="_nwQuickAmt" placeholder="0.00" oninput="formatNumberInput(this)" style="width:100%;padding:9px 12px;border:1.5px solid var(--brd);border-radius:9px;font-size:15px;font-weight:800;color:var(--txt);background:var(--input-bg);outline:none;box-sizing:border-box">
-      </div>
-      <div style="display:flex;gap:10px;justify-content:flex-end">
-        <button onclick="document.getElementById('_nwQuickAddModal').remove()" style="padding:9px 16px;border-radius:9px;border:1.5px solid var(--brd);background:var(--bg);color:var(--txt2);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit">Cancel</button>
-        <button onclick="_saveNwQuickAdd()" class="btn btn-pri" style="padding:9px 20px;border-radius:9px;font-size:13px;font-weight:700">Save</button>
-      </div>
-    </div>`;
-  document.body.appendChild(overlay);
-  overlay.addEventListener("click", e=>{ if(e.target===overlay) overlay.remove(); });
-  setTimeout(()=>document.getElementById("_nwQuickName")?.focus(), 60);
-}
-
-function _saveNwQuickAdd() {
-  const type = document.getElementById("_nwQuickType")?.value || "asset";
-  const name = document.getElementById("_nwQuickName")?.value.trim();
-  const amt = parseFloat((document.getElementById("_nwQuickAmt")?.value||"").replace(/,/g,""));
-  if (!name || !amt || amt <= 0) { toast("Enter name and amount"); return; }
-  
-  const list = getNwItems();
-  list.push({
-    id: Date.now(),
-    type,
-    label: name,
-    amt,
-    transactions: [{ id: Date.now(), date: new Date().toISOString().split("T")[0], action: "init", amount: amt, note: "Initial", balance: amt }]
-  });
-  saveNwItems(list);
-  document.getElementById("_nwQuickAddModal")?.remove();
-  toast((type === "asset" ? "Asset" : "Liability") + " added!");
-  renderNetWorth();
 }
 
 function _nwRow(item, type) {
@@ -5810,11 +5718,11 @@ function _nwRow(item, type) {
     ? `<button onclick="event.stopPropagation();openNwTxnModal(${item.id},'fund')"
         style="font-size:10px;font-weight:700;padding:4px 9px;border-radius:7px;border:1.5px solid var(--suc);background:var(--suc-l);color:var(--suc);cursor:pointer;font-family:inherit;white-space:nowrap;transition:.15s"
         onmouseover="this.style.background='var(--suc)';this.style.color='#fff'"
-        onmouseout="this.style.background='var(--suc-l)';this.style.color='var(--suc)'">Add Funds</button>`
+        onmouseout="this.style.background='var(--suc-l)';this.style.color='var(--suc)'">+ Add Funds</button>`
     : `<button onclick="event.stopPropagation();openNwTxnModal(${item.id},'pay')"
         style="font-size:10px;font-weight:700;padding:4px 9px;border-radius:7px;border:1.5px solid var(--dan);background:var(--dan-l);color:var(--dan);cursor:pointer;font-family:inherit;white-space:nowrap;transition:.15s"
         onmouseover="this.style.background='var(--dan)';this.style.color='#fff'"
-        onmouseout="this.style.background='var(--dan-l)';this.style.color='var(--dan)'">Pay Down</button>`;
+        onmouseout="this.style.background='var(--dan-l)';this.style.color='var(--dan)'">− Pay Down</button>`;
 
   const histBtn = txCount > 0
     ? `<button onclick="event.stopPropagation();_toggleNwHist('${histId}')"
@@ -7189,7 +7097,7 @@ function renderGoals() {
       accentColor: pct >= 100 ? "var(--suc)" : "var(--pri-d)",
       accentLight: pct >= 100 ? "var(--suc-l)" : "var(--pri-l)",
       tagLabel:    statusLabel,
-      actionLabel: "Add Contribution",
+      actionLabel: "+ Add Contribution",
       actionFn:    `openFinTxnModal(${g.id},'goal','contribution')`,
       balance:     g.saved || 0,
       target:      g.target,
@@ -7489,20 +7397,17 @@ function _saveIncomeSource() {
 
 function deleteIncomeSource(id) {
   saveIncomeSources(getIncomeSources().filter(s=>s.id!==id));
-  _syncIncomeSources();
-  renderIncomeSourcesList();
-  renderNetWorth();
-  updateDashboard();
-  renderFinanceOverview();
+  _syncIncomeSources(); renderIncomeSourcesList();
 }
 
 function _syncIncomeSources() {
   const sources = getIncomeSources().filter(s=>!s.isWindfall);
+  if (!sources.length) return;
   const total = sources.reduce((s,src)=>s+src.amount,0);
   const el = document.getElementById("incomeInput");
-  if (el) { el.value = total > 0 ? total.toLocaleString("en-US") : ""; updateDashboard(); setIncomeDisplay(total); }
+  if (el) { el.value = total.toLocaleString("en-US"); updateDashboard(); setIncomeDisplay(total); }
   const lbl = document.getElementById("incomeSourcesTotalLabel");
-  if (lbl) lbl.textContent = total > 0 ? fmt(total) : "—";
+  if (lbl) lbl.textContent = fmt(total);
 }
 
 function renderIncomeSourcesList() {
@@ -7529,7 +7434,7 @@ function renderIncomeSourcesList() {
     accentColor: s.isWindfall ? "var(--acc)" : "var(--suc)",
     accentLight: s.isWindfall ? "var(--acc-l)" : "var(--suc-l)",
     tagLabel:    INCOME_TYPE_LABELS[s.type] || INCOME_WINDFALL_LABELS[s.type] || s.type,
-    actionLabel: "Log Income",
+    actionLabel: "+ Log Income",
     actionFn:    `openFinTxnModal(${s.id},'income','log')`,
     balance:     s.amount,
   });
