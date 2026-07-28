@@ -2846,15 +2846,9 @@ footer .footer-links a:hover{color:var(--pri-d)}
             <div style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--txt2);margin-bottom:4px">Your Net Worth</div>
             <div id="nwTotal" style="font-size:clamp(22px,4vw,28px);font-weight:900;font-family:'SF Mono',monospace;letter-spacing:-1px;color:var(--suc);line-height:1.1">—</div>
             <div id="nwTrend" style="margin-top:4px;font-size:10px"></div>
-            <div id="nwMonthlyChange" style="margin-top:3px;font-size:10px;font-weight:700"></div>
-            
-            <!-- Mini Sparkline (last 6 months) -->
-            <svg id="nwSparkline" width="100%" height="32" style="margin-top:6px" preserveAspectRatio="none">
-              <path id="nwSparkPath" fill="none" stroke="var(--pri)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
             
             <!-- Debt-to-Asset Ratio (compact) -->
-            <div style="margin-top:8px;padding:6px 8px;background:var(--bg);border-radius:6px;display:inline-flex;align-items:baseline;gap:6px">
+            <div style="margin-top:10px;padding:6px 8px;background:var(--bg);border-radius:6px;display:inline-flex;align-items:baseline;gap:6px">
               <div>
                 <div style="font-size:8px;font-weight:700;color:var(--txt2);text-transform:uppercase;letter-spacing:.4px">Debt Ratio</div>
                 <div id="nwDebtRatio" style="font-size:14px;font-weight:800;color:var(--txt);font-family:'SF Mono',monospace">0.00</div>
@@ -5657,47 +5651,6 @@ function renderNetWorth() {
     }
   }
 
-  // Monthly change indicator
-  const monthlyEl = document.getElementById("nwMonthlyChange");
-  if (monthlyEl) {
-    const history = JSON.parse(localStorage.getItem("bt_nw_history") || "[]");
-    const now = new Date();
-    const currentMonth = now.getFullYear() + "-" + String(now.getMonth() + 1).padStart(2, "0");
-    
-    // Find last month's value
-    let lastMonthVal = null;
-    for (let i = history.length - 1; i >= 0; i--) {
-      if (history[i].month !== currentMonth) {
-        lastMonthVal = history[i].value;
-        break;
-      }
-    }
-    
-    if (lastMonthVal !== null && items.length > 0) {
-      const monthDiff = netWorth - lastMonthVal;
-      const monthPct = lastMonthVal > 0 ? Math.round(Math.abs(monthDiff) / Math.abs(lastMonthVal) * 100) : 0;
-      const color = monthDiff >= 0 ? "var(--suc)" : "var(--dan)";
-      const arrow = monthDiff >= 0 ? "↑" : "↓";
-      monthlyEl.innerHTML = `<span style="color:${color}">${arrow} ${fmt(Math.abs(monthDiff))} (${monthPct}%) this month</span>`;
-    } else {
-      monthlyEl.innerHTML = "";
-    }
-    
-    // Save current month snapshot
-    const existingIdx = history.findIndex(h => h.month === currentMonth);
-    if (existingIdx >= 0) {
-      history[existingIdx].value = netWorth;
-    } else {
-      history.push({ month: currentMonth, value: netWorth });
-    }
-    // Keep only last 6 months
-    while (history.length > 6) history.shift();
-    localStorage.setItem("bt_nw_history", JSON.stringify(history));
-    
-    // Render sparkline
-    renderNwSparkline(history);
-  }
-
   // Update new Net Worth visual elements
   const assetsBar = document.getElementById("nwAssetsBar");
   const liabBar = document.getElementById("nwLiabBar");
@@ -5795,38 +5748,6 @@ function renderNwDebtRatio(totalAssets, totalLiab) {
   badgeEl.textContent = label;
   badgeEl.style.color = color;
   badgeEl.style.background = bg;
-}
-
-// ── Mini Sparkline ─────────────────────────────────────────
-function renderNwSparkline(history) {
-  const pathEl = document.getElementById("nwSparkPath");
-  if (!pathEl) return;
-  
-  if (history.length < 2) {
-    pathEl.setAttribute("d", "");
-    return;
-  }
-  
-  const values = history.map(h => h.value);
-  const min = Math.min(...values);
-  const max = Math.max(...values);
-  const range = max - min || 1;
-  
-  const width = 200; // SVG viewBox width
-  const height = 32;
-  const padding = 2;
-  
-  const points = values.map((v, i) => {
-    const x = padding + (i / (values.length - 1)) * (width - padding * 2);
-    const y = height - padding - ((v - min) / range) * (height - padding * 2);
-    return `${x},${y}`;
-  });
-  
-  pathEl.setAttribute("d", "M" + points.join(" L"));
-  
-  // Color based on trend
-  const isUp = values[values.length - 1] >= values[0];
-  pathEl.setAttribute("stroke", isUp ? "var(--suc)" : "var(--dan)");
 }
 
 // ── Quick Add Modal ────────────────────────────────────────
