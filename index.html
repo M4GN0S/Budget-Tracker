@@ -11278,9 +11278,12 @@ function renderNoteModal() {
     if (summary) {
       tldrEl.innerHTML = '<span class="tldr-label">' + tldrIcon + 'Summary</span>' +
         '<span class="tldr-text">' + escHtml(summary) + '</span>' +
-        '<button class="tldr-collapse" onclick="this.closest(\'.note-tldr\').classList.toggle(\'collapsed\')" title="Minimize">' + chevDown + chevUp + '</button>';
+        '<button class="tldr-collapse" onclick="_toggleTldrCollapse(' + note.id + ', this)" title="Minimize">' + chevDown + chevUp + '</button>';
       tldrEl.style.display = "flex";
-      tldrEl.classList.remove("collapsed");
+      // Restore collapsed state
+      const wasCollapsed = localStorage.getItem("bt_note_tldr_collapsed_" + note.id) === "1";
+      if (wasCollapsed) tldrEl.classList.add("collapsed");
+      else tldrEl.classList.remove("collapsed");
     } else {
       tldrEl.style.display = "none";
       tldrEl.innerHTML = "";
@@ -11312,7 +11315,7 @@ function renderRelatedNotes(note) {
   const chevUp = '<svg class="chev-up" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="18 15 12 9 6 15"/></svg>';
   wrap.innerHTML =
     '<div class="note-related-label">' + linkIcon + 'Related notes</div>' +
-    '<button class="rel-collapse" onclick="this.closest(\'.note-related\').classList.toggle(\'collapsed\')" title="Minimize">' + chevDown + chevUp + '</button>' +
+    '<button class="rel-collapse" onclick="_toggleRelatedCollapse(' + note.id + ', this)" title="Minimize">' + chevDown + chevUp + '</button>' +
     related.map(r =>
       '<div class="note-related-item" onclick="openNoteModal(' + r.id + ')">' +
         '<span class="nri-title">' + escHtml(getNoteTitle(r)) + '</span>' +
@@ -11321,7 +11324,23 @@ function renderRelatedNotes(note) {
       '</div>'
     ).join("");
   wrap.style.display = "block";
-  wrap.classList.remove("collapsed");
+  // Restore collapsed state
+  const wasCollapsed = localStorage.getItem("bt_note_related_collapsed_" + note.id) === "1";
+  if (wasCollapsed) wrap.classList.add("collapsed");
+  else wrap.classList.remove("collapsed");
+}
+
+// ── Persist collapse state for Summary & Related Notes ──
+function _toggleTldrCollapse(noteId, btn) {
+  const el = btn.closest('.note-tldr');
+  el.classList.toggle('collapsed');
+  localStorage.setItem("bt_note_tldr_collapsed_" + noteId, el.classList.contains('collapsed') ? "1" : "0");
+}
+
+function _toggleRelatedCollapse(noteId, btn) {
+  const el = btn.closest('.note-related');
+  el.classList.toggle('collapsed');
+  localStorage.setItem("bt_note_related_collapsed_" + noteId, el.classList.contains('collapsed') ? "1" : "0");
 }
 
 // Supportive nudge shown when a journal note reads as financially stressed.
