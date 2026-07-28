@@ -990,16 +990,6 @@ tbody tr:hover td{background:var(--pri-l)}
 .note-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);backdrop-filter:blur(4px);z-index:1000;display:none;align-items:flex-start;justify-content:center;padding:24px 16px;overflow-y:auto}
 .note-overlay.show{display:flex}
 .note-modal{background:var(--card);border-radius:20px;max-width:560px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.25);animation:modalIn .3s cubic-bezier(.4,0,.2,1);margin:auto;display:flex;flex-direction:column;max-height:90vh}
-.note-modal.fullview .note-modal-head{display:none!important}
-.note-modal.fullview .note-modal-title{display:none!important}
-.note-modal.fullview .note-modal-date{display:none!important}
-.note-modal.fullview .note-tldr{display:none!important}
-.note-modal.fullview .note-mood{display:none!important}
-.note-modal.fullview .note-related{display:none!important}
-.note-modal.fullview .note-modal-body{padding:16px 24px!important}
-.note-modal.fullview{max-width:100%!important;max-height:100vh!important;border-radius:0!important;height:100vh!important}
-.note-modal.fullview .note-modal-body{max-height:none!important}
-.note-overlay.fullview{padding:0!important}
 .note-modal-head{padding:22px 24px 0;display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
 .note-modal-head .nm-meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .note-modal-head .close-modal{flex-shrink:0;background:var(--bg);color:var(--txt2);width:32px;height:32px;border-radius:8px;font-size:16px;display:flex;align-items:center;justify-content:center;transition:.2s;cursor:pointer;border:none}
@@ -1033,7 +1023,6 @@ tbody tr:hover td{background:var(--pri-l)}
 .note-modal-foot .nmf-pin:hover,.note-modal-foot .nmf-edit:hover{background:var(--pri-l);border-color:var(--pri);color:var(--pri-d)}
 .note-modal-foot .nmf-pin.active{background:var(--acc-l);border-color:var(--acc);color:var(--acc)}
 .note-modal-foot .nmf-del:hover{background:var(--dan-l);border-color:var(--dan);color:var(--dan)}
-.note-modal-foot .nmf-fullview:hover{background:var(--pri-l);border-color:var(--pri);color:var(--pri-d)}
 .note-modal-edit textarea{width:100%;padding:12px 14px;border:1.5px solid var(--pri);border-radius:12px;font-size:14px;font-family:inherit;outline:none;background:var(--input-bg);color:var(--txt);resize:none;overflow:hidden;min-height:160px;max-height:60vh;box-sizing:border-box;line-height:1.7}
 .note-modal-hint{padding:4px 24px 0;font-size:11px;color:var(--txt2)}
 /* Full-screen modals on mobile for a uniform, native feel */
@@ -1120,17 +1109,9 @@ tbody tr:hover td{background:var(--pri-l)}
 .note-dup-warn .dup-btn-pri{background:var(--acc);color:var(--card);border-color:var(--acc)}
 .note-dup-warn .dup-btn-pri:hover{filter:brightness(1.06)}
 /* Auto-summary TL;DR banner (inside journal modal) */
-.note-tldr{margin:2px 24px 6px;padding:11px 14px;background:var(--acc-l);border:1px solid var(--acc);border-left:3px solid var(--acc);border-radius:10px;display:flex;flex-direction:column;gap:5px;position:relative}
+.note-tldr{margin:2px 24px 6px;padding:11px 14px;background:var(--acc-l);border:1px solid var(--acc);border-left:3px solid var(--acc);border-radius:10px;display:flex;flex-direction:column;gap:5px}
 .note-tldr .tldr-label{font-size:10px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;color:var(--acc);display:flex;align-items:center;gap:6px}
 .note-tldr .tldr-text{font-size:13.5px;line-height:1.5;color:var(--txt);font-style:italic}
-.note-tldr .tldr-collapse{position:absolute;top:8px;right:8px;background:none;border:none;color:var(--acc);cursor:pointer;padding:4px;border-radius:4px;display:flex;align-items:center;justify-content:center;transition:.15s}
-.note-tldr .tldr-collapse:hover{background:var(--acc);color:#fff}
-.note-tldr .tldr-collapse .chev-down{display:block}
-.note-tldr .tldr-collapse .chev-up{display:none}
-.note-tldr.collapsed .tldr-text{display:none}
-.note-tldr.collapsed{padding-bottom:8px}
-.note-tldr.collapsed .tldr-collapse .chev-down{display:none}
-.note-tldr.collapsed .tldr-collapse .chev-up{display:block}
 /* Supportive sentiment nudge (inside journal modal) */
 .note-mood{margin:10px 24px 4px;padding:14px 16px;background:linear-gradient(135deg,var(--pri-l,rgba(126,154,142,.12)),rgba(126,154,142,.06));border:1px solid color-mix(in srgb, var(--pri) 35%, var(--brd));border-left:3px solid var(--pri);border-radius:12px}
 .note-mood .mood-head{display:flex;align-items:center;gap:7px;font-size:11px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;color:var(--pri);margin-bottom:7px}
@@ -1193,7 +1174,7 @@ tbody tr:hover td{background:var(--pri-l)}
 .count-prompt-val{min-width:40px;text-align:center;font-size:22px;font-weight:900;color:var(--txt)}
 .count-prompt-sub{font-size:11px;color:var(--txt2);text-align:center;margin-bottom:14px}
 /* Related notes (inside journal modal) */
-.note-related{padding:14px 24px 4px;border-top:1px solid var(--brd);margin-top:6px;position:relative}
+.note-related{padding:14px 24px 4px;border-top:1px solid var(--brd);margin-top:6px}
 .note-related-label{font-size:10px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;color:var(--txt2);margin-bottom:10px;display:flex;align-items:center;gap:6px}
 .note-related-item{display:flex;align-items:center;gap:10px;padding:9px 11px;border:1px solid var(--brd);border-radius:10px;margin-bottom:7px;cursor:pointer;transition:.15s;background:var(--bg)}
 .note-related-item:hover{border-color:var(--pri);box-shadow:var(--sh)}
@@ -1207,14 +1188,6 @@ tbody tr:hover td{background:var(--pri-l)}
 .note-related-item .nri-tag.tip{background:var(--acc-l);color:var(--acc)}
 .note-related-item .nri-chev{flex-shrink:0;color:var(--txt2);opacity:.5;display:flex}
 @media(max-width:600px){.note-related{padding-left:18px;padding-right:18px}}
-.note-related .rel-collapse{position:absolute;top:10px;right:16px;background:none;border:none;color:var(--txt2);cursor:pointer;padding:4px;border-radius:4px;display:flex;align-items:center;justify-content:center;transition:.15s}
-.note-related .rel-collapse:hover{background:var(--bg);color:var(--txt)}
-.note-related .rel-collapse .chev-down{display:block}
-.note-related .rel-collapse .chev-up{display:none}
-.note-related.collapsed .note-related-item{display:none}
-.note-related.collapsed{padding-bottom:8px}
-.note-related.collapsed .rel-collapse .chev-down{display:none}
-.note-related.collapsed .rel-collapse .chev-up{display:block}
 .tag-filters{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:12px}
 .tag-filter{padding:4px 12px;border-radius:16px;font-size:11px;font-weight:600;background:var(--bg);color:var(--txt2);border:1.5px solid var(--brd);cursor:pointer;transition:.2s}
 .tag-filter:hover,.tag-filter.active{background:var(--pri-l);color:var(--pri-d);border-color:var(--pri)}
@@ -2175,21 +2148,8 @@ footer .footer-links a:hover{color:var(--pri-d)}
   font-size: 12px; font-weight: 700; text-align: right;
   outline: none; font-family: "SF Mono", Consolas, monospace;
   transition: border-color .15s;
-  -webkit-user-select: text;
-  user-select: text;
 }
 .nb-price-input:focus { border-color: var(--pri); }
-.nb-qty-input {
-  width: 36px; padding: 3px 4px;
-  border: 1px solid var(--brd); border-radius: 6px;
-  background: var(--input-bg); color: var(--txt);
-  font-size: 12px; font-weight: 700; text-align: center;
-  outline: none; font-family: "SF Mono", Consolas, monospace;
-  transition: border-color .15s;
-  -webkit-user-select: text;
-  user-select: text;
-}
-.nb-qty-input:focus { border-color: var(--pri); }
 .nb-line-total { font-size: 11px; color: var(--txt2); font-family: "SF Mono", Consolas, monospace; }
 /* Total row */
 .nb-cl-total-row {
@@ -2873,81 +2833,53 @@ footer .footer-links a:hover{color:var(--pri-d)}
 
     <!-- ROW 2: Net Worth + Accordions (full width) -->
     <div style="grid-column:1/-1;display:flex;flex-direction:column;gap:10px">
-      <!-- ─── NET WORTH (COMPACT DASHBOARD) ─── -->
-      <div class="card" style="padding:14px;position:relative">
-        <!-- Quick Add Button (top-right corner) -->
-        <button onclick="openNwQuickAdd()" style="position:absolute;top:12px;right:12px;width:32px;height:32px;border-radius:8px;border:1.5px solid var(--brd);background:var(--card);color:var(--txt2);font-size:16px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s" onmouseover="this.style.borderColor='var(--pri)';this.style.color='var(--pri-d)';this.style.background='var(--pri-l)'" onmouseout="this.style.borderColor='var(--brd)';this.style.color='var(--txt2)';this.style.background='var(--card)'" title="Quick Add">+</button>
+      <!-- ─── NET WORTH (ENHANCED) ─── -->
+      <div class="card" style="padding:16px">
+        <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:1.2px;color:var(--txt2);margin-bottom:6px;text-align:center">Your Net Worth</div>
+        <div id="nwTotal" style="font-size:clamp(24px,5vw,32px);font-weight:900;font-family:'SF Mono',monospace;letter-spacing:-1px;color:var(--suc);line-height:1.2;text-align:center">—</div>
+        <div id="nwTrend" style="margin-top:4px;font-size:11px;text-align:center"></div>
         
-        <!-- Main Grid: Left (Net Worth + Trend + Ratio) | Right (Assets/Liab cards) -->
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:start">
-          
-          <!-- LEFT: Net Worth Total + Trend + Ratio -->
-          <div>
-            <div style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--txt2);margin-bottom:4px">Your Net Worth</div>
-            <div id="nwTotal" style="font-size:clamp(22px,4vw,28px);font-weight:900;font-family:'SF Mono',monospace;letter-spacing:-1px;color:var(--suc);line-height:1.1">—</div>
-            <div id="nwTrend" style="margin-top:4px;font-size:10px"></div>
-            <div id="nwMonthlyChange" style="margin-top:3px;font-size:10px;font-weight:700"></div>
-            
-            <!-- Mini Sparkline (last 6 months) -->
-            <svg id="nwSparkline" width="100%" height="32" style="margin-top:6px" preserveAspectRatio="none">
-              <path id="nwSparkPath" fill="none" stroke="var(--pri)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-            
-            <!-- Debt-to-Asset Ratio (compact) -->
-            <div style="margin-top:8px;padding:6px 8px;background:var(--bg);border-radius:6px;display:inline-flex;align-items:baseline;gap:6px">
-              <div>
-                <div style="font-size:8px;font-weight:700;color:var(--txt2);text-transform:uppercase;letter-spacing:.4px">Debt Ratio</div>
-                <div id="nwDebtRatio" style="font-size:14px;font-weight:800;color:var(--txt);font-family:'SF Mono',monospace">0.00</div>
-              </div>
-              <div id="nwDebtRatioBadge" style="font-size:8px;font-weight:700;padding:2px 5px;border-radius:4px;background:var(--suc-l);color:var(--suc)">Healthy</div>
-            </div>
-          </div>
-          
-          <!-- RIGHT: Assets/Liabilities Cards (compact) -->
-          <div style="display:flex;flex-direction:column;gap:6px">
-            <div style="background:var(--suc-l);border-radius:6px;padding:6px 8px">
-              <div style="font-size:8px;font-weight:700;color:var(--suc);text-transform:uppercase;letter-spacing:.4px">Total Assets</div>
-              <div id="nwAssetsQuick" style="font-size:13px;font-weight:800;color:var(--suc);font-family:'SF Mono',monospace">$0</div>
-            </div>
-            <div style="background:var(--dan-l);border-radius:6px;padding:6px 8px">
-              <div style="font-size:8px;font-weight:700;color:var(--dan);text-transform:uppercase;letter-spacing:.4px">Total Liabilities</div>
-              <div id="nwLiabQuick" style="font-size:13px;font-weight:800;color:var(--dan);font-family:'SF Mono',monospace">$0</div>
-            </div>
-          </div>
-        </div>
-        
-        <!-- Assets vs Liabilities Visual Bar (full width, compact) -->
-        <div style="margin-top:12px">
-          <div style="display:flex;justify-content:space-between;font-size:9px;color:var(--txt2);margin-bottom:3px">
+        <!-- Assets vs Liabilities Visual Bar -->
+        <div style="margin-top:14px">
+          <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--txt2);margin-bottom:4px">
             <span id="nwAssetsCount">0 assets</span>
             <span id="nwLiabCount">0 liabilities</span>
           </div>
-          <div style="display:flex;height:6px;border-radius:99px;overflow:hidden;background:var(--bg)">
+          <div style="display:flex;height:8px;border-radius:99px;overflow:hidden;background:var(--bg)">
             <div id="nwAssetsBar" style="background:var(--suc);transition:width .5s ease;width:50%"></div>
             <div id="nwLiabBar" style="background:var(--dan);transition:width .5s ease;width:50%"></div>
           </div>
-          <div style="display:flex;justify-content:space-between;margin-top:4px;font-size:10px;font-weight:700">
+          <div style="display:flex;justify-content:space-between;margin-top:6px;font-size:11px;font-weight:700">
             <span id="nwAssetsTotal2" style="color:var(--suc)">$0</span>
             <span id="nwLiabTotal2" style="color:var(--dan)">$0</span>
           </div>
         </div>
         
-        <!-- Top 3 Assets/Liabilities Preview -->
-        <div id="nwTopItems" style="margin-top:10px;display:none">
-          <div style="font-size:9px;font-weight:700;color:var(--txt2);text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px">Top Items</div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
-            <div id="nwTopAssets" style="font-size:10px"></div>
-            <div id="nwTopLiabilities" style="font-size:10px"></div>
+        <!-- Quick Stats Row -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px">
+          <div style="background:var(--suc-l);border-radius:8px;padding:10px;text-align:center">
+            <div style="font-size:9px;font-weight:700;color:var(--suc);text-transform:uppercase;letter-spacing:.5px">Total Assets</div>
+            <div id="nwAssetsQuick" style="font-size:14px;font-weight:800;color:var(--suc);font-family:'SF Mono',monospace;margin-top:2px">$0</div>
+          </div>
+          <div style="background:var(--dan-l);border-radius:8px;padding:10px;text-align:center">
+            <div style="font-size:9px;font-weight:700;color:var(--dan);text-transform:uppercase;letter-spacing:.5px">Total Liabilities</div>
+            <div id="nwLiabQuick" style="font-size:14px;font-weight:800;color:var(--dan);font-family:'SF Mono',monospace;margin-top:2px">$0</div>
           </div>
         </div>
         
-        <!-- Milestone Badges -->
-        <div id="nwMilestones" style="margin-top:10px;display:none">
-          <div style="font-size:9px;font-weight:700;color:var(--txt2);text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px">Milestones</div>
-          <div id="nwMilestoneBadges" style="display:flex;flex-wrap:wrap;gap:4px"></div>
-        </div>
+        <div id="nwAccSummary" style="font-size:10px;color:var(--txt2);margin-top:8px;text-align:center;display:none">Assets minus Liabilities</div>
         
-        <div id="nwAccSummary" style="font-size:10px;color:var(--txt2);margin-top:6px;text-align:center;display:none">Assets minus Liabilities</div>
+        <!-- Debt-to-Asset Ratio + Quick Add -->
+        <div style="margin-top:12px;display:flex;align-items:center;justify-content:space-between;gap:8px">
+          <div style="flex:1;padding:8px 10px;background:var(--bg);border-radius:8px">
+            <div style="font-size:9px;font-weight:700;color:var(--txt2);text-transform:uppercase;letter-spacing:.5px">Debt-to-Asset Ratio</div>
+            <div style="display:flex;align-items:baseline;gap:8px;margin-top:2px">
+              <div id="nwDebtRatio" style="font-size:16px;font-weight:800;color:var(--txt);font-family:'SF Mono',monospace">0.00</div>
+              <div id="nwDebtRatioBadge" style="font-size:9px;font-weight:700;padding:2px 6px;border-radius:4px;background:var(--suc-l);color:var(--suc)">Healthy</div>
+            </div>
+          </div>
+          <button onclick="openNwQuickAdd()" style="width:36px;height:36px;border-radius:8px;border:1.5px solid var(--brd);background:var(--card);color:var(--txt2);font-size:18px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s" onmouseover="this.style.borderColor='var(--pri)';this.style.color='var(--pri-d)';this.style.background='var(--pri-l)'" onmouseout="this.style.borderColor='var(--brd)';this.style.color='var(--txt2)';this.style.background='var(--card)'" title="Quick Add">+</button>
+        </div>
       </div>
 
       <!-- ─── INCOME SOURCES (COMPACT ACCORDION) ─── -->
@@ -5712,47 +5644,6 @@ function renderNetWorth() {
     }
   }
 
-  // Monthly change indicator
-  const monthlyEl = document.getElementById("nwMonthlyChange");
-  if (monthlyEl) {
-    const history = JSON.parse(localStorage.getItem("bt_nw_history") || "[]");
-    const now = new Date();
-    const currentMonth = now.getFullYear() + "-" + String(now.getMonth() + 1).padStart(2, "0");
-    
-    // Find last month's value
-    let lastMonthVal = null;
-    for (let i = history.length - 1; i >= 0; i--) {
-      if (history[i].month !== currentMonth) {
-        lastMonthVal = history[i].value;
-        break;
-      }
-    }
-    
-    if (lastMonthVal !== null && items.length > 0) {
-      const monthDiff = netWorth - lastMonthVal;
-      const monthPct = lastMonthVal > 0 ? Math.round(Math.abs(monthDiff) / Math.abs(lastMonthVal) * 100) : 0;
-      const color = monthDiff >= 0 ? "var(--suc)" : "var(--dan)";
-      const arrow = monthDiff >= 0 ? "↑" : "↓";
-      monthlyEl.innerHTML = `<span style="color:${color}">${arrow} ${fmt(Math.abs(monthDiff))} (${monthPct}%) this month</span>`;
-    } else {
-      monthlyEl.innerHTML = "";
-    }
-    
-    // Save current month snapshot
-    const existingIdx = history.findIndex(h => h.month === currentMonth);
-    if (existingIdx >= 0) {
-      history[existingIdx].value = netWorth;
-    } else {
-      history.push({ month: currentMonth, value: netWorth });
-    }
-    // Keep only last 6 months
-    while (history.length > 6) history.shift();
-    localStorage.setItem("bt_nw_history", JSON.stringify(history));
-    
-    // Render sparkline
-    renderNwSparkline(history);
-  }
-
   // Update new Net Worth visual elements
   const assetsBar = document.getElementById("nwAssetsBar");
   const liabBar = document.getElementById("nwLiabBar");
@@ -5773,47 +5664,6 @@ function renderNetWorth() {
   setEl("nwLiabTotal2", fmt(totalLiab));
   setEl("nwAssetsQuick", fmt(totalAssets));
   setEl("nwLiabQuick", fmt(totalLiab));
-
-  // Top 3 preview
-  const topItemsEl = document.getElementById("nwTopItems");
-  const topAssetsEl = document.getElementById("nwTopAssets");
-  const topLiabEl = document.getElementById("nwTopLiabilities");
-  if (topItemsEl && topAssetsEl && topLiabEl) {
-    if (assets.length > 0 || liabilities.length > 0) {
-      topItemsEl.style.display = "block";
-      // Top 3 assets (sorted by amount desc)
-      const top3Assets = assets.slice().sort((a, b) => b.amt - a.amt).slice(0, 3);
-      topAssetsEl.innerHTML = '<div style="font-size:8px;font-weight:700;color:var(--suc);margin-bottom:2px">ASSETS</div>' +
-        top3Assets.map(a => '<div style="display:flex;justify-content:space-between;gap:4px;margin-bottom:1px"><span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;opacity:.85">' + escHtml(a.label || a.name) + '</span><span style="font-weight:700;font-family:\'SF Mono\',monospace">' + fmt(a.amt) + '</span></div>').join("");
-      // Top 3 liabilities (sorted by amount desc)
-      const top3Liab = liabilities.slice().sort((a, b) => b.amt - a.amt).slice(0, 3);
-      topLiabEl.innerHTML = '<div style="font-size:8px;font-weight:700;color:var(--dan);margin-bottom:2px">LIABILITIES</div>' +
-        top3Liab.map(l => '<div style="display:flex;justify-content:space-between;gap:4px;margin-bottom:1px"><span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;opacity:.85">' + escHtml(l.label || l.name) + '</span><span style="font-weight:700;font-family:\'SF Mono\',monospace">' + fmt(l.amt) + '</span></div>').join("");
-    } else {
-      topItemsEl.style.display = "none";
-    }
-  }
-
-  // Milestone badges
-  const milestonesEl = document.getElementById("nwMilestones");
-  const badgesEl = document.getElementById("nwMilestoneBadges");
-  if (milestonesEl && badgesEl) {
-    const milestoneValues = [100000, 500000, 1000000, 5000000, 10000000];
-    const milestoneLabels = ["₱100K", "500K", "₱1M", "₱5M", "₱10M"];
-    const badges = [];
-    for (let i = 0; i < milestoneValues.length; i++) {
-      const reached = netWorth >= milestoneValues[i];
-      const progress = Math.min(100, (netWorth / milestoneValues[i]) * 100);
-      badges.push('<div style="font-size:9px;font-weight:700;padding:3px 6px;border-radius:4px;background:' +
-        (reached ? 'var(--suc-l)' : 'var(--bg)') + ';color:' +
-        (reached ? 'var(--suc)' : 'var(--txt2)') + ';border:1px solid ' +
-        (reached ? 'var(--suc)' : 'var(--brd)') + '">' +
-        milestoneLabels[i] + (reached ? ' ✓' : ' ' + Math.round(progress) + '%') +
-        '</div>');
-    }
-    badgesEl.innerHTML = badges.join("");
-    milestonesEl.style.display = "block";
-  }
 
   // Render assets
   const assetEl = document.getElementById("nwAssetsList");
@@ -5891,38 +5741,6 @@ function renderNwDebtRatio(totalAssets, totalLiab) {
   badgeEl.textContent = label;
   badgeEl.style.color = color;
   badgeEl.style.background = bg;
-}
-
-// ── Mini Sparkline ─────────────────────────────────────────
-function renderNwSparkline(history) {
-  const pathEl = document.getElementById("nwSparkPath");
-  if (!pathEl) return;
-  
-  if (history.length < 2) {
-    pathEl.setAttribute("d", "");
-    return;
-  }
-  
-  const values = history.map(h => h.value);
-  const min = Math.min(...values);
-  const max = Math.max(...values);
-  const range = max - min || 1;
-  
-  const width = 200; // SVG viewBox width
-  const height = 32;
-  const padding = 2;
-  
-  const points = values.map((v, i) => {
-    const x = padding + (i / (values.length - 1)) * (width - padding * 2);
-    const y = height - padding - ((v - min) / range) * (height - padding * 2);
-    return `${x},${y}`;
-  });
-  
-  pathEl.setAttribute("d", "M" + points.join(" L"));
-  
-  // Color based on trend
-  const isUp = values[values.length - 1] >= values[0];
-  pathEl.setAttribute("stroke", isUp ? "var(--suc)" : "var(--dan)");
 }
 
 // ── Quick Add Modal ────────────────────────────────────────
@@ -10079,9 +9897,11 @@ function onNoteInput(el) {
     }
     autoApplyNoteTag();
     scheduleComposeMoodNudge();
+    checkPriceListAfterToggle("noteInput");
     _showAddItemChip("noteInput");
   } else if (el.id === "noteEditText") {
     _showAddItemChip("noteEditText");
+    checkPriceListAfterToggle("noteEditText");
   }
 }
 
@@ -10386,9 +10206,18 @@ function _selectPlaceholderAtCursor(ta) {
     return;
   }
   const { itemStart, itemEnd, priceStart, priceEnd } = _checklistRanges(m, lineStart);
-  if (pos >= priceStart && pos <= priceEnd) {
-    // Price zone — switch to decimal keyboard
+  if (pos >= itemStart && pos <= itemEnd && _PLACEHOLDER_NAME_RE.test(m[2].trim())) {
+    // Item name placeholder — select it so user can just start typing
+    _setInputMode(ta, "text");
+    ta.setSelectionRange(itemStart, itemEnd);
+  } else if (pos >= priceStart && pos <= priceEnd) {
+    // Price zone — switch to decimal keyboard, select the number
     _setInputMode(ta, "decimal");
+    if (!ta._selectingPrice) {
+      ta._selectingPrice = true;
+      ta.setSelectionRange(priceStart, priceEnd);
+      setTimeout(() => { ta._selectingPrice = false; }, 400);
+    }
   } else {
     _setInputMode(ta, "text");
   }
@@ -10602,7 +10431,20 @@ function hashString(s) {
   return (h >>> 0).toString(36);
 }
 
-// ─── PROMPT: ADD CHECKLIST ITEMS TO EXPENSES (Save-only) ───────
+// ─── CHECK IF ALL PRICED ITEMS ARE CHECKED ─────────────────────
+function _checkPriceListComplete(textareaId) {
+  const ta = _tbEl(textareaId); if (!ta) return null;
+  const items = _parseChecklistItems(ta.value);
+  const priced = items.filter(it => it.amt !== null);
+  if (priced.length === 0) return null;
+  const allChecked = priced.every(it => it.checked);
+  if (!allChecked) return null;
+  const dismissKey = 'bt_plist_nagged_' + (textareaId === 'noteInput' ? 'compose' : 'edit') + '_' + hashString(ta.value);
+  if (sessionStorage.getItem(dismissKey)) return null;
+  return { items: priced, dismissKey };
+}
+
+// ─── PROMPT: ADD CHECKLIST ITEMS TO EXPENSES ──────────────────
 function _promptAddChecklistToExpenses(items, noteOrKey, noteText) {
   if (!items || items.length === 0) return;
   const existing = document.getElementById('_plistExpOverlay');
@@ -10693,6 +10535,13 @@ function _promptAddChecklistToExpenses(items, noteOrKey, noteText) {
     if (typeof renderInsights === 'function') renderInsights();
     toast(items.length + ' item' + (items.length!==1?'s':'') + ' added to Expenses!');
   });
+}
+
+function checkPriceListAfterToggle(textareaId) {
+  setTimeout(() => {
+    const info = _checkPriceListComplete(textareaId);
+    if (info) _promptAddChecklistToExpenses(info.items, info.dismissKey);
+  }, 350);
 }
 
 // Fired when the title field changes — refine the auto-tag
@@ -10979,13 +10828,13 @@ function findDuplicateNote(draftTitle, draftBody, threshold) {
 function summaryStripText(raw) {
   return (raw || "")
     .replace(/\[(x| )\]/gi, " ")          // checkbox markers
-    .replace(/\s*[-\u2013\u2014]+\s*[^\d\s]*\d[\d,]*(?:\.\d{1,2})?\s*$/gm, "")  // price portions from checklist items
     .replace(/^[\s>]*[-•*]\s+/gm, "")        // leading bullets
     .replace(/\*\*(.*?)\*\*/g, "$1")          // bold
     .replace(/\*(.*?)\*/g, "$1")              // italic
     .replace(/`+/g, " ")
     .replace(/https?:\/\/\S+/g, " ");        // urls
 }
+
 // Split text into sentence-like units (also treats line breaks as boundaries).
 function splitSentences(text) {
   return (text || "")
@@ -11167,35 +11016,6 @@ function closeNoteModal() {
   _noteModalEditing = false;
 }
 
-function toggleNoteFullview() {
-  const modal = document.querySelector('.note-modal');
-  const overlay = document.getElementById('noteOverlay');
-  if (!modal) return;
-  
-  const isFullview = modal.classList.contains('fullview');
-  
-  if (isFullview) {
-    // Exit fullview
-    modal.classList.remove('fullview');
-    modal.style.cssText = '';
-    if (overlay) {
-      overlay.classList.remove('fullview');
-      overlay.style.padding = '';
-    }
-  } else {
-    // Enter fullview
-    modal.classList.add('fullview');
-    if (overlay) overlay.classList.add('fullview');
-  }
-  
-  // Update button text without re-rendering
-  const btn = document.querySelector('.nmf-fullview');
-  if (btn) {
-    const icon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>';
-    btn.innerHTML = icon + (isFullview ? "Expand" : "Exit");
-  }
-}
-
 // ─── LIVE CHECKLIST EDITOR ──────────────────────────────────────
 // Converts a note's text to a live UI of checkbox rows with
 // desc / qty / price fields. Writes back to noteEditText on change.
@@ -11313,17 +11133,10 @@ function renderNoteModal() {
   if (tldrEl) {
     const summary = summarizeText(getNoteTitle(note) + ". " + bodyText);
     const tldrIcon = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="14" y2="12"/><line x1="4" y1="18" x2="10" y2="18"/></svg>';
-    const chevDown = '<svg class="chev-down" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>';
-    const chevUp = '<svg class="chev-up" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="18 15 12 9 6 15"/></svg>';
     if (summary) {
       tldrEl.innerHTML = '<span class="tldr-label">' + tldrIcon + 'Summary</span>' +
-        '<span class="tldr-text">' + escHtml(summary) + '</span>' +
-        '<button class="tldr-collapse" onclick="_toggleTldrCollapse(' + note.id + ', this)" title="Minimize">' + chevDown + chevUp + '</button>';
+        '<span class="tldr-text">' + escHtml(summary) + '</span>';
       tldrEl.style.display = "flex";
-      // Restore collapsed state
-      const wasCollapsed = localStorage.getItem("bt_note_tldr_collapsed_" + note.id) === "1";
-      if (wasCollapsed) tldrEl.classList.add("collapsed");
-      else tldrEl.classList.remove("collapsed");
     } else {
       tldrEl.style.display = "none";
       tldrEl.innerHTML = "";
@@ -11337,12 +11150,9 @@ function renderNoteModal() {
   renderRelatedNotes(note);
 
   const pinIcon = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 3l-1.5 1.5L16 6l-4 4-3-1-3 3 4 4-5 5 1 1 5-5 4 4 3-3-1-3 4-4 1.5 1.5L21 8z"/></svg>';
-  const fullviewIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>';
-  const isFullview = document.querySelector('.note-modal.fullview');
   footEl.innerHTML =
     '<button class="nmf-pin' + (note.pinned ? ' active' : '') + '" onclick="togglePinNote(' + note.id + ')">' + pinIcon + (note.pinned ? "Unpin" : "Pin") + '</button>' +
     '<button class="nmf-edit" onclick="startNoteModalEdit()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 013 3L12 15l-4 1 1-4z"/></svg>Edit</button>' +
-    '<button class="nmf-fullview" onclick="toggleNoteFullview()" title="Full View">' + fullviewIcon + (isFullview ? "Exit" : "Expand") + '</button>' +
     '<span class="nmf-spacer"></span>' +
     '<button class="nmf-del" onclick="deleteNote(' + note.id + ')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>Delete</button>';
 }
@@ -11354,11 +11164,8 @@ function renderRelatedNotes(note) {
   if (!related.length) { wrap.style.display = "none"; wrap.innerHTML = ""; return; }
   const chev = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>';
   const linkIcon = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>';
-  const chevDown = '<svg class="chev-down" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>';
-  const chevUp = '<svg class="chev-up" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="18 15 12 9 6 15"/></svg>';
   wrap.innerHTML =
     '<div class="note-related-label">' + linkIcon + 'Related notes</div>' +
-    '<button class="rel-collapse" onclick="_toggleRelatedCollapse(' + note.id + ', this)" title="Minimize">' + chevDown + chevUp + '</button>' +
     related.map(r =>
       '<div class="note-related-item" onclick="openNoteModal(' + r.id + ')">' +
         '<span class="nri-title">' + escHtml(getNoteTitle(r)) + '</span>' +
@@ -11367,23 +11174,6 @@ function renderRelatedNotes(note) {
       '</div>'
     ).join("");
   wrap.style.display = "block";
-  // Restore collapsed state
-  const wasCollapsed = localStorage.getItem("bt_note_related_collapsed_" + note.id) === "1";
-  if (wasCollapsed) wrap.classList.add("collapsed");
-  else wrap.classList.remove("collapsed");
-}
-
-// ── Persist collapse state for Summary & Related Notes ──
-function _toggleTldrCollapse(noteId, btn) {
-  const el = btn.closest('.note-tldr');
-  el.classList.toggle('collapsed');
-  localStorage.setItem("bt_note_tldr_collapsed_" + noteId, el.classList.contains('collapsed') ? "1" : "0");
-}
-
-function _toggleRelatedCollapse(noteId, btn) {
-  const el = btn.closest('.note-related');
-  el.classList.toggle('collapsed');
-  localStorage.setItem("bt_note_related_collapsed_" + noteId, el.classList.contains('collapsed') ? "1" : "0");
 }
 
 // Supportive nudge shown when a journal note reads as financially stressed.
@@ -11684,11 +11474,59 @@ function formatInline(s) {
 // Save an inline price edit made directly in view mode
 // Thin wrappers for inline note item edits — with confirmation
 function _nbQtyChange(el) {
+  const row    = el.closest("tr");
+  const descEl = row ? row.querySelector(".nb-cl-td-desc") : null;
+  const name   = descEl ? descEl.textContent.trim() : "this item";
   const newQty = parseInt(el.value) || 1;
+  if (!confirm("Update quantity for \"" + name + "\" to " + newQty + "?")) {
+    // Revert to stored value
+    const notes = JSON.parse(localStorage.getItem("bt_notes") || "[]");
+    const note  = notes.find(n => n.id === parseInt(el.dataset.nid));
+    if (note) {
+      const idx2   = parseInt(el.dataset.idx);
+      let count    = 0;
+      const lines  = note.text.split("\n");
+      for (const ln of lines) {
+        if (/^\s*\[[ xX]\]\s/i.test(ln)) {
+          if (count === idx2) {
+            const qM = ln.match(/\s*[x×](\d+)\s*(?=\s*[-\u2013\u2014]|$)/i);
+            el.value = qM ? qM[1] : "1";
+            break;
+          }
+          count++;
+        }
+      }
+    }
+    return;
+  }
   updateNoteItemQty(parseInt(el.dataset.nid), parseInt(el.dataset.idx), el.value, el.dataset.lid);
 }
-
 function _nbPriceChange(el) {
+  const row    = el.closest("tr");
+  const descEl = row ? row.querySelector(".nb-cl-td-desc") : null;
+  const name   = descEl ? descEl.textContent.trim() : "this item";
+  const sym    = getCurrency();
+  if (!confirm("Update price for \"" + name + "\" to " + sym + " " + (parseFloat(el.value)||0).toFixed(2) + "?")) {
+    // Revert
+    const notes = JSON.parse(localStorage.getItem("bt_notes") || "[]");
+    const note  = notes.find(n => n.id === parseInt(el.dataset.nid));
+    if (note) {
+      const idx2  = parseInt(el.dataset.idx);
+      let count   = 0;
+      const lines = note.text.split("\n");
+      for (const ln of lines) {
+        if (/^\s*\[[ xX]\]\s/i.test(ln)) {
+          if (count === idx2) {
+            const amtM = ln.match(/[-\u2013\u2014]+\s*[^\d\s]*(\d[\d,]*(?:\.\d{1,2})?)\s*$/);
+            el.value = amtM ? amtM[1] : "";
+            break;
+          }
+          count++;
+        }
+      }
+    }
+    return;
+  }
   updateNoteItemPrice(parseInt(el.dataset.nid), parseInt(el.dataset.idx), el.value, el.dataset.lid);
 }
 
@@ -11707,7 +11545,7 @@ function updateNoteItemPrice(noteId, itemIndex, newVal, tableId) {
   for (let i = 0; i < lines.length; i++) {
     if (/^\s*\[[ xX]\]\s/i.test(lines[i])) {
       if (checkCount === itemIndex) {
-        const stripped = lines[i].replace(/\s*[-\u2013\u2014]+\s*[^\d\s]*\s*\d[\d,.]*\s*$/, "").trimEnd();
+        const stripped = lines[i].replace(/\s*[-\u2013\u2014]+\s*[^\d\s]*\d[\d,.]*\s*$/, "").trimEnd();
         lines[i] = stripped + " — " + sym + parsed.toFixed(2);
         break;
       }
@@ -11738,7 +11576,7 @@ function updateNoteItemQty(noteId, itemIndex, newQty, tableId) {
         const prefix  = prefixM ? prefixM[1] : "[ ] ";
         let rest = lines[i].slice(prefix.length);
         // Strip amount first
-        const amtM = rest.match(/^(.*?)\s*[-\u2013\u2014]+\s*[^\d\s]*\s*\d[\d,.]*\s*$/);
+        const amtM = rest.match(/^(.*?)\s*[-\u2013\u2014]+\s*[^\d\s]*\d[\d,.]*\s*$/);
         let amtSuffix = "";
         if (amtM) { amtSuffix = rest.slice(amtM[1].length); rest = amtM[1].trim(); }
         // Strip old qty
@@ -11771,7 +11609,7 @@ function _refreshClTotal(tableId, noteId) {
   rows.forEach(row => {
     const qtyEl   = row.querySelector(".nb-qty-input");
     const priceEl = row.querySelector(".nb-price-input");
-    if (priceEl && priceEl.value && priceEl.value !== "0" && priceEl.value !== "0.00") {
+    if (priceEl && priceEl.value) {
       const qty    = parseInt(qtyEl?.value || "1") || 1;
       const price  = parseFloat(priceEl.value.replace(/,/g,"")) || 0;
       grandTotal  += qty * price;
@@ -11803,17 +11641,9 @@ function formatNoteBody(text, noteId) {
 
   // Parse price from a checklist item text: "cake — $ 0.00" → {desc:"cake", amt:"0.00"}
   function splitCheckItem(raw) {
-    // Strip amount: "— $ 0.00" or "— ₱ 300" etc. (with optional "x2" qty suffix)
-    const amtM = raw.match(/^(.*?)\s*[-\u2013\u2014]+\s*[^\d\s]*\s*(\d[\d,]*(?:\.\d{1,2})?)(?:\s*[x×]\d+(?:\.\d+)?)?\s*$/i);
-    if (amtM) {
-      const amt = amtM[2].replace(/,/g,"");
-      const desc = amtM[1].trim();
-      // Treat "0" or "0.00" as no price set, but still strip from description
-      if (amt === "0" || amt === "0.00" || amt === "0.0") {
-        return { desc: desc, amt: null };
-      }
-      return { desc: desc, amt: amt };
-    }
+    // Strip amount: "— $ 0.00" or "— ₱300" etc.
+    const amtM = raw.match(/^(.*?)\s*[-\u2013\u2014]+\s*[^\d\s]*(\d[\d,]*(?:\.\d{1,2})?)\s*$/);
+    if (amtM) return { desc: amtM[1].trim(), amt: amtM[2].replace(/,/g,"") };
     return { desc: raw.trim(), amt: null };
   }
 
@@ -11907,11 +11737,9 @@ function formatNoteBody(text, noteId) {
       // Compute and inject total immediately (pure string-level)
       let grandTotal = 0;
       for (const it of clItems) {
-        if (it.amt !== null && it.amt !== "0" && it.amt !== "0.00") {
-          grandTotal += (it.qty || 1) * (parseFloat(it.amt) || 0);
-        }
+        if (it.amt !== null) grandTotal += (it.qty || 1) * (parseFloat(it.amt) || 0);
       }
-      const hasAmt = clItems.some(it => it.amt !== null && it.amt !== "0" && it.amt !== "0.00");
+      const hasAmt = clItems.some(it => it.amt !== null);
       if (hasAmt) {
         html = html.replace(
           '<!-- total -->',
