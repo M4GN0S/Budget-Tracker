@@ -5617,6 +5617,77 @@ function _liabilityPay(liabId) {
   toast('Paid ' + fmt(amt) + ' toward ' + (item.label || item.name));
 }
 
+// ─── ASSET CARD (New Design) ─────────────────────────────────────
+function _assetCard(item) {
+  const balance = item.amt || 0;
+  const txns = item.transactions || [];
+  const totalFunded = txns.filter(t => t.action === 'fund').reduce((s, t) => s + t.amount, 0);
+  const circumference = 2 * Math.PI * 36;
+  // Show growth progress based on transactions
+  const growthPct = txns.length > 0 ? Math.min((txns.length / 10) * 100, 100) : 0;
+  const dashOffset = circumference - (growthPct / 100) * circumference;
+  
+  const delFn = `deleteNwItem(${item.id})`;
+  
+  return `<div class="fin-card goal-card">
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px">
+      <div>
+        <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:var(--suc);margin-bottom:4px;display:flex;align-items:center;gap:5px">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+          ASSET
+        </div>
+        <div style="font-size:18px;font-weight:900;color:var(--txt);line-height:1.2">${escHtml(item.label || item.name)}</div>
+      </div>
+      <button class="fc-del" onclick="event.stopPropagation();${delFn}" title="Delete asset" style="opacity:.4;transition:.15s" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=.4">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
+      </button>
+    </div>
+    
+    <div style="display:flex;align-items:center;gap:20px;margin:16px 0">
+      <div style="position:relative;width:90px;height:90px;flex-shrink:0">
+        <svg viewBox="0 0 80 80" style="width:100%;height:100%;transform:rotate(-90deg)">
+          <circle cx="40" cy="40" r="36" fill="none" stroke="var(--brd)" stroke-width="8" opacity=".3"/>
+          <circle cx="40" cy="40" r="36" fill="none" stroke="var(--suc)" stroke-width="8" stroke-linecap="round" stroke-dasharray="${circumference}" stroke-dashoffset="${dashOffset}" style="transition:stroke-dashoffset .6s ease"/>
+        </svg>
+        <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:900;color:var(--txt)">${fmtShort(balance)}</div>
+      </div>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:10px;font-weight:700;color:var(--txt2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Current Value</div>
+        <div style="font-size:24px;font-weight:900;color:var(--suc);font-family:'SF Mono',monospace;line-height:1.1">${fmt(balance)}</div>
+        <div style="font-size:11px;color:var(--txt2);margin-top:2px">${fmt(totalFunded)} funded · ${txns.length} txn${txns.length !== 1 ? 's' : ''}</div>
+      </div>
+    </div>
+    
+    <div style="display:grid;grid-template-columns:1fr;gap:12px;margin-top:16px;padding-top:16px;border-top:1px solid var(--brd)">
+      <div>
+        <div style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:var(--txt2);margin-bottom:6px">Add Funds</div>
+        <div style="display:flex;gap:6px">
+          <input type="text" inputmode="decimal" id="assetFund_${item.id}" placeholder="Amount" style="flex:1;padding:8px 10px;border:1.5px solid var(--brd);border-radius:8px;font-size:12px;font-family:'SF Mono',monospace;background:var(--input-bg);color:var(--txt);outline:none;box-sizing:border-box;min-width:0" onclick="event.stopPropagation()">
+          <button onclick="event.stopPropagation();_assetFund(${item.id})" style="width:32px;height:32px;border-radius:8px;border:none;background:var(--suc-l);color:var(--suc);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.15s;flex-shrink:0" onmouseover="this.style.background='var(--suc)';this.style.color='#fff'" onmouseout="this.style.background='var(--suc-l)';this.style.color='var(--suc)'">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function _assetFund(assetId) {
+  const input = document.getElementById('assetFund_' + assetId);
+  if (!input) return;
+  const amt = parseFloat((input.value || '').replace(/,/g, ''));
+  if (!amt || amt <= 0) { toast('Enter a valid amount'); return; }
+  const items = getNwItems();
+  const item = items.find(i => i.id === assetId);
+  if (!item) return;
+  item.amt = (item.amt || 0) + amt;
+  if (!item.transactions) item.transactions = [];
+  item.transactions.push({ id: Date.now(), date: new Date().toISOString().split('T')[0], action: 'fund', amount: amt, note: 'Funding', balance: item.amt });
+  saveNwItems(items);
+  renderNetWorth();
+  toast('Added ' + fmt(amt) + ' to ' + (item.label || item.name));
+}
+
 function _toggleFinHist(id) {
   const el   = document.getElementById(id);
   const chev = document.getElementById(id + "_chev");
@@ -6043,15 +6114,7 @@ function renderNetWorth() {
     if (!assets.length) {
       assetEl.innerHTML = `<div style="font-size:12px;color:var(--txt2);padding:4px 0 8px">No assets added yet.</div>`;
     } else {
-      assetEl.innerHTML = `<div class="fin-card-grid">` + assets.map(i => _finCard(i, {
-        module:      "asset",
-        accentColor: "var(--suc)",
-        accentLight: "var(--suc-l)",
-        tagLabel:    "Asset",
-        actionLabel: "Add Funds",
-        actionFn:    `openFinTxnModal(${i.id},'asset','fund')`,
-        balance:     i.amt,
-      })).join("") + `</div>` +
+      assetEl.innerHTML = `<div class="fin-card-grid">` + assets.map(i => _assetCard(i)).join("") + `</div>` +
         `<div style="display:flex;justify-content:space-between;padding:8px 12px;font-size:12px;
                      font-weight:700;color:var(--suc);background:var(--suc-l);border-radius:8px;margin-top:4px">
           <span>Total Assets</span>
