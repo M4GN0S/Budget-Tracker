@@ -5705,19 +5705,10 @@ function _liabilityCard(item) {
       </div>
     </div>
     
-    <div style="display:flex;align-items:center;gap:12px;margin:10px 0">
-      <div style="position:relative;width:60px;height:60px;flex-shrink:0">
-        <svg viewBox="0 0 64 64" style="width:100%;height:100%;transform:rotate(-90deg)">
-          <circle cx="32" cy="32" r="28" fill="none" stroke="var(--brd)" stroke-width="6" opacity=".3"/>
-          <circle cx="32" cy="32" r="28" fill="none" stroke="var(--dan)" stroke-width="6" stroke-linecap="round" stroke-dasharray="${circumference}" stroke-dashoffset="${dashOffset}"/>
-        </svg>
-        <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:900;color:var(--txt)">${Math.round(pctPaid)}%</div>
-      </div>
-      <div style="flex:1;min-width:0">
-        <div style="font-size:9px;font-weight:700;color:var(--txt2);text-transform:uppercase">Balance</div>
-        <div style="font-size:16px;font-weight:900;color:var(--dan);font-family:'SF Mono',monospace">${fmt(balance)}</div>
-        <div style="font-size:10px;color:var(--txt2)">${fmt(totalPaid)} paid · ${fmt(totalAdded)} added</div>
-      </div>
+    <div style="margin:10px 0">
+      <div style="font-size:9px;font-weight:700;color:var(--txt2);text-transform:uppercase">Balance</div>
+      <div style="font-size:20px;font-weight:900;color:var(--dan);font-family:'SF Mono',monospace">${fmt(balance)}</div>
+      <div style="font-size:10px;color:var(--txt2)">${fmt(totalPaid)} paid · ${fmt(totalAdded)} added</div>
     </div>
     
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px;padding-top:10px;border-top:1px solid var(--brd)">
@@ -6036,12 +6027,10 @@ function _assetCard(item) {
       </div>
     </div>
     
-    <div style="display:flex;align-items:center;gap:12px;margin:10px 0">
-      <div style="flex:1;min-width:0">
-        <div style="font-size:9px;font-weight:700;color:var(--txt2);text-transform:uppercase">Current Value</div>
-        <div style="font-size:16px;font-weight:900;color:var(--suc);font-family:'SF Mono',monospace">${fmt(balance)}</div>
-        <div style="font-size:10px;color:var(--txt2)">${fmt(totalFunded)} funded · ${fmt(totalWithdrawn)} withdrawn</div>
-      </div>
+    <div style="margin:10px 0">
+      <div style="font-size:9px;font-weight:700;color:var(--txt2);text-transform:uppercase">Current Value</div>
+      <div style="font-size:20px;font-weight:900;color:var(--suc);font-family:'SF Mono',monospace">${fmt(balance)}</div>
+      <div style="font-size:10px;color:var(--txt2)">${fmt(totalFunded)} funded · ${fmt(totalWithdrawn)} withdrawn</div>
     </div>
     
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px;padding-top:10px;border-top:1px solid var(--brd)">
