@@ -5548,7 +5548,8 @@ function _liabilityCard(item) {
   const balance = item.amt || 0;
   const txns = item.transactions || [];
   const totalPaid = txns.filter(t => t.action === 'pay').reduce((s, t) => s + t.amount, 0);
-  const originalAmount = balance + totalPaid;
+  const totalAdded = txns.filter(t => t.action === 'fund').reduce((s, t) => s + t.amount, 0);
+  const originalAmount = balance + totalPaid - totalAdded;
   const pctPaid = originalAmount > 0 ? Math.min((totalPaid / originalAmount) * 100, 100) : 0;
   const circumference = 2 * Math.PI * 36;
   const dashOffset = circumference - (pctPaid / 100) * circumference;
@@ -5580,11 +5581,20 @@ function _liabilityCard(item) {
       <div style="flex:1;min-width:0">
         <div style="font-size:10px;font-weight:700;color:var(--txt2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Remaining Balance</div>
         <div style="font-size:24px;font-weight:900;color:var(--dan);font-family:'SF Mono',monospace;line-height:1.1">${fmt(balance)}</div>
-        <div style="font-size:11px;color:var(--txt2);margin-top:2px">${fmt(totalPaid)} paid of ${fmt(originalAmount)}</div>
+        <div style="font-size:11px;color:var(--txt2);margin-top:2px">${fmt(totalPaid)} paid · ${fmt(totalAdded)} added</div>
       </div>
     </div>
     
-    <div style="display:grid;grid-template-columns:1fr;gap:12px;margin-top:16px;padding-top:16px;border-top:1px solid var(--brd)">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px;padding-top:16px;border-top:1px solid var(--brd)">
+      <div>
+        <div style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:var(--txt2);margin-bottom:6px">Add to Balance</div>
+        <div style="display:flex;gap:6px">
+          <input type="text" inputmode="decimal" id="liabAdd_${item.id}" placeholder="Amount" style="flex:1;padding:8px 10px;border:1.5px solid var(--brd);border-radius:8px;font-size:12px;font-family:'SF Mono',monospace;background:var(--input-bg);color:var(--txt);outline:none;box-sizing:border-box;min-width:0" onclick="event.stopPropagation()">
+          <button onclick="event.stopPropagation();_liabilityAdd(${item.id})" style="width:32px;height:32px;border-radius:8px;border:none;background:var(--pri-l);color:var(--pri-d);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.15s;flex-shrink:0" onmouseover="this.style.background='var(--pri)';this.style.color='#fff'" onmouseout="this.style.background='var(--pri-l)';this.style.color='var(--pri-d)'">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          </button>
+        </div>
+      </div>
       <div>
         <div style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:var(--txt2);margin-bottom:6px">Pay Down</div>
         <div style="display:flex;gap:6px">
@@ -5598,6 +5608,22 @@ function _liabilityCard(item) {
     
     ${txns.length > 0 ? `<div style="margin-top:12px;font-size:11px;color:var(--txt2);text-align:center">${txns.length} transaction${txns.length !== 1 ? 's' : ''} recorded</div>` : ''}
   </div>`;
+}
+
+function _liabilityAdd(liabId) {
+  const input = document.getElementById('liabAdd_' + liabId);
+  if (!input) return;
+  const amt = parseFloat((input.value || '').replace(/,/g, ''));
+  if (!amt || amt <= 0) { toast('Enter a valid amount'); return; }
+  const items = getNwItems();
+  const item = items.find(i => i.id === liabId);
+  if (!item) return;
+  item.amt = (item.amt || 0) + amt;
+  if (!item.transactions) item.transactions = [];
+  item.transactions.push({ id: Date.now(), date: new Date().toISOString().split('T')[0], action: 'fund', amount: amt, note: 'Added to balance', balance: item.amt });
+  saveNwItems(items);
+  renderNetWorth();
+  toast('Added ' + fmt(amt) + ' to ' + (item.label || item.name));
 }
 
 function _liabilityPay(liabId) {
@@ -5622,6 +5648,7 @@ function _assetCard(item) {
   const balance = item.amt || 0;
   const txns = item.transactions || [];
   const totalFunded = txns.filter(t => t.action === 'fund').reduce((s, t) => s + t.amount, 0);
+  const totalWithdrawn = txns.filter(t => t.action === 'withdraw').reduce((s, t) => s + t.amount, 0);
   const circumference = 2 * Math.PI * 36;
   // Show growth progress based on transactions
   const growthPct = txns.length > 0 ? Math.min((txns.length / 10) * 100, 100) : 0;
@@ -5654,17 +5681,26 @@ function _assetCard(item) {
       <div style="flex:1;min-width:0">
         <div style="font-size:10px;font-weight:700;color:var(--txt2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Current Value</div>
         <div style="font-size:24px;font-weight:900;color:var(--suc);font-family:'SF Mono',monospace;line-height:1.1">${fmt(balance)}</div>
-        <div style="font-size:11px;color:var(--txt2);margin-top:2px">${fmt(totalFunded)} funded · ${txns.length} txn${txns.length !== 1 ? 's' : ''}</div>
+        <div style="font-size:11px;color:var(--txt2);margin-top:2px">${fmt(totalFunded)} funded · ${fmt(totalWithdrawn)} withdrawn</div>
       </div>
     </div>
     
-    <div style="display:grid;grid-template-columns:1fr;gap:12px;margin-top:16px;padding-top:16px;border-top:1px solid var(--brd)">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px;padding-top:16px;border-top:1px solid var(--brd)">
       <div>
         <div style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:var(--txt2);margin-bottom:6px">Add Funds</div>
         <div style="display:flex;gap:6px">
           <input type="text" inputmode="decimal" id="assetFund_${item.id}" placeholder="Amount" style="flex:1;padding:8px 10px;border:1.5px solid var(--brd);border-radius:8px;font-size:12px;font-family:'SF Mono',monospace;background:var(--input-bg);color:var(--txt);outline:none;box-sizing:border-box;min-width:0" onclick="event.stopPropagation()">
           <button onclick="event.stopPropagation();_assetFund(${item.id})" style="width:32px;height:32px;border-radius:8px;border:none;background:var(--suc-l);color:var(--suc);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.15s;flex-shrink:0" onmouseover="this.style.background='var(--suc)';this.style.color='#fff'" onmouseout="this.style.background='var(--suc-l)';this.style.color='var(--suc)'">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          </button>
+        </div>
+      </div>
+      <div>
+        <div style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:var(--txt2);margin-bottom:6px">Withdraw</div>
+        <div style="display:flex;gap:6px">
+          <input type="text" inputmode="decimal" id="assetWithdraw_${item.id}" placeholder="Amount" style="flex:1;padding:8px 10px;border:1.5px solid var(--brd);border-radius:8px;font-size:12px;font-family:'SF Mono',monospace;background:var(--input-bg);color:var(--txt);outline:none;box-sizing:border-box;min-width:0" onclick="event.stopPropagation()">
+          <button onclick="event.stopPropagation();_assetWithdraw(${item.id})" style="width:32px;height:32px;border-radius:8px;border:none;background:var(--dan-l);color:var(--dan);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.15s;flex-shrink:0" onmouseover="this.style.background='var(--dan)';this.style.color='#fff'" onmouseout="this.style.background='var(--dan-l)';this.style.color='var(--dan)'">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/></svg>
           </button>
         </div>
       </div>
@@ -5686,6 +5722,23 @@ function _assetFund(assetId) {
   saveNwItems(items);
   renderNetWorth();
   toast('Added ' + fmt(amt) + ' to ' + (item.label || item.name));
+}
+
+function _assetWithdraw(assetId) {
+  const input = document.getElementById('assetWithdraw_' + assetId);
+  if (!input) return;
+  const amt = parseFloat((input.value || '').replace(/,/g, ''));
+  if (!amt || amt <= 0) { toast('Enter a valid amount'); return; }
+  const items = getNwItems();
+  const item = items.find(i => i.id === assetId);
+  if (!item) return;
+  if (amt > item.amt) { toast('Cannot withdraw more than balance'); return; }
+  item.amt = Math.max(0, item.amt - amt);
+  if (!item.transactions) item.transactions = [];
+  item.transactions.push({ id: Date.now(), date: new Date().toISOString().split('T')[0], action: 'withdraw', amount: amt, note: 'Withdrawal', balance: item.amt });
+  saveNwItems(items);
+  renderNetWorth();
+  toast('Withdrew ' + fmt(amt) + ' from ' + (item.label || item.name));
 }
 
 function _toggleFinHist(id) {
