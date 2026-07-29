@@ -5343,14 +5343,8 @@ function _finCard(item, cfg) {
     var barColor = pct >= 100 ? 'var(--suc)' : pct >= 80 ? 'var(--acc)' : pct >= 50 ? 'var(--pri)' : 'var(--acc)';
     progressHtml = '<div class="fin-card-bar"><div class="fin-card-bar-fill" style="width:' + pct + '%;background:' + barColor + '"></div></div>';
     statusText = '<div class="fin-card-status-text" style="color:' + statusColor + '">' + statusSvg + ' ' + statusLabel + '</div>';
-  } else if (cfg.module === 'income') {
-    // Income sources: no progress bar, show type label only
-    progressHtml = '';
-    statusText = '<div class="fin-card-status-text" style="color:' + cfg.accentColor + '">' + cfg.tagLabel + '</div>';
-    remainText = '';
   } else {
-    // Assets/Liabilities: no progress bar
-    progressHtml = '';
+    progressHtml = '<div class="fin-card-bar"><div class="fin-card-bar-fill" style="width:100%;background:' + cfg.accentColor + ';opacity:.35"></div></div>';
     statusText = '<div class="fin-card-status-text" style="color:' + cfg.accentColor + '">' + cfg.tagLabel + '</div>';
     remainText = '';
   }
@@ -5379,7 +5373,7 @@ function _finCard(item, cfg) {
   return '<div class="fin-card">'
     + '<div class="fin-card-top">'
       + '<div class="fin-card-title"><span class="fin-card-icon" style="background:' + cfg.accentLight + '">' + cardIcon + '</span>' + escHtml(item.label||item.name) + '</div>'
-      + '<div class="fin-card-actions">' + (cfg.module === 'income' ? '<button onclick="event.stopPropagation();openEditIncomeName(' + item.id + ')" title="Edit name" style="opacity:.5" onmouseover="this.style.opacity=\'1\'" onmouseout="this.style.opacity=\'.5\'"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 013 3L12 15l-4 1 1-4z"/></svg></button>' : '<button onclick="event.stopPropagation();' + cfg.actionFn + '" title="' + cfg.actionLabel + '" style="opacity:.5" onmouseover="this.style.opacity=\'1\'" onmouseout="this.style.opacity=\'.5\'"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06A1.65 1.65 0 009 4.6a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg></button>') + '<button class="fc-del" onclick="event.stopPropagation();' + delFn + '" title="Remove"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>'
+      + '<div class="fin-card-actions"><button onclick="event.stopPropagation();' + cfg.actionFn + '" title="' + cfg.actionLabel + '" style="opacity:.5" onmouseover="this.style.opacity=\'1\'" onmouseout="this.style.opacity=\'.5\'"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06A1.65 1.65 0 009 4.6a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg></button><button class="fc-del" onclick="event.stopPropagation();' + delFn + '" title="Remove"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>'
     + '</div>'
     + '<div class="fin-card-row"><span class="fin-card-label">' + hdrLabel + ': <strong style="color:var(--txt)">' + fmt(cfg.balance) + '</strong></span>' + (limitVal ? '<span class="fin-card-label">' + limitVal + '</span>' : '') + '</div>'
     + progressHtml
@@ -7662,46 +7656,6 @@ function _saveIncomeSource() {
   
   renderIncomeSourcesList();
   toast((isWindfall?"Windfall added to Net Worth ✓":"Income source")+" added!");
-}
-
-function openEditIncomeName(id) {
-  const sources = getIncomeSources();
-  const src = sources.find(s => s.id === id);
-  if (!src) return;
-  const ex = document.getElementById("_editIncNameModal");
-  if (ex) ex.remove();
-  const overlay = document.createElement("div");
-  overlay.id = "_editIncNameModal";
-  overlay.style.cssText = "position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.5)";
-  overlay.innerHTML = `
-    <div style="background:var(--card);border-radius:16px;padding:22px 24px;min-width:280px;max-width:90vw;box-shadow:0 12px 40px rgba(0,0,0,.28)">
-      <div style="font-size:14px;font-weight:800;color:var(--txt);margin-bottom:14px">Edit Income Source Name</div>
-      <div class="fg" style="margin-bottom:16px">
-        <label>Name</label>
-        <input type="text" id="_editIncNameInput" value="` + escHtml(src.label || '') + `" style="width:100%;padding:9px 12px;border:1.5px solid var(--brd);border-radius:9px;font-size:13px;color:var(--txt);background:var(--input-bg);outline:none;box-sizing:border-box">
-      </div>
-      <div style="display:flex;gap:10px;justify-content:flex-end">
-        <button onclick="document.getElementById('_editIncNameModal').remove()" style="padding:9px 16px;border-radius:9px;border:1.5px solid var(--brd);background:var(--bg);color:var(--txt2);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit">Cancel</button>
-        <button onclick="_saveEditIncomeName(` + id + `)" class="btn btn-pri" style="padding:9px 20px;border-radius:9px;font-size:13px;font-weight:700">Save</button>
-      </div>
-    </div>`;
-  document.body.appendChild(overlay);
-  overlay.addEventListener("click", e => { if (e.target === overlay) overlay.remove(); });
-  setTimeout(() => { const inp = document.getElementById("_editIncNameInput"); if (inp) { inp.focus(); inp.select(); } }, 60);
-}
-
-function _saveEditIncomeName(id) {
-  const newName = document.getElementById("_editIncNameInput")?.value.trim();
-  if (!newName) { toast("Name can't be empty"); return; }
-  const sources = getIncomeSources();
-  const src = sources.find(s => s.id === id);
-  if (src) {
-    src.label = newName;
-    saveIncomeSources(sources);
-    renderIncomeSourcesList();
-    toast("Income source renamed!");
-  }
-  document.getElementById("_editIncNameModal")?.remove();
 }
 
 function deleteIncomeSource(id) {
