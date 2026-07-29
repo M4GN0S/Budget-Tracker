@@ -5374,7 +5374,7 @@ function _finCard(item, cfg) {
 
   // Card header
   var hdrLabel = cfg.module === 'goal' ? 'Saved' : cfg.module === 'income' ? 'Monthly' : 'Balance';
-  var limitVal = cfg.target > 0 ? 'Target: ' + fmt(cfg.target) : (cfg.module === 'income' ? '/month' : '');
+  var limitVal = cfg.target > 0 ? 'Target: ' + fmt(cfg.target) : '';
 
   return '<div class="fin-card">'
     + '<div class="fin-card-top">'
@@ -7668,22 +7668,38 @@ function openEditIncomeName(id) {
   const sources = getIncomeSources();
   const src = sources.find(s => s.id === id);
   if (!src) return;
-  const ex = document.getElementById("_editIncNameModal");
+  const ex = document.getElementById("_editIncModal");
   if (ex) ex.remove();
   const overlay = document.createElement("div");
-  overlay.id = "_editIncNameModal";
+  overlay.id = "_editIncModal";
   overlay.style.cssText = "position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.5)";
+
+  // Build transaction history rows
+  const txns = src.transactions || [];
+  const labels = {fund:'Funded',log:'Logged',contribution:'Contributed',pay:'Paid',init:'Initial'};
+  let histHtml = '';
+  if (txns.length > 0) {
+    const rows = txns.slice().reverse().map(function(t) {
+      var isPos = ['fund','log','contribution','init'].indexOf(t.action) !== -1;
+      var col = isPos ? 'var(--suc)' : 'var(--dan)';
+      var ltCol = isPos ? 'var(--suc-l)' : 'var(--dan-l)';
+      return '<tr><td style="padding:5px 8px;font-size:11px;color:var(--txt2);white-space:nowrap">' + t.date + '</td><td style="padding:5px 8px"><span style="display:inline-flex;padding:1px 7px;border-radius:6px;font-size:9.5px;font-weight:700;background:' + ltCol + ';color:' + col + '">' + (labels[t.action] || t.action) + '</span></td><td style="padding:5px 8px;font-size:11px;font-weight:700;font-family:\'SF Mono\',monospace;color:' + col + ';text-align:right;white-space:nowrap">' + (isPos ? '+' : '−') + fmt(t.amount) + '</td><td style="padding:5px 8px;font-size:11px;color:var(--txt2);max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + escHtml(t.note||'') + '</td><td style="padding:5px 8px;font-size:11px;font-weight:700;font-family:\'SF Mono\',monospace;text-align:right;white-space:nowrap">' + fmt(t.balance) + '</td></tr>';
+    }).join('');
+    histHtml = '<div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--brd)"><div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.7px;color:var(--txt2);margin-bottom:8px;display:flex;align-items:center;gap:5px"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Transaction History (' + txns.length + ')</div><div style="overflow-x:auto;border-radius:8px;border:1px solid var(--brd)"><table style="width:100%;border-collapse:collapse;min-width:320px"><thead><tr style="background:var(--bg)"><th style="padding:5px 8px;font-size:9px;font-weight:700;text-align:left;color:var(--txt2);text-transform:uppercase;letter-spacing:.5px">Date</th><th style="padding:5px 8px;font-size:9px;font-weight:700;text-align:left;color:var(--txt2);text-transform:uppercase;letter-spacing:.5px">Action</th><th style="padding:5px 8px;font-size:9px;font-weight:700;text-align:right;color:var(--txt2);text-transform:uppercase;letter-spacing:.5px">Amount</th><th style="padding:5px 8px;font-size:9px;font-weight:700;text-align:left;color:var(--txt2);text-transform:uppercase;letter-spacing:.5px">Notes</th><th style="padding:5px 8px;font-size:9px;font-weight:700;text-align:right;color:var(--txt2);text-transform:uppercase;letter-spacing:.5px">Balance</th></tr></thead><tbody>' + rows + '</tbody></table></div></div>';
+  }
+
   overlay.innerHTML = `
-    <div style="background:var(--card);border-radius:16px;padding:22px 24px;min-width:280px;max-width:90vw;box-shadow:0 12px 40px rgba(0,0,0,.28)">
-      <div style="font-size:14px;font-weight:800;color:var(--txt);margin-bottom:14px">Edit Income Source Name</div>
+    <div style="background:var(--card);border-radius:16px;padding:22px 24px;min-width:320px;max-width:min(500px,92vw);max-height:85vh;overflow-y:auto;box-shadow:0 12px 40px rgba(0,0,0,.28)">
+      <div style="font-size:14px;font-weight:800;color:var(--txt);margin-bottom:14px">Edit Income Source</div>
       <div class="fg" style="margin-bottom:16px">
         <label>Name</label>
         <input type="text" id="_editIncNameInput" value="` + escHtml(src.label || '') + `" style="width:100%;padding:9px 12px;border:1.5px solid var(--brd);border-radius:9px;font-size:13px;color:var(--txt);background:var(--input-bg);outline:none;box-sizing:border-box">
       </div>
       <div style="display:flex;gap:10px;justify-content:flex-end">
-        <button onclick="document.getElementById('_editIncNameModal').remove()" style="padding:9px 16px;border-radius:9px;border:1.5px solid var(--brd);background:var(--bg);color:var(--txt2);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit">Cancel</button>
-        <button onclick="_saveEditIncomeName(` + id + `)" class="btn btn-pri" style="padding:9px 20px;border-radius:9px;font-size:13px;font-weight:700">Save</button>
+        <button onclick="document.getElementById('_editIncModal').remove()" style="padding:9px 16px;border-radius:9px;border:1.5px solid var(--brd);background:var(--bg);color:var(--txt2);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit">Close</button>
+        <button onclick="_saveEditIncomeName(` + id + `)" class="btn btn-pri" style="padding:9px 20px;border-radius:9px;font-size:13px;font-weight:700">Save Name</button>
       </div>
+      ` + histHtml + `
     </div>`;
   document.body.appendChild(overlay);
   overlay.addEventListener("click", e => { if (e.target === overlay) overlay.remove(); });
@@ -7701,7 +7717,7 @@ function _saveEditIncomeName(id) {
     renderIncomeSourcesList();
     toast("Income source renamed!");
   }
-  document.getElementById("_editIncNameModal")?.remove();
+  document.getElementById("_editIncModal")?.remove();
 }
 
 function deleteIncomeSource(id) {
