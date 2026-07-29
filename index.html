@@ -946,7 +946,7 @@ tbody tr:hover td{background:var(--pri-l)}
 .accordion.open .accordion-chevron{transform:rotate(180deg)}
 .accordion-body{max-height:0;overflow:hidden;transition:max-height .3s ease}
 .accordion.open .accordion-body{max-height:5000px}
-.accordion-content{padding:14px 18px 18px}
+.accordion-content{padding:14px 18px 18px;overflow:hidden}
 
 /* ─── Financial Journal ─── */
 .note-tag{display:inline-block;padding:2px 8px;border-radius:12px;font-size:10px;font-weight:700;background:var(--pri-l);color:var(--pri-d)}
@@ -1847,9 +1847,9 @@ footer .footer-links a:hover{color:var(--pri-d)}
 /* ─── Unified Financial Card ─────────────────────────────── */
 /* ─── Financial Cards (Target Track style) ─── */
 .fin-card-grid{display:grid;grid-template-columns:1fr;gap:10px}
-@media(min-width:600px){.fin-card-grid{grid-template-columns:repeat(2,1fr)}}
-@media(min-width:900px){.fin-card-grid{grid-template-columns:repeat(3,1fr)}}
-.fin-card{background:var(--card);border:1.5px solid var(--brd);border-radius:12px;padding:14px 16px;transition:border-color .15s}
+@media(min-width:700px){.fin-card-grid{grid-template-columns:repeat(2,1fr)}}
+@media(min-width:1000px){.fin-card-grid{grid-template-columns:repeat(3,1fr)}}
+.fin-card{background:var(--card);border:1.5px solid var(--brd);border-radius:12px;padding:14px 16px;transition:border-color .15s;min-width:0;max-width:100%;box-sizing:border-box}
 .fin-card:hover{border-color:var(--pri)}
 .fin-card-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
 .fin-card-title{font-size:13px;font-weight:800;color:var(--txt);display:flex;align-items:center;gap:6px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
