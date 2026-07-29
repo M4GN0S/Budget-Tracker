@@ -5608,6 +5608,55 @@ function _saveEditGoalPopup(goalId) {
   document.getElementById('_editGoalPopup')?.remove();
 }
 
+function openEditNwItemPopup(itemType, itemId) {
+  let items = [], name = '';
+  
+  if (itemType === 'asset' || itemType === 'liability') {
+    items = getNwItems();
+    const item = items.find(i => i.id === itemId);
+    if (!item) return;
+    name = item.label || item.name;
+  }
+  
+  const ex = document.getElementById('_editNwItemPopup');
+  if (ex) ex.remove();
+  
+  const overlay = document.createElement('div');
+  overlay.id = '_editNwItemPopup';
+  overlay.style.cssText = 'position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.5)';
+  overlay.innerHTML = `
+    <div style="background:var(--card);border-radius:16px;padding:22px 24px;min-width:280px;max-width:90vw;box-shadow:0 12px 40px rgba(0,0,0,.28)">
+      <div style="font-size:14px;font-weight:800;color:var(--txt);margin-bottom:14px">Edit ${itemType.charAt(0).toUpperCase() + itemType.slice(1)} Name</div>
+      <div class="fg" style="margin-bottom:16px">
+        <label>Name</label>
+        <input type="text" id="_editNwItemNameInput" value="${escHtml(name)}" style="width:100%;padding:9px 12px;border:1.5px solid var(--brd);border-radius:9px;font-size:13px;color:var(--txt);background:var(--input-bg);outline:none;box-sizing:border-box">
+      </div>
+      <div style="display:flex;gap:10px;justify-content:flex-end">
+        <button onclick="document.getElementById('_editNwItemPopup').remove()" style="padding:9px 16px;border-radius:9px;border:1.5px solid var(--brd);background:var(--bg);color:var(--txt2);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit">Cancel</button>
+        <button onclick="_saveEditNwItemPopup('${itemType}',${itemId})" class="btn btn-pri" style="padding:9px 20px;border-radius:9px;font-size:13px;font-weight:700">Save</button>
+      </div>
+    </div>`;
+  
+  document.body.appendChild(overlay);
+  overlay.addEventListener('click', e => { if (e.target === overlay) overlay.remove(); });
+  setTimeout(() => { const inp = document.getElementById('_editNwItemNameInput'); if (inp) { inp.focus(); inp.select(); } }, 60);
+}
+
+function _saveEditNwItemPopup(itemType, itemId) {
+  const newName = document.getElementById('_editNwItemNameInput')?.value.trim();
+  if (!newName) { toast("Name can't be empty"); return; }
+  
+  const items = getNwItems();
+  const item = items.find(i => i.id === itemId);
+  if (item) {
+    item.label = newName;
+    saveNwItems(items);
+    renderNetWorth();
+    toast(`${itemType.charAt(0).toUpperCase() + itemType.slice(1)} renamed!`);
+  }
+  document.getElementById('_editNwItemPopup')?.remove();
+}
+
 // ─── LIABILITY CARD (New Design) ─────────────────────────────────────
 function _liabilityCard(item) {
   const balance = item.amt || 0;
@@ -5646,6 +5695,9 @@ function _liabilityCard(item) {
         <button onclick="event.stopPropagation();_showNwHistPopup('liability',${item.id})" style="font-size:10px;color:var(--txt2);background:var(--card);border:1px solid var(--brd);border-radius:6px;cursor:pointer;padding:3px 7px;font-family:inherit;display:flex;align-items:center;gap:3px;transition:.15s;flex-shrink:0;line-height:1.4" onmouseover="this.style.borderColor='var(--pri)';this.style.color='var(--pri-d)'" onmouseout="this.style.borderColor='var(--brd)';this.style.color='var(--txt2)'" title="View history">
           <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="transition:transform .2s"><polyline points="6 9 12 15 18 9"/></svg>
           ${txns.length}
+        </button>
+        <button onclick="event.stopPropagation();openEditNwItemPopup('liability',${item.id})" style="background:none;border:none;color:var(--txt2);cursor:pointer;padding:4px;border-radius:4px;opacity:.6" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=.6" title="Edit name">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06A1.65 1.65 0 009 4.6a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
         </button>
         <button class="fc-del" onclick="event.stopPropagation();${delFn}" title="Delete" style="background:none;border:none;color:var(--txt2);opacity:.7" onmouseover="this.style.opacity=1;this.style.color='var(--dan)'" onmouseout="this.style.opacity=.7;this.style.color='var(--txt2)'">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
@@ -5974,6 +6026,9 @@ function _assetCard(item) {
         <button onclick="event.stopPropagation();_showNwHistPopup('asset',${item.id})" style="font-size:10px;color:var(--txt2);background:var(--card);border:1px solid var(--brd);border-radius:6px;cursor:pointer;padding:3px 7px;font-family:inherit;display:flex;align-items:center;gap:3px;transition:.15s;flex-shrink:0;line-height:1.4" onmouseover="this.style.borderColor='var(--pri)';this.style.color='var(--pri-d)'" onmouseout="this.style.borderColor='var(--brd)';this.style.color='var(--txt2)'" title="View history">
           <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="transition:transform .2s"><polyline points="6 9 12 15 18 9"/></svg>
           ${txns.length}
+        </button>
+        <button onclick="event.stopPropagation();openEditNwItemPopup('asset',${item.id})" style="background:none;border:none;color:var(--txt2);cursor:pointer;padding:4px;border-radius:4px;opacity:.6" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=.6" title="Edit name">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06A1.65 1.65 0 009 4.6a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
         </button>
         <button class="fc-del" onclick="event.stopPropagation();${delFn}" title="Delete" style="background:none;border:none;color:var(--txt2);opacity:.7" onmouseover="this.style.opacity=1;this.style.color='var(--dan)'" onmouseout="this.style.opacity=.7;this.style.color='var(--txt2)'">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
