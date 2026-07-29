@@ -5469,11 +5469,12 @@ function _goalCard(g, monthlySavingsRate) {
         </div>
       </div>
       <div style="display:flex;gap:4px;flex-shrink:0">
+        <button onclick="event.stopPropagation();_toggleNwHist('${histId}')" style="font-size:10px;color:var(--txt2);background:var(--card);border:1px solid var(--brd);border-radius:6px;cursor:pointer;padding:3px 7px;font-family:inherit;display:flex;align-items:center;gap:3px;transition:.15s;flex-shrink:0;line-height:1.4" onmouseover="this.style.borderColor='var(--pri)';this.style.color='var(--pri-d)'" onmouseout="this.style.borderColor='var(--brd)';this.style.color='var(--txt2)'" title="View history">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="transition:transform .2s"><polyline points="6 9 12 15 18 9"/></svg>
+          ${txns.length}
+        </button>
         <button onclick="event.stopPropagation();openEditGoalName(${g.id})" style="background:none;border:none;color:var(--txt2);cursor:pointer;padding:4px;border-radius:4px;opacity:.5" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=.5" title="Edit name">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06A1.65 1.65 0 009 4.6a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
-        </button>
-        <button onclick="event.stopPropagation();_toggleNwHist('${histId}')" style="background:none;border:none;color:var(--txt2);cursor:pointer;padding:4px;border-radius:4px;opacity:.5" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=.5" title="History">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
         </button>
         <button class="fc-del" onclick="event.stopPropagation();${delFn}" title="Delete" style="opacity:.4" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=.4">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
@@ -5635,8 +5636,9 @@ function _liabilityCard(item) {
         </div>
       </div>
       <div style="display:flex;gap:4px">
-        <button onclick="event.stopPropagation();_toggleNwHist('${histId}')" style="background:none;border:none;color:var(--txt2);cursor:pointer;padding:4px;border-radius:4px;opacity:.5" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=.5" title="History">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        <button onclick="event.stopPropagation();_toggleNwHist('${histId}')" style="font-size:10px;color:var(--txt2);background:var(--card);border:1px solid var(--brd);border-radius:6px;cursor:pointer;padding:3px 7px;font-family:inherit;display:flex;align-items:center;gap:3px;transition:.15s;flex-shrink:0;line-height:1.4" onmouseover="this.style.borderColor='var(--pri)';this.style.color='var(--pri-d)'" onmouseout="this.style.borderColor='var(--brd)';this.style.color='var(--txt2)'" title="View history">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="transition:transform .2s"><polyline points="6 9 12 15 18 9"/></svg>
+          ${txns.length}
         </button>
         <button class="fc-del" onclick="event.stopPropagation();${delFn}" title="Delete" style="opacity:.4" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=.4">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
@@ -5757,8 +5759,9 @@ function _assetCard(item) {
         </div>
       </div>
       <div style="display:flex;gap:4px">
-        <button onclick="event.stopPropagation();_toggleNwHist('${histId}')" style="background:none;border:none;color:var(--txt2);cursor:pointer;padding:4px;border-radius:4px;opacity:.5" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=.5" title="History">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        <button onclick="event.stopPropagation();_toggleNwHist('${histId}')" style="font-size:10px;color:var(--txt2);background:var(--card);border:1px solid var(--brd);border-radius:6px;cursor:pointer;padding:3px 7px;font-family:inherit;display:flex;align-items:center;gap:3px;transition:.15s;flex-shrink:0;line-height:1.4" onmouseover="this.style.borderColor='var(--pri)';this.style.color='var(--pri-d)'" onmouseout="this.style.borderColor='var(--brd)';this.style.color='var(--txt2)'" title="View history">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="transition:transform .2s"><polyline points="6 9 12 15 18 9"/></svg>
+          ${txns.length}
         </button>
         <button class="fc-del" onclick="event.stopPropagation();${delFn}" title="Delete" style="opacity:.4" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=.4">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
