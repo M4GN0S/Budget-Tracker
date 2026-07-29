@@ -5543,6 +5543,80 @@ function _goalWithdraw(goalId) {
   toast('Withdrew ' + fmt(amt) + ' from ' + g.name);
 }
 
+// ─── LIABILITY CARD (New Design) ─────────────────────────────────────
+function _liabilityCard(item) {
+  const balance = item.amt || 0;
+  const txns = item.transactions || [];
+  const totalPaid = txns.filter(t => t.action === 'pay').reduce((s, t) => s + t.amount, 0);
+  const originalAmount = balance + totalPaid;
+  const pctPaid = originalAmount > 0 ? Math.min((totalPaid / originalAmount) * 100, 100) : 0;
+  const circumference = 2 * Math.PI * 36;
+  const dashOffset = circumference - (pctPaid / 100) * circumference;
+  
+  const delFn = `deleteNwItem(${item.id})`;
+  
+  return `<div class="fin-card goal-card">
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px">
+      <div>
+        <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:var(--dan);margin-bottom:4px;display:flex;align-items:center;gap:5px">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 18 13.5 8.5 8.5 13.5 1 6"/><polyline points="17 18 23 18 23 12"/></svg>
+          LIABILITY
+        </div>
+        <div style="font-size:18px;font-weight:900;color:var(--txt);line-height:1.2">${escHtml(item.label || item.name)}</div>
+      </div>
+      <button class="fc-del" onclick="event.stopPropagation();${delFn}" title="Delete liability" style="opacity:.4;transition:.15s" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=.4">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
+      </button>
+    </div>
+    
+    <div style="display:flex;align-items:center;gap:20px;margin:16px 0">
+      <div style="position:relative;width:90px;height:90px;flex-shrink:0">
+        <svg viewBox="0 0 80 80" style="width:100%;height:100%;transform:rotate(-90deg)">
+          <circle cx="40" cy="40" r="36" fill="none" stroke="var(--brd)" stroke-width="8" opacity=".3"/>
+          <circle cx="40" cy="40" r="36" fill="none" stroke="var(--dan)" stroke-width="8" stroke-linecap="round" stroke-dasharray="${circumference}" stroke-dashoffset="${dashOffset}" style="transition:stroke-dashoffset .6s ease"/>
+        </svg>
+        <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:900;color:var(--txt)">${Math.round(pctPaid)}%</div>
+      </div>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:10px;font-weight:700;color:var(--txt2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Remaining Balance</div>
+        <div style="font-size:24px;font-weight:900;color:var(--dan);font-family:'SF Mono',monospace;line-height:1.1">${fmt(balance)}</div>
+        <div style="font-size:11px;color:var(--txt2);margin-top:2px">${fmt(totalPaid)} paid of ${fmt(originalAmount)}</div>
+      </div>
+    </div>
+    
+    <div style="display:grid;grid-template-columns:1fr;gap:12px;margin-top:16px;padding-top:16px;border-top:1px solid var(--brd)">
+      <div>
+        <div style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:var(--txt2);margin-bottom:6px">Pay Down</div>
+        <div style="display:flex;gap:6px">
+          <input type="text" inputmode="decimal" id="liabPay_${item.id}" placeholder="Amount" style="flex:1;padding:8px 10px;border:1.5px solid var(--brd);border-radius:8px;font-size:12px;font-family:'SF Mono',monospace;background:var(--input-bg);color:var(--txt);outline:none;box-sizing:border-box;min-width:0" onclick="event.stopPropagation()">
+          <button onclick="event.stopPropagation();_liabilityPay(${item.id})" style="width:32px;height:32px;border-radius:8px;border:none;background:var(--dan-l);color:var(--dan);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.15s;flex-shrink:0" onmouseover="this.style.background='var(--dan)';this.style.color='#fff'" onmouseout="this.style.background='var(--dan-l)';this.style.color='var(--dan)'">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+    
+    ${txns.length > 0 ? `<div style="margin-top:12px;font-size:11px;color:var(--txt2);text-align:center">${txns.length} transaction${txns.length !== 1 ? 's' : ''} recorded</div>` : ''}
+  </div>`;
+}
+
+function _liabilityPay(liabId) {
+  const input = document.getElementById('liabPay_' + liabId);
+  if (!input) return;
+  const amt = parseFloat((input.value || '').replace(/,/g, ''));
+  if (!amt || amt <= 0) { toast('Enter a valid amount'); return; }
+  const items = getNwItems();
+  const item = items.find(i => i.id === liabId);
+  if (!item) return;
+  if (amt > item.amt) { toast('Cannot pay more than balance'); return; }
+  item.amt = Math.max(0, item.amt - amt);
+  if (!item.transactions) item.transactions = [];
+  item.transactions.push({ id: Date.now(), date: new Date().toISOString().split('T')[0], action: 'pay', amount: amt, note: 'Payment', balance: item.amt });
+  saveNwItems(items);
+  renderNetWorth();
+  toast('Paid ' + fmt(amt) + ' toward ' + (item.label || item.name));
+}
+
 function _toggleFinHist(id) {
   const el   = document.getElementById(id);
   const chev = document.getElementById(id + "_chev");
@@ -5992,15 +6066,7 @@ function renderNetWorth() {
     if (!liabilities.length) {
       liabEl.innerHTML = `<div style="font-size:12px;color:var(--txt2);padding:4px 0 8px">No liabilities added yet.</div>`;
     } else {
-      liabEl.innerHTML = `<div class="fin-card-grid">` + liabilities.map(i => _finCard(i, {
-        module:      "liability",
-        accentColor: "var(--dan)",
-        accentLight: "var(--dan-l)",
-        tagLabel:    "Liability",
-        actionLabel: "− Pay Down",
-        actionFn:    `openFinTxnModal(${i.id},'liability','pay')`,
-        balance:     i.amt,
-      })).join("") + `</div>` +
+      liabEl.innerHTML = `<div class="fin-card-grid">` + liabilities.map(i => _liabilityCard(i)).join("") + `</div>` +
         `<div style="display:flex;justify-content:space-between;padding:8px 12px;font-size:12px;
                      font-weight:700;color:var(--dan);background:var(--dan-l);border-radius:8px;margin-top:4px">
           <span>Total Liabilities</span>
