@@ -6000,6 +6000,20 @@ function _assetCard(item) {
   const totalWithdrawn = txns.filter(t => t.action === 'withdraw').reduce((s, t) => s + t.amount, 0);
   const histId = '_nwHist_' + item.id;
   
+  // Calculate initial amount and growth
+  const initialAmount = balance - totalFunded + totalWithdrawn;
+  let growthText = '';
+  if (txns.length > 0 && initialAmount > 0) {
+    const growthPct = Math.round(((balance - initialAmount) / initialAmount) * 100);
+    if (growthPct > 0) {
+      growthText = `<span style="color:var(--suc);font-size:10px;font-weight:700">↑ ${growthPct}%</span>`;
+    } else if (growthPct < 0) {
+      growthText = `<span style="color:var(--dan);font-size:10px;font-weight:700">↓ ${Math.abs(growthPct)}%</span>`;
+    } else {
+      growthText = `<span style="color:var(--txt2);font-size:10px;font-weight:700">— 0%</span>`;
+    }
+  }
+  
   const delFn = `deleteNwItem(${item.id})`;
   
   // Build transaction history rows
@@ -6038,7 +6052,10 @@ function _assetCard(item) {
     
     <div style="margin:10px 0">
       <div style="font-size:9px;font-weight:700;color:var(--txt2);text-transform:uppercase">Current Value</div>
-      <div style="font-size:20px;font-weight:900;color:var(--suc);font-family:'SF Mono',monospace">${fmt(balance)}</div>
+      <div style="display:flex;align-items:baseline;gap:8px">
+        <div style="font-size:20px;font-weight:900;color:var(--suc);font-family:'SF Mono',monospace">${fmt(balance)}</div>
+        ${growthText}
+      </div>
       <div style="font-size:10px;color:var(--txt2)">${fmt(totalFunded)} funded · ${fmt(totalWithdrawn)} withdrawn</div>
     </div>
     
