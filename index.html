@@ -5506,6 +5506,7 @@ function _goalCard(g, monthlySavingsRate) {
             <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
           </button>
         </div>
+        <input type="text" id="goalDepositNote_${g.id}" placeholder="Note (optional)" style="width:100%;margin-top:4px;padding:4px 6px;border:1px solid var(--brd);border-radius:4px;font-size:9px;font-family:inherit;background:var(--input-bg);color:var(--txt2);outline:none;box-sizing:border-box" onclick="event.stopPropagation()">
       </div>
       <div style="min-width:0">
         <div style="font-size:8px;font-weight:800;text-transform:uppercase;color:var(--txt2);margin-bottom:4px">Withdraw</div>
@@ -5515,6 +5516,7 @@ function _goalCard(g, monthlySavingsRate) {
             <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="5" y1="12" x2="19" y2="12"/></svg>
           </button>
         </div>
+        <input type="text" id="goalWithdrawNote_${g.id}" placeholder="Note (optional)" style="width:100%;margin-top:4px;padding:4px 6px;border:1px solid var(--brd);border-radius:4px;font-size:9px;font-family:inherit;background:var(--input-bg);color:var(--txt2);outline:none;box-sizing:border-box" onclick="event.stopPropagation()">
       </div>
     </div>
     
@@ -5530,24 +5532,31 @@ function _goalCard(g, monthlySavingsRate) {
 // Goal deposit/withdraw functions
 function _goalDeposit(goalId) {
   const input = document.getElementById('goalDeposit_' + goalId);
+  const noteInput = document.getElementById('goalDepositNote_' + goalId);
   if (!input) return;
   const amt = parseFloat((input.value || '').replace(/,/g, ''));
+  const note = noteInput ? noteInput.value.trim() : '';
   if (!amt || amt <= 0) { toast('Enter a valid amount'); return; }
   const data = getData();
   const g = data.goals.find(g => g.id === goalId);
   if (!g) return;
   g.saved = (g.saved || 0) + amt;
   if (!g.transactions) g.transactions = [];
-  g.transactions.push({ id: Date.now(), date: new Date().toISOString().split('T')[0], action: 'contribution', amount: amt, note: 'Deposit', balance: g.saved });
+  g.transactions.push({ id: Date.now(), date: new Date().toISOString().split('T')[0], action: 'contribution', amount: amt, note: note || 'Deposit', balance: g.saved });
   saveData(data);
   renderGoals();
+  // Clear inputs
+  if (input) input.value = '';
+  if (noteInput) noteInput.value = '';
   toast('Deposited ' + fmt(amt) + ' to ' + g.name);
 }
 
 function _goalWithdraw(goalId) {
   const input = document.getElementById('goalWithdraw_' + goalId);
+  const noteInput = document.getElementById('goalWithdrawNote_' + goalId);
   if (!input) return;
   const amt = parseFloat((input.value || '').replace(/,/g, ''));
+  const note = noteInput ? noteInput.value.trim() : '';
   if (!amt || amt <= 0) { toast('Enter a valid amount'); return; }
   const data = getData();
   const g = data.goals.find(g => g.id === goalId);
@@ -5555,9 +5564,12 @@ function _goalWithdraw(goalId) {
   if (amt > (g.saved || 0)) { toast('Cannot withdraw more than saved'); return; }
   g.saved = Math.max(0, (g.saved || 0) - amt);
   if (!g.transactions) g.transactions = [];
-  g.transactions.push({ id: Date.now(), date: new Date().toISOString().split('T')[0], action: 'pay', amount: amt, note: 'Withdrawal', balance: g.saved });
+  g.transactions.push({ id: Date.now(), date: new Date().toISOString().split('T')[0], action: 'pay', amount: amt, note: note || 'Withdrawal', balance: g.saved });
   saveData(data);
   renderGoals();
+  // Clear inputs
+  if (input) input.value = '';
+  if (noteInput) noteInput.value = '';
   toast('Withdrew ' + fmt(amt) + ' from ' + g.name);
 }
 
@@ -5729,6 +5741,7 @@ function _liabilityCard(item) {
             <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
           </button>
         </div>
+        <input type="text" id="liabAddNote_${item.id}" placeholder="Note (optional)" style="width:100%;margin-top:4px;padding:4px 6px;border:1px solid var(--brd);border-radius:4px;font-size:9px;font-family:inherit;background:var(--input-bg);color:var(--txt2);outline:none;box-sizing:border-box" onclick="event.stopPropagation()">
       </div>
       <div style="min-width:0">
         <div style="font-size:8px;font-weight:800;text-transform:uppercase;color:var(--txt2);margin-bottom:4px">Pay Down</div>
@@ -5738,6 +5751,7 @@ function _liabilityCard(item) {
             <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="5" y1="12" x2="19" y2="12"/></svg>
           </button>
         </div>
+        <input type="text" id="liabPayNote_${item.id}" placeholder="Note (optional)" style="width:100%;margin-top:4px;padding:4px 6px;border:1px solid var(--brd);border-radius:4px;font-size:9px;font-family:inherit;background:var(--input-bg);color:var(--txt2);outline:none;box-sizing:border-box" onclick="event.stopPropagation()">
       </div>
     </div>
     
@@ -5750,24 +5764,31 @@ function _liabilityCard(item) {
 
 function _liabilityAdd(liabId) {
   const input = document.getElementById('liabAdd_' + liabId);
+  const noteInput = document.getElementById('liabAddNote_' + liabId);
   if (!input) return;
   const amt = parseFloat((input.value || '').replace(/,/g, ''));
+  const note = noteInput ? noteInput.value.trim() : '';
   if (!amt || amt <= 0) { toast('Enter a valid amount'); return; }
   const items = getNwItems();
   const item = items.find(i => i.id === liabId);
   if (!item) return;
   item.amt = (item.amt || 0) + amt;
   if (!item.transactions) item.transactions = [];
-  item.transactions.push({ id: Date.now(), date: new Date().toISOString().split('T')[0], action: 'fund', amount: amt, note: 'Added to balance', balance: item.amt });
+  item.transactions.push({ id: Date.now(), date: new Date().toISOString().split('T')[0], action: 'fund', amount: amt, note: note || 'Added to balance', balance: item.amt });
   saveNwItems(items);
   renderNetWorth();
+  // Clear inputs
+  if (input) input.value = '';
+  if (noteInput) noteInput.value = '';
   toast('Added ' + fmt(amt) + ' to ' + (item.label || item.name));
 }
 
 function _liabilityPay(liabId) {
   const input = document.getElementById('liabPay_' + liabId);
+  const noteInput = document.getElementById('liabPayNote_' + liabId);
   if (!input) return;
   const amt = parseFloat((input.value || '').replace(/,/g, ''));
+  const note = noteInput ? noteInput.value.trim() : '';
   if (!amt || amt <= 0) { toast('Enter a valid amount'); return; }
   const items = getNwItems();
   const item = items.find(i => i.id === liabId);
@@ -5775,9 +5796,12 @@ function _liabilityPay(liabId) {
   if (amt > item.amt) { toast('Cannot pay more than balance'); return; }
   item.amt = Math.max(0, item.amt - amt);
   if (!item.transactions) item.transactions = [];
-  item.transactions.push({ id: Date.now(), date: new Date().toISOString().split('T')[0], action: 'pay', amount: amt, note: 'Payment', balance: item.amt });
+  item.transactions.push({ id: Date.now(), date: new Date().toISOString().split('T')[0], action: 'pay', amount: amt, note: note || 'Payment', balance: item.amt });
   saveNwItems(items);
   renderNetWorth();
+  // Clear inputs
+  if (input) input.value = '';
+  if (noteInput) noteInput.value = '';
   toast('Paid ' + fmt(amt) + ' toward ' + (item.label || item.name));
 }
 
@@ -6068,6 +6092,7 @@ function _assetCard(item) {
             <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
           </button>
         </div>
+        <input type="text" id="assetFundNote_${item.id}" placeholder="Note (optional)" style="width:100%;margin-top:4px;padding:4px 6px;border:1px solid var(--brd);border-radius:4px;font-size:9px;font-family:inherit;background:var(--input-bg);color:var(--txt2);outline:none;box-sizing:border-box" onclick="event.stopPropagation()">
       </div>
       <div style="min-width:0">
         <div style="font-size:8px;font-weight:800;text-transform:uppercase;color:var(--txt2);margin-bottom:4px">Withdraw</div>
@@ -6077,6 +6102,7 @@ function _assetCard(item) {
             <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="5" y1="12" x2="19" y2="12"/></svg>
           </button>
         </div>
+        <input type="text" id="assetWithdrawNote_${item.id}" placeholder="Note (optional)" style="width:100%;margin-top:4px;padding:4px 6px;border:1px solid var(--brd);border-radius:4px;font-size:9px;font-family:inherit;background:var(--input-bg);color:var(--txt2);outline:none;box-sizing:border-box" onclick="event.stopPropagation()">
       </div>
     </div>
     
@@ -6089,24 +6115,31 @@ function _assetCard(item) {
 
 function _assetFund(assetId) {
   const input = document.getElementById('assetFund_' + assetId);
+  const noteInput = document.getElementById('assetFundNote_' + assetId);
   if (!input) return;
   const amt = parseFloat((input.value || '').replace(/,/g, ''));
+  const note = noteInput ? noteInput.value.trim() : '';
   if (!amt || amt <= 0) { toast('Enter a valid amount'); return; }
   const items = getNwItems();
   const item = items.find(i => i.id === assetId);
   if (!item) return;
   item.amt = (item.amt || 0) + amt;
   if (!item.transactions) item.transactions = [];
-  item.transactions.push({ id: Date.now(), date: new Date().toISOString().split('T')[0], action: 'fund', amount: amt, note: 'Funding', balance: item.amt });
+  item.transactions.push({ id: Date.now(), date: new Date().toISOString().split('T')[0], action: 'fund', amount: amt, note: note || 'Funding', balance: item.amt });
   saveNwItems(items);
   renderNetWorth();
+  // Clear inputs
+  if (input) input.value = '';
+  if (noteInput) noteInput.value = '';
   toast('Added ' + fmt(amt) + ' to ' + (item.label || item.name));
 }
 
 function _assetWithdraw(assetId) {
   const input = document.getElementById('assetWithdraw_' + assetId);
+  const noteInput = document.getElementById('assetWithdrawNote_' + assetId);
   if (!input) return;
   const amt = parseFloat((input.value || '').replace(/,/g, ''));
+  const note = noteInput ? noteInput.value.trim() : '';
   if (!amt || amt <= 0) { toast('Enter a valid amount'); return; }
   const items = getNwItems();
   const item = items.find(i => i.id === assetId);
@@ -6114,9 +6147,12 @@ function _assetWithdraw(assetId) {
   if (amt > item.amt) { toast('Cannot withdraw more than balance'); return; }
   item.amt = Math.max(0, item.amt - amt);
   if (!item.transactions) item.transactions = [];
-  item.transactions.push({ id: Date.now(), date: new Date().toISOString().split('T')[0], action: 'withdraw', amount: amt, note: 'Withdrawal', balance: item.amt });
+  item.transactions.push({ id: Date.now(), date: new Date().toISOString().split('T')[0], action: 'withdraw', amount: amt, note: note || 'Withdrawal', balance: item.amt });
   saveNwItems(items);
   renderNetWorth();
+  // Clear inputs
+  if (input) input.value = '';
+  if (noteInput) noteInput.value = '';
   toast('Withdrew ' + fmt(amt) + ' from ' + (item.label || item.name));
 }
 
