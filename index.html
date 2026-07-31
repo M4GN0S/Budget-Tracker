@@ -3051,11 +3051,11 @@ footer .footer-links a:hover{color:var(--pri-d)}
         <div class="accordion-header" style="padding:12px 14px">
           <div class="acc-left">
             <div class="acc-icon" style="background:var(--dan-l)">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--dan)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 18 13.5 8.5 8.5 13.5 1 6"/><polyline points="17 18 23 18 23 12"/></svg>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--dan)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><polyline points="8 12 12 16 16 12"/></svg>
             </div>
             <div>
               <div style="font-size:12px;font-weight:800;color:var(--txt)">Liabilities</div>
-              <div style="font-size:9.5px;color:var(--txt2)" id="nwLiabAccLabel">What you owe</div>
+              <div style="font-size:9.5px;color:var(--txt2)" id="nwLiabAccLabel">Outstanding balances</div>
             </div>
           </div>
           <div style="display:flex;align-items:center;gap:8px">
@@ -5336,7 +5336,7 @@ function _finCard(item, cfg) {
     income: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="' + cfg.accentColor + '" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>',
     goal: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="' + cfg.accentColor + '" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>',
     asset: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="' + cfg.accentColor + '" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>',
-    liability:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="' + cfg.accentColor + '" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 18 13.5 8.5 8.5 13.5 1 6"/><polyline points="17 18 23 18 23 12"/></svg>'
+    liability:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="' + cfg.accentColor + '" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><polyline points="8 12 12 16 16 12"/></svg>'
   };
   const cardIcon = iconMap[cfg.module] || iconMap.income;
 
@@ -5688,7 +5688,7 @@ function _liabilityCard(item) {
     const isPay = t.action === 'pay';
     const col = isPay ? 'var(--suc)' : 'var(--dan)';
     const ltCol = isPay ? 'var(--suc-l)' : 'var(--dan-l)';
-    const label = isPay ? 'Paid' : 'Added';
+    const label = isPay ? 'Paid' : 'Increased';
     return `<tr><td style="padding:4px 6px;font-size:10px;color:var(--txt2)">${t.date}</td><td style="padding:4px 6px"><span style="padding:1px 6px;border-radius:4px;font-size:9px;font-weight:700;background:${ltCol};color:${col}">${label}</span></td><td style="padding:4px 6px;font-size:10px;font-weight:700;color:${col};text-align:right">${isPay?'-':'+'}${fmt(t.amount)}</td></tr>`;
   }).join('');
   
@@ -5696,7 +5696,7 @@ function _liabilityCard(item) {
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
       <div style="display:flex;align-items:center;gap:6px">
         <div style="width:24px;height:24px;border-radius:6px;background:var(--dan-l);display:flex;align-items:center;justify-content:center">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--dan)" stroke-width="2.5"><polyline points="23 18 13.5 8.5 8.5 13.5 1 6"/><polyline points="17 18 23 18 23 12"/></svg>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--dan)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><polyline points="8 12 12 16 16 12"/></svg>
         </div>
         <div style="min-width:0;overflow:hidden">
           <div style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:var(--dan)">Liability</div>
@@ -5721,33 +5721,33 @@ function _liabilityCard(item) {
       <div style="position:relative;width:60px;height:60px;flex-shrink:0">
         <svg viewBox="0 0 64 64" style="width:100%;height:100%;transform:rotate(-90deg)">
           <circle cx="32" cy="32" r="28" fill="none" stroke="var(--brd)" stroke-width="6" opacity=".3"/>
-          <circle cx="32" cy="32" r="28" fill="none" stroke="var(--dan)" stroke-width="6" stroke-linecap="round" stroke-dasharray="${circumference}" stroke-dashoffset="${dashOffset}"/>
+          <circle cx="32" cy="32" r="28" fill="none" stroke="var(--suc)" stroke-width="6" stroke-linecap="round" stroke-dasharray="${circumference}" stroke-dashoffset="${dashOffset}"/>
         </svg>
         <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:900;color:var(--txt)">${Math.round(pctPaid)}%</div>
       </div>
       <div style="flex:1;min-width:0">
         <div style="font-size:9px;font-weight:700;color:var(--txt2);text-transform:uppercase">Balance</div>
         <div style="font-size:16px;font-weight:900;color:var(--dan);font-family:'SF Mono',monospace">${fmt(balance)}</div>
-        <div style="font-size:10px;color:var(--txt2)">${fmt(totalPaid)} paid · ${fmt(totalAdded)} added</div>
+        <div style="font-size:10px;color:var(--txt2)">${fmt(totalPaid)} paid down · ${fmt(totalAdded)} increased</div>
       </div>
     </div>
     
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px;padding-top:10px;border-top:1px solid var(--brd)">
-      <div style="min-width:0">
-        <div style="font-size:8px;font-weight:800;text-transform:uppercase;color:var(--txt2);margin-bottom:4px">Add</div>
-        <div style="display:flex;gap:4px;align-items:center">
-          <input type="text" inputmode="decimal" id="liabAdd_${item.id}" placeholder="0" style="flex:1;min-width:0;padding:6px 8px;border:1.5px solid var(--brd);border-radius:6px;font-size:11px;font-family:'SF Mono',monospace;background:var(--input-bg);color:var(--txt);outline:none;box-sizing:border-box" onclick="event.stopPropagation()">
-          <button onclick="event.stopPropagation();_liabilityAdd(${item.id})" style="width:26px;height:26px;min-width:26px;border-radius:6px;border:none;background:var(--pri-l);color:var(--pri-d);cursor:pointer;display:flex;align-items:center;justify-content:center" onmouseover="this.style.background='var(--pri)';this.style.color='#fff'" onmouseout="this.style.background='var(--pri-l)';this.style.color='var(--pri-d)'">
-            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          </button>
+        <div style="min-width:0">
+          <div style="font-size:8px;font-weight:800;text-transform:uppercase;color:var(--txt2);margin-bottom:4px">Increase</div>
+          <div style="display:flex;gap:4px;align-items:center">
+            <input type="text" inputmode="decimal" id="liabAdd_${item.id}" placeholder="0" style="flex:1;min-width:0;padding:6px 8px;border:1.5px solid var(--brd);border-radius:6px;font-size:11px;font-family:'SF Mono',monospace;background:var(--input-bg);color:var(--txt);outline:none;box-sizing:border-box" onclick="event.stopPropagation()">
+            <button onclick="event.stopPropagation();_liabilityAdd(${item.id})" style="width:26px;height:26px;min-width:26px;border-radius:6px;border:none;background:var(--dan-l);color:var(--dan);cursor:pointer;display:flex;align-items:center;justify-content:center" onmouseover="this.style.background='var(--dan)';this.style.color='#fff'" onmouseout="this.style.background='var(--dan-l)';this.style.color='var(--dan)'">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            </button>
+          </div>
+          <input type="text" id="liabAddNote_${item.id}" placeholder="Note (optional)" style="width:100%;margin-top:4px;padding:4px 6px;border:1px solid var(--brd);border-radius:4px;font-size:9px;font-family:inherit;background:var(--input-bg);color:var(--txt2);outline:none;box-sizing:border-box" onclick="event.stopPropagation()">
         </div>
-        <input type="text" id="liabAddNote_${item.id}" placeholder="Note (optional)" style="width:100%;margin-top:4px;padding:4px 6px;border:1px solid var(--brd);border-radius:4px;font-size:9px;font-family:inherit;background:var(--input-bg);color:var(--txt2);outline:none;box-sizing:border-box" onclick="event.stopPropagation()">
-      </div>
       <div style="min-width:0">
         <div style="font-size:8px;font-weight:800;text-transform:uppercase;color:var(--txt2);margin-bottom:4px">Pay Down</div>
         <div style="display:flex;gap:4px;align-items:center">
           <input type="text" inputmode="decimal" id="liabPay_${item.id}" placeholder="0" style="flex:1;min-width:0;padding:6px 8px;border:1.5px solid var(--brd);border-radius:6px;font-size:11px;font-family:'SF Mono',monospace;background:var(--input-bg);color:var(--txt);outline:none;box-sizing:border-box" onclick="event.stopPropagation()">
-          <button onclick="event.stopPropagation();_liabilityPay(${item.id})" style="width:26px;height:26px;min-width:26px;border-radius:6px;border:none;background:var(--dan-l);color:var(--dan);cursor:pointer;display:flex;align-items:center;justify-content:center" onmouseover="this.style.background='var(--dan)';this.style.color='#fff'" onmouseout="this.style.background='var(--dan-l)';this.style.color='var(--dan)'">
+          <button onclick="event.stopPropagation();_liabilityPay(${item.id})" style="width:26px;height:26px;min-width:26px;border-radius:6px;border:none;background:var(--suc-l);color:var(--suc);cursor:pointer;display:flex;align-items:center;justify-content:center" onmouseover="this.style.background='var(--suc)';this.style.color='#fff'" onmouseout="this.style.background='var(--suc-l)';this.style.color='var(--suc)'">
             <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="5" y1="12" x2="19" y2="12"/></svg>
           </button>
         </div>
@@ -5774,7 +5774,7 @@ function _liabilityAdd(liabId) {
   if (!item) return;
   item.amt = (item.amt || 0) + amt;
   if (!item.transactions) item.transactions = [];
-  item.transactions.push({ id: Date.now(), date: new Date().toISOString().split('T')[0], action: 'fund', amount: amt, note: note || 'Added to balance', balance: item.amt });
+  item.transactions.push({ id: Date.now(), date: new Date().toISOString().split('T')[0], action: 'fund', amount: amt, note: note || 'Balance increased', balance: item.amt });
   saveNwItems(items);
   renderNetWorth();
   // Clear inputs
@@ -5796,7 +5796,7 @@ function _liabilityPay(liabId) {
   if (amt > item.amt) { toast('Cannot pay more than balance'); return; }
   item.amt = Math.max(0, item.amt - amt);
   if (!item.transactions) item.transactions = [];
-  item.transactions.push({ id: Date.now(), date: new Date().toISOString().split('T')[0], action: 'pay', amount: amt, note: note || 'Payment', balance: item.amt });
+  item.transactions.push({ id: Date.now(), date: new Date().toISOString().split('T')[0], action: 'pay', amount: amt, note: note || 'Debt payment', balance: item.amt });
   saveNwItems(items);
   renderNetWorth();
   // Clear inputs
