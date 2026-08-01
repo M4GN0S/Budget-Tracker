@@ -19,7 +19,7 @@
 :root{
   --pri:#7E9A8E;--pri-l:#EEF3EF;--pri-d:#4E6F62;
   --acc:#B9926B;--acc-l:#F6EFE6;
-  --suc:#6E9B72;--suc-l:#EDF5ED;
+  --suc:#8CCDA0;--suc-l:#EDF5ED;
   --dan:#B86A62;--dan-l:#F7EDEA;
   --bg:#F7F4EE;--card:#FFFDF8;
   --txt:#20231F;--txt2:#6F746D;--brd:#E7E0D6;
@@ -459,6 +459,9 @@ input[type="number"]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0
 
 /* ─── Stats Grid ─── */
 .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px}
+@media(max-width:1100px){
+  .stats{grid-template-columns:1fr 1fr}
+}
 @media(min-width:768px){
   .budget-grid{grid-template-columns:1fr 1fr !important}
 }
@@ -478,38 +481,51 @@ input[type="number"]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0
   padding:20px 18px;box-shadow:var(--sh);
   position:relative;overflow:visible;
   border:1px solid var(--brd);
-  transition:transform .2s,box-shadow .2s;
+  transition:transform .2s,box-shadow .2s,border-color .2s;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;cursor:default;
 }
 .stat:hover{transform:translateY(-1px);box-shadow:var(--sh)}
-/* Replace ::before bar with border-top so it follows the card's border-radius uniformly */
-.stat.needs  { border-top:3px solid var(--pri) }
-.stat.wants  { border-top:3px solid var(--acc) }
-.stat.savings{ border-top:3px solid var(--suc) }
+.stat[onclick]{cursor:pointer}
 .stat-icon{
   width:40px;height:40px;border-radius:10px;
   display:flex;align-items:center;justify-content:center;
   margin-bottom:10px;color:var(--txt2);
 }
-.stat.needs .stat-icon{background:var(--pri-l);color:var(--pri-d)}
-.stat.wants .stat-icon{background:var(--acc-l);color:var(--acc)}
-.stat.savings .stat-icon{background:var(--suc-l);color:var(--suc)}
-.stat .lbl{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--txt2);font-weight:700}
-.stat .amt{font-size:27px;font-weight:800;margin:8px 0 4px;letter-spacing:-1px}
-.stat.needs .amt{color:var(--pri-d)}
-.stat.wants .amt{color:var(--acc)}
-.stat.savings .amt{color:var(--suc)}
-/* Savings Efficiency stat card — fixed dark gradient for both light & dark modes */
-.stat.savings-eff{background:linear-gradient(135deg,#4E6F62,#7E9A8E);color:#fff;border:1px solid #4E6F62;display:flex;flex-direction:column;justify-content:center}
-.stat.savings-eff .stat-icon{color:rgba(255,255,255,.85)}
-.stat.savings-eff .lbl{color:rgba(255,255,255,.8);font-size:11px;text-transform:uppercase;letter-spacing:.8px;font-weight:800}
-.stat.savings-eff .amt{color:#fff;font-size:24px;font-weight:900;line-height:1.2}
-.stat.savings-eff .sub{color:rgba(255,255,255,.6);font-size:11px}
-.stat.savings-eff .eff-bar{height:6px;background:rgba(255,255,255,.2);border-radius:99px;margin-top:8px;overflow:hidden}
-.stat.savings-eff .eff-bar-fill{height:100%;background:rgba(255,255,255,.85);border-radius:99px;transition:width .6s cubic-bezier(.4,0,.2,1)}
-.stat.savings-eff .stat-corner-add{color:var(--pri-d);background:rgba(255,255,255,.9)}
-.stat.savings-eff .fin-tooltip-icon{color:var(--pri-d);background:rgba(255,255,255,.9)}
-
+.stat-nw .stat-icon{background:var(--pri-l);color:var(--pri-d)}
+.stat-dr .stat-icon{background:var(--acc-l);color:var(--acc)}
+/* Typography split: Inter/sans-serif labels, SF Mono numbers */
+.stat .lbl{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--txt2);font-weight:700}
+.stat .amt{font-family:'SF Mono',Consolas,monospace;font-size:clamp(20px,2.4vw,28px);font-weight:800;margin:8px 0 4px;letter-spacing:-1px;color:var(--txt)}
 .stat .sub{font-size:11px;color:var(--txt2);line-height:1.4}
+
+/* Assets card — deep green container + mint glow */
+.stat.stat-assets{
+  background:#1F2E24;
+  border:1px solid rgba(140,205,160,.35);
+  box-shadow:0 0 22px rgba(140,205,160,.18),inset 0 1px 0 rgba(255,255,255,.06);
+}
+.stat.stat-assets:hover{box-shadow:0 0 30px rgba(140,205,160,.3),inset 0 1px 0 rgba(255,255,255,.06)}
+.stat.stat-assets .stat-icon{background:rgba(140,205,160,.16);color:#8CCDA0}
+.stat.stat-assets .lbl{color:rgba(140,205,160,.85)}
+.stat.stat-assets .amt{color:#EAF9EF}
+.stat.stat-assets .sub{color:rgba(140,205,160,.6)}
+.stat.stat-assets .stat-corner-add{background:rgba(140,205,160,.12);border-color:rgba(140,205,160,.4);color:#8CCDA0}
+.stat.stat-assets .stat-corner-add:hover{background:rgba(140,205,160,.22);border-color:#8CCDA0;color:#EAF9EF}
+
+/* Liabilities card — deep warm charcoal + red glow, bright text for contrast */
+.stat.stat-liab{
+  background:#342E2A;
+  border:1px solid rgba(224,141,132,.35);
+  box-shadow:0 0 22px rgba(224,141,132,.2),inset 0 1px 0 rgba(255,255,255,.05);
+}
+.stat.stat-liab:hover{box-shadow:0 0 30px rgba(224,141,132,.32),inset 0 1px 0 rgba(255,255,255,.05)}
+.stat.stat-liab .stat-icon{background:rgba(224,141,132,.16);color:#FFB4AC}
+.stat.stat-liab .lbl{color:rgba(255,237,237,.8)}
+.stat.stat-liab .amt{color:#FFEDED}
+.stat.stat-liab .sub{color:rgba(255,237,237,.6)}
+.stat.stat-liab .stat-corner-add{background:rgba(224,141,132,.12);border-color:rgba(224,141,132,.4);color:#FFB4AC}
+.stat.stat-liab .stat-corner-add:hover{background:rgba(224,141,132,.22);border-color:#FFB4AC;color:#FFEDED}
 
 /* ─── Progress ─── */
 .prog{margin-bottom:16px}
@@ -517,9 +533,9 @@ input[type="number"]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0
 .prog-head{display:flex;justify-content:space-between;font-size:12px;font-weight:600;margin-bottom:6px;color:var(--txt)}
 .prog-head .prog-label{display:flex;align-items:center;gap:5px}
 .prog-head .prog-vals{font-size:11px;color:var(--txt2);font-weight:500}
-.prog-bar{height:12px;background:rgba(0,0,0,.06);border-radius:6px;overflow:hidden}
+.prog-bar{height:18px;background:rgba(0,0,0,.06);border-radius:12px;overflow:hidden;box-shadow:inset 0 2px 4px rgba(0,0,0,.12)}
 .prog-fill{
-  height:100%;border-radius:6px;
+  height:100%;border-radius:12px;
   transition:width .6s cubic-bezier(.4,0,.2,1);
   position:relative;
 }
@@ -528,8 +544,8 @@ input[type="number"]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0
 .fill-s{background:linear-gradient(90deg,var(--suc),var(--suc))}
 .fill-over{background:linear-gradient(90deg,var(--dan),var(--dan))}
 .prog-pct{
-  position:absolute;right:6px;top:50%;transform:translateY(-50%);
-  font-size:9px;font-weight:700;color:#fff;white-space:nowrap;text-shadow:0 1px 2px rgba(0,0,0,.3);
+  position:absolute;right:8px;top:50%;transform:translateY(-50%);
+  font-size:10px;font-weight:700;color:#fff;white-space:nowrap;text-shadow:0 1px 2px rgba(0,0,0,.35);
 }
 
 /* ─── Summary Cards ─── */
@@ -1604,12 +1620,15 @@ tbody tr:hover td{background:var(--pri-l)}
 .insight-card-actions{flex-shrink:0;display:flex;align-items:center}
 @keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
 
-/* ── Net Worth dashboard mini-card ── */
-.nw-dash{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 16px;background:var(--card);border:1px solid var(--brd);border-radius:12px;margin-bottom:10px;cursor:pointer;transition:.15s}
-.nw-dash:hover{border-color:var(--pri);box-shadow:var(--sh)}
-.nw-dash-val{font-size:20px;font-weight:900;letter-spacing:-.5px}
-.nw-dash-val.positive{color:var(--suc)}
-.nw-dash-val.negative{color:var(--dan)}
+/* ── Milestone chips ── */
+.milestone-chip{
+  display:inline-flex;align-items:center;gap:4px;
+  font-size:9px;font-weight:700;padding:4px 10px;border-radius:20px;
+  border:1px solid var(--brd);background:var(--bg);color:var(--txt2);
+  transition:transform .2s,box-shadow .2s,border-color .2s,background .2s,color .2s;
+}
+.milestone-chip:hover{transform:translateY(-1px);box-shadow:0 2px 8px rgba(0,0,0,.14)}
+.milestone-chip.reached{background:var(--suc-l);color:var(--suc);border-color:var(--suc)}
 
 /* ─── Section Divider ─── */
 .section-label{
@@ -1818,8 +1837,9 @@ footer .footer-links a:hover{color:var(--pri-d)}
 /* ─── Dashboard stat card: top-right corner + button ──── */
 .stat-corner-add {
   position: absolute;
-  top: 10px;
+  top: 50%;
   right: 10px;
+  transform: translateY(-50%);
   width: 26px;
   height: 26px;
   border-radius: 7px;
@@ -1835,11 +1855,9 @@ footer .footer-links a:hover{color:var(--pri-d)}
   flex-shrink: 0;
 }
 .stat-corner-add:hover {
-  transform: scale(1.08);
+  transform: translateY(-50%) scale(1.08);
 }
-.stat.needs   .stat-corner-add:hover { background: var(--pri-l); border-color: var(--pri); color: var(--pri-d); }
-.stat.wants   .stat-corner-add:hover { background: var(--acc-l); border-color: var(--acc); color: var(--acc); }
-.stat.savings .stat-corner-add:hover { background: var(--suc-l); border-color: var(--suc); color: var(--suc); }
+.stat-nw .stat-corner-add:hover { background: var(--pri-l); border-color: var(--pri); color: var(--pri-d); }
 /* Keep tooltip bubbles from clipping inside stat cards */
 .stat { overflow: visible; }
 .stat .fin-tooltip-bubble { min-width: 180px; }
@@ -2394,73 +2412,40 @@ footer .footer-links a:hover{color:var(--pri-d)}
       </div>
     </div>
 
-    <!-- Net Worth mini card (shown when NW items exist) -->
-    <div class="nw-dash" id="dashNwCard" onclick="showTab('goals',document.querySelector('[data-tab=goals]'))" title="View full Net Worth details" style="display:none">
-      <div>
-        <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--txt2);margin-bottom:3px">NET WORTH</div>
-        <div class="nw-dash-val" id="dashNwVal">—</div>
-        <div id="dashNwTrend" style="font-size:10px;margin-top:2px"></div>
-      </div>
-      <div style="text-align:right;flex-shrink:0">
-        <div style="font-size:10px;color:var(--txt2);margin-bottom:4px" id="dashNwBreakdown"></div>
-        <button onclick="showTab('goals',document.querySelector('[data-tab=goals]'))" style="font-size:10px;color:var(--pri-d);font-weight:700;background:none;border:none;cursor:pointer;padding:0;font-family:inherit">View details →</button>
-      </div>
-    </div>
-
-    <!-- Stat Cards -->
+    <!-- Top Metrics: Net Worth, Debt Ratio, Assets, Liabilities -->
     <div class="stats">
-      <div class="stat needs">
-        <div class="stat-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
-        <div class="lbl" style="display:flex;align-items:center;gap:5px">
-          50% — Needs
-          <span class="fin-tooltip-wrap">
-            <span class="fin-tooltip-icon">?</span>
-            <span class="fin-tooltip-bubble">Needs: Rent, utilities, groceries, transport, insurance</span>
-          </span>
-        </div>
-        <div class="amt" id="needsAmt">$0</div>
-        <div class="sub" id="needsSub">Budget: —</div>
-        <button class="stat-corner-add" onclick="quickAdd('','','Needs',0)" title="Add Needs expense">
+      <div class="stat stat-nw" onclick="showTab('goals',document.querySelector('[data-tab=goals]'))" title="View full Net Worth details">
+        <div class="stat-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/></svg></div>
+        <div class="lbl">Net Worth</div>
+        <div class="amt" id="dashStatNw">—</div>
+        <div class="sub" id="dashStatNwSub">Assets - Liabilities</div>
+        <button class="stat-corner-add" onclick="event.stopPropagation();showTab('goals',document.querySelector('[data-tab=goals]'))" title="View Net Worth details">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
+      </div>
+      <div class="stat stat-dr">
+        <div class="stat-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="M7 21h10"/><path d="M12 3v18"/><path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2"/></svg></div>
+        <div class="lbl">Debt Ratio</div>
+        <div class="amt" id="dashStatDr">0.00</div>
+        <div class="sub" id="dashStatDrSub">No Debt</div>
+      </div>
+      <div class="stat stat-assets" onclick="showTab('goals',document.querySelector('[data-tab=goals]'))" title="View Assets">
+        <div class="stat-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/></svg></div>
+        <div class="lbl">Total Assets</div>
+        <div class="amt" id="dashStatAssets">$0</div>
+        <div class="sub" id="dashStatAssetsSub">0 items</div>
+        <button class="stat-corner-add" onclick="event.stopPropagation();addNwItem('asset')" title="Add Asset">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
         </button>
       </div>
-      <div class="stat wants">
-        <div class="stat-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg></div>
-        <div class="lbl" style="display:flex;align-items:center;gap:5px">
-          30% — Wants
-          <span class="fin-tooltip-wrap">
-            <span class="fin-tooltip-icon">?</span>
-            <span class="fin-tooltip-bubble">Wants: Dining out, subscriptions, hobbies, entertainment</span>
-          </span>
-        </div>
-        <div class="amt" id="wantsAmt">$0</div>
-        <div class="sub" id="wantsSub">Budget: —</div>
-        <button class="stat-corner-add" onclick="quickAdd('','','Wants',0)" title="Add Wants expense">
+      <div class="stat stat-liab" onclick="showTab('goals',document.querySelector('[data-tab=goals]'))" title="View Liabilities">
+        <div class="stat-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg></div>
+        <div class="lbl">Total Liabilities</div>
+        <div class="amt" id="dashStatLiab">$0</div>
+        <div class="sub" id="dashStatLiabSub">0 items</div>
+        <button class="stat-corner-add" onclick="event.stopPropagation();addNwItem('liability')" title="Add Liability">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
         </button>
-      </div>
-      <div class="stat savings">
-        <div class="stat-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></div>
-        <div class="lbl" style="display:flex;align-items:center;gap:5px">
-          20% — Savings
-          <span class="fin-tooltip-wrap">
-            <span class="fin-tooltip-icon">?</span>
-            <span class="fin-tooltip-bubble">Savings: Emergency fund, investments, debt payments, goals</span>
-          </span>
-        </div>
-        <div class="amt" id="savingsAmt">$0</div>
-        <div class="sub" id="savingsSub">Budget: —</div>
-        <button class="stat-corner-add" onclick="quickAdd('','','Savings',0)" title="Add Savings expense">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        </button>
-      </div>
-      <!-- Savings Efficiency card -->
-      <div class="stat savings-eff" id="savingsEffCard">
-        <div class="stat-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg></div>
-        <div class="lbl">Savings Efficiency</div>
-        <div class="amt" id="savingsEffPct">0%</div>
-        <div class="sub" id="savingsEffSub">Of income remaining</div>
-        <div class="eff-bar"><div class="eff-bar-fill" id="savingsEffBar" style="width:0%"></div></div>
       </div>
     </div>
 
@@ -2964,7 +2949,7 @@ footer .footer-links a:hover{color:var(--pri-d)}
         <!-- Milestone Badges -->
         <div id="nwMilestones" style="margin-top:10px;display:none">
           <div style="font-size:9px;font-weight:700;color:var(--txt2);text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px">Milestones</div>
-          <div id="nwMilestoneBadges" style="display:flex;flex-wrap:wrap;gap:4px"></div>
+          <div id="nwMilestoneBadges" style="display:flex;flex-wrap:wrap;gap:6px"></div>
         </div>
         
         <div id="nwAccSummary" style="font-size:10px;color:var(--txt2);margin-top:6px;text-align:center;display:none">Assets minus Liabilities</div>
@@ -3969,7 +3954,7 @@ footer .footer-links a:hover{color:var(--pri-d)}
 <div class="toast" id="toast"></div>
 
 <script>
-const APP_VERSION = '1.1.0'; // v99
+const APP_VERSION = '1.1.1';
 const PRODUCT_LINKS = { annualKit: "#annual-analysis-kit", managedAi: "#managed-ai", shop: "#shop" };
 // ─── DATA STORE + AUTO-BACKUP SYSTEM ───────────────────────
 const STORAGE_KEY = "budget_tracker_503020";
@@ -6570,10 +6555,7 @@ function renderNetWorth() {
     for (let i = 0; i < milestoneValues.length; i++) {
       const reached = netWorth >= milestoneValues[i];
       const progress = Math.min(100, (netWorth / milestoneValues[i]) * 100);
-      badges.push('<div style="font-size:9px;font-weight:700;padding:3px 6px;border-radius:4px;background:' +
-        (reached ? 'var(--suc-l)' : 'var(--bg)') + ';color:' +
-        (reached ? 'var(--suc)' : 'var(--txt2)') + ';border:1px solid ' +
-        (reached ? 'var(--suc)' : 'var(--brd)') + '">' +
+      badges.push('<div class="milestone-chip' + (reached ? ' reached' : '') + '">' +
         milestoneLabels[i] + (reached ? ' ✓' : ' ' + Math.round(progress) + '%') +
         '</div>');
     }
@@ -7759,28 +7741,6 @@ function updateDashboard() {
   const savingsSpent = data.expenses.filter(e => e.cat === "Savings").reduce((s,e) => s + e.amt, 0);
   const totalSpent   = needsSpent + wantsSpent + savingsSpent;
 
-  // Stat cards
-  document.getElementById("needsAmt").textContent = fmt(needsSpent);
-  document.getElementById("needsSub").innerHTML =
-    `Budget: ${fmtShort(needsBudget)} &nbsp;•&nbsp; <span style="color:${needsSpent <= needsBudget ? 'var(--suc)' : 'var(--dan)'}">${needsSpent <= needsBudget ? 'Under' : 'Over'} by ${fmtShort(Math.abs(needsBudget - needsSpent))}</span>`;
-
-  document.getElementById("wantsAmt").textContent = fmt(wantsSpent);
-  document.getElementById("wantsSub").innerHTML =
-    `Budget: ${fmtShort(wantsBudget)} &nbsp;•&nbsp; <span style="color:${wantsSpent <= wantsBudget ? 'var(--suc)' : 'var(--dan)'}">${wantsSpent <= wantsBudget ? 'Under' : 'Over'} by ${fmtShort(Math.abs(wantsBudget - wantsSpent))}</span>`;
-
-  document.getElementById("savingsAmt").textContent = fmt(savingsSpent);
-  document.getElementById("savingsSub").innerHTML =
-    `Budget: ${fmtShort(savingsBudget)} &nbsp;•&nbsp; <span style="color:${savingsSpent >= savingsBudget ? 'var(--suc)' : 'var(--acc)'}">${savingsSpent >= savingsBudget ? 'Goal met' : fmtShort(savingsBudget - savingsSpent) + ' to go'}</span>`;
-
-  // ── Savings Efficiency card ──
-  const savingsEffPct = income > 0 ? Math.max(0, ((income - totalSpent) / income) * 100) : 0;
-  const effPctEl = document.getElementById("savingsEffPct");
-  const effSubEl = document.getElementById("savingsEffSub");
-  const effBarEl = document.getElementById("savingsEffBar");
-  if (effPctEl) effPctEl.textContent = Math.round(savingsEffPct) + "%";
-  if (effSubEl) effSubEl.textContent = income > 0 ? "Of income remaining" : "Set income first";
-  if (effBarEl) effBarEl.style.width = Math.min(savingsEffPct, 100) + "%";
-
   // Progress bars
   updateProgress("needs",   needsSpent,   needsBudget,   "n");
   updateProgress("wants",   wantsSpent,   wantsBudget,   "w");
@@ -8162,32 +8122,62 @@ function formatNumberInput(el) {
   try { el.setSelectionRange(pos + (newLen - oldLen), pos + (newLen - oldLen)); } catch(e){}
 }
 
-// ── Net Worth dashboard mini card ────────────────────────
+// ── Dashboard top metrics (Net Worth / Debt Ratio / Assets / Liabilities) ──
 function _renderDashNetWorth() {
-  const card  = document.getElementById("dashNwCard");
-  const valEl = document.getElementById("dashNwVal");
-  const trendEl = document.getElementById("dashNwTrend");
-  const breakEl = document.getElementById("dashNwBreakdown");
-  if (!card || !valEl) return;
   const items = getNwItems();
-  if (!items.length) { card.style.display = "none"; return; }
-  card.style.display = "flex";
-  const assets = items.filter(i=>i.type==="asset").reduce((s,i)=>s+i.amt,0);
-  const liab   = items.filter(i=>i.type==="liability").reduce((s,i)=>s+i.amt,0);
+  const assetItems = items.filter(i => i.type === "asset");
+  const liabItems  = items.filter(i => i.type === "liability");
+  const assets = assetItems.reduce((s, i) => s + i.amt, 0);
+  const liab   = liabItems.reduce((s, i) => s + i.amt, 0);
   const nw     = assets - liab;
-  valEl.textContent  = (nw < 0 ? "-" : "") + fmt(Math.abs(nw));
-  valEl.className    = "nw-dash-val " + (nw >= 0 ? "positive" : "negative");
-  const prev = parseFloat(localStorage.getItem("bt_nw_prev") || "0");
-  const diff = nw - prev;
-  if (trendEl) {
-    if (Math.abs(diff) >= 1) {
-      const color = diff > 0 ? "var(--suc)" : "var(--dan)";
-      trendEl.innerHTML = "<span style='color:" + color + "'>" + (diff>0?"↑ +":"↓ ") + fmt(Math.abs(diff)) + " vs last</span>";
-    } else { trendEl.innerHTML = ""; }
+
+  // Net Worth card
+  const nwEl = document.getElementById("dashStatNw");
+  if (nwEl) {
+    nwEl.textContent = (nw < 0 ? "-" : "") + fmt(Math.abs(nw));
+    nwEl.style.color = nw >= 0 ? "var(--suc)" : "var(--dan)";
   }
-  if (breakEl) breakEl.innerHTML =
-    "<span style='color:var(--suc)'>↑ " + fmt(assets) + "</span>&nbsp;&nbsp;" +
-    "<span style='color:var(--dan)'>↓ " + fmt(liab) + "</span>";
+  const nwSubEl = document.getElementById("dashStatNwSub");
+  if (nwSubEl) {
+    const prev = parseFloat(localStorage.getItem("bt_nw_prev") || "0");
+    const diff = nw - prev;
+    if (items.length === 0) {
+      nwSubEl.textContent = "Assets - Liabilities";
+    } else if (Math.abs(diff) < 1) {
+      nwSubEl.textContent = "No change vs last snapshot";
+    } else {
+      const color = diff > 0 ? "var(--suc)" : "var(--dan)";
+      nwSubEl.innerHTML = "<span style='color:" + color + ";font-weight:700'>" + (diff > 0 ? "↑ +" : "↓ -") + fmt(Math.abs(diff)) + "</span> vs last";
+    }
+  }
+
+  // Debt Ratio card
+  const drEl = document.getElementById("dashStatDr");
+  const drSubEl = document.getElementById("dashStatDrSub");
+  if (drEl && drSubEl) {
+    const ratio = assets > 0 ? liab / assets : 0;
+    drEl.textContent = ratio.toFixed(2);
+    let label, color;
+    if (ratio === 0)      { label = "No Debt";    color = "var(--suc)"; }
+    else if (ratio < 0.3) { label = "Excellent";  color = "var(--suc)"; }
+    else if (ratio < 0.5) { label = "Healthy";    color = "var(--pri-d)"; }
+    else if (ratio < 0.7) { label = "Moderate";   color = "var(--acc)"; }
+    else                  { label = "High Risk";  color = "var(--dan)"; }
+    drEl.style.color = color;
+    drSubEl.innerHTML = "<span style='color:" + color + ";font-weight:700'>" + label + "</span>";
+  }
+
+  // Assets card
+  const asEl = document.getElementById("dashStatAssets");
+  const asSubEl = document.getElementById("dashStatAssetsSub");
+  if (asEl) asEl.textContent = fmt(assets);
+  if (asSubEl) asSubEl.textContent = assetItems.length + (assetItems.length === 1 ? " item" : " items");
+
+  // Liabilities card
+  const liEl = document.getElementById("dashStatLiab");
+  const liSubEl = document.getElementById("dashStatLiabSub");
+  if (liEl) liEl.textContent = fmt(liab);
+  if (liSubEl) liSubEl.textContent = liabItems.length + (liabItems.length === 1 ? " item" : " items");
 }
 
 // ── Bill alerts → bell notification ──────────────────────
@@ -8682,7 +8672,7 @@ function exportPDF() {
   const savings  = data.expenses.filter(e => e.cat === "Savings").reduce((s,e)=>s+e.amt,0);
   const total    = needs + wants + savings;
   const sym      = getCurrency();
-  const fmtN     = n => sym + " " + Number(n).toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2});
+  const fmtN     = n => sym + " " + Number(n).toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2});
   const pct      = (v,t) => t > 0 ? Math.round(v/t*100) : 0;
   const now      = new Date().toLocaleDateString("en-US",{year:"numeric",month:"long",day:"numeric"});
 
@@ -11496,7 +11486,7 @@ function _promptAddChecklistToExpenses(items, noteOrKey, noteText) {
 
   const sym = getCurrency();
   const total = items.reduce((s, it) => s + ((it.qty||1) * (it.amt || 0)), 0);
-  const fmtAmt = n => sym + ' ' + n.toLocaleString('en-US', {minimumFractionDigits:2,maximumFractionDigits:2});
+  const fmtAmt = n => sym + ' ' + n.toLocaleString('en-US', {minimumFractionDigits:2,maximumFractionDigits:2});
 
   const rows = items.map(it => {
     const lineTotal = (it.qty || 1) * (it.amt || 0);
@@ -14369,7 +14359,7 @@ function dateStamp() {
 
 // ─── THEMES ────────────────────────────────────────────────
 const THEMES = {
-  sage:     { pri:"#7E9A8E", priL:"#EEF3EF", priD:"#4E6F62", acc:"#B9926B", accL:"#F6EFE6", suc:"#6E9B72", sucL:"#EDF5ED", dan:"#B86A62", danL:"#F7EDEA", bg:"#F7F4EE", card:"#FFFDF8", txt:"#20231F", txt2:"#6F746D", brd:"#E7E0D6", onPri:"#fff", inputBg:"#FFFDF8", brandFilter:"none", texture:"rgba(78,111,98,.045)" },
+  sage:     { pri:"#7E9A8E", priL:"#EEF3EF", priD:"#4E6F62", acc:"#B9926B", accL:"#F6EFE6", suc:"#8CCDA0", sucL:"#EDF5ED", dan:"#B86A62", danL:"#F7EDEA", bg:"#F7F4EE", card:"#FFFDF8", txt:"#20231F", txt2:"#6F746D", brd:"#E7E0D6", onPri:"#fff", inputBg:"#FFFDF8", brandFilter:"none", texture:"rgba(78,111,98,.045)" },
   blush:    { pri:"#D4A0A0", priL:"#F7EDED", priD:"#B07878", acc:"#C9956B", accL:"#FBF0E5", suc:"#7EC8A0", sucL:"#E5F5EC", dan:"#D9534F", danL:"#FDEAEA", bg:"#FDF6F6", card:"#fff", txt:"#2D3436", txt2:"#636E72", brd:"#F0DEDE", onPri:"#fff", inputBg:"#fff", brandFilter:"none", texture:"rgba(78,111,98,.045)" },
   dark:     { pri:"#B3CCC1", priL:"#1E2A2F", priD:"#D8E2DD", acc:"#D9B78A", accL:"#2C2721", suc:"#8ACB96", sucL:"#1F2B22", dan:"#E0988F", danL:"#341F1D", bg:"#111C27", card:"#172332", txt:"#F4EFE6", txt2:"#C6CEC9", brd:"#2A3945", onPri:"#111C27", inputBg:"#111C27", brandFilter:"invert(1) brightness(1.25) contrast(.95)", texture:"rgba(255,255,255,.035)" },
   ocean:    { pri:"#5B8FB9", priL:"#E5EFF7", priD:"#3A6D94", acc:"#E8985E", accL:"#FDF0E6", suc:"#5CB85C", sucL:"#EAF7EA", dan:"#D9534F", danL:"#FDEAEA", bg:"#F0F5FA", card:"#fff", txt:"#2D3436", txt2:"#636E72", brd:"#D0DEE9", onPri:"#fff", inputBg:"#fff", brandFilter:"none", texture:"rgba(78,111,98,.045)" },
