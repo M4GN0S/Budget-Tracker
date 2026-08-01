@@ -527,6 +527,46 @@ input[type="number"]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0
 .stat.stat-liab .stat-corner-add{background:rgba(224,141,132,.12);border-color:rgba(224,141,132,.4);color:#FFB4AC}
 .stat.stat-liab .stat-corner-add:hover{background:rgba(224,141,132,.22);border-color:#FFB4AC;color:#FFEDED}
 
+/* 50/30/20 Budget Category Cards */
+.stats-503020{grid-template-columns:repeat(3,1fr) !important}
+@media(max-width:900px){.stats-503020{grid-template-columns:1fr !important}}
+
+/* Needs card — deep teal */
+.stat.stat-needs{
+  background:#1B2E2A;
+  border:1px solid rgba(108,154,139,.35);
+  box-shadow:0 0 22px rgba(108,154,139,.18),inset 0 1px 0 rgba(255,255,255,.06);
+}
+.stat.stat-needs:hover{box-shadow:0 0 30px rgba(108,154,139,.3),inset 0 1px 0 rgba(255,255,255,.06)}
+.stat.stat-needs .stat-icon{background:rgba(108,154,139,.16);color:#A0D4C4}
+.stat.stat-needs .lbl{color:rgba(160,212,196,.85)}
+.stat.stat-needs .amt{color:#E8F5F0}
+.stat.stat-needs .sub{color:rgba(160,212,196,.6)}
+
+/* Wants card — deep warm amber */
+.stat.stat-wants{
+  background:#2E2A1B;
+  border:1px solid rgba(212,160,160,.35);
+  box-shadow:0 0 22px rgba(212,160,160,.18),inset 0 1px 0 rgba(255,255,255,.06);
+}
+.stat.stat-wants:hover{box-shadow:0 0 30px rgba(212,160,160,.3),inset 0 1px 0 rgba(255,255,255,.06)}
+.stat.stat-wants .stat-icon{background:rgba(212,160,160,.16);color:#F0C4C4}
+.stat.stat-wants .lbl{color:rgba(240,196,196,.85)}
+.stat.stat-wants .amt{color:#F5E8E8}
+.stat.stat-wants .sub{color:rgba(240,196,196,.6)}
+
+/* Savings card — deep blue-green */
+.stat.stat-savings{
+  background:#1B2633;
+  border:1px solid rgba(91,143,185,.35);
+  box-shadow:0 0 22px rgba(91,143,185,.18),inset 0 1px 0 rgba(255,255,255,.06);
+}
+.stat.stat-savings:hover{box-shadow:0 0 30px rgba(91,143,185,.3),inset 0 1px 0 rgba(255,255,255,.06)}
+.stat.stat-savings .stat-icon{background:rgba(91,143,185,.16);color:#B4D0E8}
+.stat.stat-savings .lbl{color:rgba(180,208,232,.85)}
+.stat.stat-savings .amt{color:#E8F0F8}
+.stat.stat-savings .sub{color:rgba(180,208,232,.6)}
+
 /* ─── Progress ─── */
 .prog{margin-bottom:16px}
 .prog:last-child{margin-bottom:0}
@@ -1837,9 +1877,8 @@ footer .footer-links a:hover{color:var(--pri-d)}
 /* ─── Dashboard stat card: top-right corner + button ──── */
 .stat-corner-add {
   position: absolute;
-  top: 50%;
-  right: 10px;
-  transform: translateY(-50%);
+  top: 12px;
+  right: 12px;
   width: 26px;
   height: 26px;
   border-radius: 7px;
@@ -1855,7 +1894,7 @@ footer .footer-links a:hover{color:var(--pri-d)}
   flex-shrink: 0;
 }
 .stat-corner-add:hover {
-  transform: translateY(-50%) scale(1.08);
+  transform: scale(1.08);
 }
 .stat-nw .stat-corner-add:hover { background: var(--pri-l); border-color: var(--pri); color: var(--pri-d); }
 /* Keep tooltip bubbles from clipping inside stat cards */
@@ -2446,6 +2485,28 @@ footer .footer-links a:hover{color:var(--pri-d)}
         <button class="stat-corner-add" onclick="event.stopPropagation();addNwItem('liability')" title="Add Liability">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
         </button>
+      </div>
+    </div>
+
+    <!-- 50/30/20 Budget Cards: Needs, Wants, Savings -->
+    <div class="stats stats-503020">
+      <div class="stat stat-needs">
+        <div class="stat-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
+        <div class="lbl">Needs • 50%</div>
+        <div class="amt" id="dashStatNeeds">$0</div>
+        <div class="sub" id="dashStatNeedsSub">Budget: $0</div>
+      </div>
+      <div class="stat stat-wants">
+        <div class="stat-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg></div>
+        <div class="lbl">Wants • 30%</div>
+        <div class="amt" id="dashStatWants">$0</div>
+        <div class="sub" id="dashStatWantsSub">Budget: $0</div>
+      </div>
+      <div class="stat stat-savings">
+        <div class="stat-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></div>
+        <div class="lbl">Savings • 20%</div>
+        <div class="amt" id="dashStatSavings">$0</div>
+        <div class="sub" id="dashStatSavingsSub">Budget: $0</div>
       </div>
     </div>
 
@@ -3954,7 +4015,7 @@ footer .footer-links a:hover{color:var(--pri-d)}
 <div class="toast" id="toast"></div>
 
 <script>
-const APP_VERSION = '1.1.1';
+const APP_VERSION = '1.1.2';
 const PRODUCT_LINKS = { annualKit: "#annual-analysis-kit", managedAi: "#managed-ai", shop: "#shop" };
 // ─── DATA STORE + AUTO-BACKUP SYSTEM ───────────────────────
 const STORAGE_KEY = "budget_tracker_503020";
@@ -7745,6 +7806,22 @@ function updateDashboard() {
   updateProgress("needs",   needsSpent,   needsBudget,   "n");
   updateProgress("wants",   wantsSpent,   wantsBudget,   "w");
   updateProgress("savings", savingsSpent, savingsBudget, "s");
+
+  // 50/30/20 Budget Category Cards
+  const needsEl = document.getElementById("dashStatNeeds");
+  const needsSubEl = document.getElementById("dashStatNeedsSub");
+  if (needsEl) needsEl.textContent = fmt(needsSpent);
+  if (needsSubEl) needsSubEl.textContent = "Budget: " + fmt(needsBudget);
+
+  const wantsEl = document.getElementById("dashStatWants");
+  const wantsSubEl = document.getElementById("dashStatWantsSub");
+  if (wantsEl) wantsEl.textContent = fmt(wantsSpent);
+  if (wantsSubEl) wantsSubEl.textContent = "Budget: " + fmt(wantsBudget);
+
+  const savingsEl = document.getElementById("dashStatSavings");
+  const savingsSubEl = document.getElementById("dashStatSavingsSub");
+  if (savingsEl) savingsEl.textContent = fmt(savingsSpent);
+  if (savingsSubEl) savingsSubEl.textContent = "Budget: " + fmt(savingsBudget);
 
   // Totals
   document.getElementById("totalSpent").textContent = fmt(totalSpent);
