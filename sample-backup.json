@@ -1,0 +1,21 @@
+{
+  "_app": "50/30/20 Budget Tracker",
+  "_version": "1.0.99",
+  "_exported": "2026-08-01T00:00:00.000Z",
+  "_schema": 3,
+  "_counts": {
+    "expenses": 2,
+    "notes": 1,
+    "bills": 1,
+    "goals": 1
+  },
+  "_keyCount": 6,
+  "raw": {
+    "budget_tracker_503020": "{\"income\":4200,\"expenses\":[{\"id\":1,\"date\":\"2026-07-01\",\"desc\":\"Rent\",\"cat\":\"Needs\",\"sub\":\"Housing\",\"amt\":1500},{\"id\":2,\"date\":\"2026-07-03\",\"desc\":\"Groceries\",\"cat\":\"Needs\",\"sub\":\"Food\",\"amt\":120}],\"goals\":[{\"id\":101,\"name\":\"Emergency Fund\",\"target\":10000,\"saved\":2500,\"transactions\":[]}]}",
+    "bt_bills": "[{\"id\":1,\"name\":\"Internet\",\"amount\":60,\"due\":\"2026-08-05\",\"paid\":false}]",
+    "bt_notes": "[{\"id\":1,\"date\":\"2026-07-10\",\"text\":\"Switched to a cheaper phone plan.\"}]",
+    "bt_networth": "{\"assets\":[{\"id\":1,\"type\":\"asset\",\"name\":\"Savings Account\",\"amt\":8000,\"transactions\":[]}],\"liabilities\":[{\"id\":2,\"type\":\"liability\",\"name\":\"Credit Card\",\"amt\":1500,\"transactions\":[{\"id\":1,\"date\":\"2026-07-01\",\"action\":\"fund\",\"amount\":1500,\"note\":\"Balance increased\",\"balance\":1500},{\"id\":2,\"date\":\"2026-07-15\",\"action\":\"pay\",\"amount\":200,\"note\":\"Debt payment\",\"balance\":1300}]}]}",
+    "bt_currency": "USD",
+    "bt_user_name": "Sample User"
+  }
+}
