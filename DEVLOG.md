@@ -1,14 +1,41 @@
 # DEVLOG — L'Atelier de Luz | 50/30/20 Budget Tracker PWA
 
-## Current State: v145
+## Current State: v195
 
 | Metric | Value |
 |---|---|
-| SW cache | `budget-tracker-v145` |
-| File | `webapp/index.html` (13,393 lines) + `webapp/sw.js` |
-| JS | 441,667 chars, 9,567 lines |
+| SW cache | `budget-tracker-v195` |
+| File | `index.html` (14,663 lines) + `sw.js` |
+| App version | 1.1.1 |
 | Panels | 8 (dashboard, expenses, history, goals, networth, notes, ai, data) |
-| Duplicate functions | None |
+
+---
+
+## v195 Changelog (from v194) — Dashboard Beautification
+
+### Top Metrics (4-col grid)
+- Consolidated top metrics into a responsive 4-col grid: **Net Worth, Debt Ratio, Assets, Liabilities** (2 cols ≤1100px, 1 col ≤700px)
+- Replaced the old Needs/Wants/Savings/Savings-Efficiency stat cards and the NW mini-card; 50/30/20 breakdown remains in "Budget vs Actual Spending"
+- **Assets card**: `#1F2E24` container + mint green glow; **Liabilities card**: `#342E2A` container + red glow, `#FFEDED` bright text for contrast
+- Softened neon green `#6E9B72` → muted mint `#8CCDA0` (root + sage theme)
+- Net Worth card shows trend vs last snapshot; Debt Ratio card shows ratio + status (No Debt / Excellent / Healthy / Moderate / High Risk); card "+" buttons open the Add Asset/Add Liability modal directly
+
+### Typography
+- Split: Inter/sans-serif for labels, SF Mono monospace for numbers
+- Item names muted, values bold; amounts clamp responsively (20–28px)
+
+### Progress Bars
+- Thickened 12px → 18px, 12px border-radius, inner shadow; % readout bumped to 10px
+
+### Milestone Chips
+- Refined to 20px radius, uniform `4px 10px` padding, smooth hover transition (+`.reached` state)
+
+### Stat Cards
+- Content centered (flex column); corner action button vertically centered
+
+### Misc
+- SW cache `v194 → v195`, app version `1.1.0 → 1.1.1`
+- Syntax validated (`node --check` on all inline scripts), no emoji, SVG-only icons, no CDN, `escHtml` present
 
 ---
 
