@@ -3697,6 +3697,10 @@ footer .footer-links a:hover{color:var(--pri-d)}
             <div class="eb-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg></div>
             <div><div class="eb-text">PDF Report</div><div class="eb-sub">Print or save as PDF</div></div>
           </div>
+          <div class="export-btn" id="sendToSheetsBtn" onclick="event.stopPropagation();sendToSheets()" style="grid-column:1/-1;border-color:var(--suc);background:var(--suc-l)">
+            <div class="eb-icon" style="background:var(--suc);color:#fff"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></div>
+            <div><div class="eb-text">Send to Google Sheets</div><div class="eb-sub" id="sheetsStatus">One click — formats automatically</div></div>
+          </div>
         </div>
         <!-- Import -->
         <div class="section-label" style="margin-bottom:8px">Import</div>
@@ -4100,7 +4104,7 @@ footer .footer-links a:hover{color:var(--pri-d)}
 <div class="toast" id="toast"></div>
 
 <script>
-const APP_VERSION = '1.8.3';
+const APP_VERSION = '1.9.0';
 const PRODUCT_LINKS = { annualKit: "#annual-analysis-kit", managedAi: "#managed-ai", shop: "#shop" };
 // ─── DATA STORE + AUTO-BACKUP SYSTEM ───────────────────────
 const STORAGE_KEY = "budget_tracker_503020";
@@ -9238,6 +9242,44 @@ function exportPDF() {
   } else {
     toast("Allow pop-ups to open the PDF report");
   }
+}
+
+// ─── SEND TO GOOGLE SHEETS ────────────────────────────────
+function sendToSheets() {
+  if (!SHEETS_API || !API_SECRET) {
+    toast("Sheets not configured. Set SHEETS_API in Settings.");
+    return;
+  }
+  var btn = document.getElementById("sendToSheetsBtn");
+  var status = document.getElementById("sheetsStatus");
+  if (btn) { btn.style.opacity = "0.6"; btn.style.pointerEvents = "none"; }
+  if (status) status.textContent = "Sending...";
+
+  var data = getData();
+  var br = _getBudgetRatios();
+  var payload = {
+    income: data.income || 0,
+    budgetRatios: br,
+    expenses: data.expenses,
+    goals: data.goals || []
+  };
+
+  fetch(SHEETS_API + "?secret=" + API_SECRET, {
+    method: "POST",
+    mode: "no-cors",
+    headers: { "Content-Type": "text/plain" },
+    body: JSON.stringify({ type: "export_data", payload: payload })
+  })
+  .then(function() {
+    if (btn) { btn.style.opacity = "1"; btn.style.pointerEvents = "auto"; }
+    if (status) status.textContent = "Sent! " + payload.expenses.length + " expenses, " + payload.goals.length + " goals";
+    toast("Data sent to Google Sheets!");
+  })
+  .catch(function() {
+    if (btn) { btn.style.opacity = "1"; btn.style.pointerEvents = "auto"; }
+    if (status) status.textContent = "Failed \u2014 check connection";
+    toast("Send failed. Check your connection.");
+  });
 }
 
 function exportCSV() {

@@ -69,6 +69,8 @@ function doPost(e) {
       handleTelemetry(ss, data);
     } else if (data.type === "user_profile") {
       handleUserProfile(ss, data);
+    } else if (data.type === "export_data") {
+      return handleExportData(data);
     }
 
     return ContentService.createTextOutput(
@@ -88,7 +90,7 @@ function doGet(e) {
       status: "ok",
       message: "Budget Tracker Backend is running!",
       version: "2.0",
-      tabs: ["Newsletter", "Contacts", "Telemetry", "Comments", "Users"],
+      tabs: ["Newsletter", "Contacts", "Telemetry", "Comments", "Users", "PWA Export"],
       timestamp: new Date().toISOString()
     })
   ).setMimeType(ContentService.MimeType.JSON);
@@ -295,6 +297,95 @@ function updateUserEmail(ss, clientId, email) {
       break;
     }
   }
+}
+
+// ─── PWA EXPORT DATA ─────────────────────────────────────
+// Creates a dedicated "PWA Export" tab with the user's full budget data
+
+function handleExportData(data) {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var tabName = "PWA Export " + new Date().toLocaleDateString();
+  
+  // Remove old export tab if it exists (keep only latest)
+  var old = ss.getSheetByName(tabName);
+  if (old) ss.deleteSheet(old);
+  
+  var sheet = ss.insertSheet(tabName);
+  var pd = data.payload || {};
+  var br = pd.budgetRatios || {needs:50,wants:30,savings:20};
+  var income = pd.income || 0;
+  var needsB = income * br.needs / 100;
+  var wantsB = income * br.wants / 100;
+  var savingsB = income * br.savings / 100;
+  var needsS = (pd.expenses||[]).filter(function(e){return e.cat==="Needs";}).reduce(function(s,e){return s+e.amt;},0);
+  var wantsS = (pd.expenses||[]).filter(function(e){return e.cat==="Wants";}).reduce(function(s,e){return s+e.amt;},0);
+  var savingsS = (pd.expenses||[]).filter(function(e){return e.cat==="Savings";}).reduce(function(s,e){return s+e.amt;},0);
+  var totalS = needsS + wantsS + savingsS;
+  
+  // Column widths
+  sheet.setColumnWidth(1, 220); sheet.setColumnWidth(2, 120); sheet.setColumnWidth(3, 120);
+  sheet.setColumnWidth(4, 120); sheet.setColumnWidth(5, 120); sheet.setColumnWidth(6, 150);
+  
+  // Header
+  sheet.getRange("A1").setValue("Budget Tracker - PWA Export").setFontWeight("bold").setFontSize(14).setFontColor("#6C9A8B");
+  sheet.getRange("A2").setValue("Date: " + new Date().toLocaleDateString()).setFontSize(10).setFontColor("#6F746D");
+  sheet.getRange("A3").setValue("---");
+  
+  // Income
+  sheet.getRange("A5").setValue("Monthly Income").setFontWeight("bold");
+  sheet.getRange("B5").setValue(income).setNumberFormat("$#,##0.00");
+  
+  // Budget Summary
+  sheet.getRange("A7").setValue("Budget Summary");
+  sheet.getRange("A7").setFontWeight("bold").setFontSize(12).setFontColor("#4E6F62");
+  var hdr = [["Category","Budget","Spent","Remaining","% Used","Status"]];
+  sheet.getRange("A8:F8").setValues(hdr);
+  sheet.getRange("A8:F8").setFontWeight("bold").setBackground("#6C9A8B").setFontColor("#FFFFFF");
+  
+  var rows = [
+    ["Needs ("+br.needs+"%)", needsB, needsS, needsB-needsS, needsB>0?Math.round(needsS/needsB*100)+"%":"0%", needsS>needsB?"Over":"On Track"],
+    ["Wants ("+br.wants+"%)", wantsB, wantsS, wantsB-wantsS, wantsB>0?Math.round(wantsS/wantsB*100)+"%":"0%", wantsS>wantsB?"Over":"On Track"],
+    ["Savings ("+br.savings+"%)", savingsB, savingsS, savingsB-savingsS, savingsB>0?Math.round(savingsS/savingsB*100)+"%":"0%", savingsS>savingsB?"Over":"On Track"],
+    ["TOTAL", income, totalS, income-totalS, income>0?Math.round(totalS/income*100)+"% used":"",""]
+  ];
+  for (var r=0;r<rows.length;r++) {
+    sheet.getRange(9+r,1,1,6).setValues([rows[r]]);
+    sheet.getRange(9+r,2,1,4).setNumberFormat("$#,##0.00");
+  }
+  
+  // Expenses
+  var expHdr = [["Date","Description","Category","Sub-Category","Amount"]];
+  sheet.getRange("A14:E14").setValues(expHdr);
+  sheet.getRange("A14:E14").setFontWeight("bold").setBackground("#6C9A8B").setFontColor("#FFFFFF");
+  (pd.expenses||[]).forEach(function(e, i){
+    sheet.getRange(15+i,1).setValue(e.date);
+    sheet.getRange(15+i,2).setValue(e.desc);
+    sheet.getRange(15+i,3).setValue(e.cat);
+    sheet.getRange(15+i,4).setValue(e.sub||"");
+    sheet.getRange(15+i,5).setValue(e.amt).setNumberFormat("$#,##0.00");
+  });
+  
+  // Goals section (if any exist)
+  var goals = pd.goals || [];
+  if (goals.length > 0) {
+    var gStart = 16 + (pd.expenses||[]).length;
+    sheet.getRange("A"+gStart+":A"+gStart).setValue("Savings Goals");
+    sheet.getRange("A"+gStart).setFontWeight("bold").setFontSize(12).setFontColor("#4E6F62");
+    var gHdr = [["Goal","Target","Saved","Remaining","Progress"]];
+    sheet.getRange("A"+(gStart+1)+":E"+(gStart+1)).setValues(gHdr);
+    sheet.getRange("A"+(gStart+1)+":E"+(gStart+1)).setFontWeight("bold").setBackground("#6C9A8B").setFontColor("#FFFFFF");
+    goals.forEach(function(g, i){
+      sheet.getRange(gStart+2+i,1).setValue(g.name);
+      sheet.getRange(gStart+2+i,2).setValue(g.target).setNumberFormat("$#,##0.00");
+      sheet.getRange(gStart+2+i,3).setValue(g.saved||0).setNumberFormat("$#,##0.00");
+      sheet.getRange(gStart+2+i,4).setValue((g.target||0)-(g.saved||0)).setNumberFormat("$#,##0.00");
+      sheet.getRange(gStart+2+i,5).setValue(Math.round((g.saved||0)/(g.target||1)*100)+"%");
+    });
+  }
+  
+  return ContentService.createTextOutput(
+    JSON.stringify({status:"ok",tab:tabName,expenses:(pd.expenses||[]).length,goals:goals.length})
+  ).setMimeType(ContentService.MimeType.JSON);
 }
 
 // ─── TEST FUNCTION ─────────────────────────────────────────
