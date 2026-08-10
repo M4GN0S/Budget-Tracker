@@ -48,7 +48,7 @@
 // ─── REQUEST ROUTER ────────────────────────────────────────
 
 // SECRET - Match API_SECRET in index.html
-var APP_SECRET = "YOUR_SECRET_TOKEN";
+var APP_SECRET = "8XAlI2W_m6TXAc6tNrxr3xwBKUhUBdxP";
 
 function doPost(e) {
   // Validate shared secret token
