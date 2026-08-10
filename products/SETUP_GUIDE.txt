@@ -1,0 +1,111 @@
+============================================================
+  BUDGET TRACKER — GOOGLE SHEETS TEMPLATE v2 SETUP
+  Time: 10 minutes
+============================================================
+
+YOU'LL NEED:
+  - A Google account
+  - The expenses_seed.csv file (provided)
+  - This guide
+
+============================================================
+STEP 1: CREATE THE SHEET
+============================================================
+
+1. Go to sheets.google.com → Blank spreadsheet
+2. Rename it "Budget Tracker"
+3. Create 5 tabs: Dashboard | Yearly | Expenses | Goals | Setup
+   (click the + button at bottom to add tabs, double-click to rename)
+
+============================================================
+STEP 2: POPULATE THE EXPENSES TAB
+============================================================
+
+1. Click the "Expenses" tab
+2. File → Import → Upload → select expenses_seed.csv
+3. Import location: Replace current sheet
+4. Separator: Comma
+5. Click "Import data"
+6. This gives you 11 sample expenses with correct headers
+
+ALTERNATE: If you have data from the PWA app:
+  PWA → Settings → Export CSV → open file → copy all → paste into Expenses tab A1
+
+============================================================
+STEP 3: PASTE DASHBOARD FORMULAS
+============================================================
+
+1. Click the "Dashboard" tab
+2. Open template_dashboard.txt (provided) — it's a cell-by-cell guide
+3. Paste each formula into its cell
+4. Key formulas:
+   B3 = Your monthly income (e.g. 5000)
+   C8 = =B3*B8   (Needs budget = income x %)
+   D8 = =SUMIF(Expenses!C:C,"Needs",Expenses!E:E)  (auto-totals from Expenses tab)
+   E8 = =C8-D8   (remaining)
+   F8 = =IF(D8>C8,"Over Budget",IF(D8>=C8*0.8,"At Limit","On Track"))
+
+============================================================
+STEP 4: YEARLY TAB
+============================================================
+
+Headers: Month | Income | Needs | Wants | Savings | Total | Remaining | Savings Rate
+Row for each month (Jan-Dec). Example formula for January Needs:
+  =SUMIFS(Expenses!E:E, Expenses!C:C,"Needs", Expenses!A:A,">=2026-01-01", Expenses!A:A,"<=2026-01-31")
+
+============================================================
+STEP 5: GOALS TAB
+============================================================
+
+Headers: Goal | Target | Saved | Remaining | Progress | Projected Complete
+Row examples (manual entry):
+  Emergency Fund | 15000 | 8400 | =B2-C2 | =C2/B2 | =TODAY()+((D2/500)*30)
+
+============================================================
+STEP 6: CUSTOM RATIO SUPPORT
+============================================================
+
+Dashboard cells B8-B10 control your budget split:
+  B8: 50% (Needs)
+  B9: 30% (Wants)
+  B10: 20% (Savings)
+  TOTAL must = 100%
+
+To switch presets:
+  Classic 50/30/20:    50 / 30 / 20
+  High COL 60/20/20:   60 / 20 / 20
+  Aggressive 40/20/40: 40 / 20 / 40
+  Debt Focus 50/20/30: 50 / 20 / 30
+  Custom:              any 3 numbers that sum to 100%
+
+============================================================
+STEP 7: STYLE & FORMAT
+============================================================
+
+Color palette (File → Theme or manual):
+  Background:  #F7F4EE
+  Card/Sheet:  #FFFDF8
+  Headers:     #6C9A8B (sage green)
+  Text dark:   #4E6F62
+  Green tint:  #EDF5ED
+  Amber tint:  #FDF0E6
+
+Header rows: bold, white text, #6C9A8B background
+Amount cells: Format → Number → Currency ($)
+Percent cells: Format → Number → Percent
+Freeze top row: View → Freeze → 1 row (on all tabs)
+Column widths: adjust to fit content (double-click column edge)
+
+============================================================
+STEP 8: TEST IT WORKS
+============================================================
+
+1. Enter a new expense on the Expenses tab (any row below the sample data)
+2. Switch to Dashboard — the totals should auto-update
+3. Change income on Dashboard B3 — all budgets recalculate
+4. Change ratio % on B8-B10 — budgets adjust immediately
+
+============================================================
+DONE. You now have a fully functional, custom-ratio-ready,
+Aura-styled budget tracker that matches your PWA export format.
+============================================================

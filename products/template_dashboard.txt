@@ -1,0 +1,35 @@
+PASTE THIS INTO GOOGLE SHEETS — TAB 1: "Dashboard"
+
+CELL LAYOUT (row:col = content):
+
+A1: "Budget Tracker" (merge A1:F1, font: Inter 14px bold, color: #6C9A8B)
+B1: "Sage Green Edition" (right-align, font: 11px, color: #6F746D)
+
+A3: "Monthly Income" (font: Inter 11px bold, color: #4E6F62)
+B3: 5000 (format as currency $#,##0.00)
+
+A5: "Cashflow Balance" (font: Inter 11px bold, color: #4E6F62)
+B5: =B3-SUM(E17:E29) (format as currency $#,##0.00, green if positive)
+
+A7: "Category" | B7: "% of Income" | C7: "Budget" | D7: "Spent" | E7: "Remaining" | F7: "Status"
+Row 7: header row, background #6C9A8B, white text, bold, uppercase
+
+A8: "Needs"         B8: 50%  C8: =B3*B8    D8: =SUMIF(Expenses!C:C,"Needs",Expenses!E:E)    E8: =C8-D8    F8: =IF(D8>C8,"Over Budget",IF(D8>=C8*0.8,"At Limit","On Track"))
+A9: "Wants"         B9: 30%  C9: =B3*B9    D9: =SUMIF(Expenses!C:C,"Wants",Expenses!E:E)    E9: =C9-D9    F9: =IF(D9>C9,"Over Budget",IF(D9>=C9*0.8,"At Limit","On Track"))
+A10: "Savings"      B10: 20% C10: =B3*B10  D10: =SUMIF(Expenses!C:C,"Savings",Expenses!E:E) E10: =C10-D10 F10: =IF(D10>C10,"Over Budget",IF(D10>=C10*0.8,"At Limit","On Track"))
+A11: "TOTAL"        (bold)  C11: =SUM(C8:C10)  D11: =SUM(D8:D10)  E11: =SUM(E8:E10)  F11: =D11/B3&" used"
+
+Row 8-10 background: alternating #EDF5ED (green tint) / #FDF0E6 (amber tint)
+A13: "Category Breakdown" (font: Inter 13px bold, margin top)
+
+A14: "Description"  B14: "Type"  C14: "Budget"  D14: "Spent"  E14: "Remaining"  F14: "% Used"
+Row 14: header row, background #6C9A8B, white text
+
+A15-F27: 13 category rows (user fills in)
+
+A29: "TOTAL" (bold)   D29: =SUM(D15:D28)   E29: =SUM(E15:E28)   F29: =D29/SUM(C15:C28)
+
+A31: "Made with love by LAtelier de Luz" (footer, center, color: #6F746D, font-size:10px)
+
+COLORS: Needs rows=#EDF5ED, Wants rows=#FDF0E6, Savings rows=#EDF5ED, Total row=#EDF5ED bold
+FORMATTING: Percent=Format Number Percent, Currency=Format Number Currency ($), Widths: A=200px B=80px C=100px D=100px E=100px F=120px

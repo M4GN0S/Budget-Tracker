@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Google Sheets Template Redesign — Sage Green Edition v2</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family: 'Inter', -apple-system, sans-serif; background: #F7F4EE; color: #20231F; padding: 40px 20px; line-height: 1.6; }
+  .container { max-width: 1100px; margin: 0 auto; }
+  h1 { font-size: 28px; font-weight: 900; color: #6C9A8B; margin-bottom: 8px; }
+  h2 { font-size: 20px; font-weight: 800; margin: 32px 0 12px; border-bottom: 2px solid #E7E0D6; padding-bottom: 6px; }
+  h3 { font-size: 15px; font-weight: 800; margin: 16px 0 8px; color: #4E6F62; }
+  p, li { font-size: 13px; color: #6F746D; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 12px 0; background: #FFFDF8; border-radius: 10px; overflow: hidden; border: 1px solid #E7E0D6; }
+  th { background: #6C9A8B; color: #fff; padding: 10px 14px; font-size: 11px; font-weight: 800; text-align: left; text-transform: uppercase; letter-spacing: .8px; }
+  td { padding: 10px 14px; font-size: 12px; border-bottom: 1px solid #E7E0D6; }
+  tr:last-child td { border-bottom: none; }
+  .code { background: #20231F; color: #8CCDA0; font-family: 'SF Mono', monospace; padding: 12px 18px; border-radius: 10px; font-size: 12px; overflow-x: auto; white-space: pre; margin: 8px 0; }
+  .badge { display: inline-block; padding: 3px 10px; border-radius: 6px; font-size: 10px; font-weight: 800; }
+  .badge-green { background: #EDF5ED; color: #6C9A8B; }
+  .badge-amber { background: #FDF0E6; color: #B9926B; }
+  .badge-red { background: #FDEAEA; color: #B86A62; }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  @media(max-width:700px) { .grid-2 { grid-template-columns: 1fr; } }
+  .tab-row { display: flex; gap: 2px; margin: 16px 0 0; }
+  .tab-label { padding: 8px 20px; border-radius: 10px 10px 0 0; font-size: 11px; font-weight: 800; cursor: default; }
+  .tab-active { background: #FFFDF8; border: 1px solid #E7E0D6; border-bottom: 2px solid #6C9A8B; color: #4E6F62; }
+  .tab-inactive { background: transparent; border: 1px solid transparent; color: #6F746D; }
+</style>
+</head>
+<body>
+<div class="container">
+
+<h1>50/30/20 Budget Tracker — Sheets Template v2</h1>
+<p>Redesigned to match the Aura PWA. 5 tabs. Auto-calculating. Custom-ratio ready.</p>
+
+<div class="tab-row">
+  <div class="tab-label tab-active">📊 Dashboard</div>
+  <div class="tab-label tab-inactive">📅 Yearly</div>
+  <div class="tab-label tab-inactive">💰 Expenses</div>
+  <div class="tab-label tab-inactive">🎯 Goals</div>
+  <div class="tab-label tab-inactive">📖 Setup</div>
+</div>
+
+<!-- ===== TAB 1: DASHBOARD ===== -->
+<h2>Tab 1 — Dashboard</h2>
+<p>The main sheet. Users see this first. Matches the PWA layout.</p>
+
+<h3>Section A: Header</h3>
+<table>
+  <tr><td style="font-weight:800">50/30/20 Budget Tracker</td><td style="text-align:right;color:#6F746D;font-size:11px">Sage Green Edition • 2026</td></tr>
+  <tr><td>Monthly Income</td><td style="text-align:right;font-weight:900;font-size:18px;font-family:SF Mono,monospace">$5,000.00</td></tr>
+  <tr><td style="font-weight:800;color:#4E6F62">Cashflow Balance</td><td style="text-align:right;font-weight:900;color:#6C9A8B;font-family:SF Mono,monospace">+$1,580.00</td></tr>
+</table>
+
+<h3>Section B: 50/30/20 Allocation</h3>
+<table>
+  <tr><th>Category</th><th>% of Income</th><th>Budget</th><th>Spent</th><th>Remaining</th><th>Status</th></tr>
+  <tr style="background:#EDF5ED"><td>Needs</td><td>50%</td><td>$2,500.00</td><td>$2,060.00</td><td>$440.00</td><td><span class="badge badge-green">On Track</span></td></tr>
+  <tr style="background:#FDF0E6"><td>Wants</td><td>30%</td><td>$1,500.00</td><td>$360.00</td><td>$1,140.00</td><td><span class="badge badge-green">Under Budget</span></td></tr>
+  <tr style="background:#EDF5ED"><td>Savings</td><td>20%</td><td>$1,000.00</td><td>$1,000.00</td><td>$0.00</td><td><span class="badge badge-amber">At Limit</span></td></tr>
+  <tr style="font-weight:800"><td>TOTAL</td><td>100%</td><td>$5,000.00</td><td>$3,420.00</td><td>$1,580.00</td><td>68% used</td></tr>
+</table>
+
+<h3>Section C: Category Breakdown</h3>
+<table>
+  <tr><th>Description</th><th>Type</th><th>Budget</th><th>Spent</th><th>Remaining</th><th>% Used</th></tr>
+  <tr><td>Rent / Mortgage</td><td>Needs</td><td>$1,400.00</td><td>$1,400.00</td><td>$0.00</td><td>100%</td></tr>
+  <tr><td>Groceries</td><td>Needs</td><td>$500.00</td><td>$400.00</td><td>$100.00</td><td>80%</td></tr>
+  <tr><td>Transportation</td><td>Needs</td><td>$300.00</td><td>$110.00</td><td>$190.00</td><td>37%</td></tr>
+  <tr><td>Utilities & Phone</td><td>Needs</td><td>$200.00</td><td>$95.00</td><td>$105.00</td><td>48%</td></tr>
+  <tr><td>Insurance</td><td>Needs</td><td>$100.00</td><td>$0.00</td><td>$100.00</td><td>0%</td></tr>
+  <tr><td>Dining & Takeout</td><td>Wants</td><td>$400.00</td><td>$127.00</td><td>$273.00</td><td>32%</td></tr>
+  <tr><td>Entertainment</td><td>Wants</td><td>$200.00</td><td>$35.00</td><td>$165.00</td><td>18%</td></tr>
+  <tr><td>Shopping</td><td>Wants</td><td>$300.00</td><td>$120.00</td><td>$180.00</td><td>40%</td></tr>
+  <tr><td>Subscriptions</td><td>Wants</td><td>$200.00</td><td>$28.00</td><td>$172.00</td><td>14%</td></tr>
+  <tr><td>Hobbies & Fun</td><td>Wants</td><td>$400.00</td><td>$0.00</td><td>$400.00</td><td>0%</td></tr>
+  <tr><td>Emergency Fund</td><td>Savings</td><td>$500.00</td><td>$500.00</td><td>$0.00</td><td>100%</td></tr>
+  <tr><td>Investments</td><td>Savings</td><td>$300.00</td><td>$400.00</td><td>-$100.00</td><td>133%</td></tr>
+  <tr><td>Savings Goal</td><td>Savings</td><td>$200.00</td><td>$100.00</td><td>$100.00</td><td>50%</td></tr>
+</table>
+
+<h3>Formulas (auto-calculating)</h3>
+<div class="code">Needs budget:   =B2 * 50%        (B2 = income cell)
+Wants budget:   =B2 * 30%
+Savings budget: =B2 * 20%
+Spent column:   =SUMIF(Expenses!C:C, "Needs", Expenses!E:E)
+Remaining:      =Budget - Spent
+Status:         =IF(Spent>Budget,"Over",IF(Spent>=Budget*0.8,"At Limit","On Track"))
+% Used:         =Spent/Budget
+Total Spent:    =SUM(Spent column)
+Cashflow:       =Income - TotalSpent</div>
+
+<!-- ===== TAB 2: YEARLY ===== -->
+<h2>Tab 2 — Yearly Overview</h2>
+<p>12-month tracker with auto-filled monthly summaries.</p>
+
+<table>
+  <tr><th>Month</th><th>Income</th><th>Needs</th><th>Wants</th><th>Savings</th><th>Total</th><th>Remaining</th><th>Savings Rate</th></tr>
+  <tr><td>January</td><td>$5,000</td><td>$2,100</td><td>$400</td><td>$1,000</td><td>$3,500</td><td>+$1,500</td><td>30%</td></tr>
+  <tr><td>February</td><td>$5,000</td><td>$2,300</td><td>$350</td><td>$900</td><td>$3,550</td><td>+$1,450</td><td>29%</td></tr>
+  <tr><td colspan="8" style="color:#6F746D;text-align:center">... remaining months TBD by user ...</td></tr>
+</table>
+
+<div class="code">Each month reads from a separate tab (Jan, Feb, etc.) or a filtered Expenses range.
+Monthly needs:  =SUMIFS(Expenses!E:E, Expenses!C:C, "Needs", Expenses!A:A, ">=1/1/"&A1, Expenses!A:A, "<=1/31/"&A1)
+Savings rate:   =(Income - Total) / Income</div>
+
+<!-- ===== TAB 3: EXPENSES ===== -->
+<h2>Tab 3 — Expenses (import-friendly)</h2>
+<p>Drop your exported CSV data here. Columns match the PWA export format exactly.</p>
+
+<table>
+  <tr><th>Date</th><th>Description</th><th>Category</th><th>Sub-Category</th><th>Amount</th></tr>
+  <tr><td>2026-06-01</td><td>Rent</td><td>Needs</td><td>Housing</td><td>$1,400.00</td></tr>
+  <tr><td>2026-06-03</td><td>Grocery Store</td><td>Needs</td><td>Groceries</td><td>$150.00</td></tr>
+  <tr><td>2026-06-05</td><td>Netflix</td><td>Wants</td><td>Subscriptions</td><td>$15.99</td></tr>
+  <tr><td colspan="5" style="color:#6F746D;text-align:center">Paste exported CSV data here → Dashboard auto-updates</td></tr>
+</table>
+
+<h3>Import from PWA</h3>
+<div class="code">1. Open Budget Tracker PWA → Settings → Export CSV
+2. Open the downloaded CSV file
+3. Copy all rows (Ctrl+A → Ctrl+C)
+4. Paste into this Expenses tab starting at A2
+5. Dashboard, Yearly, and Goals tabs all update automatically</div>
+
+<!-- ===== TAB 4: GOALS ===== -->
+<h2>Tab 4 — Savings Goals</h2>
+
+<table>
+  <tr><th>Goal</th><th>Target</th><th>Saved</th><th>Remaining</th><th>Progress</th><th>Projected Complete</th></tr>
+  <tr><td>Emergency Fund</td><td>$15,000</td><td>$8,400</td><td>$6,600</td><td>56%</td><td>Mar 2027</td></tr>
+  <tr><td>Vacation</td><td>$5,000</td><td>$2,300</td><td>$2,700</td><td>46%</td><td>Jan 2027</td></tr>
+  <tr><td>New Car</td><td>$20,000</td><td>$5,000</td><td>$15,000</td><td>25%</td><td>Jun 2028</td></tr>
+</table>
+
+<div class="code">Progress:       =Saved / Target
+Remaining:      =Target - Saved
+Projected Date: =TODAY() + (Remaining / (MONTHLY_SAVINGS_RATE)) * 30</div>
+
+<!-- ===== TAB 5: SETUP ===== -->
+<h2>Tab 5 — Setup Guide</h2>
+
+<div class="grid-2">
+  <div>
+    <h3>Getting Started</h3>
+    <p><strong>1.</strong> Enter your <strong>Monthly Income</strong> on the Dashboard tab (cell B2)</p>
+    <p><strong>2.</strong> Add expenses on the Expenses tab or import from the PWA</p>
+    <p><strong>3.</strong> Customize categories — edit the Category column, formulas auto-adjust</p>
+    <p><strong>4.</strong> Set savings goals on the Goals tab</p>
+    <p><strong>5.</strong> Use the Yearly tab to track month-over-month progress</p>
+  </div>
+  <div>
+    <h3>Custom Ratio Support</h3>
+    <p>Dashboard cells E2-E4 control your budget split:</p>
+    <table>
+      <tr><th>Ratio</th><th>Needs</th><th>Wants</th><th>Savings</th></tr>
+      <tr><td>Classic</td><td>50%</td><td>30%</td><td>20%</td></tr>
+      <tr><td>High COL</td><td>60%</td><td>20%</td><td>20%</td></tr>
+      <tr><td>Aggressive</td><td>40%</td><td>20%</td><td>40%</td></tr>
+      <tr><td>Debt Focus</td><td>50%</td><td>20%</td><td>30%</td></tr>
+      <tr><td>Custom</td><td colspan="3">Enter any 3 values that total 100%</td></tr>
+    </table>
+  </div>
+</div>
+
+<!-- ===== VISUAL NOTES ===== -->
+<h2>Design Notes</h2>
+
+<div class="grid-2">
+  <div>
+    <h3>Color Palette</h3>
+    <table>
+      <tr><td style="background:#F7F4EE;width:40px"></td><td>Background</td><td>#F7F4EE</td></tr>
+      <tr><td style="background:#FFFDF8"></td><td>Card/Sheet</td><td>#FFFDF8</td></tr>
+      <tr><td style="background:#6C9A8B"></td><td>Headers</td><td>#6C9A8B</td></tr>
+      <tr><td style="background:#4E6F62"></td><td>Text Dark</td><td>#4E6F62</td></tr>
+      <tr><td style="background:#EDF5ED"></td><td>Green tint</td><td>#EDF5ED</td></tr>
+      <tr><td style="background:#FDF0E6"></td><td>Amber tint</td><td>#FDF0E6</td></tr>
+    </table>
+  </div>
+  <div>
+    <h3>Typography</h3>
+    <table>
+      <tr><td>Headers</td><td>Inter, 11px, Bold, #fff</td></tr>
+      <tr><td>Labels</td><td>Inter, 11px, #6F746D</td></tr>
+      <tr><td>Amounts</td><td>SF Mono, 13px, Bold</td></tr>
+      <tr><td>Body text</td><td>Inter, 12px, #20231F</td></tr>
+    </table>
+    <h3>What We Removed (vs v1)</h3>
+    <ul>
+      <li>All emojis — replaced with clean text labels</li>
+      <li>Hardcoded 50/30/20 — now custom-ratio ready</li>
+      <li>Single-tab layout — now 5 organized tabs</li>
+    </ul>
+  </div>
+</div>
+
+<h3>PWA → Sheets Pipeline</h3>
+<div class="code">PWA App (daily tracking)  →  Export CSV  →  Paste into Expenses tab  →  Dashboard + Yearly auto-update
+   FREE                          Settings tab     This template              $6.99 Etsy product</div>
+
+</div>
+</body>
+</html>
