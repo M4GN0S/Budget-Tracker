@@ -110,7 +110,7 @@ function buildDashboardSheet(ss) {
 
   // Needs (row 10)
   s.getRange("A10").setValue("Needs").setFontWeight("bold").setBackground("#EDF5ED");
-  s.getRange("B10").setValue(0.50).setNumberFormat("0%").setBackground("#EDF5ED");
+  s.getRange("B10").setFormula('=SWITCH(B4,"Classic 50/30/20",0.5,"High Cost of Living 60/20/20",0.6,"Aggressive Wealth Growth 40/20/40",0.4,"Debt Elimination 50/20/30",0.5,0.5)').setNumberFormat("0%").setBackground("#EDF5ED");
   s.getRange("C10").setFormula("=B6*B10");  styleAmount(s.getRange("C10"));
   s.getRange("D10").setFormula('=SUMIF(Expenses!C:C,"Needs",Expenses!E:E)'); styleAmount(s.getRange("D10"));
   s.getRange("E10").setFormula("=C10-D10"); styleAmount(s.getRange("E10"));
@@ -120,7 +120,7 @@ function buildDashboardSheet(ss) {
 
   // Wants (row 11)
   s.getRange("A11").setValue("Wants").setFontWeight("bold").setBackground("#FDF0E6");
-  s.getRange("B11").setValue(0.30).setNumberFormat("0%").setBackground("#FDF0E6");
+  s.getRange("B11").setFormula('=SWITCH(B4,"Classic 50/30/20",0.3,"High Cost of Living 60/20/20",0.2,"Aggressive Wealth Growth 40/20/40",0.2,"Debt Elimination 50/20/30",0.2,0.3)').setNumberFormat("0%").setBackground("#FDF0E6");
   s.getRange("C11").setFormula("=B6*B11"); styleAmount(s.getRange("C11"));
   s.getRange("D11").setFormula('=SUMIF(Expenses!C:C,"Wants",Expenses!E:E)'); styleAmount(s.getRange("D11"));
   s.getRange("E11").setFormula("=C11-D11"); styleAmount(s.getRange("E11"));
@@ -130,7 +130,7 @@ function buildDashboardSheet(ss) {
 
   // Savings (row 12)
   s.getRange("A12").setValue("Savings").setFontWeight("bold").setBackground("#EDF5ED");
-  s.getRange("B12").setValue(0.20).setNumberFormat("0%").setBackground("#EDF5ED");
+  s.getRange("B12").setFormula('=SWITCH(B4,"Classic 50/30/20",0.2,"High Cost of Living 60/20/20",0.2,"Aggressive Wealth Growth 40/20/40",0.4,"Debt Elimination 50/20/30",0.3,0.2)').setNumberFormat("0%").setBackground("#EDF5ED");
   s.getRange("C12").setFormula("=B6*B12"); styleAmount(s.getRange("C12"));
   s.getRange("D12").setFormula('=SUMIF(Expenses!C:C,"Savings",Expenses!E:E)'); styleAmount(s.getRange("D12"));
   s.getRange("E12").setFormula("=C12-D12"); styleAmount(s.getRange("E12"));
