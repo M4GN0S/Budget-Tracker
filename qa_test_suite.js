@@ -350,6 +350,41 @@ const testRatio = testLiabs / testAssets;
 assert(testNw === 120000, "Net worth calculated correctly ($150k - $30k = $120k)");
 assert(testRatio.toFixed(2) === "0.20", "Debt-to-asset ratio calculated correctly (0.20 / 20%)");
 
+// AI Context builder verification (guards against missing variables like _br)
+let aiContextResult = "";
+let aiContextThrew = false;
+try {
+  localStorage.setItem("budget_tracker_503020", JSON.stringify({
+    income: 5000,
+    expenses: [{ id: 1, date: "2026-09-01", desc: "Groceries", cat: "Needs", sub: "Food", amt: 300 }],
+    goals: [{ id: 2, name: "Vacation", target: 2000, saved: 500 }]
+  }));
+  localStorage.setItem("bt_budget_ratios", JSON.stringify({ needs: 50, wants: 30, savings: 20 }));
+  aiContextResult = buildAiContext();
+} catch (e) {
+  aiContextThrew = true;
+  console.error("buildAiContext failed with error:", e);
+}
+assert(!aiContextThrew, "buildAiContext executes without throwing ReferenceError");
+assert(aiContextResult.includes("50% Needs") && aiContextResult.includes("30% Wants"), "buildAiContext generates correct budget ratio text");
+
+// exportPDF verification (guards against missing variables like _br)
+let pdfThrew = false;
+try {
+  // Mock window.open for PDF print popup
+  window.open = () => ({
+    document: {
+      write: () => {},
+      close: () => {}
+    }
+  });
+  exportPDF();
+} catch (e) {
+  pdfThrew = true;
+  console.error("exportPDF failed with error:", e);
+}
+assert(!pdfThrew, "exportPDF executes without throwing ReferenceError");
+
 
 // ─── SUMMARY ────────────────────────────────────────────────
 console.log("\n=================================================");

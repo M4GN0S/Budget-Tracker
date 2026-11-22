@@ -1,15 +1,25 @@
 # DEVLOG — L'Atelier de Luz | Budget Tracker PWA
 
-## Current State: v250
+## Current State: v251
 
 | Metric | Value |
 |---|---|
-| SW cache | `budget-tracker-v250` |
-| File | `index.html` (15,335 lines) + `sw.js` |
-| App version | 1.9.0 |
+| SW cache | `budget-tracker-v251` |
+| File | `index.html` (15,337 lines) + `sw.js` |
+| App version | 1.9.1 |
 | Panels | 7 (`dashboard`, `expenses`, `history`, `goals`, `notes`, `ai`, `data`) |
 | Backend | `backend/google_sheets_backend.js` (Google Apps Script Web App) |
 | Products | `products/` (Sheets Template v2, Setup Guide, Seed CSV, Apps Script Template) |
+
+---
+
+## v251 Changelog (from v250) — Bug Fix: AI Context & PDF Export _br Reference
+
+### Fixes
+- **AI Context Builder (`buildAiContext`)**: Added `const _br = _getBudgetRatios();` declaration to prevent `ReferenceError: _br is not defined` when assembling financial context for AI chat responses.
+- **PDF Export (`exportPDF`)**: Added `const _br = _getBudgetRatios();` declaration and updated dynamic budget calculation targets (`income * _br.needs / 100`, etc.) instead of hardcoded 50/30/20 multiplier fractions.
+- **Automated QA Test Suite (`qa_test_suite.js`)**: Added explicit unit and integration tests validating `buildAiContext()` and `exportPDF()` runtime execution.
+- Bumped SW cache to `budget-tracker-v251` and app version to `1.9.1`.
 
 ---
 

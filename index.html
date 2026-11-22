@@ -4104,7 +4104,7 @@ footer .footer-links a:hover{color:var(--pri-d)}
 <div class="toast" id="toast"></div>
 
 <script>
-const APP_VERSION = '1.9.0';
+const APP_VERSION = '1.9.1';
 const PRODUCT_LINKS = { annualKit: "#annual-analysis-kit", managedAi: "#managed-ai", shop: "#shop" };
 // ─── DATA STORE + AUTO-BACKUP SYSTEM ───────────────────────
 const STORAGE_KEY = "budget_tracker_503020";
@@ -9108,6 +9108,7 @@ function exportPDF() {
   const data = getData();
   if (!data.expenses.length) { toast("No expenses to export"); return; }
 
+  const _br      = _getBudgetRatios();
   const income   = data.income || 0;
   const needs    = data.expenses.filter(e => e.cat === "Needs").reduce((s,e)=>s+e.amt,0);
   const wants    = data.expenses.filter(e => e.cat === "Wants").reduce((s,e)=>s+e.amt,0);
@@ -9211,9 +9212,9 @@ function exportPDF() {
   </div>
 
   <div class="section-title">Budget vs Actual</div>
-  ${income > 0 ? summaryBar("Needs (" + _br.needs + "% target)", needs, income*0.5, "#5B8FB9") : ""}
-  ${income > 0 ? summaryBar("Wants (" + _br.wants + "% target)", wants, income*0.3, "#D4A0A0") : ""}
-  ${income > 0 ? summaryBar("Savings (" + _br.savings + "% target)", savings, income*0.2, "#6C9A8B") : ""}
+  ${income > 0 ? summaryBar("Needs (" + _br.needs + "% target)", needs, income * _br.needs / 100, "#5B8FB9") : ""}
+  ${income > 0 ? summaryBar("Wants (" + _br.wants + "% target)", wants, income * _br.wants / 100, "#D4A0A0") : ""}
+  ${income > 0 ? summaryBar("Savings (" + _br.savings + "% target)", savings, income * _br.savings / 100, "#6C9A8B") : ""}
 
   <div class="section-title">Transaction Detail</div>
   <table>
@@ -14074,6 +14075,7 @@ function initAiChat() {
 // Build context from user's budget data
 function buildAiContext() {
   const data = getData();
+  const _br = _getBudgetRatios();
   const income = data.income || 0;
   const needs = data.expenses.filter(e => e.cat === "Needs").reduce((s,e) => s+e.amt, 0);
   const wants = data.expenses.filter(e => e.cat === "Wants").reduce((s,e) => s+e.amt, 0);
