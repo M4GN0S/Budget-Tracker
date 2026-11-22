@@ -1,15 +1,33 @@
 # DEVLOG — L'Atelier de Luz | Budget Tracker PWA
 
-## Current State: v256
+## Current State: v257
 
 | Metric | Value |
 |---|---|
-| SW cache | `budget-tracker-v256` |
+| SW cache | `budget-tracker-v257` |
 | File | `index.html` + `sw.js` |
-| App version | 1.9.5 |
+| App version | 1.9.6 |
 | Panels | 7 (`dashboard`, `expenses`, `history`, `goals`, `notes`, `ai`, `data`) |
 | Backend | `backend/google_sheets_backend.js` (Google Apps Script Web App) |
 | Products | `products/` (Sheets Template v2, Setup Guide, Seed CSV, Apps Script Template) |
+
+---
+
+## v257 Changelog (from v256) — Savings Goals Accordion Layout Fix & Past Windfall Rollover Integration
+
+### 1. Savings Goals Accordion UI Layout Fix
+- **Duplicate Header Removal**: Removed redundant nested `<div class="accordion-header">` within `#goalsAccordion` that caused the accordion header to render as a horizontal flex sibling with the `.accordion-body` (cards content pushed to the right side).
+- **Proper Hierarchy**: Verified that `#goalsAccordion` uses clean top-level header and full-width collapsible body container.
+
+### 2. Comprehensive Windfall Rollover Edge Cases
+- **Past Months' Windfall Inclusion**: Updated `calcPreviousMonthsSurplus()` to aggregate past months from both `data.expenses` AND `sources.filter(s => s.isWindfall)`.
+- **Windfall Surplus Calculation**: Accurately computes monthly income as `baseIncome + windfallInMonth` for previous calendar months.
+- **Pure Windfall Support**: Correctly rolls over past windfall amounts even if regular recurring income is unset/zero ($0 base income).
+- **Detailed Ledger Notes**: Formats auto-surplus transaction entries with clear breakdowns (`"${m.label} Unspent Income ($X base + $Y windfall - $Z spent)"` or `"${m.label} Windfall Rollover ($Y windfall - $Z spent)"`).
+- **Overview Summary**: Enhanced the Finance tab summary box to display past windfall details in the rollover badge.
+
+### 3. Automated QA Test Suite Expansion
+- Added Test Suite 15 to `qa_test_suite.js` covering accordion header DOM uniqueness, windfall rollover calculations, and pure windfall edge cases (145/145 tests passing).
 
 ---
 

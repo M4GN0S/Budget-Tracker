@@ -761,6 +761,68 @@ currentNwItems = getNwItems();
 assert(!currentNwItems.some(i => i.id === "auto_surplus_asset"), "Re-sync respects dismissal flag and does not resurrect card");
 
 
+// ─── TEST SUITE 15: Savings Goals Accordion UI & Windfall Rollover Edge Cases ───
+console.log("\n─── TEST SUITE 15: Savings Goals Accordion UI & Windfall Rollover Edge Cases ───");
+
+// 1. Verify index.html does not have nested accordion-header tags in goalsAccordion
+const rawIndexHtml = fs.readFileSync(path.join(__dirname, 'index.html'), 'utf8');
+const goalsAccMatch = rawIndexHtml.match(/<div class="accordion fin-accordion" id="goalsAccordion">([\s\S]*?)<\/div>\s*<\/div>\s*<\/div>/);
+assert(goalsAccMatch !== null, "goalsAccordion exists in index.html");
+const headerOccurrences = (goalsAccMatch ? goalsAccMatch[0].match(/class="accordion-header"/g) || [] : []).length;
+assert(headerOccurrences === 1, `goalsAccordion has exactly 1 accordion-header (got ${headerOccurrences})`);
+
+// 2. Windfall rollover in past month with regular monthly income
+localStorage.clear();
+const windfallTestData = {
+  income: 3000,
+  expenses: [
+    { id: 101, name: "Rent", cat: "Needs", amt: 1000, date: "2026-07-05" }
+  ],
+  goals: []
+};
+saveData(windfallTestData);
+saveIncomeSources([
+  { id: 201, type: "bonus", label: "One-time Bonus", amount: 5000, isWindfall: true, date: "2026-07-15" }
+]);
+
+const pastSurplusWithWf = calcPreviousMonthsSurplus();
+assert(pastSurplusWithWf.totalSurplus === 7000, `Past surplus correctly includes 3000 base + 5000 windfall - 1000 expense = 7000 (got ${pastSurplusWithWf.totalSurplus})`);
+assert(pastSurplusWithWf.totalWindfall === 5000, `Past surplus captures totalWindfall of 5000 (got ${pastSurplusWithWf.totalWindfall})`);
+assert(pastSurplusWithWf.months.length === 1, "Exactly 1 rollover month recorded");
+
+// 3. Sync to asset and verify transaction note details
+_syncPreviousMonthsSurplusToAssets();
+const syncedNw = getNwItems();
+const autoSurplus = syncedNw.find(i => i.id === "auto_surplus_asset");
+assert(autoSurplus !== undefined, "Rollover income asset created with windfall surplus");
+assert(autoSurplus.amt === 7000, `Rollover asset amount is 7000 (got ${autoSurplus.amt})`);
+assert(autoSurplus.transactions[0].note.includes("5,000") && autoSurplus.transactions[0].note.includes("windfall"), `Transaction note explicitly details windfall breakdown: "${autoSurplus.transactions[0].note}"`);
+
+// 4. Pure windfall rollover with 0 regular income
+localStorage.clear();
+const pureWfData = {
+  income: 0,
+  expenses: [
+    { id: 102, name: "Equipment", cat: "Needs", amt: 1500, date: "2026-06-10" }
+  ],
+  goals: []
+};
+saveData(pureWfData);
+saveIncomeSources([
+  { id: 202, type: "lottery", label: "Lottery Win", amount: 10000, isWindfall: true, date: "2026-06-01" }
+]);
+
+const pureWfSurplus = calcPreviousMonthsSurplus();
+assert(pureWfSurplus.totalSurplus === 8500, `Pure windfall surplus is 10000 - 1500 = 8500 (got ${pureWfSurplus.totalSurplus})`);
+assert(pureWfSurplus.totalWindfall === 10000, `Pure windfall captures 10000 (got ${pureWfSurplus.totalWindfall})`);
+
+_syncPreviousMonthsSurplusToAssets();
+const pureWfSynced = getNwItems();
+const pureWfAsset = pureWfSynced.find(i => i.id === "auto_surplus_asset");
+assert(pureWfAsset.amt === 8500, `Pure windfall rollover asset amount is 8500 (got ${pureWfAsset.amt})`);
+assert(pureWfAsset.transactions[0].note.includes("Windfall Rollover"), `Transaction note uses 'Windfall Rollover' label: "${pureWfAsset.transactions[0].note}"`);
+
+
 // ─── SUMMARY ────────────────────────────────────────────────
 console.log("\n=================================================");
 console.log(`  QA TEST RUN COMPLETE: ${passed} PASSED, ${failed} FAILED`);

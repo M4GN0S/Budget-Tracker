@@ -3151,7 +3151,6 @@ footer .footer-links a:hover{color:var(--pri-d)}
 <!-- ─── SAVINGS GOALS (COMPACT ACCORDION) ── -->
       <div class="accordion fin-accordion" id="goalsAccordion">
         <div class="accordion-header" style="padding:12px 14px" onclick="toggleFinAccordion(this, event)">
-        <div class="accordion-header" style="padding:12px 14px">
           <div class="acc-left">
             <div class="acc-icon" style="background:var(--pri-l)">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--pri-d)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
@@ -5297,41 +5296,61 @@ function updateNwAmt(id, val) {
 // ─── PAST MONTHS' SURPLUS & ROLLOVER ──────────────────────
 function calcPreviousMonthsSurplus() {
   const data = getData();
-  const income = typeof getMonthlyIncome === "function" ? getMonthlyIncome() : (data.income || 0);
-  if (income <= 0 || !data.expenses || !data.expenses.length) return { totalSurplus: 0, months: [] };
+  const baseIncome = typeof getMonthlyIncome === "function" ? getMonthlyIncome() : (data.income || 0);
+  const sources = typeof getIncomeSources === "function" ? getIncomeSources() : [];
+  const windfalls = sources.filter(s => s.isWindfall && (parseFloat(s.amount) || 0) > 0);
 
   const now = new Date();
   const currentYm = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
   
-  const monthMap = new Map();
-  data.expenses.forEach(e => {
-    if (e.date && typeof e.date === "string" && e.date.length >= 7) {
-      const ym = e.date.substring(0, 7);
+  const monthExpenseMap = new Map();
+  if (data.expenses && Array.isArray(data.expenses)) {
+    data.expenses.forEach(e => {
+      if (e.date && typeof e.date === "string" && e.date.length >= 7) {
+        const ym = e.date.substring(0, 7);
+        if (ym < currentYm) {
+          monthExpenseMap.set(ym, (monthExpenseMap.get(ym) || 0) + (parseFloat(e.amt) || 0));
+        }
+      }
+    });
+  }
+
+  const monthWindfallMap = new Map();
+  windfalls.forEach(w => {
+    if (w.date && typeof w.date === "string" && w.date.length >= 7) {
+      const ym = w.date.substring(0, 7);
       if (ym < currentYm) {
-        monthMap.set(ym, (monthMap.get(ym) || 0) + (parseFloat(e.amt) || 0));
+        monthWindfallMap.set(ym, (monthWindfallMap.get(ym) || 0) + (parseFloat(w.amount) || 0));
       }
     }
   });
 
+  const allYms = new Set([...monthExpenseMap.keys(), ...monthWindfallMap.keys()]);
+  if (!allYms.size && baseIncome <= 0) return { totalSurplus: 0, totalWindfall: 0, months: [] };
+
   const months = [];
   let totalSurplus = 0;
+  let totalWindfall = 0;
   let runningTotal = 0;
 
-  const sortedYms = Array.from(monthMap.keys()).sort();
+  const sortedYms = Array.from(allYms).sort();
   sortedYms.forEach(ym => {
-    const spent = monthMap.get(ym);
-    const surplus = Math.max(0, income - spent);
+    const spent = monthExpenseMap.get(ym) || 0;
+    const windfall = monthWindfallMap.get(ym) || 0;
+    const monthIncome = baseIncome + windfall;
+    const surplus = Math.max(0, monthIncome - spent);
     const parts = ym.split("-");
     const d = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, 1);
     const label = d.toLocaleDateString("en-US", { month: "short", year: "numeric" });
     if (surplus > 0) {
       runningTotal += surplus;
-      months.push({ ym, label, income, spent, surplus, balance: runningTotal });
+      totalWindfall += windfall;
+      months.push({ ym, label, income: monthIncome, baseIncome, windfall, spent, surplus, balance: runningTotal });
       totalSurplus += surplus;
     }
   });
 
-  return { totalSurplus, months };
+  return { totalSurplus, totalWindfall, months };
 }
 
 function _syncPreviousMonthsSurplusToAssets() {
@@ -5351,14 +5370,22 @@ function _syncPreviousMonthsSurplusToAssets() {
       type: "asset",
       isAutoSurplus: true,
       amt: totalSurplus,
-      transactions: months.map(m => ({
-        id: "surplus_" + m.ym,
-        date: m.ym + "-28",
-        action: "fund",
-        amount: m.surplus,
-        note: `${m.label} Unspent Income (${fmt(m.income)} income - ${fmt(m.spent)} spent)`,
-        balance: m.balance
-      }))
+      transactions: months.map(m => {
+        let noteTxt = `${m.label} Unspent Income (${fmt(m.income)} income - ${fmt(m.spent)} spent)`;
+        if (m.windfall > 0 && m.baseIncome > 0) {
+          noteTxt = `${m.label} Unspent Income (${fmt(m.baseIncome)} base + ${fmt(m.windfall)} windfall - ${fmt(m.spent)} spent)`;
+        } else if (m.windfall > 0 && m.baseIncome === 0) {
+          noteTxt = `${m.label} Windfall Rollover (${fmt(m.windfall)} windfall - ${fmt(m.spent)} spent)`;
+        }
+        return {
+          id: "surplus_" + m.ym,
+          date: m.ym + "-28",
+          action: "fund",
+          amount: m.surplus,
+          note: noteTxt,
+          balance: m.balance
+        };
+      })
     };
     
     if (existingIdx >= 0) {
@@ -5515,11 +5542,14 @@ function renderFinanceOverview() {
       </div>`;
     }
     if (pastSurplus.totalSurplus > 0) {
+      const wfBadge = pastSurplus.totalWindfall > 0
+        ? ` <span style="font-size:9px;font-weight:400;color:var(--txt2)">(includes ${fmt(pastSurplus.totalWindfall)} windfall)</span>`
+        : '';
       rows += `<div class="fin-summary-row">
         <span class="fin-summary-label">
           <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor"
             stroke-width="2.5" stroke-linecap="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
-          Past Months' Rollover
+          Past Months' Rollover${wfBadge}
           <span style="font-size:9px;font-weight:400;color:var(--suc);margin-left:2px">· added to Assets ✓</span>
         </span>
         <span class="fin-summary-amt" style="color:var(--suc)">+${fmt(pastSurplus.totalSurplus)}</span>
