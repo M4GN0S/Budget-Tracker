@@ -2447,6 +2447,24 @@ footer .footer-links a:hover{color:var(--pri-d)}
       </div>
     </div>
 
+    <!-- ── Month / Period Navigator ── -->
+    <div class="period-navigator-bar" id="periodNavigatorBar" style="display:flex;align-items:center;justify-content:space-between;background:var(--card);border:1px solid var(--brd);border-radius:var(--rad);padding:10px 14px;margin-bottom:12px;box-shadow:var(--sh)">
+      <button class="btn-period-nav" id="periodNavPrevBtn" onclick="navPeriod(-1)" title="Previous Month" style="background:var(--bg);border:1px solid var(--brd);border-radius:8px;width:32px;height:32px;cursor:pointer;color:var(--txt);display:flex;align-items:center;justify-content:center;transition:all .15s" onmouseover="this.style.borderColor='var(--pri)';this.style.color='var(--pri-d)'" onmouseout="this.style.borderColor='var(--brd)';this.style.color='var(--txt)'">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+      <div style="display:flex;align-items:center;gap:8px;text-align:center">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--pri-d)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        <span id="periodNavTitle" style="font-size:13px;font-weight:800;color:var(--txt)">November 2026</span>
+        <span id="periodNavBadge" style="font-size:9.5px;font-weight:700;padding:2px 7px;border-radius:10px;background:var(--pri-l);color:var(--pri-d);border:1px solid var(--pri)">Current</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:6px">
+        <button id="periodNavTodayBtn" onclick="navPeriod(0)" title="Jump to Current Month" style="display:none;background:var(--pri-l);border:1px solid var(--pri);border-radius:8px;padding:4px 10px;font-size:10px;font-weight:700;color:var(--pri-d);cursor:pointer;font-family:inherit">Today</button>
+        <button class="btn-period-nav" id="periodNavNextBtn" onclick="navPeriod(1)" title="Next Month" style="background:var(--bg);border:1px solid var(--brd);border-radius:8px;width:32px;height:32px;cursor:pointer;color:var(--txt);display:flex;align-items:center;justify-content:center;transition:all .15s" onmouseover="this.style.borderColor='var(--pri)';this.style.color='var(--pri-d)'" onmouseout="this.style.borderColor='var(--brd)';this.style.color='var(--txt)'">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
+      </div>
+    </div>
+
     <!-- Top Metrics: Net Worth, Debt Ratio, Assets, Liabilities -->
     <div class="stats">
       <div class="stat stat-nw" onclick="showTab('goals',document.querySelector('[data-tab=goals]'))" title="View full Net Worth details">
@@ -4104,7 +4122,7 @@ footer .footer-links a:hover{color:var(--pri-d)}
 <div class="toast" id="toast"></div>
 
 <script>
-const APP_VERSION = '1.9.1';
+const APP_VERSION = '1.9.2';
 const PRODUCT_LINKS = { annualKit: "#annual-analysis-kit", managedAi: "#managed-ai", shop: "#shop" };
 // ─── DATA STORE + AUTO-BACKUP SYSTEM ───────────────────────
 const STORAGE_KEY = "budget_tracker_503020";
@@ -4727,6 +4745,121 @@ function renderPayPeriodBar() {
     `<span style="font-size:12px;font-weight:900;color:var(--pri-d);white-space:nowrap;background:var(--pri-l);border:1px solid var(--pri);padding:1px 8px;border-radius:20px">${pp.daysLeft}d left</span>`;
 }
 
+// ─── UNIFIED PERIOD FILTER ENGINE (CALENDAR MONTH & PAY PERIOD) ──
+let currentViewMonth = null; // null = current calendar month, or "YYYY-MM"
+
+function getActiveViewMonth() {
+  if (currentViewMonth) return currentViewMonth;
+  const now = new Date();
+  const y = now.getFullYear();
+  const m = String(now.getMonth() + 1).padStart(2, "0");
+  return `${y}-${m}`;
+}
+
+function getActivePeriodRange() {
+  const isPayPeriod = localStorage.getItem("bt_pp_enabled") === "1";
+  const pad = n => String(n).padStart(2, "0");
+  const today = new Date();
+  const todayIso = `${today.getFullYear()}-${pad(today.getMonth()+1)}-${pad(today.getDate())}`;
+
+  if (isPayPeriod) {
+    const pp = getCurrentPayPeriod();
+    const fmtIso = d => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+    const startIso = fmtIso(pp.start);
+    const endIso = fmtIso(pp.end);
+    const isCurrent = (todayIso >= startIso && todayIso <= endIso);
+    return {
+      type: "payperiod",
+      isPayPeriod: true,
+      startIso,
+      endIso,
+      label: "Pay Period: " + pp.label,
+      shortLabel: pp.label,
+      daysLeft: pp.daysLeft,
+      isCurrent
+    };
+  } else {
+    const ym = getActiveViewMonth();
+    const parts = ym.split("-");
+    const y = parseInt(parts[0], 10);
+    const m = parseInt(parts[1], 10); // 1-12
+    const lastDay = new Date(y, m, 0).getDate();
+    const startIso = `${y}-${pad(m)}-01`;
+    const endIso = `${y}-${pad(m)}-${pad(lastDay)}`;
+    
+    const dateObj = new Date(y, m - 1, 1);
+    const label = dateObj.toLocaleDateString("en-US", { month: "long", year: "numeric" });
+    
+    const isCurrent = (today.getFullYear() === y && (today.getMonth() + 1) === m);
+    const daysLeft = isCurrent ? Math.max(0, lastDay - today.getDate()) : 0;
+    
+    return {
+      type: "month",
+      isPayPeriod: false,
+      ym,
+      startIso,
+      endIso,
+      label,
+      shortLabel: label,
+      daysLeft,
+      isCurrent
+    };
+  }
+}
+
+function getPeriodExpenses(period) {
+  const p = period || getActivePeriodRange();
+  const data = getData();
+  const start = p.startIso;
+  const end = p.endIso;
+  return data.expenses.filter(e => {
+    if (!e.date) return false;
+    return e.date >= start && e.date <= end;
+  });
+}
+
+function navPeriod(delta) {
+  if (delta === 0) {
+    currentViewMonth = null;
+  } else {
+    const ym = getActiveViewMonth();
+    const [yStr, mStr] = ym.split("-");
+    let y = parseInt(yStr, 10);
+    let m = parseInt(mStr, 10) + delta;
+    if (m < 1) { m = 12; y--; }
+    else if (m > 12) { m = 1; y++; }
+    const pad = n => String(n).padStart(2, "0");
+    currentViewMonth = `${y}-${pad(m)}`;
+  }
+  updateDashboard();
+  renderFinanceOverview();
+  renderInsights();
+}
+
+function renderPeriodNavigator() {
+  const titleEl = document.getElementById("periodNavTitle");
+  const badgeEl = document.getElementById("periodNavBadge");
+  const todayBtn = document.getElementById("periodNavTodayBtn");
+  if (!titleEl) return;
+  const period = getActivePeriodRange();
+  titleEl.textContent = period.label;
+  if (badgeEl) {
+    if (period.isPayPeriod) {
+      badgeEl.textContent = period.daysLeft + "d left";
+      badgeEl.style.display = "inline-block";
+    } else if (period.isCurrent) {
+      badgeEl.textContent = "Current (" + period.daysLeft + "d left)";
+      badgeEl.style.display = "inline-block";
+    } else {
+      badgeEl.textContent = "Archive";
+      badgeEl.style.display = "inline-block";
+    }
+  }
+  if (todayBtn) {
+    todayBtn.style.display = (!period.isPayPeriod && !period.isCurrent) ? "inline-block" : "none";
+  }
+}
+
 // ─── INIT ──────────────────────────────────────────────────
 document.addEventListener("DOMContentLoaded", () => {
   // Reset session-only reminder flag on fresh page load
@@ -5160,17 +5293,19 @@ function updateNwAmt(id, val) {
 // ─── FINANCE TAB OVERVIEW ──────────────────────────────────
 function renderFinanceOverview() {
   const data    = getData();
+  const period  = getActivePeriodRange();
+  const pExps   = getPeriodExpenses(period);
   const income  = data.income || 0;
-  const needs   = data.expenses.filter(e=>e.cat==="Needs").reduce((s,e)=>s+e.amt,0);
-  const wants   = data.expenses.filter(e=>e.cat==="Wants").reduce((s,e)=>s+e.amt,0);
-  const savings = data.expenses.filter(e=>e.cat==="Savings").reduce((s,e)=>s+e.amt,0);
+  const needs   = pExps.filter(e=>e.cat==="Needs").reduce((s,e)=>s+e.amt,0);
+  const wants   = pExps.filter(e=>e.cat==="Wants").reduce((s,e)=>s+e.amt,0);
+  const savings = pExps.filter(e=>e.cat==="Savings").reduce((s,e)=>s+e.amt,0);
   const spent   = needs + wants + savings;
   const unalloc = Math.max(0, income - spent);
   var br = _getBudgetRatios();
 
   // Month label
   const monthLabel = document.getElementById("financeMonthLabel");
-  if (monthLabel) monthLabel.textContent = new Date().toLocaleDateString("en-US",{month:"long",year:"numeric"});
+  if (monthLabel) monthLabel.textContent = period.label;
 
   // Income total
   const incomeTotalEl = document.getElementById("financeIncomeTotal");
@@ -5315,8 +5450,8 @@ function renderFinanceOverview() {
 
 // ── Where is my money going? — donut chart + category list ──
 function renderSpendingBreakdown() {
-  const data = getData();
-  const expenses = data.expenses || [];
+  const period = getActivePeriodRange();
+  const expenses = getPeriodExpenses(period);
   const total = expenses.reduce((s, e) => s + e.amt, 0);
 
   // Group by sub-category (or cat if no sub)
@@ -7937,14 +8072,18 @@ function updateDashboard() {
   checkPersonalizeCard();
   renderStreak();
 
+  const period = getActivePeriodRange();
+  renderPeriodNavigator();
+  const pExps = getPeriodExpenses(period);
+
   var _br = _getBudgetRatios();
   const needsBudget   = income * _br.needs / 100;
   const wantsBudget   = income * _br.wants / 100;
   const savingsBudget = income * _br.savings / 100;
 
-  const needsSpent   = data.expenses.filter(e => e.cat === "Needs").reduce((s,e) => s + e.amt, 0);
-  const wantsSpent   = data.expenses.filter(e => e.cat === "Wants").reduce((s,e) => s + e.amt, 0);
-  const savingsSpent = data.expenses.filter(e => e.cat === "Savings").reduce((s,e) => s + e.amt, 0);
+  const needsSpent   = pExps.filter(e => e.cat === "Needs").reduce((s,e) => s + e.amt, 0);
+  const wantsSpent   = pExps.filter(e => e.cat === "Wants").reduce((s,e) => s + e.amt, 0);
+  const savingsSpent = pExps.filter(e => e.cat === "Savings").reduce((s,e) => s + e.amt, 0);
   const totalSpent   = needsSpent + wantsSpent + savingsSpent;
 
   // Progress bars
@@ -8117,9 +8256,9 @@ function updateProgress(name, spent, budget, cls) {
   // Subcategory tags
   const subsEl = document.getElementById(name + "Subs");
   if (subsEl) {
-    const data = getData();
+    const periodExps = getPeriodExpenses();
     const catSubs = {};
-    data.expenses.filter(e => e.cat === name).forEach(e => {
+    periodExps.filter(e => (e.cat || "").toLowerCase() === (name || "").toLowerCase()).forEach(e => {
       const s = e.sub || "Other";
       catSubs[s] = (catSubs[s] || 0) + e.amt;
     });
@@ -9108,11 +9247,13 @@ function exportPDF() {
   const data = getData();
   if (!data.expenses.length) { toast("No expenses to export"); return; }
 
+  const period   = getActivePeriodRange();
+  const pExps    = getPeriodExpenses(period);
   const _br      = _getBudgetRatios();
   const income   = data.income || 0;
-  const needs    = data.expenses.filter(e => e.cat === "Needs").reduce((s,e)=>s+e.amt,0);
-  const wants    = data.expenses.filter(e => e.cat === "Wants").reduce((s,e)=>s+e.amt,0);
-  const savings  = data.expenses.filter(e => e.cat === "Savings").reduce((s,e)=>s+e.amt,0);
+  const needs    = pExps.filter(e => e.cat === "Needs").reduce((s,e)=>s+e.amt,0);
+  const wants    = pExps.filter(e => e.cat === "Wants").reduce((s,e)=>s+e.amt,0);
+  const savings  = pExps.filter(e => e.cat === "Savings").reduce((s,e)=>s+e.amt,0);
   const total    = needs + wants + savings;
   const sym      = getCurrency();
   const fmtN     = n => sym + " " + Number(n).toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2});
@@ -9121,7 +9262,7 @@ function exportPDF() {
 
   // Group by category then sub-category
   const byCat = {};
-  data.expenses.forEach(e => {
+  pExps.forEach(e => {
     if (!byCat[e.cat]) byCat[e.cat] = {};
     const sub = e.sub || "Other";
     if (!byCat[e.cat][sub]) byCat[e.cat][sub] = [];
@@ -9163,7 +9304,7 @@ function exportPDF() {
   };
 
   const html2 = `<!DOCTYPE html><html><head><meta charset="UTF-8">
-  <title>Budget Report — ${now}</title>
+  <title>Budget Report — ${period.label}</title>
   <style>
     *{margin:0;padding:0;box-sizing:border-box}
     body{font-family:'Segoe UI',Arial,sans-serif;color:#222;padding:32px;max-width:900px;margin:0 auto}
@@ -9187,7 +9328,7 @@ function exportPDF() {
   <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px">
     <div>
       <h1>Budget Report</h1>
-      <div class="sub">L'Atelier de Luz · Generated ${now}</div>
+      <div class="sub">L'Atelier de Luz · ${period.label} · Generated ${now}</div>
     </div>
     <button onclick="window.print()" style="padding:8px 18px;background:#6C9A8B;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer">Print / Save PDF</button>
   </div>
@@ -9287,44 +9428,49 @@ function exportCSV() {
   var data = getData();
   if (!data.expenses.length) { toast("No expenses to export"); return; }
   var br = _getBudgetRatios();
+  var period = getActivePeriodRange();
+  var pExps = getPeriodExpenses(period);
   var income = data.income || 0;
   var needsB = income * br.needs / 100;
   var wantsB = income * br.wants / 100;
   var savingsB = income * br.savings / 100;
-  var needsS = data.expenses.filter(function(e){return e.cat==="Needs";}).reduce(function(s,e){return s+e.amt;},0);
-  var wantsS = data.expenses.filter(function(e){return e.cat==="Wants";}).reduce(function(s,e){return s+e.amt;},0);
-  var savingsS = data.expenses.filter(function(e){return e.cat==="Savings";}).reduce(function(s,e){return s+e.amt;},0);
+  var needsS = pExps.filter(function(e){return e.cat==="Needs";}).reduce(function(s,e){return s+e.amt;},0);
+  var wantsS = pExps.filter(function(e){return e.cat==="Wants";}).reduce(function(s,e){return s+e.amt;},0);
+  var savingsS = pExps.filter(function(e){return e.cat==="Savings";}).reduce(function(s,e){return s+e.amt;},0);
   var totalS = needsS + wantsS + savingsS;
   
   var csv = "50/30/20 Budget Tracker Export\n";
-  csv += "Generated:," + new Date().toLocaleDateString() + "\n\n";
-  csv += "SUMMARY\n";
+  csv += "Generated:," + new Date().toLocaleDateString() + "\n";
+  csv += "Active Period:," + period.label + "\n\n";
+  csv += "SUMMARY (" + period.label + ")\n";
   csv += "Monthly Income,," + income.toFixed(2) + "\n";
   csv += "Category,Budget,Spent,Remaining,% Used\n";
   csv += "Needs (" + br.needs + "%)," + needsB.toFixed(2) + "," + needsS.toFixed(2) + "," + (needsB-needsS).toFixed(2) + "," + (needsB>0 ? Math.round(needsS/needsB*100)+"%" : "0%") + "\n";
   csv += "Wants (" + br.wants + "%)," + wantsB.toFixed(2) + "," + wantsS.toFixed(2) + "," + (wantsB-wantsS).toFixed(2) + "," + (wantsB>0 ? Math.round(wantsS/wantsB*100)+"%" : "0%") + "\n";
   csv += "Savings (" + br.savings + "%)," + savingsB.toFixed(2) + "," + savingsS.toFixed(2) + "," + (savingsB-savingsS).toFixed(2) + "," + (savingsB>0 ? Math.round(savingsS/savingsB*100)+"%" : "0%") + "\n";
   csv += "TOTAL,," + totalS.toFixed(2) + "," + (income-totalS).toFixed(2) + "," + (income>0?Math.round(totalS/income*100)+"% used" : "") + "\n\n";
-  csv += "EXPENSES\n";
+  csv += "ALL EXPENSES\n";
   csv += "Date,Description,Category,Sub-Category,Amount\n";
   data.expenses.forEach(function(e){
     csv += e.date + ',"' + e.desc.replace(/"/g,'""') + '",' + e.cat + ',' + (e.sub||"") + ',' + e.amt.toFixed(2) + "\n";
   });
   downloadFile(csv, "budget-tracker-" + dateStamp() + ".csv", "text/csv");
   markBackupDone();
-  toast("CSV exported! Summary matches your custom " + br.needs + "/" + br.wants + "/" + br.savings + " ratio.");
+  toast("CSV exported! Summary matches " + period.label + " (" + br.needs + "/" + br.wants + "/" + br.savings + ").");
 }
 function exportExcel() {
   var data = getData();
   if (!data.expenses.length) { toast("No expenses to export"); return; }
   var br = _getBudgetRatios();
+  var period = getActivePeriodRange();
+  var pExps = getPeriodExpenses(period);
   var income = data.income || 0;
   var needsB = income * br.needs / 100;
   var wantsB = income * br.wants / 100;
   var savingsB = income * br.savings / 100;
-  var needsS = data.expenses.filter(function(e){return e.cat==="Needs";}).reduce(function(s,e){return s+e.amt;},0);
-  var wantsS = data.expenses.filter(function(e){return e.cat==="Wants";}).reduce(function(s,e){return s+e.amt;},0);
-  var savingsS = data.expenses.filter(function(e){return e.cat==="Savings";}).reduce(function(s,e){return s+e.amt;},0);
+  var needsS = pExps.filter(function(e){return e.cat==="Needs";}).reduce(function(s,e){return s+e.amt;},0);
+  var wantsS = pExps.filter(function(e){return e.cat==="Wants";}).reduce(function(s,e){return s+e.amt;},0);
+  var savingsS = pExps.filter(function(e){return e.cat==="Savings";}).reduce(function(s,e){return s+e.amt;},0);
   var totalS = needsS + wantsS + savingsS;
   var date = dateStamp();
 
@@ -9965,12 +10111,14 @@ function renderInsights() {
     return;
   }
 
+  const period = getActivePeriodRange();
+  const pExps = getPeriodExpenses(period);
   const income = data.income || 0;
   var _br = _getBudgetRatios();
   var nTgt = _br.needs, wTgt = _br.wants, sTgt = _br.savings;
-  const needs = data.expenses.filter(e => e.cat === "Needs").reduce((s,e) => s+e.amt, 0);
-  const wants = data.expenses.filter(e => e.cat === "Wants").reduce((s,e) => s+e.amt, 0);
-  const savings = data.expenses.filter(e => e.cat === "Savings").reduce((s,e) => s+e.amt, 0);
+  const needs = pExps.filter(e => e.cat === "Needs").reduce((s,e) => s+e.amt, 0);
+  const wants = pExps.filter(e => e.cat === "Wants").reduce((s,e) => s+e.amt, 0);
+  const savings = pExps.filter(e => e.cat === "Savings").reduce((s,e) => s+e.amt, 0);
   const total = needs + wants + savings;
   const remaining = income - total;
 
@@ -10238,9 +10386,11 @@ function _retryInsightAi(id) {
 function _getInsightTips(insight) {
   // Offline severity-aware tips
   const data = getData();
+  const period = getActivePeriodRange();
+  const pExps = getPeriodExpenses(period);
   const income = data.income || 0;
-  const needs  = data.expenses.filter(e=>e.cat==="Needs").reduce((s,e)=>s+e.amt,0);
-  const wants  = data.expenses.filter(e=>e.cat==="Wants").reduce((s,e)=>s+e.amt,0);
+  const needs  = pExps.filter(e=>e.cat==="Needs").reduce((s,e)=>s+e.amt,0);
+  const wants  = pExps.filter(e=>e.cat==="Wants").reduce((s,e)=>s+e.amt,0);
   const id = insight.id || "";
   const nPct = income>0?Math.round(needs/income*100):0;
   const wPct = income>0?Math.round(wants/income*100):0;
@@ -10266,7 +10416,7 @@ function _getInsightTips(insight) {
          "Review dining — it's usually the fastest category to cut."];
   }
   if (id === "budget_remaining") {
-    const rem = income - needs - wants - (data.expenses.filter(e=>e.cat==="Savings").reduce((s,e)=>s+e.amt,0));
+    const rem = income - needs - wants - (pExps.filter(e=>e.cat==="Savings").reduce((s,e)=>s+e.amt,0));
     return rem < 0
       ? ["Stop all non-essential purchases immediately.",
          "Find one expense from this month you can reverse or cancel.",
@@ -10284,10 +10434,12 @@ async function _fetchInsightTipsViaAI(insight) {
   // Key is retrieved via getAiConfig() which deobfuscates it from localStorage.
   // Works for Groq, OpenAI, OpenRouter, Gemini, custom — all providers.
   const data    = getData();
+  const period  = getActivePeriodRange();
+  const pExps   = getPeriodExpenses(period);
   const income  = data.income || 0;
-  const needs   = data.expenses.filter(e=>e.cat==="Needs").reduce((s,e)=>s+e.amt,0);
-  const wants   = data.expenses.filter(e=>e.cat==="Wants").reduce((s,e)=>s+e.amt,0);
-  const savings = data.expenses.filter(e=>e.cat==="Savings").reduce((s,e)=>s+e.amt,0);
+  const needs   = pExps.filter(e=>e.cat==="Needs").reduce((s,e)=>s+e.amt,0);
+  const wants   = pExps.filter(e=>e.cat==="Wants").reduce((s,e)=>s+e.amt,0);
+  const savings = pExps.filter(e=>e.cat==="Savings").reduce((s,e)=>s+e.amt,0);
   const sym     = getCurrency();
   const nPct = income>0?Math.round(needs/income*100):0;
   const wPct = income>0?Math.round(wants/income*100):0;
@@ -11348,7 +11500,15 @@ function openExpenseModal() {
   const ov = document.getElementById("expenseOverlay");
   if (!ov) return;
   ov.classList.add("show");
-  document.getElementById("expDate").valueAsDate = new Date();
+  const period = typeof getActivePeriodRange === "function" ? getActivePeriodRange() : null;
+  const dateInput = document.getElementById("expDate");
+  if (dateInput) {
+    if (period && !period.isCurrent && period.startIso) {
+      dateInput.value = period.startIso;
+    } else {
+      dateInput.valueAsDate = new Date();
+    }
+  }
   setTimeout(() => document.getElementById("expDesc")?.focus(), 80);
 }
 function closeExpenseModal() {
@@ -14076,21 +14236,23 @@ function initAiChat() {
 function buildAiContext() {
   const data = getData();
   const _br = _getBudgetRatios();
+  const period = getActivePeriodRange();
+  const periodExps = getPeriodExpenses(period);
   const income = data.income || 0;
-  const needs = data.expenses.filter(e => e.cat === "Needs").reduce((s,e) => s+e.amt, 0);
-  const wants = data.expenses.filter(e => e.cat === "Wants").reduce((s,e) => s+e.amt, 0);
-  const savings = data.expenses.filter(e => e.cat === "Savings").reduce((s,e) => s+e.amt, 0);
+  const needs = periodExps.filter(e => e.cat === "Needs").reduce((s,e) => s+e.amt, 0);
+  const wants = periodExps.filter(e => e.cat === "Wants").reduce((s,e) => s+e.amt, 0);
+  const savings = periodExps.filter(e => e.cat === "Savings").reduce((s,e) => s+e.amt, 0);
   const total = needs + wants + savings;
 
-  // Top expenses
+  // Top expenses for active period
   const c = getCurrency();
   const fmtC = v => c + " " + Number(v).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-  const sorted = [...data.expenses].sort((a,b) => b.amt - a.amt).slice(0, 5);
+  const sorted = [...periodExps].sort((a,b) => b.amt - a.amt).slice(0, 5);
   const topExpenses = sorted.map(e => `${e.desc}: ${fmtC(e.amt)} (${e.cat})`).join(", ");
 
-  // Sub-category breakdown
+  // Sub-category breakdown for active period
   const subTotals = {};
-  data.expenses.forEach(e => { subTotals[e.sub] = (subTotals[e.sub]||0) + e.amt; });
+  periodExps.forEach(e => { subTotals[e.sub || "Other"] = (subTotals[e.sub || "Other"]||0) + e.amt; });
   const subBreakdown = Object.entries(subTotals).sort((a,b) => b[1]-a[1]).slice(0,8)
     .map(([k,v]) => `${k}: ${fmtC(v)}`).join(", ");
 
@@ -14110,18 +14272,18 @@ function buildAiContext() {
   return `YOUR NAME: ${botName}
 ${userName ? "USER'S NAME: " + userName + "\n" : ""}${customPrompt ? "\nUSER'S CUSTOM INSTRUCTIONS:\n" + customPrompt + "\n" : ""}
 ${recentNotes ? "USER'S RECENT FINANCIAL NOTES:\n" + recentNotes + "\n" : ""}
-USER'S FINANCIAL DATA (current month):
+USER'S FINANCIAL DATA (${period.label}):
 Today's Date: ${new Date().toLocaleDateString("en-US", { weekday:"long", year:"numeric", month:"long", day:"numeric" })}
-Days Left in Month: ${(() => { const now = new Date(); const end = new Date(now.getFullYear(), now.getMonth()+1, 0); return end.getDate() - now.getDate(); })()}
+Period Window: ${period.startIso} to ${period.endIso} (${period.daysLeft} days remaining)
 Currency: ${getCurrency()} (ALWAYS use this symbol with a space before the number, e.g. "${getCurrency()} 13,700.00" — never default to $)
 Monthly Income: ${fmtCtx(income)}
 Budget: ${_br.needs}% Needs (${fmtCtx(income*_br.needs/100)}), ${_br.wants}% Wants (${fmtCtx(income*_br.wants/100)}), ${_br.savings}% Savings (${fmtCtx(income*_br.savings/100)})
-Actual Spending: Needs ${fmtCtx(needs)} (${income>0?Math.round(needs/income*100):0}%), Wants ${fmtCtx(wants)} (${income>0?Math.round(wants/income*100):0}%), Savings ${fmtCtx(savings)} (${income>0?Math.round(savings/income*100):0}%)
+Actual Spending (${period.shortLabel}): Needs ${fmtCtx(needs)} (${income>0?Math.round(needs/income*100):0}%), Wants ${fmtCtx(wants)} (${income>0?Math.round(wants/income*100):0}%), Savings ${fmtCtx(savings)} (${income>0?Math.round(savings/income*100):0}%)
 Total Spent: ${fmtCtx(total)} | Remaining: ${fmtCtx(income-total)}
-Top Expenses: ${topExpenses || "None yet"}
-Category Breakdown: ${subBreakdown || "None yet"}
+Period Transactions: ${periodExps.length} (Total all-time transactions: ${data.expenses.length})
+Top Expenses (${period.shortLabel}): ${topExpenses || "None this period"}
+Category Breakdown: ${subBreakdown || "None this period"}
 Savings Goals: ${goalInfo}
-Number of Transactions: ${data.expenses.length}
 ${(() => { const bills = (typeof getBills === 'function' ? getBills() : []).filter(b => !b.paid); if (!bills.length) return ''; return 'Upcoming Bills: ' + bills.map(b => b.name + ': ' + fmtCtx(b.amt) + ' due ' + b.due).join(', '); })()}
 ${(() => { const nwItems = (typeof getNwItems === 'function' ? getNwItems() : []); if (!nwItems.length) return ''; const a = nwItems.filter(i=>i.type==='asset').reduce((s,i)=>s+i.amt,0); const l = nwItems.filter(i=>i.type==='liability').reduce((s,i)=>s+i.amt,0); return 'Net Worth: ' + fmtCtx(a - l) + ' (Assets: ' + fmtCtx(a) + ', Liabilities: ' + fmtCtx(l) + ')'; })()}
 ${(() => { const r = (typeof getRecurring === 'function' ? getRecurring() : []); if (!r.length) return ''; return 'Recurring: ' + r.map(x => x.desc + ' ' + fmtCtx(x.amt) + '/' + x.freq).join(', '); })()}`;

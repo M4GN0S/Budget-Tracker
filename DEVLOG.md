@@ -1,15 +1,33 @@
 # DEVLOG — L'Atelier de Luz | Budget Tracker PWA
 
-## Current State: v251
+## Current State: v252
 
 | Metric | Value |
 |---|---|
-| SW cache | `budget-tracker-v251` |
-| File | `index.html` (15,337 lines) + `sw.js` |
-| App version | 1.9.1 |
+| SW cache | `budget-tracker-v252` |
+| File | `index.html` (15,488 lines) + `sw.js` |
+| App version | 1.9.2 |
 | Panels | 7 (`dashboard`, `expenses`, `history`, `goals`, `notes`, `ai`, `data`) |
 | Backend | `backend/google_sheets_backend.js` (Google Apps Script Web App) |
 | Products | `products/` (Sheets Template v2, Setup Guide, Seed CSV, Apps Script Template) |
+
+---
+
+## v252 Changelog (from v251) — Active Period Scoping & Month Navigator (Option 3)
+
+### Unified Period Filter Engine (`getActivePeriodRange`, `getPeriodExpenses`)
+- **Resolved Multi-Month Expense Contamination:** Budget calculations, progress bars, Cashflow stat card, and AI Advisor now strictly scope spending to the active period (current calendar month by default, or active pay period cycle when enabled) instead of accumulating all historical expenses across all time.
+- **Month / Period Navigator Bar:** Added interactive month switcher on the Dashboard (`[ ‹ ] Month YYYY [ › ]`) with `Today` jump-back button and real-time days-remaining badge.
+- **Pay Period Mode Compatibility:** Fully integrated with custom pay period settings (weekly, bi-weekly, semi-monthly, monthly custom anchor date) via `getCurrentPayPeriod()`.
+- **Integrated Components:**
+  - Dashboard Allocation Breakdown progress bars & subcategory tags (`updateProgress`)
+  - Dashboard Donut Chart & Spending Distribution (`updateDonut`, `updateDashboard`)
+  - Budget tab "Budget Overview" & "Where is my money going?" (`renderFinanceOverview`, `renderSpendingBreakdown`)
+  - Financial Health Score engine & Dynamic Health Banners (`updateHealthScore`, `renderBudgetHealthBanner`)
+  - AI Advisor context prompt generator (`buildAiContext`)
+  - PDF & CSV/Excel export generators (`exportPDF`, `exportCSV`, `exportExcel`)
+- **Automated QA Suite (`qa_test_suite.js`):** Added Test Suite 10 validating multi-month filtering, date bounds, and month navigation (77 / 77 passing tests).
+- Bumped SW cache to `budget-tracker-v252` and app version to `1.9.2`.
 
 ---
 

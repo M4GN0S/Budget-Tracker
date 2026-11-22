@@ -20,6 +20,7 @@ const makeMockElement = (id = '') => ({
   innerHTML: '',
   value: '',
   style: {},
+  dataset: {},
   classList: {
     add: () => {},
     remove: () => {},
@@ -31,6 +32,8 @@ const makeMockElement = (id = '') => ({
   addEventListener: () => {},
   remove: () => {},
   appendChild: () => {},
+  querySelector: () => null,
+  querySelectorAll: () => [],
   children: []
 });
 
@@ -48,6 +51,7 @@ const document = {
   querySelector: (sel) => document.getElementById(sel.replace(/^[#.]/, '')),
   querySelectorAll: () => [],
   createElement: (tag) => makeMockElement(tag),
+  createElementNS: (ns, tag) => makeMockElement(tag),
   body: { style: {}, appendChild: () => {}, addEventListener: () => {} }
 };
 
@@ -384,6 +388,60 @@ try {
   console.error("exportPDF failed with error:", e);
 }
 assert(!pdfThrew, "exportPDF executes without throwing ReferenceError");
+
+
+// ─── SUITE 10: ACTIVE PERIOD & MULTI-MONTH EXPENSE FILTERING ─
+console.log("\n─── TEST SUITE 10: Active Period & Month Scoping Engine ───");
+localStorage.clear();
+
+// Seed expenses across 3 different months: September, October, November 2026
+const multiMonthExpenses = [
+  { id: 1001, date: "2026-09-05", desc: "Sept Rent", cat: "Needs", sub: "Housing", amt: 1500 },
+  { id: 1002, date: "2026-09-12", desc: "Sept Groceries", cat: "Needs", sub: "Food", amt: 400 },
+  { id: 1003, date: "2026-10-02", desc: "Oct Groceries", cat: "Needs", sub: "Food", amt: 450 },
+  { id: 1004, date: "2026-10-18", desc: "Oct Dining", cat: "Wants", sub: "Dining", amt: 120 },
+  { id: 1005, date: "2026-11-01", desc: "Nov Rent", cat: "Needs", sub: "Housing", amt: 1500 },
+  { id: 1006, date: "2026-11-03", desc: "Nov Coffee", cat: "Wants", sub: "Cafe", amt: 25 },
+  { id: 1007, date: "2026-11-08", desc: "Nov Deposit", cat: "Savings", sub: "Emergency", amt: 800 }
+];
+
+localStorage.setItem("budget_tracker_503020", JSON.stringify({
+  income: 5000,
+  expenses: multiMonthExpenses,
+  goals: []
+}));
+
+// Test November filtering
+currentViewMonth = "2026-11";
+const novPeriod = getActivePeriodRange();
+assert(novPeriod.startIso === "2026-11-01" && novPeriod.endIso === "2026-11-30", `November period range bounded correctly: ${novPeriod.startIso} to ${novPeriod.endIso}`);
+
+const novExpenses = getPeriodExpenses(novPeriod);
+assert(novExpenses.length === 3, `November filtered exactly 3 expenses (got ${novExpenses.length})`);
+const novNeeds = novExpenses.filter(e => e.cat === "Needs").reduce((s,e) => s+e.amt, 0);
+const novWants = novExpenses.filter(e => e.cat === "Wants").reduce((s,e) => s+e.amt, 0);
+const novSavings = novExpenses.filter(e => e.cat === "Savings").reduce((s,e) => s+e.amt, 0);
+const novTotal = novNeeds + novWants + novSavings;
+
+assert(novNeeds === 1500, `November Needs spending is $1500 (got $${novNeeds}), NOT all-time $3450`);
+assert(novWants === 25, `November Wants spending is $25 (got $${novWants}), NOT all-time $145`);
+assert(novSavings === 800, `November Savings spending is $800 (got $${novSavings})`);
+assert(novTotal === 2325, `November Total spending is $2325 (got $${novTotal}), NOT all-time $4795`);
+
+// Test Month Navigation (navPeriod delta)
+navPeriod(-1); // Move from 2026-11 to 2026-10
+assert(currentViewMonth === "2026-10", "navPeriod(-1) correctly shifted active view to October 2026 (2026-10)");
+const octPeriod = getActivePeriodRange();
+const octExpenses = getPeriodExpenses(octPeriod);
+assert(octExpenses.length === 2, `October filtered exactly 2 expenses (got ${octExpenses.length})`);
+
+navPeriod(-1); // Move from 2026-10 to 2026-09
+assert(currentViewMonth === "2026-09", "navPeriod(-1) correctly shifted active view to September 2026 (2026-09)");
+const septExpenses = getPeriodExpenses(getActivePeriodRange());
+assert(septExpenses.length === 2, `September filtered exactly 2 expenses (got ${septExpenses.length})`);
+
+navPeriod(0); // Jump back to current month
+assert(currentViewMonth === null, "navPeriod(0) resets view to current calendar month");
 
 
 // ─── SUMMARY ────────────────────────────────────────────────
