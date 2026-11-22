@@ -14,28 +14,58 @@ const localStorage = {
 };
 
 const documentElements = new Map();
-const makeMockElement = (id = '') => ({
-  id,
-  textContent: '',
-  innerHTML: '',
-  value: '',
-  style: {},
-  dataset: {},
-  classList: {
-    add: () => {},
+const makeMockElement = (id = '') => {
+  const classes = new Set();
+  const el = {
+    id,
+    textContent: '',
+    innerHTML: '',
+    value: '',
+    style: {},
+    dataset: {},
+    parentElement: null,
+    get className() { return Array.from(classes).join(' '); },
+    set className(val) {
+      classes.clear();
+      if (val) val.split(/\s+/).forEach(c => c && classes.add(c));
+    },
+    classList: {
+      add: (...cls) => cls.forEach(c => c && classes.add(c)),
+      remove: (...cls) => cls.forEach(c => classes.delete(c)),
+      contains: (c) => classes.has(c),
+      toggle: (c, force) => {
+        if (force !== undefined) {
+          if (force) classes.add(c); else classes.delete(c);
+          return force;
+        }
+        if (classes.has(c)) { classes.delete(c); return false; }
+        else { classes.add(c); return true; }
+      }
+    },
+    setAttribute: () => {},
+    getAttribute: () => '',
+    addEventListener: () => {},
     remove: () => {},
-    contains: () => false,
-    toggle: () => {}
-  },
-  setAttribute: () => {},
-  getAttribute: () => '',
-  addEventListener: () => {},
-  remove: () => {},
-  appendChild: () => {},
-  querySelector: () => null,
-  querySelectorAll: () => [],
-  children: []
-});
+    appendChild: (child) => {
+      if (child) child.parentElement = el;
+      el.children.push(child);
+      return child;
+    },
+    closest: (selector) => {
+      let cur = el;
+      const targetClass = selector.replace(/^\./, '');
+      while (cur) {
+        if (cur.classList && cur.classList.contains(targetClass)) return cur;
+        cur = cur.parentElement;
+      }
+      return null;
+    },
+    querySelector: () => null,
+    querySelectorAll: () => [],
+    children: []
+  };
+  return el;
+};
 
 const document = {
   addEventListener: () => {},
@@ -563,6 +593,56 @@ try {
   console.error(e);
 }
 assert(bannerOk, "renderBudgetHealthBanner handles 0 / unset income gracefully without crashing");
+
+
+// ─── TEST SUITE 13: Card UI, Redundant Header Removal & Accordion Isolation ───
+console.log("\n─── TEST SUITE 13: Card UI, Redundant Header Removal & Accordion Isolation ───");
+
+// 1. Goal card renders name cleanly without redundant 'Savings Goal' category heading
+const sampleGoal = { id: "g1", name: "Emergency Fund", target: 10000, saved: 3000, transactions: [] };
+const goalHtml = _goalCard(sampleGoal, 500);
+assert(!goalHtml.includes('>Savings Goal<'), "Goal card does not contain redundant 'Savings Goal' category label");
+assert(goalHtml.includes('Emergency Fund'), "Goal card contains goal name");
+assert(goalHtml.includes('event.stopPropagation()'), "Goal card action buttons stop propagation");
+assert(goalHtml.includes('_showNwHistPopup(\'goal\',"g1")'), "Goal card history button calls _showNwHistPopup");
+
+// 2. Asset card renders name cleanly without redundant 'Asset' category heading
+const sampleAsset = { id: "a1", label: "Checking Account", amt: 12500, transactions: [] };
+const assetHtml = _assetCard(sampleAsset);
+assert(!assetHtml.includes('>Asset<'), "Asset card does not contain redundant 'Asset' category label");
+assert(assetHtml.includes('Checking Account'), "Asset card contains asset name");
+assert(assetHtml.includes('_showNwHistPopup(\'asset\',"a1")'), "Asset card history button calls _showNwHistPopup");
+
+// 3. Liability card renders name cleanly without redundant 'Liability' category heading
+const sampleLiab = { id: "l1", label: "Student Loan", amt: 15000, transactions: [] };
+const liabHtml = _liabilityCard(sampleLiab);
+assert(!liabHtml.includes('>Liability<'), "Liability card does not contain redundant 'Liability' category label");
+assert(liabHtml.includes('Student Loan'), "Liability card contains liability name");
+assert(liabHtml.includes('_showNwHistPopup(\'liability\',"l1")'), "Liability card history button calls _showNwHistPopup");
+
+// 4. Accordion Toggle Isolation test
+const mockAccordion = document.createElement("div");
+mockAccordion.className = "accordion fin-accordion";
+const mockHeader = document.createElement("div");
+mockHeader.className = "accordion-header";
+const mockBody = document.createElement("div");
+mockBody.className = "accordion-body";
+mockAccordion.appendChild(mockHeader);
+mockAccordion.appendChild(mockBody);
+document.body.appendChild(mockAccordion);
+
+let stopPropCalled = false;
+const mockEvt = { stopPropagation: () => { stopPropCalled = true; } };
+
+assert(!mockAccordion.classList.contains("open"), "Accordion starts closed");
+toggleFinAccordion(mockHeader, mockEvt);
+assert(mockAccordion.classList.contains("open"), "toggleFinAccordion toggles parent fin-accordion open when clicked on header");
+assert(stopPropCalled, "toggleFinAccordion stopped event propagation");
+
+toggleFinAccordion(mockHeader, mockEvt);
+assert(!mockAccordion.classList.contains("open"), "toggleFinAccordion toggles fin-accordion closed on second click");
+
+mockAccordion.remove();
 
 
 // ─── SUMMARY ────────────────────────────────────────────────

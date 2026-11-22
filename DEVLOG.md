@@ -1,15 +1,36 @@
 # DEVLOG — L'Atelier de Luz | Budget Tracker PWA
 
-## Current State: v253
+## Current State: v254
 
 | Metric | Value |
 |---|---|
-| SW cache | `budget-tracker-v253` |
+| SW cache | `budget-tracker-v254` |
 | File | `index.html` + `sw.js` |
-| App version | 1.9.3 |
+| App version | 1.9.4 |
 | Panels | 7 (`dashboard`, `expenses`, `history`, `goals`, `notes`, `ai`, `data`) |
 | Backend | `backend/google_sheets_backend.js` (Google Apps Script Web App) |
 | Products | `products/` (Sheets Template v2, Setup Guide, Seed CSV, Apps Script Template) |
+
+---
+
+## v254 Changelog (from v253) — Financial Card Header Cleanup, High-Contrast Action Buttons & Accordion Event Isolation
+
+### 1. Card Redundancy Cleanup Across Asset, Liability & Savings Goal Cards
+- **Removed Redundant Header Category Labels**: Eliminated the redundant uppercase category labels (`"Asset"`, `"Liability"`, `"Savings Goal"`) at the top of individual cards within the Assets, Liabilities, and Savings Goals sections, as the section accordions and tabs already establish the context.
+- **Enhanced Primary Card Titles**: Emphasized item titles (with tooltip fallback on truncated text) with improved font hierarchy and aligned icon badging.
+
+### 2. High-Contrast Action Buttons & Visible Non-Clipping Delete ('x') Buttons
+- **Clean Action Button Toolbar**: Replaced low-opacity and unbordered card action buttons with modern 24×24px bordered pill and icon buttons (`var(--bg)`, `var(--brd)`, rounded corners).
+- **Transaction History Chip**: Added an intuitive clock icon (`<circle>` + `<polyline>`) with transaction count badge and high-contrast hover feedback.
+- **Delete / Close ('x') Button Visibility**: Styled delete buttons with explicit dimensions, centered stroke lines, high-contrast hover states (`var(--dan-l)` background and `var(--dan)` border/stroke), and zero clipping across desktop, tablet, and mobile viewport sizes.
+- **Modal Close Buttons**: Modernized modal close buttons in transaction history and item edit popups with dedicated 28×28px rounded bordered buttons.
+
+### 3. Accordion Event Isolation & Event Propagation Fix
+- **Header-Scoped Accordion Toggling**: Relocated `onclick="toggleFinAccordion(this, event)"` strictly to the `.accordion-header` elements across all compact accordions (`#billAccordion`, `#nwAssetsAccordion`, `#nwLiabilitiesAccordion`, `#incomeSrcAnchor`, and `#goalsAccordion`).
+- **Bubbling & History Modal Isolation**: Updated `toggleFinAccordion` with `event.stopPropagation()` and `.closest(".fin-accordion")` parent resolution so that clicking history buttons, edit buttons, inputs, quick fund/pay buttons, or card backgrounds never inadvertently collapses or toggles the parent Assets or Liabilities accordions.
+
+### 4. Automated QA Test Suite Expansion
+- Added Test Suite 13 in `qa_test_suite.js` covering redundant category heading removal, card title preservation, history button invocation, high-contrast action styling, and accordion click isolation.
 
 ---
 
