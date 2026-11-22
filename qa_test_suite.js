@@ -82,7 +82,14 @@ global.sessionStorage = sessionStorage;
 global.navigator = window.navigator;
 
 // Load the app code into context
-const code = fs.readFileSync('/tmp/bt_main.js', 'utf8');
+let code = '';
+const html = fs.readFileSync(path.join(__dirname, 'index.html'), 'utf8');
+const scriptMatch = html.match(/<script>([\s\S]*?)<\/script>/);
+if (scriptMatch) {
+  code = scriptMatch[1];
+} else if (fs.existsSync('/tmp/bt_main.js')) {
+  code = fs.readFileSync('/tmp/bt_main.js', 'utf8');
+}
 try {
   // Convert top-level const/let declarations to var/window properties so they are accessible
   const modCode = code
@@ -442,6 +449,120 @@ assert(septExpenses.length === 2, `September filtered exactly 2 expenses (got ${
 
 navPeriod(0); // Jump back to current month
 assert(currentViewMonth === null, "navPeriod(0) resets view to current calendar month");
+
+// ─── TEST SUITE 11: Past Months Surplus & Asset Sync Engine ───
+console.log("\n─── TEST SUITE 11: Past Months Surplus & Net Worth Asset Sync ───");
+localStorage.clear();
+
+// Set past expenses in earlier months
+const testPastData = {
+  income: 5000,
+  expenses: [
+    { id: 1, date: "2026-07-15", desc: "July Needs", cat: "Needs", sub: "Rent", amt: 2000 },
+    { id: 2, date: "2026-07-20", desc: "July Wants", cat: "Wants", sub: "Fun", amt: 500 },
+    // July total spent: 2500 -> July surplus: 2500
+    { id: 3, date: "2026-08-10", desc: "Aug Needs", cat: "Needs", sub: "Rent", amt: 2200 },
+    { id: 4, date: "2026-08-15", desc: "Aug Wants", cat: "Wants", sub: "Fun", amt: 300 }
+    // August total spent: 2500 -> August surplus: 2500
+  ],
+  goals: []
+};
+localStorage.setItem("budget_tracker_503020", JSON.stringify(testPastData));
+
+const pastSurplus = calcPreviousMonthsSurplus(testPastData);
+assert(typeof pastSurplus === "object" && typeof pastSurplus.totalSurplus === "number", "calcPreviousMonthsSurplus returns an object with totalSurplus");
+assert(pastSurplus.totalSurplus === 5000, `Past surplus correctly calculated as $5000 from July + Aug surpluses (got $${pastSurplus.totalSurplus})`);
+assert(pastSurplus.months.length === 2, `Past surplus correctly contains 2 monthly rollover breakdowns (got ${pastSurplus.months.length})`);
+
+// Test _syncPreviousMonthsSurplusToAssets
+_syncPreviousMonthsSurplusToAssets();
+const nwItems = getNwItems();
+const autoSurplusAsset = nwItems.find(i => String(i.id) === "auto_surplus_asset" || i.isAutoSurplus);
+assert(!!autoSurplusAsset, "Net worth contains auto-synced surplus asset with string id 'auto_surplus_asset'");
+assert(autoSurplusAsset && autoSurplusAsset.amt === 5000, `Auto surplus asset amt matches calculated past surplus ($5000, got $${autoSurplusAsset?.amt})`);
+
+// Test updateNwAmt and deleteNwItem with string IDs on a custom asset
+saveNwItems([
+  ...getNwItems(),
+  { id: "custom_crypto_wallet", type: "asset", label: "Crypto", amt: 2500, transactions: [] }
+]);
+
+updateNwAmt("custom_crypto_wallet", 3500);
+const updatedNw = getNwItems().find(i => String(i.id) === "custom_crypto_wallet");
+assert(updatedNw && updatedNw.amt === 3500, "updateNwAmt successfully updates custom item with string ID");
+
+deleteNwItem("custom_crypto_wallet");
+const afterDelete = getNwItems().find(i => String(i.id) === "custom_crypto_wallet");
+assert(!afterDelete, "deleteNwItem successfully deletes item with string ID");
+
+// Test string ID handling on liabilities
+saveNwItems([
+  { id: "car_loan_101", type: "liability", label: "Car Loan", amt: 10000, transactions: [] },
+  { id: "stock_portfolio_01", type: "asset", label: "Stocks", amt: 25000, transactions: [] }
+]);
+
+const mockLiabAddInput = makeMockElement("liabAdd_car_loan_101");
+mockLiabAddInput.value = "1,500";
+documentElements.set("liabAdd_car_loan_101", mockLiabAddInput);
+_liabilityAdd("car_loan_101");
+
+let liabItem = getNwItems().find(i => String(i.id) === "car_loan_101");
+assert(liabItem && liabItem.amt === 11500, `_liabilityAdd successfully increased liability with string ID (got $${liabItem?.amt})`);
+
+const mockLiabPayInput = makeMockElement("liabPay_car_loan_101");
+mockLiabPayInput.value = "3,500";
+documentElements.set("liabPay_car_loan_101", mockLiabPayInput);
+_liabilityPay("car_loan_101");
+
+liabItem = getNwItems().find(i => String(i.id) === "car_loan_101");
+assert(liabItem && liabItem.amt === 8000, `_liabilityPay successfully paid down liability with string ID (got $${liabItem?.amt})`);
+
+
+// ─── TEST SUITE 12: Dynamic Income & Zero-Budget Fallbacks ───
+console.log("\n─── TEST SUITE 12: Dynamic Income & Zero-Budget Fallbacks ───");
+localStorage.clear();
+
+// Set income sources
+localStorage.setItem("bt_income_sources", JSON.stringify([
+  { id: "inc_salary", label: "Day Job", amount: 4500, isWindfall: false },
+  { id: "inc_side", label: "Freelance", amount: 1500, isWindfall: false }
+]));
+
+// Clear main income input in DOM to test dynamic fallback
+const incomeInput = document.getElementById("incomeInput");
+if (incomeInput) incomeInput.value = "";
+
+const parsed = parseIncome();
+assert(parsed === 6000, `parseIncome falls back dynamically to total active income sources ($6000, got $${parsed})`);
+
+const monthly = getMonthlyIncome();
+assert(monthly === 6000, `getMonthlyIncome correctly sums income sources ($6000, got $${monthly})`);
+
+// Test Finance Overview and Budget Health execution with zero or configured budgets
+assert(typeof renderFinanceOverview === "function", "renderFinanceOverview is defined");
+assert(typeof renderBudgetHealthBanner === "function", "renderBudgetHealthBanner is defined");
+
+// Execute renderFinanceOverview and verify it runs cleanly without throwing
+let renderOk = true;
+try {
+  renderFinanceOverview();
+} catch (e) {
+  renderOk = false;
+  console.error(e);
+}
+assert(renderOk, "renderFinanceOverview executes cleanly with dynamic income and past surplus");
+
+// Test zero budget health banner fallback
+localStorage.setItem("bt_income_sources", "[]");
+localStorage.setItem("budget_tracker_503020", JSON.stringify({ income: 0, expenses: [], goals: [] }));
+let bannerOk = true;
+try {
+  renderBudgetHealthBanner();
+} catch (e) {
+  bannerOk = false;
+  console.error(e);
+}
+assert(bannerOk, "renderBudgetHealthBanner handles 0 / unset income gracefully without crashing");
 
 
 // ─── SUMMARY ────────────────────────────────────────────────

@@ -1,15 +1,40 @@
 # DEVLOG — L'Atelier de Luz | Budget Tracker PWA
 
-## Current State: v252
+## Current State: v253
 
 | Metric | Value |
 |---|---|
-| SW cache | `budget-tracker-v252` |
-| File | `index.html` (15,488 lines) + `sw.js` |
-| App version | 1.9.2 |
+| SW cache | `budget-tracker-v253` |
+| File | `index.html` + `sw.js` |
+| App version | 1.9.3 |
 | Panels | 7 (`dashboard`, `expenses`, `history`, `goals`, `notes`, `ai`, `data`) |
 | Backend | `backend/google_sheets_backend.js` (Google Apps Script Web App) |
 | Products | `products/` (Sheets Template v2, Setup Guide, Seed CSV, Apps Script Template) |
+
+---
+
+## v253 Changelog (from v252) — Previous Months' Surplus Rollover, Dynamic Income & String-Safe Net Worth
+
+### 1. Previous Months' Surplus Rollover Engine
+- **Accurate Historical Surplus Calculation (`calcPreviousMonthsSurplus`)**: Automatically computes unspent income (`income - period expenses`) for all calendar months strictly prior to the current active month, accounting for monthly variations and rollovers.
+- **Auto-Sync to Net Worth Assets (`_syncPreviousMonthsSurplusToAssets`)**: Creates or updates a dedicated `Rollover Savings (Past Months)` asset in Net Worth with full historical month-by-month transaction logs (`surplus_YYYY-MM`), making accumulated past surpluses visible in Net Worth and dashboard asset tallies.
+- **Finance Overview Rollover Summary**: Added an interactive past rollover summary row in the Finance/Budget Overview card with clickable month breakdown pills.
+
+### 2. Header UI Polish & Add Expense Button Duplicate Fix
+- **Button Duplicate Removed**: Fixed duplicate `+` icon rendering in desktop and tablet headers where `+ Add Expense` was shown alongside the `<svg>` plus icon.
+
+### 3. Dynamic Multi-Source Income Parsing & Zero-Budget Handling
+- **Dynamic Fallbacks (`parseIncome`, `getMonthlyIncome`)**: `parseIncome()` and `getMonthlyIncome()` now dynamically fall back to configured income streams (`bt_income_sources`) and stored profile data when DOM input is zero or empty.
+- **Zero-Budget Resilience**: `renderFinanceOverview()`, `renderBudgetHealthBanner()`, and `renderSpendingBreakdown()` handle zero or unconfigured income gracefully without displaying `NaN%`, division by zero errors, or crashing.
+
+### 4. Robust String-Safe Item ID Architecture
+- **Net Worth & Liabilities String-Safe ID Handling**: Updated `_liabilityCard`, `_liabilityAdd`, `_liabilityPay`, `_assetCard`, `_assetFund`, `_assetWithdraw`, `deleteNwItem`, `updateNwAmt`, `openFinTxnModal`, `saveFinTxn`, `_showNwHistPopup`, `_editNwTxn`, `_saveEditNwTxn`, and `_deleteNwTxn` to safely support string-based and hyphenated IDs (e.g. `auto_surplus_asset`, `liab_car_loan_101`).
+- **DOM Selector Escaping & Sanitation**: Elements dynamically generate alphanumeric safe IDs (`idStr`) to prevent DOM query errors on special characters.
+
+### 5. Automated QA Test Suite Expansion
+- Added Test Suite 11 (Past Months Surplus & Net Worth Asset Sync) and Test Suite 12 (Dynamic Income & Zero-Budget Fallbacks).
+- Expanded automated QA coverage from 77 to 92 passing tests (0 failures).
+- Bumped SW cache to `budget-tracker-v253` and app version to `1.9.3`.
 
 ---
 

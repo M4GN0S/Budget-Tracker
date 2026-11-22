@@ -2750,7 +2750,7 @@ footer .footer-links a:hover{color:var(--pri-d)}
       </div>
       <button class="btn btn-pri inline-action-btn" onclick="openExpenseModal()" style="display:flex;align-items:center;gap:7px;padding:10px 18px;border-radius:12px;font-size:13px;font-weight:700;white-space:nowrap">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        + Add Expense
+        Add Expense
       </button>
     </div>
 
@@ -5279,23 +5279,99 @@ function addNwItem(type) {
 }
 
 function deleteNwItem(id) {
-  saveNwItems(getNwItems().filter(i => i.id !== id));
+  saveNwItems(getNwItems().filter(i => String(i.id) !== String(id) && i.id !== id));
   renderNetWorth();
   _renderDashNetWorth();
 }
 
 function updateNwAmt(id, val) {
   const list = getNwItems();
-  const item = list.find(i => i.id === id);
+  const item = list.find(i => String(i.id) === String(id) || i.id === id);
   if (item) { item.amt = parseFloat(val) || 0; saveNwItems(list); renderNetWorth(); _renderDashNetWorth(); }
+}
+
+// ─── PAST MONTHS' SURPLUS & ROLLOVER ──────────────────────
+function calcPreviousMonthsSurplus() {
+  const data = getData();
+  const income = typeof getMonthlyIncome === "function" ? getMonthlyIncome() : (data.income || 0);
+  if (income <= 0 || !data.expenses || !data.expenses.length) return { totalSurplus: 0, months: [] };
+
+  const now = new Date();
+  const currentYm = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+  
+  const monthMap = new Map();
+  data.expenses.forEach(e => {
+    if (e.date && typeof e.date === "string" && e.date.length >= 7) {
+      const ym = e.date.substring(0, 7);
+      if (ym < currentYm) {
+        monthMap.set(ym, (monthMap.get(ym) || 0) + (parseFloat(e.amt) || 0));
+      }
+    }
+  });
+
+  const months = [];
+  let totalSurplus = 0;
+  let runningTotal = 0;
+
+  const sortedYms = Array.from(monthMap.keys()).sort();
+  sortedYms.forEach(ym => {
+    const spent = monthMap.get(ym);
+    const surplus = Math.max(0, income - spent);
+    const parts = ym.split("-");
+    const d = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, 1);
+    const label = d.toLocaleDateString("en-US", { month: "short", year: "numeric" });
+    if (surplus > 0) {
+      runningTotal += surplus;
+      months.push({ ym, label, income, spent, surplus, balance: runningTotal });
+      totalSurplus += surplus;
+    }
+  });
+
+  return { totalSurplus, months };
+}
+
+function _syncPreviousMonthsSurplusToAssets() {
+  const { totalSurplus, months } = calcPreviousMonthsSurplus();
+  const items = getNwItems();
+  const existingIdx = items.findIndex(i => i.isAutoSurplus || i.id === "auto_surplus_asset" || i.name === "Rollover Savings (Past Months)");
+  
+  if (totalSurplus > 0) {
+    const surplusItem = {
+      id: "auto_surplus_asset",
+      name: "Rollover Savings (Past Months)",
+      label: "Rollover Savings (Past Months)",
+      type: "asset",
+      isAutoSurplus: true,
+      amt: totalSurplus,
+      transactions: months.map(m => ({
+        id: "surplus_" + m.ym,
+        date: m.ym + "-28",
+        action: "fund",
+        amount: m.surplus,
+        note: `${m.label} Unspent Income (${fmt(m.income)} income - ${fmt(m.spent)} spent)`,
+        balance: m.balance
+      }))
+    };
+    
+    if (existingIdx >= 0) {
+      items[existingIdx] = surplusItem;
+    } else {
+      items.unshift(surplusItem);
+    }
+    saveNwItems(items);
+  } else if (existingIdx >= 0) {
+    items.splice(existingIdx, 1);
+    saveNwItems(items);
+  }
 }
 
 // ─── FINANCE TAB OVERVIEW ──────────────────────────────────
 function renderFinanceOverview() {
+  _syncPreviousMonthsSurplusToAssets();
   const data    = getData();
   const period  = getActivePeriodRange();
   const pExps   = getPeriodExpenses(period);
-  const income  = data.income || 0;
+  const income  = typeof getMonthlyIncome === "function" ? getMonthlyIncome() : (data.income || 0);
   const needs   = pExps.filter(e=>e.cat==="Needs").reduce((s,e)=>s+e.amt,0);
   const wants   = pExps.filter(e=>e.cat==="Wants").reduce((s,e)=>s+e.amt,0);
   const savings = pExps.filter(e=>e.cat==="Savings").reduce((s,e)=>s+e.amt,0);
@@ -5325,83 +5401,93 @@ function renderFinanceOverview() {
     if (fsW) fsW.style.width = pW + "%";
     if (fsS) fsS.style.width = pS + "%";
     if (fsU) fsU.style.width = pU + "%";
+  } else if (spent > 0 && (fsN||fsW||fsS||fsU)) {
+    const pN = (needs/spent)*100;
+    const pW = (wants/spent)*100;
+    const pS = (savings/spent)*100;
+    if (fsN) fsN.style.width = pN + "%";
+    if (fsW) fsW.style.width = pW + "%";
+    if (fsS) fsS.style.width = pS + "%";
+    if (fsU) fsU.style.width = "0%";
+  } else if (fsN||fsW||fsS||fsU) {
+    if (fsN) fsN.style.width = "0%";
+    if (fsW) fsW.style.width = "0%";
+    if (fsS) fsS.style.width = "0%";
+    if (fsU) fsU.style.width = "100%";
   }
 
   // Category rows
   const catRows = document.getElementById("financeCatRows");
   if (catRows) {
-    if (income > 0) {
-      const cats = [
-        { label:"Needs",   pctTarget:br.needs, target:income*br.needs/100, spent:needs,   color:"var(--pri)" },
-        { label:"Wants",   pctTarget:br.wants, target:income*br.wants/100, spent:wants,   color:"var(--acc)" },
-        { label:"Savings", pctTarget:br.savings, target:income*br.savings/100, spent:savings, color:"var(--suc)" },
-      ];
-      const tooltips = {
-        Needs:   "Rent, utilities, groceries, transport, insurance",
-        Wants:   "Dining out, subscriptions, hobbies, entertainment",
-        Savings: "Emergency fund, investments, debt payments"
-      };
-      catRows.innerHTML = cats.map(c => {
-        const pct    = c.target > 0 ? Math.min(Math.round(c.spent/c.target*100),999) : 0;
-        const isOver = c.spent > c.target;
-        const barW   = Math.min(pct, 100);
-        const diff   = Math.abs(c.target - c.spent);
-        const leftClass = isOver ? "fin-left-amt over" : "fin-left-amt ok";
-        const leftTxt   = isOver
-          ? `<span class="${leftClass}">+${fmt(diff)} over</span>`
-          : `<span class="${leftClass}">${fmt(diff)} left</span>`;
-        // Tooltip icon (Needs + Wants only — Savings is self-explanatory)
-        const tipHtml = tooltips[c.label]
-          ? `<span class="fin-tooltip-wrap">
-              <span class="fin-tooltip-icon">?</span>
-              <span class="fin-tooltip-bubble">${c.label}: ${tooltips[c.label]}</span>
-            </span>` : "";
-        // Quick-add button — opens expense modal pre-filled with this category
-        const addBtn = `<button class="fin-cat-add"
-          onclick="event.stopPropagation();quickAdd('','',${JSON.stringify(c.label)},0)"
-          title="Add ${c.label} expense">
-          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        </button>`;
-        return `<div class="fin-cat-row"
-          onclick="quickAdd('','',${JSON.stringify(c.label)},0)"
-          title="Click to add a ${c.label} expense">
+    const cats = [
+      { label:"Needs",   pctTarget:br.needs, target:income*br.needs/100, spent:needs,   color:"var(--pri)" },
+      { label:"Wants",   pctTarget:br.wants, target:income*br.wants/100, spent:wants,   color:"var(--acc)" },
+      { label:"Savings", pctTarget:br.savings, target:income*br.savings/100, spent:savings, color:"var(--suc)" },
+    ];
+    const tooltips = {
+      Needs:   "Rent, utilities, groceries, transport, insurance",
+      Wants:   "Dining out, subscriptions, hobbies, entertainment",
+      Savings: "Emergency fund, investments, debt payments"
+    };
+    catRows.innerHTML = cats.map(c => {
+      const pct    = c.target > 0 ? Math.min(Math.round(c.spent/c.target*100),999) : 0;
+      const isOver = c.target > 0 && c.spent > c.target;
+      const barW   = c.target > 0 ? Math.min(pct, 100) : (c.spent > 0 ? 100 : 0);
+      const diff   = Math.abs(c.target - c.spent);
+      const leftClass = isOver ? "fin-left-amt over" : "fin-left-amt ok";
+      const leftTxt   = c.target > 0
+        ? (isOver ? `<span class="${leftClass}">+${fmt(diff)} over</span>` : `<span class="${leftClass}">${fmt(diff)} left</span>`)
+        : `<span class="fin-left-amt">${fmt(c.spent)} spent</span>`;
+      // Tooltip icon (Needs + Wants only — Savings is self-explanatory)
+      const tipHtml = tooltips[c.label]
+        ? `<span class="fin-tooltip-wrap">
+            <span class="fin-tooltip-icon">?</span>
+            <span class="fin-tooltip-bubble">${c.label}: ${tooltips[c.label]}</span>
+          </span>` : "";
+      // Quick-add button — opens expense modal pre-filled with this category
+      const addBtn = `<button class="fin-cat-add"
+        onclick="event.stopPropagation();quickAdd('','',${JSON.stringify(c.label)},0)"
+        title="Add ${c.label} expense">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      </button>`;
+      return `<div class="fin-cat-row"
+        onclick="quickAdd('','',${JSON.stringify(c.label)},0)"
+        title="Click to add a ${c.label} expense">
 
-          <!-- Row A: dot + label + tooltip + % · spent amount + add btn -->
-          <div style="display:flex;align-items:center;gap:6px;margin-bottom:7px;flex-wrap:nowrap">
-            <span style="width:9px;height:9px;border-radius:50%;background:${c.color};
-                         flex-shrink:0;display:inline-block"></span>
-            <span style="font-size:13px;font-weight:800;color:var(--txt);flex-shrink:0">${c.label}</span>
-            ${tipHtml}
-            <span style="font-size:10px;color:var(--txt2);flex-shrink:0">${c.pctTarget}%</span>
-            <span style="flex:1"></span>
-            ${addBtn}
-          </div>
+        <!-- Row A: dot + label + tooltip + % · spent amount + add btn -->
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:7px;flex-wrap:nowrap">
+          <span style="width:9px;height:9px;border-radius:50%;background:${c.color};
+                       flex-shrink:0;display:inline-block"></span>
+          <span style="font-size:13px;font-weight:800;color:var(--txt);flex-shrink:0">${c.label}</span>
+          ${tipHtml}
+          <span style="font-size:10px;color:var(--txt2);flex-shrink:0">${c.pctTarget}%</span>
+          <span style="flex:1"></span>
+          ${addBtn}
+        </div>
 
-          <!-- Row B: progress bar -->
-          <div style="height:8px;background:var(--bg);border-radius:99px;overflow:hidden;margin-bottom:6px">
-            <div style="height:100%;width:${barW}%;background:${isOver?"var(--dan)":c.color};
-                        border-radius:99px;transition:width .4s ease"></div>
-          </div>
+        <!-- Row B: progress bar -->
+        <div style="height:8px;background:var(--bg);border-radius:99px;overflow:hidden;margin-bottom:6px">
+          <div style="height:100%;width:${barW}%;background:${isOver?"var(--dan)":c.color};
+                      border-radius:99px;transition:width .4s ease"></div>
+        </div>
 
-          <!-- Row C: spent / target  ·  left/over -->
-          <div style="display:flex;justify-content:space-between;align-items:baseline;font-size:11px;flex-wrap:wrap;gap:4px">
-            <span style="color:var(--txt2)">
-              <span style="font-weight:700;color:var(--txt);font-family:'SF Mono',monospace">${fmt(c.spent)}</span>
-              <span style="color:var(--txt2)"> / ${fmt(c.target)}</span>
-            </span>
-            <span>${leftTxt} &nbsp;·&nbsp; <span style="color:var(--txt2)">${pct}% used</span></span>
-          </div>
-        </div>`;
-      }).join("");
-    } else {
-      catRows.innerHTML = `<div style="font-size:12px;color:var(--txt2);padding:4px 0">Add income sources below to see your budget breakdown here.</div>`;
-    }
+        <!-- Row C: spent / target  ·  left/over -->
+        <div style="display:flex;justify-content:space-between;align-items:baseline;font-size:11px;flex-wrap:wrap;gap:4px">
+          <span style="color:var(--txt2)">
+            <span style="font-weight:700;color:var(--txt);font-family:'SF Mono',monospace">${fmt(c.spent)}</span>
+            <span style="color:var(--txt2)"> / ${c.target > 0 ? fmt(c.target) : "$0.00"}</span>
+          </span>
+          <span>${leftTxt} &nbsp;·&nbsp; <span style="color:var(--txt2)">${c.target > 0 ? pct + '% used' : 'No budget set'}</span></span>
+        </div>
+      </div>`;
+    }).join("");
   }
 
-  // ── Summary box: Remaining to Spend + Windfall ──────────────
+  // ── Summary box: Remaining to Spend + Past Rollover + Windfall ──────────────
   const sources   = typeof getIncomeSources === "function" ? getIncomeSources() : [];
   const windfalls = sources.filter(s => s.isWindfall);
   const wfTotal   = windfalls.reduce((s, w) => s + w.amount, 0);
+  const pastSurplus = calcPreviousMonthsSurplus();
 
   const summaryBox = document.getElementById("financeSummaryBox");
   if (summaryBox) {
@@ -5415,9 +5501,20 @@ function renderFinanceOverview() {
             stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/>
             <line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
           </svg>
-          Remaining to Spend
+          Remaining to Spend (${period.shortLabel || 'Month'})
         </span>
         <span class="fin-summary-amt" style="color:${unallocColor}">${fmt(unalloc)}</span>
+      </div>`;
+    }
+    if (pastSurplus.totalSurplus > 0) {
+      rows += `<div class="fin-summary-row">
+        <span class="fin-summary-label">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2.5" stroke-linecap="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+          Past Months' Rollover
+          <span style="font-size:9px;font-weight:400;color:var(--suc);margin-left:2px">· added to Assets ✓</span>
+        </span>
+        <span class="fin-summary-amt" style="color:var(--suc)">+${fmt(pastSurplus.totalSurplus)}</span>
       </div>`;
     }
     if (wfTotal > 0) {
@@ -5452,6 +5549,8 @@ function renderFinanceOverview() {
 function renderSpendingBreakdown() {
   const period = getActivePeriodRange();
   const expenses = getPeriodExpenses(period);
+  const data = getData();
+  const allExpenses = data.expenses || [];
   const total = expenses.reduce((s, e) => s + e.amt, 0);
 
   // Group by sub-category (or cat if no sub)
@@ -5471,7 +5570,7 @@ function renderSpendingBreakdown() {
   const centerValue = document.getElementById("donutCenterValue");
   const centerSub = document.getElementById("donutCenterSub");
   if (centerValue) centerValue.textContent = total > 0 ? fmt(total) : "$0";
-  if (centerSub) centerSub.textContent = total > 0 ? cats.length + " categories" : "spent";
+  if (centerSub) centerSub.textContent = total > 0 ? cats.length + " categories" : "spent (" + (period.shortLabel || 'Month') + ")";
 
   // Render donut SVG
   const svg = document.getElementById("spendingDonut");
@@ -5545,14 +5644,22 @@ function renderSpendingBreakdown() {
 }
 
 function renderBudgetHealthBanner(totalSpent) {
-  const data = getData();
-  const income = data.income || 0;
+  const income = typeof getMonthlyIncome === "function" ? getMonthlyIncome() : 0;
   const banner = document.getElementById("budgetHealthBanner");
   const title = document.getElementById("budgetHealthTitle");
   const body = document.getElementById("budgetHealthBody");
   if (!banner || !title || !body) return;
 
-  if (income <= 0) { banner.style.display = "none"; return; }
+  if (income <= 0) {
+    banner.style.display = "block";
+    banner.style.background = "var(--pri-l)";
+    banner.style.color = "var(--pri-d)";
+    const svgIcon = banner.querySelector("svg");
+    if (svgIcon) svgIcon.setAttribute("stroke", "var(--pri-d)");
+    title.textContent = "Set Your Monthly Income";
+    body.textContent = "Add your monthly income in Dashboard or Income Sources below to track savings rates and financial health.";
+    return;
+  }
 
   const effPct = Math.max(0, Math.round((income - totalSpent) / income * 100));
   let color, bg, iconColor, titleText, bodyText;
@@ -5578,7 +5685,8 @@ function renderBudgetHealthBanner(totalSpent) {
   banner.style.display = "block";
   banner.style.background = bg;
   banner.style.color = color;
-  banner.querySelector("svg").setAttribute("stroke", iconColor);
+  const svgIcon = banner.querySelector("svg");
+  if (svgIcon) svgIcon.setAttribute("stroke", iconColor);
   title.textContent = titleText;
   body.textContent = bodyText;
 }
@@ -5870,14 +5978,15 @@ function _goalCard(g, monthlySavingsRate) {
 
 // Goal deposit/withdraw functions
 function _goalDeposit(goalId) {
-  const input = document.getElementById('goalDeposit_' + goalId);
-  const noteInput = document.getElementById('goalDepositNote_' + goalId);
+  const idStr = String(goalId).replace(/[^a-zA-Z0-9_-]/g, '_');
+  const input = document.getElementById('goalDeposit_' + idStr) || document.getElementById('goalDeposit_' + goalId);
+  const noteInput = document.getElementById('goalDepositNote_' + idStr) || document.getElementById('goalDepositNote_' + goalId);
   if (!input) return;
   const amt = parseFloat((input.value || '').replace(/,/g, ''));
   const note = noteInput ? noteInput.value.trim() : '';
   if (!amt || amt <= 0) { toast('Enter a valid amount'); return; }
   const data = getData();
-  const g = data.goals.find(g => g.id === goalId);
+  const g = data.goals.find(g => String(g.id) === String(goalId) || g.id === goalId);
   if (!g) return;
   g.saved = (g.saved || 0) + amt;
   if (!g.transactions) g.transactions = [];
@@ -5891,14 +6000,15 @@ function _goalDeposit(goalId) {
 }
 
 function _goalWithdraw(goalId) {
-  const input = document.getElementById('goalWithdraw_' + goalId);
-  const noteInput = document.getElementById('goalWithdrawNote_' + goalId);
+  const idStr = String(goalId).replace(/[^a-zA-Z0-9_-]/g, '_');
+  const input = document.getElementById('goalWithdraw_' + idStr) || document.getElementById('goalWithdraw_' + goalId);
+  const noteInput = document.getElementById('goalWithdrawNote_' + idStr) || document.getElementById('goalWithdrawNote_' + goalId);
   if (!input) return;
   const amt = parseFloat((input.value || '').replace(/,/g, ''));
   const note = noteInput ? noteInput.value.trim() : '';
   if (!amt || amt <= 0) { toast('Enter a valid amount'); return; }
   const data = getData();
-  const g = data.goals.find(g => g.id === goalId);
+  const g = data.goals.find(g => String(g.id) === String(goalId) || g.id === goalId);
   if (!g) return;
   if (amt > (g.saved || 0)) { toast('Cannot withdraw more than saved'); return; }
   g.saved = Math.max(0, (g.saved || 0) - amt);
@@ -5914,13 +6024,14 @@ function _goalWithdraw(goalId) {
 
 function openEditGoalPopup(goalId) {
   const data = getData();
-  const g = data.goals.find(g => g.id === goalId);
+  const g = data.goals.find(g => String(g.id) === String(goalId) || g.id === goalId);
   if (!g) return;
   const ex = document.getElementById('_editGoalPopup');
   if (ex) ex.remove();
   const overlay = document.createElement('div');
   overlay.id = '_editGoalPopup';
   overlay.style.cssText = 'position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.5)';
+  const goalIdJson = JSON.stringify(goalId);
   overlay.innerHTML = `
     <div style="background:var(--card);border-radius:16px;padding:22px 24px;min-width:280px;max-width:90vw;box-shadow:0 12px 40px rgba(0,0,0,.28)">
       <div style="font-size:14px;font-weight:800;color:var(--txt);margin-bottom:14px">Edit Goal Details</div>
@@ -5934,7 +6045,7 @@ function openEditGoalPopup(goalId) {
       </div>
       <div style="display:flex;gap:10px;justify-content:flex-end">
         <button onclick="document.getElementById('_editGoalPopup').remove()" style="padding:9px 16px;border-radius:9px;border:1.5px solid var(--brd);background:var(--bg);color:var(--txt2);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit">Cancel</button>
-        <button onclick="_saveEditGoalPopup(${goalId})" class="btn btn-pri" style="padding:9px 20px;border-radius:9px;font-size:13px;font-weight:700">Save</button>
+        <button onclick="_saveEditGoalPopup(${goalIdJson})" class="btn btn-pri" style="padding:9px 20px;border-radius:9px;font-size:13px;font-weight:700">Save</button>
       </div>
     </div>`;
   document.body.appendChild(overlay);
@@ -5948,7 +6059,7 @@ function _saveEditGoalPopup(goalId) {
   if (!newName) { toast("Name can't be empty"); return; }
   if (isNaN(newTarget) || newTarget <= 0) { toast("Enter a valid target amount"); return; }
   const data = getData();
-  const g = data.goals.find(g => g.id === goalId);
+  const g = data.goals.find(g => String(g.id) === String(goalId) || g.id === goalId);
   if (g) {
     g.name = newName;
     g.target = newTarget;
@@ -5964,7 +6075,7 @@ function openEditNwItemPopup(itemType, itemId) {
   
   if (itemType === 'asset' || itemType === 'liability') {
     items = getNwItems();
-    const item = items.find(i => i.id === itemId);
+    const item = items.find(i => String(i.id) === String(itemId) || i.id === itemId);
     if (!item) return;
     name = item.label || item.name;
   }
@@ -5975,6 +6086,7 @@ function openEditNwItemPopup(itemType, itemId) {
   const overlay = document.createElement('div');
   overlay.id = '_editNwItemPopup';
   overlay.style.cssText = 'position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.5)';
+  const itemIdJson = JSON.stringify(itemId);
   overlay.innerHTML = `
     <div style="background:var(--card);border-radius:16px;padding:22px 24px;min-width:280px;max-width:90vw;box-shadow:0 12px 40px rgba(0,0,0,.28)">
       <div style="font-size:14px;font-weight:800;color:var(--txt);margin-bottom:14px">Edit ${itemType.charAt(0).toUpperCase() + itemType.slice(1)} Name</div>
@@ -5984,7 +6096,7 @@ function openEditNwItemPopup(itemType, itemId) {
       </div>
       <div style="display:flex;gap:10px;justify-content:flex-end">
         <button onclick="document.getElementById('_editNwItemPopup').remove()" style="padding:9px 16px;border-radius:9px;border:1.5px solid var(--brd);background:var(--bg);color:var(--txt2);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit">Cancel</button>
-        <button onclick="_saveEditNwItemPopup('${itemType}',${itemId})" class="btn btn-pri" style="padding:9px 20px;border-radius:9px;font-size:13px;font-weight:700">Save</button>
+        <button onclick="_saveEditNwItemPopup('${itemType}',${itemIdJson})" class="btn btn-pri" style="padding:9px 20px;border-radius:9px;font-size:13px;font-weight:700">Save</button>
       </div>
     </div>`;
   
@@ -5998,7 +6110,7 @@ function _saveEditNwItemPopup(itemType, itemId) {
   if (!newName) { toast("Name can't be empty"); return; }
   
   const items = getNwItems();
-  const item = items.find(i => i.id === itemId);
+  const item = items.find(i => String(i.id) === String(itemId) || i.id === itemId);
   if (item) {
     item.label = newName;
     saveNwItems(items);
@@ -6018,9 +6130,10 @@ function _liabilityCard(item) {
   const pctPaid = originalAmount > 0 ? Math.min((totalPaid / originalAmount) * 100, 100) : 0;
   const circumference = 2 * Math.PI * 28;
   const dashOffset = circumference - (pctPaid / 100) * circumference;
-  const histId = '_nwHist_' + item.id;
-  
-  const delFn = `deleteNwItem(${item.id})`;
+  const idStr = String(item.id).replace(/[^a-zA-Z0-9_-]/g, '_');
+  const histId = '_nwHist_' + idStr;
+  const itemIdJson = JSON.stringify(item.id);
+  const delFn = `deleteNwItem(${itemIdJson})`;
   
   // Build transaction history rows
   const histRows = txns.slice().reverse().map(t => {
@@ -6043,11 +6156,11 @@ function _liabilityCard(item) {
         </div>
       </div>
       <div style="display:flex;gap:4px">
-        <button onclick="event.stopPropagation();_showNwHistPopup('liability',${item.id})" style="font-size:10px;color:var(--txt2);background:var(--card);border:1px solid var(--brd);border-radius:6px;cursor:pointer;padding:3px 7px;font-family:inherit;display:flex;align-items:center;gap:3px;transition:.15s;flex-shrink:0;line-height:1.4" onmouseover="this.style.borderColor='var(--pri)';this.style.color='var(--pri-d)'" onmouseout="this.style.borderColor='var(--brd)';this.style.color='var(--txt2)'" title="View history">
+        <button onclick="event.stopPropagation();_showNwHistPopup('liability',${itemIdJson})" style="font-size:10px;color:var(--txt2);background:var(--card);border:1px solid var(--brd);border-radius:6px;cursor:pointer;padding:3px 7px;font-family:inherit;display:flex;align-items:center;gap:3px;transition:.15s;flex-shrink:0;line-height:1.4" onmouseover="this.style.borderColor='var(--pri)';this.style.color='var(--pri-d)'" onmouseout="this.style.borderColor='var(--brd)';this.style.color='var(--txt2)'" title="View history">
           <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="transition:transform .2s"><polyline points="6 9 12 15 18 9"/></svg>
           ${txns.length}
         </button>
-        <button onclick="event.stopPropagation();openEditNwItemPopup('liability',${item.id})" style="background:none;border:none;color:var(--txt2);cursor:pointer;padding:4px;border-radius:4px;opacity:.6" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=.6" title="Edit name">
+        <button onclick="event.stopPropagation();openEditNwItemPopup('liability',${itemIdJson})" style="background:none;border:none;color:var(--txt2);cursor:pointer;padding:4px;border-radius:4px;opacity:.6" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=.6" title="Edit name">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06A1.65 1.65 0 009 4.6a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
         </button>
         <button class="fc-del" onclick="event.stopPropagation();${delFn}" title="Delete" style="background:none;border:none;color:var(--txt2);opacity:.7" onmouseover="this.style.opacity=1;this.style.color='var(--dan)'" onmouseout="this.style.opacity=.7;this.style.color='var(--txt2)'">
@@ -6075,22 +6188,22 @@ function _liabilityCard(item) {
         <div style="min-width:0">
           <div style="font-size:8px;font-weight:800;text-transform:uppercase;color:var(--txt2);margin-bottom:4px">Increase</div>
           <div style="display:flex;gap:4px;align-items:center">
-            <input type="text" inputmode="decimal" id="liabAdd_${item.id}" placeholder="0" style="flex:1;min-width:0;padding:6px 8px;border:1.5px solid var(--brd);border-radius:6px;font-size:11px;font-family:'SF Mono',monospace;background:var(--input-bg);color:var(--txt);outline:none;box-sizing:border-box" onclick="event.stopPropagation()">
-            <button onclick="event.stopPropagation();_liabilityAdd(${item.id})" style="width:26px;height:26px;min-width:26px;border-radius:6px;border:none;background:var(--dan-l);color:var(--dan);cursor:pointer;display:flex;align-items:center;justify-content:center" onmouseover="this.style.background='var(--dan)';this.style.color='#fff'" onmouseout="this.style.background='var(--dan-l)';this.style.color='var(--dan)'">
+            <input type="text" inputmode="decimal" id="liabAdd_${idStr}" placeholder="0" style="flex:1;min-width:0;padding:6px 8px;border:1.5px solid var(--brd);border-radius:6px;font-size:11px;font-family:'SF Mono',monospace;background:var(--input-bg);color:var(--txt);outline:none;box-sizing:border-box" onclick="event.stopPropagation()">
+            <button onclick="event.stopPropagation();_liabilityAdd(${itemIdJson})" style="width:26px;height:26px;min-width:26px;border-radius:6px;border:none;background:var(--dan-l);color:var(--dan);cursor:pointer;display:flex;align-items:center;justify-content:center" onmouseover="this.style.background='var(--dan)';this.style.color='#fff'" onmouseout="this.style.background='var(--dan-l)';this.style.color='var(--dan)'">
               <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
             </button>
           </div>
-          <input type="text" id="liabAddNote_${item.id}" placeholder="Note (optional)" style="width:100%;margin-top:4px;padding:4px 6px;border:1px solid var(--brd);border-radius:4px;font-size:9px;font-family:inherit;background:var(--input-bg);color:var(--txt2);outline:none;box-sizing:border-box" onclick="event.stopPropagation()">
+          <input type="text" id="liabAddNote_${idStr}" placeholder="Note (optional)" style="width:100%;margin-top:4px;padding:4px 6px;border:1px solid var(--brd);border-radius:4px;font-size:9px;font-family:inherit;background:var(--input-bg);color:var(--txt2);outline:none;box-sizing:border-box" onclick="event.stopPropagation()">
         </div>
       <div style="min-width:0">
         <div style="font-size:8px;font-weight:800;text-transform:uppercase;color:var(--txt2);margin-bottom:4px">Pay Down</div>
         <div style="display:flex;gap:4px;align-items:center">
-          <input type="text" inputmode="decimal" id="liabPay_${item.id}" placeholder="0" style="flex:1;min-width:0;padding:6px 8px;border:1.5px solid var(--brd);border-radius:6px;font-size:11px;font-family:'SF Mono',monospace;background:var(--input-bg);color:var(--txt);outline:none;box-sizing:border-box" onclick="event.stopPropagation()">
-          <button onclick="event.stopPropagation();_liabilityPay(${item.id})" style="width:26px;height:26px;min-width:26px;border-radius:6px;border:none;background:var(--suc-l);color:var(--suc);cursor:pointer;display:flex;align-items:center;justify-content:center" onmouseover="this.style.background='var(--suc)';this.style.color='#fff'" onmouseout="this.style.background='var(--suc-l)';this.style.color='var(--suc)'">
+          <input type="text" inputmode="decimal" id="liabPay_${idStr}" placeholder="0" style="flex:1;min-width:0;padding:6px 8px;border:1.5px solid var(--brd);border-radius:6px;font-size:11px;font-family:'SF Mono',monospace;background:var(--input-bg);color:var(--txt);outline:none;box-sizing:border-box" onclick="event.stopPropagation()">
+          <button onclick="event.stopPropagation();_liabilityPay(${itemIdJson})" style="width:26px;height:26px;min-width:26px;border-radius:6px;border:none;background:var(--suc-l);color:var(--suc);cursor:pointer;display:flex;align-items:center;justify-content:center" onmouseover="this.style.background='var(--suc)';this.style.color='#fff'" onmouseout="this.style.background='var(--suc-l)';this.style.color='var(--suc)'">
             <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="5" y1="12" x2="19" y2="12"/></svg>
           </button>
         </div>
-        <input type="text" id="liabPayNote_${item.id}" placeholder="Note (optional)" style="width:100%;margin-top:4px;padding:4px 6px;border:1px solid var(--brd);border-radius:4px;font-size:9px;font-family:inherit;background:var(--input-bg);color:var(--txt2);outline:none;box-sizing:border-box" onclick="event.stopPropagation()">
+        <input type="text" id="liabPayNote_${idStr}" placeholder="Note (optional)" style="width:100%;margin-top:4px;padding:4px 6px;border:1px solid var(--brd);border-radius:4px;font-size:9px;font-family:inherit;background:var(--input-bg);color:var(--txt2);outline:none;box-sizing:border-box" onclick="event.stopPropagation()">
       </div>
     </div>
     
@@ -6102,14 +6215,15 @@ function _liabilityCard(item) {
 }
 
 function _liabilityAdd(liabId) {
-  const input = document.getElementById('liabAdd_' + liabId);
-  const noteInput = document.getElementById('liabAddNote_' + liabId);
+  const idStr = String(liabId).replace(/[^a-zA-Z0-9_-]/g, '_');
+  const input = document.getElementById('liabAdd_' + idStr) || document.getElementById('liabAdd_' + liabId);
+  const noteInput = document.getElementById('liabAddNote_' + idStr) || document.getElementById('liabAddNote_' + liabId);
   if (!input) return;
   const amt = parseFloat((input.value || '').replace(/,/g, ''));
   const note = noteInput ? noteInput.value.trim() : '';
   if (!amt || amt <= 0) { toast('Enter a valid amount'); return; }
   const items = getNwItems();
-  const item = items.find(i => i.id === liabId);
+  const item = items.find(i => String(i.id) === String(liabId) || i.id === liabId);
   if (!item) return;
   item.amt = (item.amt || 0) + amt;
   if (!item.transactions) item.transactions = [];
@@ -6123,14 +6237,15 @@ function _liabilityAdd(liabId) {
 }
 
 function _liabilityPay(liabId) {
-  const input = document.getElementById('liabPay_' + liabId);
-  const noteInput = document.getElementById('liabPayNote_' + liabId);
+  const idStr = String(liabId).replace(/[^a-zA-Z0-9_-]/g, '_');
+  const input = document.getElementById('liabPay_' + idStr) || document.getElementById('liabPay_' + liabId);
+  const noteInput = document.getElementById('liabPayNote_' + idStr) || document.getElementById('liabPayNote_' + liabId);
   if (!input) return;
   const amt = parseFloat((input.value || '').replace(/,/g, ''));
   const note = noteInput ? noteInput.value.trim() : '';
   if (!amt || amt <= 0) { toast('Enter a valid amount'); return; }
   const items = getNwItems();
-  const item = items.find(i => i.id === liabId);
+  const item = items.find(i => String(i.id) === String(liabId) || i.id === liabId);
   if (!item) return;
   if (amt > item.amt) { toast('Cannot pay more than balance'); return; }
   item.amt = Math.max(0, item.amt - amt);
@@ -6150,7 +6265,7 @@ function _showNwHistPopup(itemType, itemId) {
   
   if (itemType === 'goal') {
     const data = getData();
-    const g = data.goals.find(g => g.id === itemId);
+    const g = data.goals.find(g => String(g.id) === String(itemId) || g.id === itemId);
     if (!g) return;
     txns = g.transactions || [];
     name = g.name;
@@ -6158,7 +6273,7 @@ function _showNwHistPopup(itemType, itemId) {
     balance = g.saved || 0;
   } else if (itemType === 'asset' || itemType === 'liability') {
     const items = getNwItems();
-    const item = items.find(i => i.id === itemId);
+    const item = items.find(i => String(i.id) === String(itemId) || i.id === itemId);
     if (!item) return;
     txns = item.transactions || [];
     name = item.label || item.name;
@@ -6172,6 +6287,7 @@ function _showNwHistPopup(itemType, itemId) {
   overlay.id = '_nwHistPopup';
   overlay.style.cssText = 'position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.5)';
   
+  const itemIdJson = JSON.stringify(itemId);
   // Build transaction rows with edit/delete buttons
   const rows = txns.slice().reverse().map((t, idx) => {
     const realIdx = txns.length - 1 - idx;
@@ -6192,10 +6308,10 @@ function _showNwHistPopup(itemType, itemId) {
       <td style="padding:6px 8px;font-size:10px;color:var(--txt2);max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escHtml(t.note||'')}</td>
       <td style="padding:6px 8px;font-size:11px;font-weight:700;font-family:'SF Mono',monospace;text-align:right">${fmt(t.balance)}</td>
       <td style="padding:6px 4px;white-space:nowrap">
-        <button onclick="_editNwTxn('${itemType}',${itemId},${realIdx})" style="background:none;border:none;color:var(--txt2);cursor:pointer;padding:3px;border-radius:4px;opacity:.6" onmouseover="this.style.opacity=1;this.style.color='var(--pri-d)'" onmouseout="this.style.opacity=.6;this.style.color='var(--txt2)'" title="Edit">
+        <button onclick="_editNwTxn('${itemType}',${itemIdJson},${realIdx})" style="background:none;border:none;color:var(--txt2);cursor:pointer;padding:3px;border-radius:4px;opacity:.6" onmouseover="this.style.opacity=1;this.style.color='var(--pri-d)'" onmouseout="this.style.opacity=.6;this.style.color='var(--txt2)'" title="Edit">
           <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 013 3L12 15l-4 1 1-4z"/></svg>
         </button>
-        <button onclick="_deleteNwTxn('${itemType}',${itemId},${realIdx})" style="background:none;border:none;color:var(--txt2);cursor:pointer;padding:3px;border-radius:4px;opacity:.6" onmouseover="this.style.opacity=1;this.style.color='var(--dan)'" onmouseout="this.style.opacity=.6;this.style.color='var(--txt2)'" title="Delete">
+        <button onclick="_deleteNwTxn('${itemType}',${itemIdJson},${realIdx})" style="background:none;border:none;color:var(--txt2);cursor:pointer;padding:3px;border-radius:4px;opacity:.6" onmouseover="this.style.opacity=1;this.style.color='var(--dan)'" onmouseout="this.style.opacity=.6;this.style.color='var(--txt2)'" title="Delete">
           <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
         </button>
       </td>
@@ -6239,13 +6355,13 @@ function _editNwTxn(itemType, itemId, txnIdx) {
   
   if (itemType === 'goal') {
     const data = getData();
-    const g = data.goals.find(g => g.id === itemId);
+    const g = data.goals.find(g => String(g.id) === String(itemId) || g.id === itemId);
     if (!g) return;
     txns = g.transactions || [];
     name = g.name;
   } else {
     const items = getNwItems();
-    const item = items.find(i => i.id === itemId);
+    const item = items.find(i => String(i.id) === String(itemId) || i.id === itemId);
     if (!item) return;
     txns = item.transactions || [];
     name = item.label || item.name;
@@ -6260,6 +6376,7 @@ function _editNwTxn(itemType, itemId, txnIdx) {
   const overlay = document.createElement('div');
   overlay.id = '_editTxnPopup';
   overlay.style.cssText = 'position:fixed;inset:0;z-index:10000;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.5)';
+  const itemIdJson = JSON.stringify(itemId);
   overlay.innerHTML = `
     <div style="background:var(--card);border-radius:16px;padding:22px 24px;min-width:280px;max-width:90vw;box-shadow:0 12px 40px rgba(0,0,0,.28)">
       <div style="font-size:14px;font-weight:800;color:var(--txt);margin-bottom:14px">Edit Transaction</div>
@@ -6277,7 +6394,7 @@ function _editNwTxn(itemType, itemId, txnIdx) {
       </div>
       <div style="display:flex;gap:10px;justify-content:flex-end">
         <button onclick="document.getElementById('_editTxnPopup').remove()" style="padding:9px 16px;border-radius:9px;border:1.5px solid var(--brd);background:var(--bg);color:var(--txt2);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit">Cancel</button>
-        <button onclick="_saveEditNwTxn('${itemType}',${itemId},${txnIdx})" class="btn btn-pri" style="padding:9px 20px;border-radius:9px;font-size:13px;font-weight:700">Save</button>
+        <button onclick="_saveEditNwTxn('${itemType}',${itemIdJson},${txnIdx})" class="btn btn-pri" style="padding:9px 20px;border-radius:9px;font-size:13px;font-weight:700">Save</button>
       </div>
     </div>`;
   
@@ -6294,7 +6411,7 @@ function _saveEditNwTxn(itemType, itemId, txnIdx) {
   
   if (itemType === 'goal') {
     const data = getData();
-    const g = data.goals.find(g => g.id === itemId);
+    const g = data.goals.find(g => String(g.id) === String(itemId) || g.id === itemId);
     if (!g || !g.transactions[txnIdx]) return;
     g.transactions[txnIdx].date = newDate || g.transactions[txnIdx].date;
     g.transactions[txnIdx].amount = newAmt;
@@ -6307,7 +6424,7 @@ function _saveEditNwTxn(itemType, itemId, txnIdx) {
     renderGoals();
   } else {
     const items = getNwItems();
-    const item = items.find(i => i.id === itemId);
+    const item = items.find(i => String(i.id) === String(itemId) || i.id === itemId);
     if (!item || !item.transactions[txnIdx]) return;
     item.transactions[txnIdx].date = newDate || item.transactions[txnIdx].date;
     item.transactions[txnIdx].amount = newAmt;
@@ -6329,7 +6446,7 @@ function _deleteNwTxn(itemType, itemId, txnIdx) {
   
   if (itemType === 'goal') {
     const data = getData();
-    const g = data.goals.find(g => g.id === itemId);
+    const g = data.goals.find(g => String(g.id) === String(itemId) || g.id === itemId);
     if (!g) return;
     g.transactions.splice(txnIdx, 1);
     // Recalculate balances
@@ -6340,7 +6457,7 @@ function _deleteNwTxn(itemType, itemId, txnIdx) {
     renderGoals();
   } else {
     const items = getNwItems();
-    const item = items.find(i => i.id === itemId);
+    const item = items.find(i => String(i.id) === String(itemId) || i.id === itemId);
     if (!item) return;
     item.transactions.splice(txnIdx, 1);
     // Recalculate balances
@@ -6360,7 +6477,9 @@ function _assetCard(item) {
   const txns = item.transactions || [];
   const totalFunded = txns.filter(t => t.action === 'fund').reduce((s, t) => s + t.amount, 0);
   const totalWithdrawn = txns.filter(t => t.action === 'withdraw').reduce((s, t) => s + t.amount, 0);
-  const histId = '_nwHist_' + item.id;
+  const idStr = String(item.id).replace(/[^a-zA-Z0-9_-]/g, '_');
+  const histId = '_nwHist_' + idStr;
+  const itemIdJson = JSON.stringify(item.id);
   
   // Calculate initial amount and growth
   const initialAmount = balance - totalFunded + totalWithdrawn;
@@ -6376,7 +6495,7 @@ function _assetCard(item) {
     }
   }
   
-  const delFn = `deleteNwItem(${item.id})`;
+  const delFn = `deleteNwItem(${itemIdJson})`;
   
   // Build transaction history rows
   const histRows = txns.slice().reverse().map(t => {
@@ -6399,11 +6518,11 @@ function _assetCard(item) {
         </div>
       </div>
       <div style="display:flex;gap:4px">
-        <button onclick="event.stopPropagation();_showNwHistPopup('asset',${item.id})" style="font-size:10px;color:var(--txt2);background:var(--card);border:1px solid var(--brd);border-radius:6px;cursor:pointer;padding:3px 7px;font-family:inherit;display:flex;align-items:center;gap:3px;transition:.15s;flex-shrink:0;line-height:1.4" onmouseover="this.style.borderColor='var(--pri)';this.style.color='var(--pri-d)'" onmouseout="this.style.borderColor='var(--brd)';this.style.color='var(--txt2)'" title="View history">
+        <button onclick="event.stopPropagation();_showNwHistPopup('asset',${itemIdJson})" style="font-size:10px;color:var(--txt2);background:var(--card);border:1px solid var(--brd);border-radius:6px;cursor:pointer;padding:3px 7px;font-family:inherit;display:flex;align-items:center;gap:3px;transition:.15s;flex-shrink:0;line-height:1.4" onmouseover="this.style.borderColor='var(--pri)';this.style.color='var(--pri-d)'" onmouseout="this.style.borderColor='var(--brd)';this.style.color='var(--txt2)'" title="View history">
           <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="transition:transform .2s"><polyline points="6 9 12 15 18 9"/></svg>
           ${txns.length}
         </button>
-        <button onclick="event.stopPropagation();openEditNwItemPopup('asset',${item.id})" style="background:none;border:none;color:var(--txt2);cursor:pointer;padding:4px;border-radius:4px;opacity:.6" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=.6" title="Edit name">
+        <button onclick="event.stopPropagation();openEditNwItemPopup('asset',${itemIdJson})" style="background:none;border:none;color:var(--txt2);cursor:pointer;padding:4px;border-radius:4px;opacity:.6" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=.6" title="Edit name">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06A1.65 1.65 0 009 4.6a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
         </button>
         <button class="fc-del" onclick="event.stopPropagation();${delFn}" title="Delete" style="background:none;border:none;color:var(--txt2);opacity:.7" onmouseover="this.style.opacity=1;this.style.color='var(--dan)'" onmouseout="this.style.opacity=.7;this.style.color='var(--txt2)'">
@@ -6425,22 +6544,22 @@ function _assetCard(item) {
       <div style="min-width:0">
         <div style="font-size:8px;font-weight:800;text-transform:uppercase;color:var(--txt2);margin-bottom:4px">Add Funds</div>
         <div style="display:flex;gap:4px;align-items:center">
-          <input type="text" inputmode="decimal" id="assetFund_${item.id}" placeholder="0" style="flex:1;min-width:0;padding:6px 8px;border:1.5px solid var(--brd);border-radius:6px;font-size:11px;font-family:'SF Mono',monospace;background:var(--input-bg);color:var(--txt);outline:none;box-sizing:border-box" onclick="event.stopPropagation()">
-          <button onclick="event.stopPropagation();_assetFund(${item.id})" style="width:26px;height:26px;min-width:26px;border-radius:6px;border:none;background:var(--suc-l);color:var(--suc);cursor:pointer;display:flex;align-items:center;justify-content:center" onmouseover="this.style.background='var(--suc)';this.style.color='#fff'" onmouseout="this.style.background='var(--suc-l)';this.style.color='var(--suc)'">
+          <input type="text" inputmode="decimal" id="assetFund_${idStr}" placeholder="0" style="flex:1;min-width:0;padding:6px 8px;border:1.5px solid var(--brd);border-radius:6px;font-size:11px;font-family:'SF Mono',monospace;background:var(--input-bg);color:var(--txt);outline:none;box-sizing:border-box" onclick="event.stopPropagation()">
+          <button onclick="event.stopPropagation();_assetFund(${itemIdJson})" style="width:26px;height:26px;min-width:26px;border-radius:6px;border:none;background:var(--suc-l);color:var(--suc);cursor:pointer;display:flex;align-items:center;justify-content:center" onmouseover="this.style.background='var(--suc)';this.style.color='#fff'" onmouseout="this.style.background='var(--suc-l)';this.style.color='var(--suc)'">
             <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
           </button>
         </div>
-        <input type="text" id="assetFundNote_${item.id}" placeholder="Note (optional)" style="width:100%;margin-top:4px;padding:4px 6px;border:1px solid var(--brd);border-radius:4px;font-size:9px;font-family:inherit;background:var(--input-bg);color:var(--txt2);outline:none;box-sizing:border-box" onclick="event.stopPropagation()">
+        <input type="text" id="assetFundNote_${idStr}" placeholder="Note (optional)" style="width:100%;margin-top:4px;padding:4px 6px;border:1px solid var(--brd);border-radius:4px;font-size:9px;font-family:inherit;background:var(--input-bg);color:var(--txt2);outline:none;box-sizing:border-box" onclick="event.stopPropagation()">
       </div>
       <div style="min-width:0">
         <div style="font-size:8px;font-weight:800;text-transform:uppercase;color:var(--txt2);margin-bottom:4px">Withdraw</div>
         <div style="display:flex;gap:4px;align-items:center">
-          <input type="text" inputmode="decimal" id="assetWithdraw_${item.id}" placeholder="0" style="flex:1;min-width:0;padding:6px 8px;border:1.5px solid var(--brd);border-radius:6px;font-size:11px;font-family:'SF Mono',monospace;background:var(--input-bg);color:var(--txt);outline:none;box-sizing:border-box" onclick="event.stopPropagation()">
-          <button onclick="event.stopPropagation();_assetWithdraw(${item.id})" style="width:26px;height:26px;min-width:26px;border-radius:6px;border:none;background:var(--dan-l);color:var(--dan);cursor:pointer;display:flex;align-items:center;justify-content:center" onmouseover="this.style.background='var(--dan)';this.style.color='#fff'" onmouseout="this.style.background='var(--dan-l)';this.style.color='var(--dan)'">
+          <input type="text" inputmode="decimal" id="assetWithdraw_${idStr}" placeholder="0" style="flex:1;min-width:0;padding:6px 8px;border:1.5px solid var(--brd);border-radius:6px;font-size:11px;font-family:'SF Mono',monospace;background:var(--input-bg);color:var(--txt);outline:none;box-sizing:border-box" onclick="event.stopPropagation()">
+          <button onclick="event.stopPropagation();_assetWithdraw(${itemIdJson})" style="width:26px;height:26px;min-width:26px;border-radius:6px;border:none;background:var(--dan-l);color:var(--dan);cursor:pointer;display:flex;align-items:center;justify-content:center" onmouseover="this.style.background='var(--dan)';this.style.color='#fff'" onmouseout="this.style.background='var(--dan-l)';this.style.color='var(--dan)'">
             <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="5" y1="12" x2="19" y2="12"/></svg>
           </button>
         </div>
-        <input type="text" id="assetWithdrawNote_${item.id}" placeholder="Note (optional)" style="width:100%;margin-top:4px;padding:4px 6px;border:1px solid var(--brd);border-radius:4px;font-size:9px;font-family:inherit;background:var(--input-bg);color:var(--txt2);outline:none;box-sizing:border-box" onclick="event.stopPropagation()">
+        <input type="text" id="assetWithdrawNote_${idStr}" placeholder="Note (optional)" style="width:100%;margin-top:4px;padding:4px 6px;border:1px solid var(--brd);border-radius:4px;font-size:9px;font-family:inherit;background:var(--input-bg);color:var(--txt2);outline:none;box-sizing:border-box" onclick="event.stopPropagation()">
       </div>
     </div>
     
@@ -6452,14 +6571,15 @@ function _assetCard(item) {
 }
 
 function _assetFund(assetId) {
-  const input = document.getElementById('assetFund_' + assetId);
-  const noteInput = document.getElementById('assetFundNote_' + assetId);
+  const idStr = String(assetId).replace(/[^a-zA-Z0-9_-]/g, '_');
+  const input = document.getElementById('assetFund_' + idStr) || document.getElementById('assetFund_' + assetId);
+  const noteInput = document.getElementById('assetFundNote_' + idStr) || document.getElementById('assetFundNote_' + assetId);
   if (!input) return;
   const amt = parseFloat((input.value || '').replace(/,/g, ''));
   const note = noteInput ? noteInput.value.trim() : '';
   if (!amt || amt <= 0) { toast('Enter a valid amount'); return; }
   const items = getNwItems();
-  const item = items.find(i => i.id === assetId);
+  const item = items.find(i => String(i.id) === String(assetId) || i.id === assetId);
   if (!item) return;
   item.amt = (item.amt || 0) + amt;
   if (!item.transactions) item.transactions = [];
@@ -6473,14 +6593,15 @@ function _assetFund(assetId) {
 }
 
 function _assetWithdraw(assetId) {
-  const input = document.getElementById('assetWithdraw_' + assetId);
-  const noteInput = document.getElementById('assetWithdrawNote_' + assetId);
+  const idStr = String(assetId).replace(/[^a-zA-Z0-9_-]/g, '_');
+  const input = document.getElementById('assetWithdraw_' + idStr) || document.getElementById('assetWithdraw_' + assetId);
+  const noteInput = document.getElementById('assetWithdrawNote_' + idStr) || document.getElementById('assetWithdrawNote_' + assetId);
   if (!input) return;
   const amt = parseFloat((input.value || '').replace(/,/g, ''));
   const note = noteInput ? noteInput.value.trim() : '';
   if (!amt || amt <= 0) { toast('Enter a valid amount'); return; }
   const items = getNwItems();
-  const item = items.find(i => i.id === assetId);
+  const item = items.find(i => String(i.id) === String(assetId) || i.id === assetId);
   if (!item) return;
   if (amt > item.amt) { toast('Cannot withdraw more than balance'); return; }
   item.amt = Math.max(0, item.amt - amt);
@@ -6512,7 +6633,7 @@ function openFinTxnModal(itemId, module, action) {
   const today = new Date().toISOString().split("T")[0];
 
   if (module === "income") {
-    item = getIncomeSources().find(s => s.id === itemId);
+    item = getIncomeSources().find(s => String(s.id) === String(itemId) || s.id === itemId);
     if (!item) return;
     itemName       = item.label;
     currentBalance = item.amount;
@@ -6523,7 +6644,7 @@ function openFinTxnModal(itemId, module, action) {
     notePh         = "e.g. July salary, client payment";
   } else if (module === "goal") {
     const data = getData();
-    item = data.goals.find(g => g.id === itemId);
+    item = data.goals.find(g => String(g.id) === String(itemId) || g.id === itemId);
     if (!item) return;
     itemName       = item.name;
     currentBalance = item.saved || 0;
@@ -6533,7 +6654,7 @@ function openFinTxnModal(itemId, module, action) {
     btnLabel       = "Add Contribution";
     notePh         = "e.g. July savings, bonus allocation";
   } else if (module === "asset") {
-    item = getNwItems().find(i => i.id === itemId);
+    item = getNwItems().find(i => String(i.id) === String(itemId) || i.id === itemId);
     if (!item) return;
     itemName       = item.name;
     currentBalance = item.amt;
@@ -6543,7 +6664,7 @@ function openFinTxnModal(itemId, module, action) {
     btnLabel       = "Add Funds";
     notePh         = "e.g. Monthly deposit, dividend";
   } else { // liability
-    item = getNwItems().find(i => i.id === itemId);
+    item = getNwItems().find(i => String(i.id) === String(itemId) || i.id === itemId);
     if (!item) return;
     itemName       = item.name;
     currentBalance = item.amt;
@@ -6554,6 +6675,7 @@ function openFinTxnModal(itemId, module, action) {
     notePh         = "e.g. Monthly amortization, extra payment";
   }
 
+  const itemIdJson = JSON.stringify(itemId);
   const overlay = document.createElement("div");
   overlay.id    = "_finTxnModal";
   overlay.style.cssText = "position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:1400;display:flex;align-items:flex-end;justify-content:center";
@@ -6605,7 +6727,7 @@ function openFinTxnModal(itemId, module, action) {
         </div>
       </div>
 
-      <button onclick="saveFinTxn(${itemId},'${module}','${action}')"
+      <button onclick="saveFinTxn(${itemIdJson},'${module}','${action}')"
         style="width:100%;margin-top:20px;padding:13px;background:${accentColor};color:#fff;
                border:none;border-radius:12px;font-size:14px;font-weight:800;
                cursor:pointer;font-family:inherit;letter-spacing:.1px">
@@ -6631,7 +6753,7 @@ function saveFinTxn(itemId, module, action) {
 
   if (module === "income") {
     const list = getIncomeSources();
-    const item = list.find(s => s.id === itemId);
+    const item = list.find(s => String(s.id) === String(itemId) || s.id === itemId);
     if (!item) return;
     item.amount += amt;
     txn.balance  = item.amount;
@@ -6645,7 +6767,7 @@ function saveFinTxn(itemId, module, action) {
 
   } else if (module === "goal") {
     const data = getData();
-    const g    = data.goals.find(g => g.id === itemId);
+    const g    = data.goals.find(g => String(g.id) === String(itemId) || g.id === itemId);
     if (!g) return;
     g.saved = (g.saved || 0) + amt;
     txn.balance = g.saved;
@@ -6665,7 +6787,7 @@ function saveFinTxn(itemId, module, action) {
 
   } else if (module === "asset") {
     const items = getNwItems();
-    const item  = items.find(i => i.id === itemId);
+    const item  = items.find(i => String(i.id) === String(itemId) || i.id === itemId);
     if (!item) return;
     item.amt += amt;
     txn.balance = item.amt;
@@ -6685,7 +6807,7 @@ function saveFinTxn(itemId, module, action) {
 
   } else { // liability
     const items = getNwItems();
-    const item  = items.find(i => i.id === itemId);
+    const item  = items.find(i => String(i.id) === String(itemId) || i.id === itemId);
     if (!item) return;
     item.amt    = Math.max(0, item.amt - amt);
     txn.action  = "pay";
@@ -6764,6 +6886,9 @@ function _migrateGoals() {
 
 
 function renderNetWorth() {
+  if (typeof _syncPreviousMonthsSurplusToAssets === "function") {
+    _syncPreviousMonthsSurplusToAssets();
+  }
   const items = getNwItems();
   const assets      = items.filter(i => i.type === "asset");
   const liabilities = items.filter(i => i.type === "liability");
@@ -7987,7 +8112,21 @@ function formatIncomeInput(el) {
 }
 
 function parseIncome() {
-  return parseFloat(document.getElementById("incomeInput").value.replace(/,/g, "")) || 0;
+  const inp = document.getElementById("incomeInput");
+  if (inp && inp.value && inp.value.trim()) {
+    const v = parseFloat(inp.value.replace(/,/g, ""));
+    if (!isNaN(v) && v > 0) return v;
+  }
+  const data = getData();
+  if (data && typeof data.income === "number" && data.income > 0) return data.income;
+  const sources = (typeof getIncomeSources === "function" ? getIncomeSources() : []).filter(s => !s.isWindfall);
+  const sTotal = sources.reduce((s, src) => s + (src.amount || 0), 0);
+  if (sTotal > 0) return sTotal;
+  return 0;
+}
+
+function getMonthlyIncome() {
+  return parseIncome();
 }
 
 function setIncomeDisplay(val) {
@@ -8704,6 +8843,9 @@ function formatNumberInput(el) {
 
 // ── Dashboard top metrics (Net Worth / Debt Ratio / Assets / Liabilities) ──
 function _renderDashNetWorth() {
+  if (typeof _syncPreviousMonthsSurplusToAssets === "function") {
+    _syncPreviousMonthsSurplusToAssets();
+  }
   const items = getNwItems();
   const assetItems = items.filter(i => i.type === "asset");
   const liabItems  = items.filter(i => i.type === "liability");
