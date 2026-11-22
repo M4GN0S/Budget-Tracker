@@ -1,15 +1,33 @@
 # DEVLOG — L'Atelier de Luz | Budget Tracker PWA
 
-## Current State: v257
+## Current State: v258
 
 | Metric | Value |
 |---|---|
-| SW cache | `budget-tracker-v257` |
+| SW cache | `budget-tracker-v258` |
 | File | `index.html` + `sw.js` |
-| App version | 1.9.6 |
+| App version | 1.9.7 |
 | Panels | 7 (`dashboard`, `expenses`, `history`, `goals`, `notes`, `ai`, `data`) |
 | Backend | `backend/google_sheets_backend.js` (Google Apps Script Web App) |
 | Products | `products/` (Sheets Template v2, Setup Guide, Seed CSV, Apps Script Template) |
+
+---
+
+## v258 Changelog (from v257) — Windfall & Sideline Income UI Redesign & Dynamic Terminology
+
+### 1. Dynamic UI Terminology for One-Time / Windfall Income
+- **Card Header Labels**: Updated `_finCard` to conditionally render `Amount:` instead of inappropriate `Monthly:` for windfall/one-time income entries (e.g. lot sale, bonus, windfall).
+- **Dynamic Amount Input in Modal**: In `addIncomeSource()` modal, the amount input label dynamically switches between `Monthly Amount` (for recurring streams) and `One-Time Amount` (for windfalls & project payouts) based on category selection.
+- **Categorization Grouping**: Added explicit `optgroup` headers (`Recurring Monthly Streams` vs `One-Time / Project / Windfall`) with clear distinctions.
+- **Action Button Semantics**: Windfall cards now display `+ Record Payout` instead of `+ Log Income`, and unified transaction modal uses "Record Payout" with relevant placeholders.
+- **Rename & Edit Modals**: Updated modal titles to reflect "Edit One-Time / Windfall Income" and field label "Description / Title" for non-recurring sources.
+
+### 2. Sideline & Side Hustle Income Distinctions
+- Added `side_hustle` ("Side Hustle / Sideline (Monthly)") under recurring streams for consistent monthly side gigs.
+- Added `side_income` ("Sideline / Project Payout") under one-time/windfall streams for project/freelance lump-sum payouts.
+
+### 3. Automated QA Test Suite
+- Added **Test Suite 16** covering windfall card UI labels, dynamic modal labels on category change, and button action semantics (156/156 tests passing).
 
 ---
 

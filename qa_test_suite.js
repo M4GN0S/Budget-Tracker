@@ -823,6 +823,64 @@ assert(pureWfAsset.amt === 8500, `Pure windfall rollover asset amount is 8500 (g
 assert(pureWfAsset.transactions[0].note.includes("Windfall Rollover"), `Transaction note uses 'Windfall Rollover' label: "${pureWfAsset.transactions[0].note}"`);
 
 
+// ─── TEST SUITE 16: Windfall & Sideline Income UI Semantics & Modal Dynamic Labels ───
+console.log("\n─── TEST SUITE 16: Windfall & Sideline Income UI Semantics & Modal Dynamic Labels ───");
+
+// 1. Windfall income card renders 'Amount:' instead of 'Monthly:'
+const sampleWindfall = { id: 501, label: "Lot Sale", type: "property_sale", amount: 300000, isWindfall: true, transactions: [] };
+const windfallCardHtml = _finCard(sampleWindfall, {
+  module: "income",
+  isWindfall: true,
+  accentColor: "var(--acc)",
+  accentLight: "var(--acc-l)",
+  tagLabel: "Property / Asset Sale",
+  actionLabel: "+ Record Payout",
+  actionFn: "openFinTxnModal(501,'income','log')",
+  balance: 300000
+});
+assert(windfallCardHtml.includes("Amount:"), "Windfall card renders 'Amount:' label");
+assert(!windfallCardHtml.includes("Monthly:"), "Windfall card does NOT render 'Monthly:' label");
+assert(windfallCardHtml.includes("+ Record Payout"), "Windfall card uses '+ Record Payout' action button");
+
+// 2. Regular monthly income card renders 'Monthly:'
+const sampleMonthlyInc = { id: 502, label: "Day Job", type: "salary", amount: 5000, isWindfall: false, transactions: [] };
+const monthlyCardHtml = _finCard(sampleMonthlyInc, {
+  module: "income",
+  isWindfall: false,
+  accentColor: "var(--suc)",
+  accentLight: "var(--suc-l)",
+  tagLabel: "Salary / Employment",
+  actionLabel: "+ Log Income",
+  actionFn: "openFinTxnModal(502,'income','log')",
+  balance: 5000
+});
+assert(monthlyCardHtml.includes("Monthly:"), "Recurring income card renders 'Monthly:' label");
+assert(monthlyCardHtml.includes("+ Log Income"), "Recurring income card uses '+ Log Income' action button");
+
+// 3. Dynamic modal update hint and amount label
+addIncomeSource();
+const incTypeSel = document.getElementById("_incType");
+const incAmtLabel = document.getElementById("_incAmtLabel");
+const incHint = document.getElementById("_incTypeHint");
+
+assert(incTypeSel !== null, "Income type select exists in modal");
+assert(incAmtLabel !== null, "Amount label exists in modal");
+
+// Change to a windfall category
+incTypeSel.value = "property_sale";
+_updateIncTypeHint(incTypeSel);
+assert(incAmtLabel.textContent === "One-Time Amount", `Selecting property_sale updates amount label to 'One-Time Amount' (got '${incAmtLabel.textContent}')`);
+assert(incHint.style.display !== "none", "Selecting property_sale shows windfall info hint");
+
+// Change to recurring category
+incTypeSel.value = "salary";
+_updateIncTypeHint(incTypeSel);
+assert(incAmtLabel.textContent === "Monthly Amount", `Selecting salary updates amount label to 'Monthly Amount' (got '${incAmtLabel.textContent}')`);
+assert(incHint.style.display === "none", "Selecting salary hides windfall info hint");
+
+document.getElementById("_incSrcModal")?.remove();
+
+
 // ─── SUMMARY ────────────────────────────────────────────────
 console.log("\n=================================================");
 console.log(`  QA TEST RUN COMPLETE: ${passed} PASSED, ${failed} FAILED`);

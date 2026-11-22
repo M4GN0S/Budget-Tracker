@@ -5894,7 +5894,7 @@ function _finCard(item, cfg) {
   var histSection = txCount > 0 ? '<div id="' + histId + '" style="display:none;padding-top:10px"><div style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.7px;color:var(--txt2);margin-bottom:6px;display:flex;align-items:center;gap:5px"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Transaction History</div><div style="overflow-x:auto;border-radius:8px;border:1px solid var(--brd)"><table style="width:100%;border-collapse:collapse;min-width:320px"><thead><tr style="background:var(--bg)">' + ['Date','Action','Amount','Notes','Balance'].map(function(h) { return '<th style="padding:5px 8px;font-size:9px;font-weight:700;text-align:' + (h==='Amount'||h==='Balance'?'right':'left') + ';color:var(--txt2);text-transform:uppercase;letter-spacing:.5px">' + h + '</th>'; }).join('') + '</tr></thead><tbody>' + histRows + '</tbody></table></div></div>' : '';
 
   // Card header
-  var hdrLabel = cfg.module === 'goal' ? 'Saved' : cfg.module === 'income' ? 'Monthly' : 'Balance';
+  var hdrLabel = cfg.module === 'goal' ? 'Saved' : cfg.module === 'income' ? (cfg.isWindfall ? 'Amount' : 'Monthly') : 'Balance';
   var limitVal = cfg.target > 0 ? 'Target: ' + fmt(cfg.target) : '';
 
   return '<div class="fin-card">'
@@ -6682,9 +6682,9 @@ function openFinTxnModal(itemId, module, action) {
     currentBalance = item.amount;
     accentColor    = item.isWindfall ? "var(--acc)" : "var(--suc)";
     accentLight    = item.isWindfall ? "var(--acc-l)" : "var(--suc-l)";
-    title          = "Log Income — " + itemName;
-    btnLabel       = "Log Income";
-    notePh         = "e.g. July salary, client payment";
+    title          = (item.isWindfall ? "Record Payout — " : "Log Income — ") + itemName;
+    btnLabel       = item.isWindfall ? "Record Payout" : "Log Income";
+    notePh         = item.isWindfall ? "e.g. Partial sale payment, milestone bonus, sideline payout" : "e.g. July salary, client payment";
   } else if (module === "goal") {
     const data = getData();
     item = data.goals.find(g => String(g.id) === String(itemId) || g.id === itemId);
@@ -6730,7 +6730,7 @@ function openFinTxnModal(itemId, module, action) {
         <div>
           <div style="font-size:15px;font-weight:800;color:var(--txt)">${title}</div>
           <div style="font-size:11px;color:var(--txt2);margin-top:2px">
-            Current: <strong style="font-family:'SF Mono',monospace;color:${accentColor}">${fmt(currentBalance)}</strong>
+            ${(module === "income" && item.isWindfall) ? "Total Received" : "Current"}: <strong style="font-family:'SF Mono',monospace;color:${accentColor}">${fmt(currentBalance)}</strong>
           </div>
         </div>
         <button onclick="document.getElementById('_finTxnModal').remove()"
@@ -9024,13 +9024,15 @@ function deleteGoalContrib(goalId, idx) {
 const INCOME_SOURCES_KEY = "bt_income_sources";
 const INCOME_TYPE_LABELS = {
   salary:"Salary / Employment", business:"Business", freelance:"Freelance",
+  side_hustle:"Side Hustle / Sideline (Monthly)",
   dividends:"Dividends / Investments", retirement:"Retirement / Pension",
-  rental:"Rental Income", other:"Other Income"
+  rental:"Rental Income", other:"Other Monthly Income"
 };
 const INCOME_WINDFALL_LABELS = {
-  lottery:"Lottery Win", inheritance:"Inheritance",
+  side_income:"Sideline / Project Payout",
   property_sale:"Property / Asset Sale", bonus:"One-time Bonus",
-  gift:"Cash Gift", settlement:"Settlement Payout", windfall_other:"Other Windfall"
+  gift:"Cash Gift", inheritance:"Inheritance",
+  lottery:"Lottery Win", settlement:"Settlement Payout", windfall_other:"Other Windfall / One-Time"
 };
 
 function getIncomeSources() {
@@ -9043,7 +9045,7 @@ function addIncomeSource() {
   if (ex) ex.remove();
   const typeOpts = '<optgroup label="Monthly / Recurring">' +
     Object.entries(INCOME_TYPE_LABELS).map(([v,l])=>`<option value="${v}">${l}</option>`).join("") +
-    '</optgroup><optgroup label="One-time / Windfall">' +
+    '</optgroup><optgroup label="One-Time / Windfall / Sideline Payout">' +
     Object.entries(INCOME_WINDFALL_LABELS).map(([v,l])=>`<option value="${v}">${l}</option>`).join("") + '</optgroup>';
   const overlay = document.createElement("div");
   overlay.id = "_incSrcModal";
@@ -9055,13 +9057,13 @@ function addIncomeSource() {
         <label>Category</label>
         <select id="_incType" onchange="_updateIncTypeHint(this)" style="width:100%;padding:9px 12px;border:1.5px solid var(--brd);border-radius:9px;font-size:13px;font-family:inherit;background:var(--input-bg);color:var(--txt);outline:none;box-sizing:border-box">${typeOpts}</select>
       </div>
-      <div id="_incTypeHint" style="font-size:11px;color:var(--txt2);margin:-4px 0 10px;padding:6px 10px;background:var(--bg);border-radius:8px;display:none">Note: One-time income is logged separately and won't affect your monthly budget.</div>
+      <div id="_incTypeHint" style="font-size:11px;color:var(--txt2);margin:-4px 0 10px;padding:8px 12px;background:var(--bg);border:1px solid var(--brd);border-radius:8px;display:none;line-height:1.4"></div>
       <div class="fg" style="margin-bottom:10px">
         <label>Label <span style="font-weight:400;color:var(--txt2)">(optional)</span></label>
-        <input type="text" id="_incLabel" placeholder="e.g. Day job, Airbnb" style="width:100%;padding:9px 12px;border:1.5px solid var(--brd);border-radius:9px;font-size:13px;color:var(--txt);background:var(--input-bg);outline:none;box-sizing:border-box">
+        <input type="text" id="_incLabel" placeholder="e.g. Day job, Rental unit, Monthly freelance" style="width:100%;padding:9px 12px;border:1.5px solid var(--brd);border-radius:9px;font-size:13px;color:var(--txt);background:var(--input-bg);outline:none;box-sizing:border-box">
       </div>
       <div class="fg" style="margin-bottom:16px">
-        <label>Monthly Amount</label>
+        <label id="_incAmtLabel">Monthly Amount</label>
         <input type="text" inputmode="decimal" id="_incAmt" placeholder="0.00" oninput="formatNumberInput(this)" style="width:100%;padding:9px 12px;border:1.5px solid var(--brd);border-radius:9px;font-size:15px;font-weight:800;color:var(--txt);background:var(--input-bg);outline:none;box-sizing:border-box">
       </div>
       <div style="display:flex;gap:10px;justify-content:flex-end">
@@ -9075,8 +9077,22 @@ function addIncomeSource() {
 }
 
 function _updateIncTypeHint(sel) {
+  const isWf = !!INCOME_WINDFALL_LABELS[sel.value];
   const hint = document.getElementById("_incTypeHint");
-  if (hint) hint.style.display = INCOME_WINDFALL_LABELS[sel.value] ? "block" : "none";
+  const amtLabel = document.getElementById("_incAmtLabel");
+  const labelInput = document.getElementById("_incLabel");
+  if (hint) {
+    hint.style.display = isWf ? "block" : "none";
+    if (isWf) {
+      hint.innerHTML = '<span style="color:var(--acc);font-weight:700">One-Time / Sideline Income:</span> Recorded directly into Net Worth and rolls over to past months rather than recurring monthly budget.';
+    }
+  }
+  if (amtLabel) {
+    amtLabel.textContent = isWf ? "One-Time Amount" : "Monthly Amount";
+  }
+  if (labelInput) {
+    labelInput.placeholder = isWf ? "e.g. Lot sale, Freelance project, Year-end bonus" : "e.g. Day job, Rental unit, Monthly freelance";
+  }
 }
 
 function _saveIncomeSource() {
@@ -9126,6 +9142,8 @@ function openEditIncomeName(id) {
   const overlay = document.createElement("div");
   overlay.id = "_editIncModal";
   overlay.style.cssText = "position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.5)";
+  const modalTitle = src.isWindfall ? "Edit One-Time / Windfall Income" : "Edit Income Source";
+  const nameLabel = src.isWindfall ? "Description / Title" : "Name";
 
   // Build transaction history rows
   const txns = src.transactions || [];
@@ -9146,9 +9164,9 @@ function openEditIncomeName(id) {
 
   overlay.innerHTML = `
     <div style="background:var(--card);border-radius:16px;padding:22px 24px;min-width:320px;max-width:min(500px,92vw);max-height:85vh;overflow-y:auto;box-shadow:0 12px 40px rgba(0,0,0,.28)">
-      <div style="font-size:14px;font-weight:800;color:var(--txt);margin-bottom:14px">Edit Income Source</div>
+      <div style="font-size:14px;font-weight:800;color:var(--txt);margin-bottom:14px">${modalTitle}</div>
       <div class="fg" style="margin-bottom:16px">
-        <label>Name</label>
+        <label>${nameLabel}</label>
         <input type="text" id="_editIncNameInput" value="` + escHtml(src.label || '') + `" style="width:100%;padding:9px 12px;border:1.5px solid var(--brd);border-radius:9px;font-size:13px;color:var(--txt);background:var(--input-bg);outline:none;box-sizing:border-box">
       </div>
       <div style="display:flex;gap:10px;justify-content:flex-end">
@@ -9166,12 +9184,12 @@ function _saveEditIncomeName(id) {
   const newName = document.getElementById("_editIncNameInput")?.value.trim();
   if (!newName) { toast("Name can't be empty"); return; }
   const sources = getIncomeSources();
-  const src = sources.find(s => s.id === id);
+  const src = sources.find(s => s.id === id || String(s.id) === String(id));
   if (src) {
     src.label = newName;
     saveIncomeSources(sources);
     renderIncomeSourcesList();
-    toast("Income source renamed!");
+    toast(src.isWindfall ? "One-time income renamed!" : "Income source renamed!");
   }
   document.getElementById("_editIncModal")?.remove();
 }
@@ -9288,10 +9306,11 @@ function renderIncomeSourcesList() {
 
   const incomeCard = s => _finCard(s, {
     module:      "income",
+    isWindfall:  !!s.isWindfall,
     accentColor: s.isWindfall ? "var(--acc)" : "var(--suc)",
     accentLight: s.isWindfall ? "var(--acc-l)" : "var(--suc-l)",
     tagLabel:    INCOME_TYPE_LABELS[s.type] || INCOME_WINDFALL_LABELS[s.type] || s.type,
-    actionLabel: "Log Income",
+    actionLabel: s.isWindfall ? "+ Record Payout" : "+ Log Income",
     actionFn:    `openFinTxnModal(${s.id},'income','log')`,
     balance:     s.amount,
   });
@@ -9302,15 +9321,15 @@ function renderIncomeSourcesList() {
     html2 += `<div style="display:flex;justify-content:space-between;padding:8px 12px;
                 font-size:12px;font-weight:700;color:var(--suc);
                 background:var(--suc-l);border-radius:8px;margin-top:4px;margin-bottom:8px">
-                <span>Monthly Total</span><span style="font-family:'SF Mono',monospace">${fmt(mTotal)}</span>
+                <span>Monthly Recurring Total</span><span style="font-family:'SF Mono',monospace">${fmt(mTotal)}</span>
               </div>`;
   }
   if (windfalls.length) {
-    html2 += `<div style="font-size:9.5px;font-weight:800;text-transform:uppercase;
-                letter-spacing:.7px;color:var(--acc);margin:6px 0;
+    html2 += `<div style="font-size:10px;font-weight:800;text-transform:uppercase;
+                letter-spacing:.7px;color:var(--acc);margin:12px 0 6px;
                 display:flex;align-items:center;justify-content:space-between">
-                <span>One-time / Windfall</span>
-                <span style="font-style:italic;font-weight:400;font-size:9px">Added to Net Worth</span>
+                <span>One-Time / Sideline / Windfall</span>
+                <span style="font-style:italic;font-weight:500;font-size:9.5px;color:var(--txt2)">Added to Net Worth &amp; Rollover</span>
               </div><div class="fin-card-grid">` + windfalls.map(incomeCard).join("") + `</div>`;
   }
   el.innerHTML = html2;
