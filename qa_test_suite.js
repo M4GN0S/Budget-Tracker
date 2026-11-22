@@ -826,7 +826,7 @@ assert(pureWfAsset.transactions[0].note.includes("Windfall Rollover"), `Transact
 // ─── TEST SUITE 16: Windfall & Sideline Income UI Semantics & Modal Dynamic Labels ───
 console.log("\n─── TEST SUITE 16: Windfall & Sideline Income UI Semantics & Modal Dynamic Labels ───");
 
-// 1. Windfall income card renders 'Amount:' instead of 'Monthly:'
+// 1. Windfall income card renders 'Amount:' instead of 'Monthly:' and does NOT render double plus '+ +'
 const sampleWindfall = { id: 501, label: "Lot Sale", type: "property_sale", amount: 300000, isWindfall: true, transactions: [] };
 const windfallCardHtml = _finCard(sampleWindfall, {
   module: "income",
@@ -834,15 +834,16 @@ const windfallCardHtml = _finCard(sampleWindfall, {
   accentColor: "var(--acc)",
   accentLight: "var(--acc-l)",
   tagLabel: "Property / Asset Sale",
-  actionLabel: "+ Record Payout",
+  actionLabel: "Record Payout",
   actionFn: "openFinTxnModal(501,'income','log')",
   balance: 300000
 });
 assert(windfallCardHtml.includes("Amount:"), "Windfall card renders 'Amount:' label");
 assert(!windfallCardHtml.includes("Monthly:"), "Windfall card does NOT render 'Monthly:' label");
-assert(windfallCardHtml.includes("+ Record Payout"), "Windfall card uses '+ Record Payout' action button");
+assert(windfallCardHtml.includes("Record Payout"), "Windfall card uses 'Record Payout' action button");
+assert(!windfallCardHtml.includes("+ +"), "Windfall card has no duplicate '+ +' (double cross) icon");
 
-// 2. Regular monthly income card renders 'Monthly:'
+// 2. Regular monthly income card renders 'Monthly:' and tests defensive leading '+' stripping
 const sampleMonthlyInc = { id: 502, label: "Day Job", type: "salary", amount: 5000, isWindfall: false, transactions: [] };
 const monthlyCardHtml = _finCard(sampleMonthlyInc, {
   module: "income",
@@ -850,12 +851,14 @@ const monthlyCardHtml = _finCard(sampleMonthlyInc, {
   accentColor: "var(--suc)",
   accentLight: "var(--suc-l)",
   tagLabel: "Salary / Employment",
-  actionLabel: "+ Log Income",
+  actionLabel: "+ Log Income", // intentionally passing leading '+' to test defensive stripping
   actionFn: "openFinTxnModal(502,'income','log')",
   balance: 5000
 });
 assert(monthlyCardHtml.includes("Monthly:"), "Recurring income card renders 'Monthly:' label");
-assert(monthlyCardHtml.includes("+ Log Income"), "Recurring income card uses '+ Log Income' action button");
+assert(monthlyCardHtml.includes("Log Income"), "Recurring income card uses 'Log Income' action button");
+assert(!monthlyCardHtml.includes("+ +"), "Defensive sanitizer prevents duplicate '+ +' when actionLabel starts with '+'");
+assert(!monthlyCardHtml.includes(">+ Log Income"), "Leading '+' is stripped so text node is cleanly 'Log Income'");
 
 // 3. Dynamic modal update hint and amount label
 addIncomeSource();

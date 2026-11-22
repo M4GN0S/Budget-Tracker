@@ -1,15 +1,37 @@
 # DEVLOG — L'Atelier de Luz | Budget Tracker PWA
 
-## Current State: v258
+## Current State: v259
 
 | Metric | Value |
 |---|---|
-| SW cache | `budget-tracker-v258` |
+| SW cache | `budget-tracker-v259` |
 | File | `index.html` + `sw.js` |
-| App version | 1.9.7 |
+| App version | 1.9.8 |
 | Panels | 7 (`dashboard`, `expenses`, `history`, `goals`, `notes`, `ai`, `data`) |
 | Backend | `backend/google_sheets_backend.js` (Google Apps Script Web App) |
 | Products | `products/` (Sheets Template v2, Setup Guide, Seed CSV, Apps Script Template) |
+
+---
+
+## ⚠️ PERMANENT UI GUIDELINES & ANTI-REGRESSION RULES
+
+### Rule 1: No Duplicate Cross/Plus Icons in Buttons (`+ +` Regression Rule)
+- **Problem**: When a button template already includes an SVG plus icon (`<svg><line.../></svg>`), passing an `actionLabel` that begins with a literal `+` (e.g., `+ Log Income` or `+ Record Payout`) causes the button to display a double plus / double cross: `+ + Log Income`.
+- **Enforcement**:
+  1. `_finCard` and all button generator helpers must sanitize `actionLabel` using `(cfg.actionLabel || '').replace(/^\+\s*/, '')` to strip any accidental leading `+` before rendering next to the SVG plus icon.
+  2. Call sites (e.g., `renderIncomeSourcesList()`) must supply plain verb phrases like `"Log Income"` and `"Record Payout"`.
+  3. Automated QA in `qa_test_suite.js` (Suite 16) explicitly asserts that no card or button renders `+ +` in any state.
+
+---
+
+## v259 Changelog (from v258) — Double Plus / Double Cross Fix & Permanent Prevention
+
+### 1. Fixed Double Plus Icon on Income & Windfall Cards
+- Removed redundant leading `+` in `renderIncomeSourcesList()` action button configurations.
+- Added regex sanitizer `replace(/^\+\s*/, '')` in `_finCard` to defensively strip leading `+` characters so `_finCard` will never render duplicate plus signs regardless of input string.
+
+### 2. Automated Regression Tests
+- Added QA assertions in Suite 16 testing both standard labels and strings with leading `+` to verify that duplicate crosses `+ +` never appear in the DOM.
 
 ---
 

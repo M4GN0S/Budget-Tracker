@@ -5876,8 +5876,9 @@ function _finCard(item, cfg) {
     remainText = '';
   }
 
-  // Action button
-  var actionBtn = '<button onclick="event.stopPropagation();' + cfg.actionFn + '" style="font-size:11px;font-weight:700;padding:5px 12px;border-radius:8px;border:1.5px solid ' + cfg.accentColor + ';background:' + cfg.accentLight + ';color:' + cfg.accentColor + ';cursor:pointer;font-family:inherit;white-space:nowrap;transition:.15s;display:flex;align-items:center;gap:5px" onmouseover="this.style.background=\'' + cfg.accentColor + '\';this.style.color=\'#fff\'" onmouseout="this.style.background=\'' + cfg.accentLight + '\';this.style.color=\'' + cfg.accentColor + '\'"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>' + cfg.actionLabel + '</button>';
+  // Action button (defensively strip any leading '+' so SVG plus icon is never doubled)
+  var cleanActionLabel = (cfg.actionLabel || '').replace(/^\+\s*/, '');
+  var actionBtn = '<button onclick="event.stopPropagation();' + cfg.actionFn + '" style="font-size:11px;font-weight:700;padding:5px 12px;border-radius:8px;border:1.5px solid ' + cfg.accentColor + ';background:' + cfg.accentLight + ';color:' + cfg.accentColor + ';cursor:pointer;font-family:inherit;white-space:nowrap;transition:.15s;display:flex;align-items:center;gap:5px" onmouseover="this.style.background=\'' + cfg.accentColor + '\';this.style.color=\'#fff\'" onmouseout="this.style.background=\'' + cfg.accentLight + '\';this.style.color=\'' + cfg.accentColor + '\'"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>' + cleanActionLabel + '</button>';
 
   // History toggle
   var histBtn = txCount > 0 ? '<button onclick="event.stopPropagation();_toggleFinHist(\'' + histId + '\')" style="font-size:10px;color:var(--txt2);background:var(--card);border:1px solid var(--brd);border-radius:6px;cursor:pointer;padding:3px 7px;font-family:inherit;display:flex;align-items:center;gap:3px;transition:.15s;flex-shrink:0;line-height:1.4" onmouseover="this.style.borderColor=\'var(--pri)\';this.style.color=\'var(--pri-d)\'" onmouseout="this.style.borderColor=\'var(--brd)\';this.style.color=\'var(--txt2)\'" title="View history"><svg id="' + histId + '_chev" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="transition:transform .2s"><polyline points="6 9 12 15 18 9"/></svg>' + txCount + '</button>' : '';
@@ -9310,7 +9311,7 @@ function renderIncomeSourcesList() {
     accentColor: s.isWindfall ? "var(--acc)" : "var(--suc)",
     accentLight: s.isWindfall ? "var(--acc-l)" : "var(--suc-l)",
     tagLabel:    INCOME_TYPE_LABELS[s.type] || INCOME_WINDFALL_LABELS[s.type] || s.type,
-    actionLabel: s.isWindfall ? "+ Record Payout" : "+ Log Income",
+    actionLabel: s.isWindfall ? "Record Payout" : "Log Income",
     actionFn:    `openFinTxnModal(${s.id},'income','log')`,
     balance:     s.amount,
   });
