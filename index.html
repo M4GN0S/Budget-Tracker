@@ -5280,6 +5280,9 @@ function addNwItem(type) {
 }
 
 function deleteNwItem(id) {
+  if (String(id) === "auto_surplus_asset" || id === "auto_surplus_asset") {
+    localStorage.setItem("bt_auto_surplus_dismissed", "1");
+  }
   saveNwItems(getNwItems().filter(i => String(i.id) !== String(id) && i.id !== id));
   renderNetWorth();
   _renderDashNetWorth();
@@ -5332,15 +5335,19 @@ function calcPreviousMonthsSurplus() {
 }
 
 function _syncPreviousMonthsSurplusToAssets() {
+  if (localStorage.getItem("bt_auto_surplus_dismissed") === "1") return;
   const { totalSurplus, months } = calcPreviousMonthsSurplus();
   const items = getNwItems();
-  const existingIdx = items.findIndex(i => i.isAutoSurplus || i.id === "auto_surplus_asset" || i.name === "Rollover Savings (Past Months)");
+  const existingIdx = items.findIndex(i => i.isAutoSurplus || i.id === "auto_surplus_asset" || i.name === "Rollover Income (Past Months)" || i.name === "Rollover Savings (Past Months)" || i.label === "Rollover Savings (Past Months)");
   
   if (totalSurplus > 0) {
+    const existing = existingIdx >= 0 ? items[existingIdx] : null;
+    const currentName = existing ? (existing.label || existing.name) : "Rollover Income (Past Months)";
+    const finalName = (currentName === "Rollover Savings (Past Months)" || !currentName) ? "Rollover Income (Past Months)" : currentName;
     const surplusItem = {
       id: "auto_surplus_asset",
-      name: "Rollover Savings (Past Months)",
-      label: "Rollover Savings (Past Months)",
+      name: finalName,
+      label: finalName,
       type: "asset",
       isAutoSurplus: true,
       amt: totalSurplus,
@@ -5447,12 +5454,12 @@ function renderFinanceOverview() {
           </span>` : "";
       // Quick-add button — opens expense modal pre-filled with this category
       const addBtn = `<button class="fin-cat-add"
-        onclick="event.stopPropagation();quickAdd('','',${JSON.stringify(c.label)},0)"
+        onclick="event.stopPropagation();quickAdd('','',${JSON.stringify(c.label).replace(/\"/g, '&quot;')},0)"
         title="Add ${c.label} expense">
         <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
       </button>`;
       return `<div class="fin-cat-row"
-        onclick="quickAdd('','',${JSON.stringify(c.label)},0)"
+        onclick="quickAdd('','',${JSON.stringify(c.label).replace(/\"/g, '&quot;')},0)"
         title="Click to add a ${c.label} expense">
 
         <!-- Row A: dot + label + tooltip + % · spent amount + add btn -->
@@ -5713,14 +5720,14 @@ function toggleFinAccordion(el, evt) {
 // ─── NET WORTH TRANSACTION MODAL ───────────────────────────
 function openNwTxnModal(itemId, action) {
   // Unified: delegate to openFinTxnModal
-  const item = getNwItems().find(i => i.id === itemId);
+  const item = getNwItems().find(i => String(i.id) === String(itemId) || i.id === itemId);
   if (!item) return;
   openFinTxnModal(itemId, item.type === "asset" ? "asset" : "liability", action);
 }
 
 function saveNwTxn(itemId, action) {
   // Unified: delegate to saveFinTxn
-  const item = getNwItems().find(i => i.id === itemId);
+  const item = getNwItems().find(i => String(i.id) === String(itemId) || i.id === itemId);
   if (!item) return;
   saveFinTxn(itemId, item.type === "asset" ? "asset" : "liability", action);
 }
@@ -5773,14 +5780,16 @@ function _migrateNwItems() {
 function _finCard(item, cfg) {
   const txns    = item.transactions || [];
   const txCount = txns.length;
-  const histId  = '_finHist_' + cfg.module + '_' + item.id;
+  const idStr   = String(item.id).replace(/[^a-zA-Z0-9_-]/g, '_');
+  const histId  = '_finHist_' + cfg.module + '_' + idStr;
+  const itemIdJson = JSON.stringify(item.id).replace(/"/g, '&quot;');
 
   // Delete fn
   const delFn = cfg.module === 'income'
-    ? 'deleteIncomeSource(' + item.id + ')'
+    ? 'deleteIncomeSource(' + itemIdJson + ')'
     : cfg.module === 'goal'
-    ? 'deleteGoal(' + item.id + ')'
-    : 'deleteNwItem(' + item.id + ')';
+    ? 'deleteGoal(' + itemIdJson + ')'
+    : 'deleteNwItem(' + itemIdJson + ')';
 
   // Card icon
   const iconMap = {
@@ -5861,7 +5870,7 @@ function _finCard(item, cfg) {
   return '<div class="fin-card">'
     + '<div class="fin-card-top">'
       + '<div class="fin-card-title"><span class="fin-card-icon" style="background:' + cfg.accentLight + '">' + cardIcon + '</span>' + escHtml(item.label||item.name) + '</div>'
-    + '<div class="fin-card-actions">' + (cfg.module === 'income' ? '<button type="button" onclick="event.stopPropagation();openEditIncomeName(' + item.id + ')" title="Edit" style="width:24px;height:24px;border-radius:7px;border:1px solid var(--brd);background:var(--bg);color:var(--txt2);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;transition:.15s;flex-shrink:0;padding:0;box-sizing:border-box" onmouseover="this.style.borderColor=\'var(--pri)\';this.style.color=\'var(--pri-d)\'" onmouseout="this.style.borderColor=\'var(--brd)\';this.style.color=\'var(--txt2)\'"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06A1.65 1.65 0 009 4.6a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg></button>' : '<button type="button" onclick="event.stopPropagation();' + cfg.actionFn + '" title="' + cfg.actionLabel + '" style="width:24px;height:24px;border-radius:7px;border:1px solid var(--brd);background:var(--bg);color:var(--txt2);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;transition:.15s;flex-shrink:0;padding:0;box-sizing:border-box" onmouseover="this.style.borderColor=\'var(--pri)\';this.style.color=\'var(--pri-d)\'" onmouseout="this.style.borderColor=\'var(--brd)\';this.style.color=\'var(--txt2)\'"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06A1.65 1.65 0 009 4.6a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg></button>') + '<button type="button" class="fc-del" onclick="event.stopPropagation();' + delFn + '" title="Remove" style="width:24px;height:24px;border-radius:7px;border:1px solid var(--brd);background:var(--bg);color:var(--txt2);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;transition:.15s;flex-shrink:0;padding:0;box-sizing:border-box" onmouseover="this.style.background=\'var(--dan-l)\';this.style.borderColor=\'var(--dan)\';this.style.color=\'var(--dan)\'" onmouseout="this.style.background=\'var(--bg)\';this.style.borderColor=\'var(--brd)\';this.style.color=\'var(--txt2)\'"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>'
+    + '<div class="fin-card-actions">' + (cfg.module === 'income' ? '<button type="button" onclick="event.stopPropagation();openEditIncomeName(' + itemIdJson + ')" title="Edit" style="width:24px;height:24px;border-radius:7px;border:1px solid var(--brd);background:var(--bg);color:var(--txt2);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;transition:.15s;flex-shrink:0;padding:0;box-sizing:border-box" onmouseover="this.style.borderColor=\'var(--pri)\';this.style.color=\'var(--pri-d)\'" onmouseout="this.style.borderColor=\'var(--brd)\';this.style.color=\'var(--txt2)\'"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06A1.65 1.65 0 009 4.6a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg></button>' : '<button type="button" onclick="event.stopPropagation();' + cfg.actionFn + '" title="' + cfg.actionLabel + '" style="width:24px;height:24px;border-radius:7px;border:1px solid var(--brd);background:var(--bg);color:var(--txt2);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;transition:.15s;flex-shrink:0;padding:0;box-sizing:border-box" onmouseover="this.style.borderColor=\'var(--pri)\';this.style.color=\'var(--pri-d)\'" onmouseout="this.style.borderColor=\'var(--brd)\';this.style.color=\'var(--txt2)\'"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06A1.65 1.65 0 009 4.6a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg></button>') + '<button type="button" class="fc-del" onclick="event.stopPropagation();' + delFn + '" title="Remove" style="width:24px;height:24px;border-radius:7px;border:1px solid var(--brd);background:var(--bg);color:var(--txt2);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;transition:.15s;flex-shrink:0;padding:0;box-sizing:border-box" onmouseover="this.style.background=\'var(--dan-l)\';this.style.borderColor=\'var(--dan)\';this.style.color=\'var(--dan)\'" onmouseout="this.style.background=\'var(--bg)\';this.style.borderColor=\'var(--brd)\';this.style.color=\'var(--txt2)\'"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>'
     + '</div>'
     + '<div class="fin-card-row"><span class="fin-card-label">' + hdrLabel + ': <strong style="color:var(--txt)">' + fmt(cfg.balance) + '</strong></span>' + (limitVal ? '<span class="fin-card-label">' + limitVal + '</span>' : '') + '</div>'
     + progressHtml
@@ -5883,7 +5892,7 @@ function _goalCard(g, monthlySavingsRate) {
   const txns = g.transactions || [];
   const idStr = String(g.id).replace(/[^a-zA-Z0-9_-]/g, '_');
   const histId = '_nwHist_' + idStr;
-  const goalIdJson = JSON.stringify(g.id);
+  const goalIdJson = JSON.stringify(g.id).replace(/"/g, '&quot;');
   
   // Projection
   let projectionText = "";
@@ -6036,7 +6045,7 @@ function openEditGoalPopup(goalId) {
   const overlay = document.createElement('div');
   overlay.id = '_editGoalPopup';
   overlay.style.cssText = 'position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.5)';
-  const goalIdJson = JSON.stringify(goalId);
+  const goalIdJson = JSON.stringify(goalId).replace(/"/g, '&quot;');
   overlay.innerHTML = `
     <div style="background:var(--card);border-radius:16px;padding:22px 24px;min-width:280px;max-width:90vw;box-shadow:0 12px 40px rgba(0,0,0,.28)">
       <div style="font-size:14px;font-weight:800;color:var(--txt);margin-bottom:14px">Edit Goal Details</div>
@@ -6091,7 +6100,7 @@ function openEditNwItemPopup(itemType, itemId) {
   const overlay = document.createElement('div');
   overlay.id = '_editNwItemPopup';
   overlay.style.cssText = 'position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.5)';
-  const itemIdJson = JSON.stringify(itemId);
+  const itemIdJson = JSON.stringify(itemId).replace(/"/g, '&quot;');
   overlay.innerHTML = `
     <div style="background:var(--card);border-radius:16px;padding:22px 24px;min-width:280px;max-width:90vw;box-shadow:0 12px 40px rgba(0,0,0,.28)">
       <div style="font-size:14px;font-weight:800;color:var(--txt);margin-bottom:14px">Edit ${itemType.charAt(0).toUpperCase() + itemType.slice(1)} Name</div>
@@ -6118,6 +6127,7 @@ function _saveEditNwItemPopup(itemType, itemId) {
   const item = items.find(i => String(i.id) === String(itemId) || i.id === itemId);
   if (item) {
     item.label = newName;
+    item.name = newName;
     saveNwItems(items);
     renderNetWorth();
     toast(`${itemType.charAt(0).toUpperCase() + itemType.slice(1)} renamed!`);
@@ -6137,7 +6147,7 @@ function _liabilityCard(item) {
   const dashOffset = circumference - (pctPaid / 100) * circumference;
   const idStr = String(item.id).replace(/[^a-zA-Z0-9_-]/g, '_');
   const histId = '_nwHist_' + idStr;
-  const itemIdJson = JSON.stringify(item.id);
+  const itemIdJson = JSON.stringify(item.id).replace(/"/g, '&quot;');
   const delFn = `deleteNwItem(${itemIdJson})`;
   
   // Build transaction history rows
@@ -6291,7 +6301,7 @@ function _showNwHistPopup(itemType, itemId) {
   overlay.id = '_nwHistPopup';
   overlay.style.cssText = 'position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.5)';
   
-  const itemIdJson = JSON.stringify(itemId);
+  const itemIdJson = JSON.stringify(itemId).replace(/"/g, "&quot;");
   // Build transaction rows with edit/delete buttons
   const rows = txns.slice().reverse().map((t, idx) => {
     const realIdx = txns.length - 1 - idx;
@@ -6380,7 +6390,7 @@ function _editNwTxn(itemType, itemId, txnIdx) {
   const overlay = document.createElement('div');
   overlay.id = '_editTxnPopup';
   overlay.style.cssText = 'position:fixed;inset:0;z-index:10000;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.5)';
-  const itemIdJson = JSON.stringify(itemId);
+  const itemIdJson = JSON.stringify(itemId).replace(/"/g, '&quot;');
   overlay.innerHTML = `
     <div style="background:var(--card);border-radius:16px;padding:22px 24px;min-width:280px;max-width:90vw;box-shadow:0 12px 40px rgba(0,0,0,.28)">
       <div style="font-size:14px;font-weight:800;color:var(--txt);margin-bottom:14px">Edit Transaction</div>
@@ -6483,7 +6493,7 @@ function _assetCard(item) {
   const totalWithdrawn = txns.filter(t => t.action === 'withdraw').reduce((s, t) => s + t.amount, 0);
   const idStr = String(item.id).replace(/[^a-zA-Z0-9_-]/g, '_');
   const histId = '_nwHist_' + idStr;
-  const itemIdJson = JSON.stringify(item.id);
+  const itemIdJson = JSON.stringify(item.id).replace(/"/g, '&quot;');
   
   // Calculate initial amount and growth
   const initialAmount = balance - totalFunded + totalWithdrawn;
@@ -6678,7 +6688,7 @@ function openFinTxnModal(itemId, module, action) {
     notePh         = "e.g. Monthly amortization, extra payment";
   }
 
-  const itemIdJson = JSON.stringify(itemId);
+  const itemIdJson = JSON.stringify(itemId).replace(/"/g, "&quot;");
   const overlay = document.createElement("div");
   overlay.id    = "_finTxnModal";
   overlay.style.cssText = "position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:1400;display:flex;align-items:flex-end;justify-content:center";
@@ -7184,16 +7194,18 @@ function _nwRow(item, type) {
   const isAsset   = type === "asset";
   const txns      = item.transactions || [];
   const txCount   = txns.length;
-  const histId    = "_nwHist_" + item.id;
+  const idStr     = String(item.id).replace(/[^a-zA-Z0-9_-]/g, "_");
+  const histId    = "_nwHist_" + idStr;
+  const itemIdJson = JSON.stringify(item.id).replace(/"/g, "&quot;");
   const accentCol = isAsset ? "var(--suc)" : "var(--dan)";
   const accentLt  = isAsset ? "var(--suc-l)" : "var(--dan-l)";
 
   const actionBtn = isAsset
-    ? `<button onclick="event.stopPropagation();openNwTxnModal(${item.id},'fund')"
+    ? `<button onclick="event.stopPropagation();openNwTxnModal(${itemIdJson},'fund')"
         style="font-size:10px;font-weight:700;padding:4px 9px;border-radius:7px;border:1.5px solid var(--suc);background:var(--suc-l);color:var(--suc);cursor:pointer;font-family:inherit;white-space:nowrap;transition:.15s"
         onmouseover="this.style.background='var(--suc)';this.style.color='#fff'"
         onmouseout="this.style.background='var(--suc-l)';this.style.color='var(--suc)'">Add Funds</button>`
-    : `<button onclick="event.stopPropagation();openNwTxnModal(${item.id},'pay')"
+    : `<button onclick="event.stopPropagation();openNwTxnModal(${itemIdJson},'pay')"
         style="font-size:10px;font-weight:700;padding:4px 9px;border-radius:7px;border:1.5px solid var(--dan);background:var(--dan-l);color:var(--dan);cursor:pointer;font-family:inherit;white-space:nowrap;transition:.15s"
         onmouseover="this.style.background='var(--dan)';this.style.color='#fff'"
         onmouseout="this.style.background='var(--dan-l)';this.style.color='var(--dan)'">Pay Down</button>`;
@@ -7254,7 +7266,7 @@ function _nwRow(item, type) {
       <div style="display:flex;align-items:center;gap:6px;flex-shrink:0">
         ${actionBtn}
         ${histBtn}
-        <button onclick="event.stopPropagation();deleteNwItem(${item.id})"
+        <button onclick="event.stopPropagation();deleteNwItem(${itemIdJson})"
           style="background:none;border:none;color:var(--txt2);cursor:pointer;padding:3px;border-radius:6px;line-height:0;display:flex;align-items:center;opacity:.5;transition:.15s"
           onmouseover="this.style.opacity='1';this.style.color='var(--dan)'"
           onmouseout="this.style.opacity='.5';this.style.color='var(--txt2)'"
@@ -7548,7 +7560,7 @@ function renderLearnedKeywords() {
       <span style="flex:1;font-size:12.5px;font-weight:700;color:var(--txt)">"${escHtml(token)}"</span>
       <span style="font-size:11px;color:var(--txt2)">${entry.cat} → ${entry.sub}</span>
       <span style="font-size:10px;color:var(--txt2);padding:1px 6px;border-radius:6px;background:var(--pri-l);color:var(--pri-d)">${entry.count}×</span>
-      <button onclick="deleteLearnedKeyword(${JSON.stringify(token)})" style="background:none;border:none;color:var(--dan);cursor:pointer;font-size:13px;line-height:1;padding:2px 4px;border-radius:5px;line-height:0;display:flex;align-items:center" title="Remove"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+      <button onclick="deleteLearnedKeyword(${JSON.stringify(token).replace(/\"/g, '&quot;')})" style="background:none;border:none;color:var(--dan);cursor:pointer;font-size:13px;line-height:1;padding:2px 4px;border-radius:5px;line-height:0;display:flex;align-items:center" title="Remove"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
     </div>`
   ).join("") +
   (entries.length > 0 ? `<button onclick="clearAllLearnedKeywords()" style="margin-top:4px;font-size:11px;font-weight:700;color:var(--dan);background:none;border:none;cursor:pointer;font-family:inherit;text-decoration:underline">Clear all learned keywords</button>` : "");
@@ -8724,7 +8736,7 @@ function updateGoalSaved(id, val) {
 
 function deleteGoal(id) {
   const data = getData();
-  data.goals = data.goals.filter(g => g.id !== id);
+  data.goals = data.goals.filter(g => String(g.id) !== String(id) && g.id !== id);
   saveData(data);
   toast("Goal deleted");
   renderGoals();
@@ -9077,7 +9089,7 @@ function _saveIncomeSource() {
 
 function openEditIncomeName(id) {
   const sources = getIncomeSources();
-  const src = sources.find(s => s.id === id);
+  const src = sources.find(s => String(s.id) === String(id) || s.id === id);
   if (!src) return;
   const ex = document.getElementById("_editIncModal");
   if (ex) ex.remove();
@@ -9208,7 +9220,7 @@ function _deleteIncTxn(incId, txnIdx) {
 }
 
 function deleteIncomeSource(id) {
-  saveIncomeSources(getIncomeSources().filter(s=>s.id!==id));
+  saveIncomeSources(getIncomeSources().filter(s=>String(s.id)!==String(id) && s.id!==id));
   _syncIncomeSources();
   renderIncomeSourcesList();
   renderNetWorth();

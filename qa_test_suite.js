@@ -14,13 +14,44 @@ const localStorage = {
 };
 
 const documentElements = new Map();
-const makeMockElement = (id = '') => {
+const makeMockElement = (initialId = '') => {
   const classes = new Set();
+  let _id = initialId;
+  let _innerHTML = '';
+  let _textContent = '';
+  let _value = '';
+
   const el = {
-    id,
-    textContent: '',
-    innerHTML: '',
-    value: '',
+    get id() { return _id; },
+    set id(val) {
+      if (_id && documentElements.get(_id) === el) documentElements.delete(_id);
+      _id = val;
+      if (val) documentElements.set(val, el);
+    },
+    get textContent() { return _textContent || _innerHTML.replace(/<[^>]+>/g, ''); },
+    set textContent(val) { _textContent = val; _innerHTML = val; },
+    get innerHTML() { return _innerHTML; },
+    set innerHTML(val) {
+      _innerHTML = val;
+      _textContent = (val || '').replace(/<[^>]+>/g, '');
+      const idMatches = (val || '').matchAll(/id=["']([^"']+)["']/g);
+      for (const m of idMatches) {
+        const childId = m[1];
+        let childEl = documentElements.get(childId);
+        if (!childEl) {
+          childEl = makeMockElement(childId);
+          documentElements.set(childId, childEl);
+        }
+        const tagRegex = new RegExp(`<[^>]*id=["\']${childId}["\'][^>]*>`);
+        const tagMatch = val.match(tagRegex);
+        if (tagMatch) {
+          const valMatch = tagMatch[0].match(/value=["']([^"']*)["']/);
+          if (valMatch) childEl.value = valMatch[1];
+        }
+      }
+    },
+    get value() { return _value; },
+    set value(val) { _value = val; },
     style: {},
     dataset: {},
     parentElement: null,
@@ -45,7 +76,11 @@ const makeMockElement = (id = '') => {
     setAttribute: () => {},
     getAttribute: () => '',
     addEventListener: () => {},
-    remove: () => {},
+    focus: () => {},
+    select: () => {},
+    remove: () => {
+      el._removed = true;
+    },
     appendChild: (child) => {
       if (child) child.parentElement = el;
       el.children.push(child);
@@ -64,6 +99,7 @@ const makeMockElement = (id = '') => {
     querySelectorAll: () => [],
     children: []
   };
+  if (initialId) documentElements.set(initialId, el);
   return el;
 };
 
@@ -76,7 +112,8 @@ const document = {
     if (!documentElements.has(id)) {
       documentElements.set(id, makeMockElement(id));
     }
-    return documentElements.get(id);
+    const el = documentElements.get(id);
+    return (el && el._removed) ? null : el;
   },
   querySelector: (sel) => document.getElementById(sel.replace(/^[#.]/, '')),
   querySelectorAll: () => [],
@@ -604,7 +641,7 @@ const goalHtml = _goalCard(sampleGoal, 500);
 assert(!goalHtml.includes('>Savings Goal<'), "Goal card does not contain redundant 'Savings Goal' category label");
 assert(goalHtml.includes('Emergency Fund'), "Goal card contains goal name");
 assert(goalHtml.includes('event.stopPropagation()'), "Goal card action buttons stop propagation");
-assert(goalHtml.includes('_showNwHistPopup(\'goal\',"g1")'), "Goal card history button calls _showNwHistPopup");
+assert(goalHtml.includes('_showNwHistPopup(\'goal\',&quot;g1&quot;)'), "Goal card history button calls _showNwHistPopup with escaped string ID");
 assert(goalHtml.startsWith('<div class="fin-card"') && goalHtml.endsWith('</div>'), "Goal card is a well-formed single root container");
 assert((goalHtml.match(/<div/g) || []).length === (goalHtml.match(/<\/div>/g) || []).length, "Goal card has balanced open and close div tags");
 
@@ -613,7 +650,7 @@ const sampleAsset = { id: "a1", label: "Checking Account", amt: 12500, transacti
 const assetHtml = _assetCard(sampleAsset);
 assert(!assetHtml.includes('>Asset<'), "Asset card does not contain redundant 'Asset' category label");
 assert(assetHtml.includes('Checking Account'), "Asset card contains asset name");
-assert(assetHtml.includes('_showNwHistPopup(\'asset\',"a1")'), "Asset card history button calls _showNwHistPopup");
+assert(assetHtml.includes('_showNwHistPopup(\'asset\',&quot;a1&quot;)'), "Asset card history button calls _showNwHistPopup with escaped string ID");
 assert(assetHtml.startsWith('<div class="fin-card"') && assetHtml.endsWith('</div>'), "Asset card is a well-formed single root container");
 assert((assetHtml.match(/<div class="fin-card"/g) || []).length === 1, "Asset card contains exactly one card container");
 assert((assetHtml.match(/<div/g) || []).length === (assetHtml.match(/<\/div>/g) || []).length, "Asset card has balanced open and close div tags");
@@ -623,7 +660,7 @@ const sampleLiab = { id: "l1", label: "Student Loan", amt: 15000, transactions: 
 const liabHtml = _liabilityCard(sampleLiab);
 assert(!liabHtml.includes('>Liability<'), "Liability card does not contain redundant 'Liability' category label");
 assert(liabHtml.includes('Student Loan'), "Liability card contains liability name");
-assert(liabHtml.includes('_showNwHistPopup(\'liability\',"l1")'), "Liability card history button calls _showNwHistPopup");
+assert(liabHtml.includes('_showNwHistPopup(\'liability\',&quot;l1&quot;)'), "Liability card history button calls _showNwHistPopup with escaped string ID");
 assert(liabHtml.startsWith('<div class="fin-card"') && liabHtml.endsWith('</div>'), "Liability card is a well-formed single root container");
 assert((liabHtml.match(/<div/g) || []).length === (liabHtml.match(/<\/div>/g) || []).length, "Liability card has balanced open and close div tags");
 
@@ -650,6 +687,78 @@ toggleFinAccordion(mockHeader, mockEvt);
 assert(!mockAccordion.classList.contains("open"), "toggleFinAccordion toggles fin-accordion closed on second click");
 
 mockAccordion.remove();
+
+
+// ─── TEST SUITE 14: Rollover Income Card Interaction & String ID Buttons ───
+console.log("\n─── TEST SUITE 14: Rollover Income Card Interaction & String ID Buttons ───");
+
+// Reset storage
+localStorage.clear();
+const testData = {
+  income: 5000,
+  expenses: [
+    { id: 1, name: "Rent", cat: "Needs", amt: 1000, date: "2026-07-05" },
+    { id: 2, name: "Groceries", cat: "Needs", amt: 500, date: "2026-08-10" }
+  ],
+  goals: []
+};
+saveData(testData);
+
+// 1. Sync creates "Rollover Income (Past Months)"
+_syncPreviousMonthsSurplusToAssets();
+let currentNwItems = getNwItems();
+let rolloverItem = currentNwItems.find(i => i.id === "auto_surplus_asset");
+assert(rolloverItem !== undefined, "Rollover Income asset created automatically");
+assert(rolloverItem.label === "Rollover Income (Past Months)", "Auto asset named 'Rollover Income (Past Months)'");
+assert(rolloverItem.name === "Rollover Income (Past Months)", "Auto asset name is 'Rollover Income (Past Months)'");
+
+// 2. Render card and verify escaped button attributes
+const rolloverCardHtml = _assetCard(rolloverItem);
+assert(rolloverCardHtml.includes("Rollover Income (Past Months)"), "Card renders 'Rollover Income (Past Months)' text");
+assert(rolloverCardHtml.includes('_showNwHistPopup(\'asset\',&quot;auto_surplus_asset&quot;)'), "History button contains escaped string ID argument");
+assert(rolloverCardHtml.includes('openEditNwItemPopup(\'asset\',&quot;auto_surplus_asset&quot;)'), "Edit name button contains escaped string ID argument");
+assert(rolloverCardHtml.includes('deleteNwItem(&quot;auto_surplus_asset&quot;)'), "Delete button contains escaped string ID argument");
+assert(rolloverCardHtml.includes('_assetFund(&quot;auto_surplus_asset&quot;)'), "Fund button contains escaped string ID argument");
+assert(rolloverCardHtml.includes('_assetWithdraw(&quot;auto_surplus_asset&quot;)'), "Withdraw button contains escaped string ID argument");
+
+// 3. Test history popup opens cleanly
+_showNwHistPopup("asset", "auto_surplus_asset");
+const histPopup = document.getElementById("_nwHistPopup");
+assert(histPopup !== null, "Transaction history popup opens cleanly for 'auto_surplus_asset'");
+assert(histPopup.textContent.includes("Rollover Income (Past Months)"), "History popup displays item title");
+histPopup.remove();
+
+// 4. Test edit name popup opens cleanly and renaming persists
+openEditNwItemPopup("asset", "auto_surplus_asset");
+const editPopup = document.getElementById("_editNwItemPopup");
+assert(editPopup !== null, "Edit name popup opens cleanly for 'auto_surplus_asset'");
+const editNameInput = document.getElementById("_editNwItemNameInput");
+assert(editNameInput !== null && editNameInput.value === "Rollover Income (Past Months)", "Edit input populated with current name");
+editNameInput.value = "Custom Rollover Stash";
+_saveEditNwItemPopup("asset", "auto_surplus_asset");
+assert(document.getElementById("_editNwItemPopup") === null, "Edit popup closes on save");
+
+currentNwItems = getNwItems();
+rolloverItem = currentNwItems.find(i => i.id === "auto_surplus_asset");
+assert(rolloverItem.label === "Custom Rollover Stash", "Custom rename persisted to asset label");
+assert(rolloverItem.name === "Custom Rollover Stash", "Custom rename persisted to asset name");
+
+// 5. Test _syncPreviousMonthsSurplusToAssets preserves custom rename
+_syncPreviousMonthsSurplusToAssets();
+currentNwItems = getNwItems();
+rolloverItem = currentNwItems.find(i => i.id === "auto_surplus_asset");
+assert(rolloverItem.label === "Custom Rollover Stash", "Re-sync preserves user custom rename");
+
+// 6. Test delete dismisses auto-surplus card and sets flag
+deleteNwItem("auto_surplus_asset");
+currentNwItems = getNwItems();
+assert(!currentNwItems.some(i => i.id === "auto_surplus_asset"), "deleteNwItem removes 'auto_surplus_asset'");
+assert(localStorage.getItem("bt_auto_surplus_dismissed") === "1", "deleteNwItem sets 'bt_auto_surplus_dismissed' flag in localStorage");
+
+// 7. Verify subsequent sync respects dismissal flag
+_syncPreviousMonthsSurplusToAssets();
+currentNwItems = getNwItems();
+assert(!currentNwItems.some(i => i.id === "auto_surplus_asset"), "Re-sync respects dismissal flag and does not resurrect card");
 
 
 // ─── SUMMARY ────────────────────────────────────────────────

@@ -1,15 +1,34 @@
 # DEVLOG — L'Atelier de Luz | Budget Tracker PWA
 
-## Current State: v255
+## Current State: v256
 
 | Metric | Value |
 |---|---|
-| SW cache | `budget-tracker-v255` |
+| SW cache | `budget-tracker-v256` |
 | File | `index.html` + `sw.js` |
-| App version | 1.9.4 |
+| App version | 1.9.5 |
 | Panels | 7 (`dashboard`, `expenses`, `history`, `goals`, `notes`, `ai`, `data`) |
 | Backend | `backend/google_sheets_backend.js` (Google Apps Script Web App) |
 | Products | `products/` (Sheets Template v2, Setup Guide, Seed CSV, Apps Script Template) |
+
+---
+
+## v256 Changelog (from v255) — Rollover Income Renaming, Card Action Button Quotes Escaping & Dismissal Persistence
+
+### 1. Rollover Savings Renamed to "Rollover Income (Past Months)"
+- **Accurate Semantics**: Renamed the automated monthly surplus asset from `"Rollover Savings (Past Months)"` to `"Rollover Income (Past Months)"` across auto-sync logic, net worth item defaults, and user-facing cards.
+- **Custom Renames Preserved**: Synchronizer checks whether an item was renamed by the user and preserves custom user titles upon monthly re-calculation.
+
+### 2. Comprehensive HTML Attribute Quote Escaping for String IDs
+- **Attribute Parsing Fix**: Fixed issue where string IDs (such as `"auto_surplus_asset"`) interpolated directly into double-quoted HTML attributes like `onclick="_showNwHistPopup('asset', ...)"` caused HTML parsing syntax breakage.
+- **Safe Escaping**: Applied `.replace(/"/g, '&quot;')` across `_assetCard`, `_liabilityCard`, `_goalCard`, `_finCard`, `openEditGoalPopup`, `openEditNwItemPopup`, `_showNwHistPopup`, `_editNwTxn`, `openFinTxnModal`, and `_nwRow`.
+- **All Interactive Buttons Operational**: Transaction history, edit name modal, delete, fund, and withdraw buttons now execute cleanly without syntax errors on all item cards.
+
+### 3. Rollover Card Dismissal Persistence
+- **Delete Support**: Deleting the auto-surplus card flags `bt_auto_surplus_dismissed = "1"` in `localStorage`, preventing the asset from being immediately re-generated on subsequent renders while allowing full user control.
+
+### 4. QA Test Suite Expansion
+- Added Test Suite 14 to `qa_test_suite.js` covering "Rollover Income (Past Months)" creation, HTML attribute escaping, history popup launching, name editing, custom rename preservation, deletion, and dismissal persistence (133/133 tests passing).
 
 ---
 
