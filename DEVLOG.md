@@ -1,12 +1,12 @@
 # DEVLOG — L'Atelier de Luz | Budget Tracker PWA
 
-## Current State: v259
+## Current State: v260
 
 | Metric | Value |
 |---|---|
-| SW cache | `budget-tracker-v259` |
+| SW cache | `budget-tracker-v260` |
 | File | `index.html` + `sw.js` |
-| App version | 1.9.8 |
+| App version | 1.9.9 |
 | Panels | 7 (`dashboard`, `expenses`, `history`, `goals`, `notes`, `ai`, `data`) |
 | Backend | `backend/google_sheets_backend.js` (Google Apps Script Web App) |
 | Products | `products/` (Sheets Template v2, Setup Guide, Seed CSV, Apps Script Template) |
@@ -21,6 +21,25 @@
   1. `_finCard` and all button generator helpers must sanitize `actionLabel` using `(cfg.actionLabel || '').replace(/^\+\s*/, '')` to strip any accidental leading `+` before rendering next to the SVG plus icon.
   2. Call sites (e.g., `renderIncomeSourcesList()`) must supply plain verb phrases like `"Log Income"` and `"Record Payout"`.
   3. Automated QA in `qa_test_suite.js` (Suite 16) explicitly asserts that no card or button renders `+ +` in any state.
+
+### Rule 2: Unified Financial Summary Formatting & Badge Styling
+- **Problem**: Inconsistent typography, arbitrary `+` prefixes attached directly to currency signs (e.g. `+₱`), or uncolored text tags in financial summary cards make the UI appear uneven and unfinished.
+- **Enforcement**:
+  1. All summary row amounts must use standard `fmt(val)` formatting without arbitrary string prepending.
+  2. All subtitle status indicators must be rendered as styled badge pills with unified padding, radius, font size, and semantic color pairings (`var(--suc-l)`/`var(--suc)`, `var(--acc-l)`/`var(--acc)`, `var(--pri-l)`/`var(--pri-d)`).
+  3. Automated QA in `qa_test_suite.js` (Suite 17) validates row presence, badge styles, and lack of raw `+` prefixes on amounts.
+
+---
+
+## v260 Changelog (from v259) — Financial Summary Box Uniform Formatting & Badge Polish
+
+### 1. Consistent Formatting Across Summary Rows
+- Removed uneven `+` prefix in Past Rollover amount (now consistently rendered with `fmt(pastSurplus.totalSurplus)`).
+- Styled all row sub-labels as semantic badge pills (`Added to Assets ✓`, `Added to Net Worth ✓`, period name) with matching background and text colors.
+- Made primary row titles clearly prominent with `font-weight: 700` and `color: var(--txt)`.
+
+### 2. Automated QA Test Suite
+- Added **Test Suite 17** verifying summary box row consistency, badge rendering, and clean numerical formatting (166/166 tests passing).
 
 ---
 

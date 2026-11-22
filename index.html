@@ -5529,39 +5529,42 @@ function renderFinanceOverview() {
     // Build rows dynamically
     let rows = "";
     if (income > 0 && unalloc > 1) {
-      const unallocColor = unalloc / income > 0.1 ? "var(--suc)" : "var(--acc)";
+      const isHealthy    = unalloc / income > 0.1;
+      const unallocColor = isHealthy ? "var(--suc)" : "var(--acc)";
+      const unallocBg    = isHealthy ? "var(--suc-l)" : "var(--acc-l)";
       rows += `<div class="fin-summary-row">
         <span class="fin-summary-label">
-          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
             stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/>
             <line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
           </svg>
-          Remaining to Spend (${period.shortLabel || 'Month'})
+          <span style="color:var(--txt);font-weight:700">Remaining to Spend</span>
+          <span style="font-size:9.5px;font-weight:700;padding:1.5px 7px;border-radius:6px;background:${unallocBg};color:${unallocColor}">${period.shortLabel || 'Current Month'}</span>
         </span>
         <span class="fin-summary-amt" style="color:${unallocColor}">${fmt(unalloc)}</span>
       </div>`;
     }
     if (pastSurplus.totalSurplus > 0) {
       const wfBadge = pastSurplus.totalWindfall > 0
-        ? ` <span style="font-size:9px;font-weight:400;color:var(--txt2)">(includes ${fmt(pastSurplus.totalWindfall)} windfall)</span>`
+        ? ` <span style="font-size:9px;font-weight:500;color:var(--txt2)">(incl. ${fmt(pastSurplus.totalWindfall)} windfall)</span>`
         : '';
       rows += `<div class="fin-summary-row">
         <span class="fin-summary-label">
-          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
             stroke-width="2.5" stroke-linecap="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
-          Past Months' Rollover${wfBadge}
-          <span style="font-size:9px;font-weight:400;color:var(--suc);margin-left:2px">· added to Assets ✓</span>
+          <span style="color:var(--txt);font-weight:700">Past Months' Rollover</span>${wfBadge}
+          <span style="font-size:9.5px;font-weight:700;padding:1.5px 7px;border-radius:6px;background:var(--suc-l);color:var(--suc)">Added to Assets ✓</span>
         </span>
-        <span class="fin-summary-amt" style="color:var(--suc)">+${fmt(pastSurplus.totalSurplus)}</span>
+        <span class="fin-summary-amt" style="color:var(--suc)">${fmt(pastSurplus.totalSurplus)}</span>
       </div>`;
     }
     if (wfTotal > 0) {
       rows += `<div class="fin-summary-row">
         <span class="fin-summary-label">
-          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
             stroke-width="2.5" stroke-linecap="round"><polygon points="12 2 15 9 22 9 16 14 18 21 12 17 6 21 8 14 2 9 9 9"/></svg>
-          Windfall Income
-          <span style="font-size:9px;font-weight:400;color:var(--txt2);margin-left:2px">· added to Net Worth</span>
+          <span style="color:var(--txt);font-weight:700">Windfall / One-Time Income</span>
+          <span style="font-size:9.5px;font-weight:700;padding:1.5px 7px;border-radius:6px;background:var(--acc-l);color:var(--acc)">Added to Net Worth ✓</span>
         </span>
         <span class="fin-summary-amt" style="color:var(--acc)">${fmt(wfTotal)}</span>
       </div>`;

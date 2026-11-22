@@ -884,6 +884,42 @@ assert(incHint.style.display === "none", "Selecting salary hides windfall info h
 document.getElementById("_incSrcModal")?.remove();
 
 
+// ─── TEST SUITE 17: Finance Summary Box Formatting & Badge Consistency ───
+console.log("\n─── TEST SUITE 17: Finance Summary Box Formatting & Badge Consistency ───");
+
+// Setup sample data with recurring income, past rollover, and windfall income
+saveData({
+  income: 5000,
+  expenses: [
+    { id: 901, date: "2026-07-15", desc: "Past rent", cat: "Needs", sub: "Rent", amt: 1000 }
+  ],
+  goals: [],
+  ratios: { needs: 50, wants: 30, savings: 20 }
+});
+saveIncomeSources([
+  { id: 902, label: "Salary", type: "salary", amount: 5000, isWindfall: false },
+  { id: 903, label: "Bonus", type: "bonus", amount: 15000, isWindfall: true }
+]);
+localStorage.removeItem("bt_auto_surplus_dismissed");
+
+renderFinanceOverview();
+
+const summaryBoxEl = document.getElementById("financeSummaryBox");
+assert(summaryBoxEl !== null, "financeSummaryBox element exists in DOM");
+const summaryHtml = summaryBoxEl.innerHTML;
+
+assert(summaryHtml.includes("Remaining to Spend"), "Summary box includes 'Remaining to Spend' row");
+assert(summaryHtml.includes("Past Months' Rollover"), "Summary box includes 'Past Months' Rollover' row");
+assert(summaryHtml.includes("Windfall / One-Time Income"), "Summary box includes 'Windfall / One-Time Income' row");
+
+// Check badge consistency
+assert(summaryHtml.includes("Added to Assets ✓"), "Rollover row includes styled 'Added to Assets ✓' badge");
+assert(summaryHtml.includes("Added to Net Worth ✓"), "Windfall row includes styled 'Added to Net Worth ✓' badge");
+
+// Check that no row amounts have arbitrary '+' prepended to currency symbol like '+₱' or '+$'
+assert(!summaryHtml.includes(">+<") && !summaryHtml.includes(">+$") && !summaryHtml.includes(">+€") && !summaryHtml.includes(">+£") && !summaryHtml.includes(">+₱"), "No row amounts have raw '+' prepended directly to currency symbols");
+
+
 // ─── SUMMARY ────────────────────────────────────────────────
 console.log("\n=================================================");
 console.log(`  QA TEST RUN COMPLETE: ${passed} PASSED, ${failed} FAILED`);
