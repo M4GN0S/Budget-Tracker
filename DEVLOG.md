@@ -1,10 +1,10 @@
 # DEVLOG — L'Atelier de Luz | Budget Tracker PWA
 
-## Current State: v260
+## Current State: v261
 
 | Metric | Value |
 |---|---|
-| SW cache | `budget-tracker-v260` |
+| SW cache | `budget-tracker-v261` |
 | File | `index.html` + `sw.js` |
 | App version | 1.9.9 |
 | Panels | 7 (`dashboard`, `expenses`, `history`, `goals`, `notes`, `ai`, `data`) |
@@ -28,6 +28,39 @@
   1. All summary row amounts must use standard `fmt(val)` formatting without arbitrary string prepending.
   2. All subtitle status indicators must be rendered as styled badge pills with unified padding, radius, font size, and semantic color pairings (`var(--suc-l)`/`var(--suc)`, `var(--acc-l)`/`var(--acc)`, `var(--pri-l)`/`var(--pri-d)`).
   3. Automated QA in `qa_test_suite.js` (Suite 17) validates row presence, badge styles, and lack of raw `+` prefixes on amounts.
+
+### Rule 3: Uniform Modal Popup Pattern for Financial Card History Across All Tabs
+- **Problem**: Inconsistent transaction history interaction across tabs (e.g. Goals, Assets, and Liabilities opening in standard modal dialogs with edit/delete controls while Income Sources opened in an inline expanding accordion below the card) created an uneven UX and visual clutter.
+- **Enforcement**:
+  1. All financial entity cards (`_goalCard`, `_assetCard`, `_liabilityCard`, `_finCard`) must use the identical top-right action button row: `[ 🕒 count ]` history modal trigger, `[ ⚙️ ]` edit details modal trigger, and `[ ✕ ]` delete trigger.
+  2. Transaction history must always open via `_showNwHistPopup(itemType, itemId)` modal overlay, supporting `'goal'`, `'asset'`, `'liability'`, and `'income'`.
+  3. Inline expanding accordion tables under cards are deprecated in favor of the clean modal popup experience.
+  4. Automated QA in `qa_test_suite.js` (Suite 18) verifies history trigger modal attributes, lack of inline history tables, and modal transaction edit/delete behaviors.
+
+---
+
+## v261 Changelog (from v260) — Unified Income Sources Card UI & Modal History Popup
+
+### 1. Standardized Income Sources Card Action Buttons
+- Updated `_finCard` to match `_goalCard`, `_assetCard`, and `_liabilityCard` with top-right action buttons:
+  - `[ 🕒 count ]`: Opens the unified `_showNwHistPopup('income', id)` modal popup.
+  - `[ ⚙️ ]`: Opens the `openEditIncomeName(id)` rename modal prompt.
+  - `[ ✕ ]`: Calls `deleteIncomeSource(id)` with prompt/confirmation.
+- Removed deprecated inline expanding transaction history accordion table below the card, keeping cards clean, compact, and aligned.
+
+### 2. Unified Modal History Engine for Income Sources
+- Extended `_showNwHistPopup`, `_editNwTxn`, `_saveEditNwTxn`, and `_deleteNwTxn` to fully handle `itemType === 'income'`.
+- Editing or deleting an income transaction recalculates running balances, updates total income amount, syncs monthly budget and dashboard, and re-renders the open modal and income sources list seamlessly.
+
+### 3. Automated QA Test Suite
+- Added **Test Suite 18** covering:
+  - Income card UI structure and action button callbacks.
+  - Verification of no embedded inline history tables.
+  - Opening `_showNwHistPopup('income', id)` and verifying transaction row rendering.
+  - Editing transactions and verifying balance recalculation.
+  - Deleting transactions and verifying balance recalculation.
+  - Renaming income sources via `openEditIncomeName`.
+- All 187 automated QA tests passing (187/187).
 
 ---
 

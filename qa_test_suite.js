@@ -920,6 +920,94 @@ assert(summaryHtml.includes("Added to Net Worth ✓"), "Windfall row includes st
 assert(!summaryHtml.includes(">+<") && !summaryHtml.includes(">+$") && !summaryHtml.includes(">+€") && !summaryHtml.includes(">+£") && !summaryHtml.includes(">+₱"), "No row amounts have raw '+' prepended directly to currency symbols");
 
 
+// ─── TEST SUITE 18: Unified Income Sources Card UI & Modal History ───
+console.log("\n─── TEST SUITE 18: Unified Income Sources Card UI & Modal History ───");
+
+// Setup income source with transactions
+const testInc = {
+  id: 888,
+  label: "Freelance Design",
+  name: "Freelance Design",
+  type: "freelance",
+  amount: 2500,
+  isWindfall: false,
+  transactions: [
+    { id: "tx_1", date: "2026-08-01", action: "init", amount: 1000, balance: 1000, note: "Initial" },
+    { id: "tx_2", date: "2026-08-15", action: "fund", amount: 1500, balance: 2500, note: "Project payout" }
+  ]
+};
+saveIncomeSources([testInc]);
+
+// Render card
+const renderedCard = _finCard(testInc, {
+  module:      "income",
+  isWindfall:  false,
+  accentColor: "var(--suc)",
+  accentLight: "var(--suc-l)",
+  tagLabel:    "Freelance",
+  actionLabel: "Log Income",
+  actionFn:    `openFinTxnModal(${testInc.id},'income','log')`,
+  balance:     testInc.amount,
+});
+
+// Card UI assertions
+assert(renderedCard.includes("_showNwHistPopup('income',888)"), "Income card history button triggers modal popup _showNwHistPopup('income', 888)");
+assert(renderedCard.includes("openEditIncomeName(888)"), "Income card edit button triggers openEditIncomeName(888)");
+assert(renderedCard.includes("deleteIncomeSource(888)"), "Income card delete button triggers deleteIncomeSource(888)");
+assert(!renderedCard.includes("_toggleFinHist"), "Income card does NOT contain legacy inline _toggleFinHist accordion");
+assert(!renderedCard.includes("<table"), "Income card does NOT embed inline history table");
+
+// Test history modal popup
+_showNwHistPopup('income', 888);
+const histModal = document.getElementById('_nwHistPopup');
+assert(histModal !== null, "_showNwHistPopup('income', 888) creates history modal in DOM");
+assert(histModal.innerHTML.includes("Freelance Design"), "History modal shows item title");
+assert(histModal.innerHTML.includes("Project payout"), "History modal shows transaction note");
+assert(histModal.innerHTML.includes("_editNwTxn('income',888,1)"), "History modal edit button targets _editNwTxn('income', 888, 1)");
+assert(histModal.innerHTML.includes("_deleteNwTxn('income',888,1)"), "History modal delete button targets _deleteNwTxn('income', 888, 1)");
+
+// Test transaction editing
+_editNwTxn('income', 888, 1);
+const editTxnModal = document.getElementById('_editTxnPopup');
+assert(editTxnModal !== null, "_editNwTxn opens edit txn modal");
+const amtInp = document.getElementById('_editTxnAmt');
+assert(amtInp !== null, "Edit txn amount input exists");
+amtInp.value = "2000";
+const noteInp = document.getElementById('_editTxnNote');
+noteInp.value = "Updated payout note";
+_saveEditNwTxn('income', 888, 1);
+
+const updatedSources = getIncomeSources();
+const updatedInc = updatedSources.find(s => s.id === 888);
+assert(updatedInc.amount === 3000, `Income total recalculated correctly after txn edit (expected 3000, got ${updatedInc.amount})`);
+assert(updatedInc.transactions[1].amount === 2000, "Edited transaction amount persisted");
+assert(updatedInc.transactions[1].note === "Updated payout note", "Edited transaction note persisted");
+assert(updatedInc.transactions[1].balance === 3000, "Edited transaction balance recalculated");
+
+// Test transaction deleting
+global.confirm = () => true;
+_deleteNwTxn('income', 888, 1);
+const afterDelSources = getIncomeSources();
+const afterDelInc = afterDelSources.find(s => s.id === 888);
+assert(afterDelInc.transactions.length === 1, "Transaction successfully deleted from income source");
+assert(afterDelInc.amount === 1000, `Income total recalculated correctly after txn deletion (expected 1000, got ${afterDelInc.amount})`);
+
+histModal.remove();
+
+// Test edit income name modal
+openEditIncomeName(888);
+const nameModal = document.getElementById('_editIncModal');
+assert(nameModal !== null, "openEditIncomeName opens edit name modal");
+const nameInp = document.getElementById('_editIncNameInput');
+assert(nameInp !== null, "Edit name input exists");
+nameInp.value = "Consulting & Design";
+_saveEditIncomeName(888);
+
+const finalSources = getIncomeSources();
+const finalInc = finalSources.find(s => s.id === 888);
+assert(finalInc.label === "Consulting & Design", "Updated income name persisted");
+
+
 // ─── SUMMARY ────────────────────────────────────────────────
 console.log("\n=================================================");
 console.log(`  QA TEST RUN COMPLETE: ${passed} PASSED, ${failed} FAILED`);
