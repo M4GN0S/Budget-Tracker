@@ -605,6 +605,8 @@ assert(!goalHtml.includes('>Savings Goal<'), "Goal card does not contain redunda
 assert(goalHtml.includes('Emergency Fund'), "Goal card contains goal name");
 assert(goalHtml.includes('event.stopPropagation()'), "Goal card action buttons stop propagation");
 assert(goalHtml.includes('_showNwHistPopup(\'goal\',"g1")'), "Goal card history button calls _showNwHistPopup");
+assert(goalHtml.startsWith('<div class="fin-card"') && goalHtml.endsWith('</div>'), "Goal card is a well-formed single root container");
+assert((goalHtml.match(/<div/g) || []).length === (goalHtml.match(/<\/div>/g) || []).length, "Goal card has balanced open and close div tags");
 
 // 2. Asset card renders name cleanly without redundant 'Asset' category heading
 const sampleAsset = { id: "a1", label: "Checking Account", amt: 12500, transactions: [] };
@@ -612,6 +614,9 @@ const assetHtml = _assetCard(sampleAsset);
 assert(!assetHtml.includes('>Asset<'), "Asset card does not contain redundant 'Asset' category label");
 assert(assetHtml.includes('Checking Account'), "Asset card contains asset name");
 assert(assetHtml.includes('_showNwHistPopup(\'asset\',"a1")'), "Asset card history button calls _showNwHistPopup");
+assert(assetHtml.startsWith('<div class="fin-card"') && assetHtml.endsWith('</div>'), "Asset card is a well-formed single root container");
+assert((assetHtml.match(/<div class="fin-card"/g) || []).length === 1, "Asset card contains exactly one card container");
+assert((assetHtml.match(/<div/g) || []).length === (assetHtml.match(/<\/div>/g) || []).length, "Asset card has balanced open and close div tags");
 
 // 3. Liability card renders name cleanly without redundant 'Liability' category heading
 const sampleLiab = { id: "l1", label: "Student Loan", amt: 15000, transactions: [] };
@@ -619,6 +624,8 @@ const liabHtml = _liabilityCard(sampleLiab);
 assert(!liabHtml.includes('>Liability<'), "Liability card does not contain redundant 'Liability' category label");
 assert(liabHtml.includes('Student Loan'), "Liability card contains liability name");
 assert(liabHtml.includes('_showNwHistPopup(\'liability\',"l1")'), "Liability card history button calls _showNwHistPopup");
+assert(liabHtml.startsWith('<div class="fin-card"') && liabHtml.endsWith('</div>'), "Liability card is a well-formed single root container");
+assert((liabHtml.match(/<div/g) || []).length === (liabHtml.match(/<\/div>/g) || []).length, "Liability card has balanced open and close div tags");
 
 // 4. Accordion Toggle Isolation test
 const mockAccordion = document.createElement("div");

@@ -6533,10 +6533,6 @@ function _assetCard(item) {
         </button>
       </div>
     </div>
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-        </button>
-      </div>
-    </div>
     
     <div style="margin:10px 0">
       <div style="font-size:9px;font-weight:700;color:var(--txt2);text-transform:uppercase">Current Value</div>
@@ -8755,53 +8751,7 @@ function renderGoals() {
   }
 
   const monthlySavingsRate = _calcMonthlySavingsRate(data);
-
-  el.innerHTML = data.goals.map(g => {
-    const pct       = g.target > 0 ? Math.min((g.saved / g.target) * 100, 100) : 0;
-    const remaining = Math.max(0, g.target - g.saved);
-
-    // Status label
-    let statusLabel;
-    if (pct >= 100)     statusLabel = "Complete!";
-    else if (pct >= 75) statusLabel = "Almost there";
-    else if (pct >= 50) statusLabel = "Halfway";
-    else if (pct >= 25) statusLabel = "Good start";
-    else                statusLabel = "Starting";
-
-    // Smart projection html (shown as extraHtml inside card)
-    let projectionHtml = "";
-    if (pct < 100 && remaining > 0) {
-      if (monthlySavingsRate > 0) {
-        const monthsNeeded = Math.ceil(remaining / monthlySavingsRate);
-        const projDate = new Date();
-        projDate.setMonth(projDate.getMonth() + monthsNeeded);
-        const projStr = projDate.toLocaleDateString("en-US", { month: "long", year: "numeric" });
-        projectionHtml = `<div style="margin-top:8px;padding:7px 10px;background:var(--pri-l);
-          border-radius:8px;font-size:11px;color:var(--pri-d);font-weight:600;
-          display:flex;align-items:center;gap:6px">
-          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-            stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
-          </svg>
-          At your current rate (${fmtShort(monthlySavingsRate)}/mo) — <strong>${projStr}</strong> · ${monthsNeeded} month${monthsNeeded!==1?"s":""}
-        </div>`;
-      } else {
-        projectionHtml = `<div style="margin-top:8px;padding:7px 10px;background:var(--bg);
-          border-radius:8px;font-size:11px;color:var(--txt2);font-weight:600">
-          Log savings to see your projected completion date
-        </div>`;
-      }
-    }
-
-    // Status badge as extra content above projection
-    const statusBadge = `<div style="margin-top:6px;font-size:10px;color:var(--txt2)">
-      <span style="font-weight:700">${statusLabel}</span> · ${fmt(remaining)} remaining
-    </div>`;
-
-    return _goalCard(g, monthlySavingsRate);
-  }).join("");
-  // Wrap in grid
-  el.innerHTML = '<div class="fin-card-grid">' + el.innerHTML + '</div>';
+  el.innerHTML = '<div class="fin-card-grid">' + data.goals.map(g => _goalCard(g, monthlySavingsRate)).join("") + '</div>';
 
   // Update accordion header
   const goalsTotal   = document.getElementById("goalsAccTotal");

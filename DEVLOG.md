@@ -1,15 +1,29 @@
 # DEVLOG — L'Atelier de Luz | Budget Tracker PWA
 
-## Current State: v254
+## Current State: v255
 
 | Metric | Value |
 |---|---|
-| SW cache | `budget-tracker-v254` |
+| SW cache | `budget-tracker-v255` |
 | File | `index.html` + `sw.js` |
 | App version | 1.9.4 |
 | Panels | 7 (`dashboard`, `expenses`, `history`, `goals`, `notes`, `ai`, `data`) |
 | Backend | `backend/google_sheets_backend.js` (Google Apps Script Web App) |
 | Products | `products/` (Sheets Template v2, Setup Guide, Seed CSV, Apps Script Template) |
+
+---
+
+## v255 Changelog (from v254) — Card Container Structural Fix & Complete HTML Nesting Integrity
+
+### 1. Fixed Asset Card HTML Structure & Floating Delete Icon
+- **Orphan Tag Removal**: Removed duplicate closing tags and stray `<svg>` delete element from `_assetCard` that had caused the `.fin-card` border to close prematurely and left the `Current Value` and `Add Funds` / `Withdraw` inputs floating outside the card box.
+- **Card Integrity Guaranteed**: Verified that all asset, liability, and goal cards generate a single, properly closed `.fin-card` root containing title, action buttons, balance indicators, action inputs, and ledger history.
+
+### 2. Streamlined Goal Cards Rendering
+- Refactored `renderGoals()` to directly map into `_goalCard()` without redundant temporary innerHTML string wrappers.
+
+### 3. Automated QA Suite Expansion
+- Added strict root-container validation and balanced HTML opening/closing tag verification for `_assetCard`, `_liabilityCard`, and `_goalCard` in Test Suite 13 (all **113/113 tests passing**).
 
 ---
 
