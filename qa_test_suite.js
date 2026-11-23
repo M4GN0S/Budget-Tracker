@@ -1086,6 +1086,65 @@ assert(indexHtmlContent.includes('class="stat stat-liab"'), "Top metrics contain
 assert(indexHtmlContent.includes('class="stat stat-cf"'), "Top metrics contains Cashflow card");
 
 
+// ─── SUITE 20: JOURNAL NOTE MODAL MAXIMIZE/MINIMIZE & SUBDUED RELATED NOTES ─
+console.log("\n─── TEST SUITE 20: Journal Note Modal Maximize/Minimize & Subdued Related Notes ───");
+
+// 1. Verify Maximize/Minimize toggle function
+toggleNoteModalMaximize(true);
+const modalEl = document.querySelector(".note-modal");
+const maxBtnEl = document.getElementById("noteModalMaxBtn");
+assert(modalEl.classList.contains("is-maximized"), "toggleNoteModalMaximize(true) adds is-maximized class to .note-modal");
+assert(localStorage.getItem("bt_note_modal_max") === "1", "toggleNoteModalMaximize(true) persists '1' to localStorage bt_note_modal_max");
+assert(maxBtnEl.title === "Restore size", "Maximize button tooltip changes to 'Restore size'");
+
+toggleNoteModalMaximize(false);
+assert(!modalEl.classList.contains("is-maximized"), "toggleNoteModalMaximize(false) removes is-maximized class");
+assert(localStorage.getItem("bt_note_modal_max") === "0", "toggleNoteModalMaximize(false) persists '0' to localStorage");
+assert(maxBtnEl.title === "Maximize note", "Maximize button tooltip resets to 'Maximize note'");
+
+// 2. Verify formatNoteBody checklist table output and direct itemIdx parameter
+const sampleNoteText = "End of Month Action Items\n[ ] Transfer ₱ 15,000.00 to savings x2 — ₱15000.00\n[x] Keep ₱ 48,200.00 for remaining bills — ₱48200.00";
+const formattedBody = formatNoteBody(sampleNoteText, 999);
+assert(formattedBody.includes('class="nb-checklist-wrap"'), "formatNoteBody wraps checklist items in nb-checklist-wrap container");
+assert(formattedBody.includes('class="nb-cl-table"'), "formatNoteBody renders nb-cl-table element");
+assert(formattedBody.includes('class="nb-qty-input"'), "formatNoteBody renders qty input for items");
+assert(formattedBody.includes('class="nb-price-input"'), "formatNoteBody renders price input for items");
+assert(formattedBody.includes('toggleNoteCheck(999,this,0)'), "Checkbox onchange passes direct itemIdx 0 to toggleNoteCheck");
+assert(formattedBody.includes('toggleNoteCheck(999,this,1)'), "Checkbox onchange passes direct itemIdx 1 to toggleNoteCheck");
+
+// 3. Verify toggleNoteCheck with directIdx
+localStorage.setItem("bt_notes", JSON.stringify([
+  { id: 999, title: "End of Month Action Items", text: "[ ] Item 1\n[ ] Item 2\n[ ] Item 3", tag: "checklist", date: new Date().toISOString() }
+]));
+const mockCb = makeMockElement("mockCb");
+mockCb.checked = true;
+toggleNoteCheck(999, mockCb, 1);
+const updatedNotes = JSON.parse(localStorage.getItem("bt_notes") || "[]");
+const targetNote = updatedNotes.find(n => n.id === 999);
+assert(targetNote.text.includes("[ ] Item 1\n[x] Item 2\n[ ] Item 3"), "toggleNoteCheck with directIdx 1 toggles exactly Item 2 without off-by-one errors");
+
+// 4. Verify Subdued Related Notes header and markup
+localStorage.setItem("bt_notes", JSON.stringify([
+  { id: 901, title: "Next Month's Budget Checklist", text: "Details here", tag: "checklist", date: new Date().toISOString() },
+  { id: 902, title: "Next Month's Savings Checklist", text: "Details here", tag: "checklist", date: new Date().toISOString() },
+  { id: 903, title: "Budget Action Items", text: "Budget details", tag: "checklist", date: new Date().toISOString() }
+]));
+renderRelatedNotes({ id: 900, title: "Budget Checklist", text: "Budget items", tag: "checklist" });
+const relWrap = document.getElementById("noteModalRelated");
+assert(relWrap !== null && relWrap.style.display !== "none", "Related notes container rendered and visible");
+assert(relWrap.innerHTML.includes("Related notes"), "Related notes container displays label");
+assert(relWrap.innerHTML.includes("rel-collapse"), "Related notes container includes collapse toggle button");
+assert(relWrap.innerHTML.includes("note-related-list"), "Related notes container uses note-related-list container");
+
+// 5. Verify index.html contains Maximize button markup and mobile/tablet permanent fullscreen CSS
+const indexHtml = fs.readFileSync('index.html', 'utf8');
+assert(indexHtml.includes('id="noteModalMaxBtn"'), "index.html contains #noteModalMaxBtn maximize button");
+assert(indexHtml.includes('class="icon-max"'), "Maximize button contains icon-max");
+assert(indexHtml.includes('class="icon-restore"'), "Maximize button contains icon-restore");
+assert(indexHtml.includes('@media(max-width:900px)'), "index.html contains responsive media query for mobile phones and tablets");
+assert(indexHtml.includes('.btn-modal-max{display:none !important}'), "Maximize button is hidden on mobile & tablets where modal is permanently fullscreen");
+
+
 // ─── SUMMARY ────────────────────────────────────────────────
 console.log("\n=================================================");
 console.log(`  QA TEST RUN COMPLETE: ${passed} PASSED, ${failed} FAILED`);

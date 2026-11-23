@@ -1,10 +1,10 @@
 # DEVLOG — L'Atelier de Luz | Budget Tracker PWA
 
-## Current State: v262
+## Current State: v263
 
 | Metric | Value |
 |---|---|
-| SW cache | `budget-tracker-v262` |
+| SW cache | `budget-tracker-v263` |
 | File | `index.html` + `sw.js` |
 | App version | 1.9.9 |
 | Panels | 7 (`dashboard`, `expenses`, `history`, `goals`, `notes`, `ai`, `data`) |
@@ -44,6 +44,56 @@
   2. Positive cashflow figures must not prepend raw `+` signs to formatted currency; instead, clean semantic color (`var(--suc)`) and subtitle status badges indicate surplus or overspent state.
   3. All 5 top metrics cards must share the standard theme background (`var(--card)`), rounded corners (`12px`), borders (`1.5px solid var(--brd)`), and hover lift (`translateY(-2px)`).
   4. Automated QA in `qa_test_suite.js` (Suite 19) asserts unicode minus sign usage, unbroken typography, badge indicators, and consistent markup.
+
+### Rule 5: Journal Note Modal Typography, Fullscreen Responsiveness & Subdued Related Notes
+- **Problem**: In the Journal note viewer modal, the "Related Notes" section was disproportionately large and bulky compared to the actual note content, while the note body typography was cramped. On mobile phones and tablets, partial modal margins wasted valuable screen real estate, and desktop users lacked window maximization controls.
+- **Enforcement**:
+  1. Related Notes must be subdued and compact: minimal padding (`8px 28px 4px`), sleek item cards (`padding: 5px 9px`), small tag badges (`font-size: 7.5px`), and collapsible headers with note count (`Related notes (N)`).
+  2. Note content and body must be prominent and spacious: `.note-modal-title` (`clamp(20px, 2.2vw, 24px)`), `.note-modal-body` (`font-size: 15px; line-height: 1.75;`), and checklist tables wrapped in clear card containers (`.nb-checklist-wrap`).
+  3. Maximize/Minimize toggle button (`#noteModalMaxBtn`) must be present in the modal header for desktop devices with state persistence in localStorage (`bt_note_modal_max`).
+  4. Mobile phones and tablets (screen width ≤ 900px) must open journal notes in **permanent full screen** (`100dvh`, fixed inset 0, full height scrollable body, with maximize button hidden).
+  5. Checklist row checkbox onchange callbacks must pass direct `itemIdx` to prevent off-by-one errors when notes lack explicit titles.
+  6. Automated QA in `qa_test_suite.js` (Suite 20) verifies maximize/restore toggling, checklist table generation with direct indices, subdued related notes structure, and responsive mobile/tablet fullscreen rules.
+
+---
+
+## v263 Changelog (from v262) — Journal Note Viewer Modal Redesign, Maximize Controls & Fullscreen Responsive Engine
+
+### 1. Subdued & Compact Related Notes Section
+- Restyled the Related Notes container in the Journal note viewer modal to be sleek, subdued, and non-intrusive.
+- Reduced item height with compact padding (`5px 9px`), smaller text (`11.5px`), micro tag badge pills (`7.5px`), and subtle border styling.
+- Added note count indicator (`Related notes (N)`) and preserved smooth collapse/expand toggle controls.
+
+### 2. Bigger & More Spacious Note Body & Checklist Typography
+- Increased modal title font size to `clamp(20px, 2.2vw, 24px)` with weight 900 and tightened letter spacing.
+- Upgraded `.note-modal-body` base font size from 14px to 15px with relaxed `1.75` line height for paragraphs, lists, and markdown blocks.
+- Upgraded checklist tables into clean bordered card containers (`.nb-checklist-wrap`) with larger item descriptions (`14.5px`), clear quantity/price inputs (`12.5px`), and a prominent Grand Total bar (`15px` bold).
+
+### 3. Desktop Maximize & Minimize Button
+- Added `#noteModalMaxBtn` toggle button in the modal header next to the close button.
+- Toggling maximization expands the modal to near-fullscreen desktop overlay (`inset: 16px; width: auto; max-width: none; height: auto; max-height: none;`).
+- Dynamically swaps between Maximize (`.icon-max`) and Restore (`.icon-restore`) SVG icons with tooltips and persists user preference to `localStorage.getItem("bt_note_modal_max")`.
+
+### 4. Permanent Fullscreen on Mobile Phones & Tablets
+- Implemented `@media (max-width: 900px)` responsive stylesheet making the Journal note modal permanently full screen on all phone and tablet viewports (`100dvh`, fixed `inset: 0`, edge-to-edge layout, scrollable body with momentum scrolling).
+- Cleanly hid the maximize button on mobile/tablets where fullscreen is already permanent.
+
+### 5. Bug Fixes in Journal CSS & Checklist Event Handling
+- Removed an orphaned closing brace `}` in CSS around line 2157 that previously broke subsequent table stylesheet rules.
+- Updated `toggleNoteCheck` and `formatNoteBody` to pass direct checklist `itemIdx` (e.g. `toggleNoteCheck(noteId, this, itemIdx)`), eliminating off-by-one line matching bugs when notes don't have explicit titles.
+
+### 6. Automated QA Test Suite
+- Added **Test Suite 20** covering:
+  - Maximize and restore toggle state transitions and localStorage persistence.
+  - Checklist table formatting and direct item index parameter verification.
+  - `toggleNoteCheck` direct item index toggle accuracy without off-by-one errors.
+  - Subdued related notes container markup, label, and collapse button.
+  - Presence of `#noteModalMaxBtn` markup and responsive mobile/tablet fullscreen CSS.
+- All 236 automated QA tests passing (236/236).
+
+---
+
+## v262 Changelog (from v261) — Dashboard Top Stat Cards & Budget Health Card Redesign & Polish
 
 ---
 
