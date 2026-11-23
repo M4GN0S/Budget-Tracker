@@ -1,10 +1,10 @@
 # DEVLOG — L'Atelier de Luz | Budget Tracker PWA
 
-## Current State: v265
+## Current State: v266
 
 | Metric | Value |
 |---|---|
-| SW cache | `budget-tracker-v265` |
+| SW cache | `budget-tracker-v266` |
 | File | `index.html` + `sw.js` |
 | App version | 1.9.9 |
 | Panels | 7 (`dashboard`, `expenses`, `history`, `goals`, `notes`, `ai`, `data`) |
@@ -71,6 +71,40 @@
   2. **Subdued Gentle Note**: Muted background (`var(--bg)`), small header (`8.5px`), compact typography (`11.5px`), and sleek action button.
   3. **Dismiss & Permanent Opt-Out**: Includes a direct Dismiss button (`dismissMoodNudge`) and a persistent `"Don't show this again"` checkbox (`toggleMoodNudgeOptOut`) storing `localStorage.setItem("bt_dismiss_mood_nudge", "1")` so nudges never re-appear when opted out.
   4. Automated QA in `qa_test_suite.js` (Suite 20) validates summary styles, dismiss action, and opt-out localStorage persistence.
+
+### Rule 8: Direct Interactive Checklist Builder & Composer Fullscreen
+- **Problem**: Checklists and priced lists created via `₱ List` dumped raw, incomplete markdown text without quantity fields into a textarea, and relied on a redundant floating `+ Add item` button inside the textarea. Furthermore, the New Journal Entry compose modal lacked a maximize/fullscreen button.
+- **Enforcement**:
+  1. **Direct Interactive Table UI**: `₱ List` immediately activates a structured table builder (`#clBuilder_noteInput` / `#clBuilder_noteEditText`) containing explicit columns: `#`, `✓` (checkbox), `Item Description`, `Qty` (number input, min 1), `Price` (currency prefix input), `Total` (auto-calculated `Qty × Price`), and `Delete` (`✕`).
+  2. **Footer Actions & Live Totals**: Direct `+ Add item` button below the table and live `Grand Total` display; seamless toggle between `Table UI` and `Markdown Text` modes.
+  3. **Removed Redundant Floating Button**: Textarea wrapper no longer contains `.add-item-fab` (`#addItemFab_noteInput` / `#addItemFab_noteEditText`).
+  4. **Compose Modal Fullscreen**: `#composeOverlay` includes `#composeModalMaxBtn` with maximize and restore SVG icons, resetting cleanly on open/close and constraining reading max-width to `860px` when maximized.
+  5. Automated QA in `qa_test_suite.js` (Suite 21) validates builder operations, serialization with quantities, modal maximize toggle, and absence of redundant FAB elements.
+
+---
+
+## v266 Changelog (from v265) — Composer Fullscreen, Direct Interactive Checklist Builder & Quantity Support
+
+### 1. New Journal Entry Modal Fullscreen Maximize/Restore Button
+- Added `#composeModalMaxBtn` to `#composeOverlay .note-modal-head-actions` alongside the close button.
+- Implemented `toggleComposeModalMaximize()` with smooth transitions and tooltip updates (`Full screen` / `Exit full screen`).
+- Styled `.note-modal.is-maximized .compose-modal-body` with centered reading width (`860px`) on wide screens.
+- Ensured `openComposeModal()` and `closeComposeModal()` reset fullscreen state so modal always opens in standard windowed view first.
+
+### 2. Direct Interactive Table Builder for `₱ List` & Checklists
+- Replaced the legacy raw text insertion prompt with a direct interactive table component (`.cl-builder-wrap` in both composer `#composeOverlay` and edit modal `#noteModal`).
+- Added dedicated input fields for **Item Description**, **Quantity** (`Qty` with numeric input), and **Price** with currency prefix.
+- Automatically calculates line totals (`Qty × Price`) and live Grand Total as users type.
+- Serializes rows into note storage with full quantity and price preservation (`[ ] Item x2 — ₱ 100.00`).
+- Provides a clean mode toggle between `Table UI` and `Markdown Text` view for flexibility.
+
+### 3. Removed Redundant Floating `+ Add item` Button
+- Completely removed `#addItemFab_noteInput` and `#addItemFab_noteEditText` from the textarea overlay.
+- Relocated the `+ Add item` action to a clean button inside the table builder footer directly below the items.
+
+### 4. Automated QA Test Suite Expansion
+- Added **Test Suite 21** in `qa_test_suite.js` bringing test count to 293 passing tests (293/293 across 21 suites).
+- Bumped Service Worker cache version to `budget-tracker-v266`.
 
 ---
 

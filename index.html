@@ -1024,6 +1024,7 @@ tbody tr:hover td{background:var(--pri-l)}
 .note-modal.is-maximized .note-modal-date,
 .note-modal.is-maximized .note-tldr,
 .note-modal.is-maximized .note-modal-body,
+.note-modal.is-maximized .compose-modal-body,
 .note-modal.is-maximized .note-mood,
 .note-modal.is-maximized .note-related,
 .note-modal.is-maximized .note-modal-foot,
@@ -1221,29 +1222,266 @@ tbody tr:hover td{background:var(--pri-l)}
   .tb-btn svg{width:15px;height:15px}
   .tb-btn.tb-wide{padding:0 7px;font-size:11px}
 }
-/* Editor wrap = positioned container for the floating Add-item FAB */
+/* Editor wrap */
 .editor-wrap{position:relative}
-/* Floating "+ Add item" FAB — sits in the bottom-right inside the textarea */
-.add-item-fab{
-  position:absolute;right:10px;bottom:8px;
-  display:inline-flex;align-items:center;gap:4px;
-  padding:4px 10px;border-radius:14px;
-  border:1.5px dashed var(--pri);background:var(--pri-l);color:var(--pri-d);
-  font-size:10.5px;font-weight:700;font-family:inherit;cursor:pointer;
-  transition:all .15s;z-index:2;line-height:1;
-  backdrop-filter:blur(4px);
-  -webkit-backdrop-filter:blur(4px);
+
+/* ─── Direct Interactive Checklist Builder ─── */
+.cl-builder-wrap {
+  border: 1.5px solid var(--brd);
+  border-radius: 12px;
+  background: var(--card);
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgba(0,0,0,.04);
+  margin-bottom: 2px;
 }
-.add-item-fab:hover{background:var(--pri);color:var(--on-pri);border-style:solid;transform:translateY(-1px)}
-.add-item-fab svg{width:12px;height:12px}
-@media(max-width:520px){.add-item-fab{font-size:10px;padding:4px 8px}}
-/* Visually style placeholders (item N / 0.00) so they read as tappable */
-/* Count prompt modal */
-.count-prompt-wrap{display:flex;align-items:center;gap:10px;margin:12px 0 6px;justify-content:center}
-.count-prompt-wrap button{width:36px;height:36px;border-radius:10px;border:1.5px solid var(--brd);background:var(--bg);color:var(--txt);font-size:18px;font-weight:800;cursor:pointer}
-.count-prompt-wrap button:hover{border-color:var(--pri);color:var(--pri-d);background:var(--pri-l)}
-.count-prompt-val{min-width:40px;text-align:center;font-size:22px;font-weight:900;color:var(--txt)}
-.count-prompt-sub{font-size:11px;color:var(--txt2);text-align:center;margin-bottom:14px}
+.clb-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  background: var(--bg);
+  border-bottom: 1.5px solid var(--brd);
+  gap: 8px;
+}
+.clb-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11.5px;
+  font-weight: 800;
+  color: var(--txt);
+  text-transform: uppercase;
+  letter-spacing: .5px;
+}
+.clb-title svg {
+  color: var(--pri);
+}
+.clb-modes {
+  display: flex;
+  gap: 4px;
+  background: var(--card);
+  padding: 2px;
+  border-radius: 8px;
+  border: 1px solid var(--brd);
+}
+.clb-view-btn {
+  background: transparent;
+  border: none;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--txt2);
+  padding: 4px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all .15s;
+}
+.clb-view-btn.active {
+  background: var(--pri);
+  color: var(--on-pri);
+  box-shadow: 0 1px 4px rgba(0,0,0,.15);
+}
+.clb-table-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  max-height: 280px;
+  overflow-y: auto;
+}
+.clb-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  table-layout: fixed;
+}
+.clb-table thead tr {
+  background: var(--bg);
+  border-bottom: 1.5px solid var(--brd);
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+.clb-table th {
+  padding: 7px 8px;
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: .5px;
+  color: var(--txt2);
+  white-space: nowrap;
+}
+.clb-row {
+  border-bottom: 1px solid var(--brd);
+  transition: background .12s;
+}
+.clb-row:last-child {
+  border-bottom: none;
+}
+.clb-row:hover {
+  background: var(--bg);
+}
+.clb-row.is-checked {
+  background: rgba(34, 197, 94, 0.05);
+}
+.clb-row.is-checked .clb-input-desc {
+  text-decoration: line-through;
+  opacity: .65;
+}
+.clb-row td {
+  padding: 5px 6px;
+  vertical-align: middle;
+}
+.clb-td-num {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--txt2);
+  text-align: center;
+}
+.clb-td-check {
+  text-align: center;
+}
+.clb-td-check input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--suc);
+  cursor: pointer;
+  vertical-align: middle;
+}
+.clb-input {
+  width: 100%;
+  padding: 6px 8px;
+  border: 1px solid var(--brd);
+  border-radius: 7px;
+  font-size: 12.5px;
+  font-family: inherit;
+  background: var(--input-bg, var(--bg));
+  color: var(--txt);
+  outline: none;
+  box-sizing: border-box;
+  transition: border-color .15s;
+}
+.clb-input:focus {
+  border-color: var(--pri);
+  background: var(--card);
+}
+.clb-input-qty {
+  font-weight: 700;
+  font-family: "SF Mono", Consolas, monospace;
+  text-align: center;
+  padding: 6px 2px;
+}
+.clb-price-input-wrap {
+  display: flex;
+  align-items: center;
+  padding: 0 6px;
+  border: 1px solid var(--brd);
+  border-radius: 7px;
+  background: var(--input-bg, var(--bg));
+  box-sizing: border-box;
+  transition: border-color .15s;
+}
+.clb-price-input-wrap:focus-within {
+  border-color: var(--pri);
+  background: var(--card);
+}
+.clb-price-sym {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--txt2);
+  margin-right: 2px;
+  flex-shrink: 0;
+}
+.clb-input-price {
+  border: none;
+  background: transparent;
+  font-weight: 700;
+  font-family: "SF Mono", Consolas, monospace;
+  text-align: right;
+  padding: 6px 2px;
+}
+.clb-input-price:focus {
+  border-color: transparent;
+  background: transparent;
+}
+.clb-row-total {
+  font-size: 11.5px;
+  font-weight: 700;
+  font-family: "SF Mono", Consolas, monospace;
+  color: var(--txt2);
+  display: block;
+  text-align: right;
+  padding-right: 4px;
+}
+.clb-del-btn {
+  background: transparent;
+  border: none;
+  color: var(--txt2);
+  opacity: .5;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all .15s;
+}
+.clb-del-btn:hover {
+  background: var(--dan-l);
+  color: var(--dan);
+  opacity: 1;
+}
+.clb-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  background: var(--bg);
+  border-top: 1.5px solid var(--brd);
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.clb-add-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 13px;
+  border-radius: 8px;
+  border: 1.5px dashed var(--pri);
+  background: var(--pri-l);
+  color: var(--pri-d);
+  font-size: 11.5px;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all .15s;
+}
+.clb-add-btn:hover {
+  background: var(--pri);
+  color: var(--on-pri);
+  border-style: solid;
+}
+.clb-grand-total {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--txt);
+  font-family: "SF Mono", Consolas, monospace;
+}
+.clb-grand-total strong {
+  color: var(--txt);
+  font-weight: 900;
+}
+.clb-text-mode-hint {
+  padding: 10px 14px;
+  font-size: 11.5px;
+  color: var(--txt2);
+  background: var(--bg);
+  line-height: 1.5;
+}
+@media(max-width:520px){
+  .clb-table th:first-child,
+  .clb-table td:first-child {
+    display: none;
+  }
+}
 /* Related notes (inside journal modal) */
 /* Related notes (inside journal modal) - Ultra-Subdued, Compact & Sleek */
 .note-related{padding:4px 28px 2px;border-top:1px solid var(--brd);margin-top:2px;position:relative;flex-shrink:0;background:var(--card)}
@@ -3893,10 +4131,16 @@ footer .footer-links a:hover{color:var(--pri-d)}
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4 12.5-12.5z"/></svg>
         <span id="composeModalHeading" style="font-size:15px;font-weight:800;color:var(--txt)">New Journal Entry</span>
       </div>
-      <button class="close-modal" onclick="closeComposeModal()" aria-label="Close"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+      <div class="note-modal-head-actions">
+        <button type="button" class="btn-modal-max" id="composeModalMaxBtn" onclick="event.stopPropagation();toggleComposeModalMaximize()" aria-label="Toggle Fullscreen" title="Full screen">
+          <svg class="icon-max" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
+          <svg class="icon-restore" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><path d="M4 14h6v6M20 10h-6V4M14 10l7-7M10 14l-7 7"/></svg>
+        </button>
+        <button class="close-modal" onclick="closeComposeModal()" aria-label="Close" title="Close"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+      </div>
     </div>
     <!-- Body -->
-    <div style="padding:16px 24px;display:flex;flex-direction:column;gap:12px;overflow-y:auto;flex:1">
+    <div class="compose-modal-body" style="padding:16px 24px;display:flex;flex-direction:column;gap:12px;overflow-y:auto;flex:1">
       <!-- Title row -->
       <div class="title-row">
         <input type="text" id="noteTitle" required maxlength="80" oninput="onNoteTitleInput()" placeholder="Title (required) — or tap Suggest" style="padding:10px 14px;border:1.5px solid var(--brd);border-radius:10px;font-size:13px;font-weight:700;font-family:inherit;outline:none;background:var(--bg);color:var(--txt);width:100%;box-sizing:border-box;transition:border-color .2s">
@@ -3920,16 +4164,14 @@ footer .footer-links a:hover{color:var(--pri-d)}
           ₱ List
         </button>
       </div>
+      <!-- Direct Interactive Checklist Builder container -->
+      <div id="clBuilder_noteInput" class="cl-builder-wrap" style="display:none"></div>
       <!-- Textarea -->
       <div class="editor-wrap" id="editorWrap_noteInput">
-        <textarea id="noteInput" rows="6" oninput="onNoteInput(this)" onblur="onNoteBlur(this)" onclick="onTextareaClick(event)" onkeydown="onTextareaKeydown(event,'noteInput')" onkeyup="onTextareaKeyup(event,'noteInput')" placeholder="Write your note… tap a toolbar button to format, or just type naturally." inputmode="text" style="padding:10px 14px 36px 14px;border:1.5px solid var(--brd);border-radius:10px 10px 0 0;border-bottom:none;font-size:13px;line-height:1.6;font-family:inherit;outline:none;background:var(--bg);color:var(--txt);resize:none;overflow:hidden;min-height:100px;max-height:420px;width:100%;box-sizing:border-box"></textarea>
-        <button type="button" class="add-item-fab" id="addItemFab_noteInput" onclick="tbAddPriceRow('noteInput')" style="display:none" title="Add another item to this ₱ list">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          Add item
-        </button>
+        <textarea id="noteInput" rows="6" oninput="onNoteInput(this)" onblur="onNoteBlur(this)" onclick="onTextareaClick(event)" onkeydown="onTextareaKeydown(event,'noteInput')" onkeyup="onTextareaKeyup(event,'noteInput')" placeholder="Write your note… tap a toolbar button to format, or just type naturally." inputmode="text" style="padding:10px 14px;border:1.5px solid var(--brd);border-radius:10px;font-size:13px;line-height:1.6;font-family:inherit;outline:none;background:var(--bg);color:var(--txt);resize:none;overflow:hidden;min-height:100px;max-height:420px;width:100%;box-sizing:border-box"></textarea>
       </div>
       <!-- Tip bar -->
-      <p style="font-size:11px;color:var(--txt2);margin:0;padding:5px 10px;background:var(--bg);border:1.5px solid var(--brd);border-top:none;border-radius:0 0 10px 10px;line-height:1.4">Tip: <b>₱ List</b> inserts a priced checklist — check every item to auto-add to Expenses.</p>
+      <p style="font-size:11px;color:var(--txt2);margin:0;padding:5px 10px;background:var(--bg);border:1.5px solid var(--brd);border-radius:10px;line-height:1.4">Tip: <b>₱ List</b> creates an interactive priced list with quantities — check items to auto-add to Expenses.</p>
       <!-- Mood nudge -->
       <div class="compose-mood-nudge" id="composeMoodNudge" style="display:none"></div>
       <!-- Footer row: tag + pin + save -->
@@ -11618,6 +11860,10 @@ function closeBriefView() {
 let noteFilter = "all";
 
 function addNote() {
+  const state = _getClb('noteInput');
+  if (state.active) {
+    _syncClBuilderToTextarea('noteInput');
+  }
   const titleEl = document.getElementById("noteTitle");
   const title = titleEl.value.trim();
   const text = document.getElementById("noteInput").value.trim();
@@ -11666,6 +11912,7 @@ function addNote() {
   const cmn = document.getElementById("composeMoodNudge");
   if (cmn) { cmn.style.display = "none"; cmn.innerHTML = ""; }
   document.getElementById("noteTitle").placeholder = "Title (required) — or tap Suggest";
+  _resetClBuilder('noteInput');
   renderNotes();
   closeComposeModal();
   toast("Entry saved!");
@@ -11708,9 +11955,37 @@ function _updateFab(tabId) {
   journalFab.style.display = tabId === "notes"    ? "flex" : "none";
 }
 
+let _composeModalMaximized = false;
+
+function toggleComposeModalMaximize(forceState) {
+  const overlay = document.getElementById("composeOverlay");
+  const modal = overlay ? overlay.querySelector(".note-modal") : null;
+  const maxBtn = document.getElementById("composeModalMaxBtn");
+  if (!modal) return;
+
+  if (typeof forceState === "boolean") {
+    _composeModalMaximized = forceState;
+  } else {
+    _composeModalMaximized = !_composeModalMaximized;
+  }
+
+  modal.classList.toggle("is-maximized", _composeModalMaximized);
+  if (overlay) overlay.classList.toggle("is-maximized", _composeModalMaximized);
+
+  if (maxBtn) {
+    maxBtn.title = _composeModalMaximized ? "Exit full screen" : "Full screen";
+    maxBtn.setAttribute("aria-label", _composeModalMaximized ? "Exit full screen" : "Full screen");
+    const iconMax = maxBtn.querySelector(".icon-max");
+    const iconRestore = maxBtn.querySelector(".icon-restore");
+    if (iconMax) iconMax.style.display = _composeModalMaximized ? "none" : "block";
+    if (iconRestore) iconRestore.style.display = _composeModalMaximized ? "block" : "none";
+  }
+}
+
 function openComposeModal() {
   const ov = document.getElementById("composeOverlay");
   if (!ov) return;
+  toggleComposeModalMaximize(false);
   ov.classList.add("show");
   // Focus the title field after the animation settles
   setTimeout(() => {
@@ -11722,9 +11997,8 @@ function openComposeModal() {
 function closeComposeModal() {
   const ov = document.getElementById("composeOverlay");
   if (ov) ov.classList.remove("show");
-  // Also hide the + Add item FAB and reset chip state
-  const fab = document.getElementById("addItemFab_noteInput");
-  if (fab) fab.style.display = "none";
+  toggleComposeModalMaximize(false);
+  _resetClBuilder('noteInput');
 }
 
 // ── Duplicate-warning UI (non-blocking; user decides) ──
@@ -11894,9 +12168,9 @@ let _suggestDebounce = null;
 function autoGrowTextarea(el) {
   if (!el) return;
   el.style.height = "auto";
-  const max = parseInt(getComputedStyle(el).maxHeight, 10) || 99999;
-  el.style.height = Math.min(el.scrollHeight, max) + "px";
-  el.style.overflowY = el.scrollHeight > max ? "auto" : "hidden";
+  const max = (typeof getComputedStyle !== 'undefined' ? parseInt(getComputedStyle(el).maxHeight, 10) : 420) || 99999;
+  el.style.height = Math.min(el.scrollHeight || 100, max) + "px";
+  el.style.overflowY = (el.scrollHeight || 0) > max ? "auto" : "hidden";
 }
 
 function onNoteInput(el) {
@@ -11917,9 +12191,7 @@ function onNoteInput(el) {
     autoApplyNoteTag();
     scheduleComposeMoodNudge();
     checkPriceListAfterToggle("noteInput");
-    _showAddItemChip("noteInput");
   } else if (el.id === "noteEditText") {
-    _showAddItemChip("noteEditText");
     checkPriceListAfterToggle("noteEditText");
   }
 }
@@ -11984,137 +12256,376 @@ function tbInsertLine(textareaId, prefix) {
 // Insert a heading (### ) on a new line
 function tbInsertHeading(textareaId) { tbInsertLine(textareaId, "### "); }
 
-// ─── PRICE CHECKLIST (₱ LIST) — core logic ─────────────────
+// ─── DIRECT INTERACTIVE CHECKLIST BUILDER (₱ LIST) ──────────
 // Cached currency-symbol regex
 let _symReCache = { sym:null, src:null };
 function _symRe() {
   const sym = getCurrency();
   if (_symReCache.sym === sym) return _symReCache.src;
   const esc = sym.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-  // One regex that matches a priced-checklist line.
-  // Groups: 1=leading "[ ] ", 2=item desc, 3=" — " separator (optional), 4=amount
   _symReCache = {
     sym,
-    src: new RegExp("^(\\s*\\[[ xX]\\]\\s*)(.+?)(\\s*[-–—]+\\s*)?(?:" + esc + "\\s*|PHP\\s*)?(\\d{1,3}(?:,\\d{3})*(?:\\.\\d{1,2})?|\\d+(?:\\.\\d{1,2})?)\\s*$", "i")
+    src: new RegExp("^(\\s*\\[[ xX]\\]\\s*)(.+?)(\\s*[-–—:]+\\s*)?(?:" + esc + "\\s*|PHP\\s*)?(\\d{1,3}(?:,\\d{3})*(?:\\.\\d{1,2})?|\\d+(?:\\.\\d{1,2})?)?\\s*$", "i")
   };
   return _symReCache.src;
 }
-// Looser "is this a checklist line at all?" regex for detecting lists
 const _CHECKLIST_RE = /^\s*\[[ xX]\]\s+/;
-const _PLACEHOLDER_NAME_RE = /^Item\s+\d+$/i;
-const _PLACEHOLDER_PRICE_RE = /^0(?:\.0+)?$/;
 
-function tbInsertPriceList(textareaId) {
-  const ta = _tbEl(textareaId); if (!ta) return;
-  _showCountPrompt(count => {
-    const sym = getCurrency();
-    ta.focus();
-    // Insert at cursor — but if cursor is mid-plain-text, prefer inserting at the
-    // next blank line so we don't break existing paragraphs.
-    const curPos = ta.selectionStart;
-    let insertAt = curPos;
-    const val = ta.value;
-    // If cursor in middle of a non-checklist line, move to start of the next line
-    const { line, lineStart } = _currentLine(ta, curPos);
-    const inChecklist = _CHECKLIST_RE.test(line);
-    if (!inChecklist && line.trim() !== "") {
-      insertAt = _nextBlankLinePos(val, lineStart + line.length);
-    }
-    let before = val.substring(0, insertAt);
-    const after  = val.substring(insertAt);
-    const nl = (before.length === 0 || before.endsWith("\n")) ? "" : "\n";
-    let rows = "";
-    // Pick the next unused item number so inserting multiple lists doesn't clash
-    const nextN = _nextItemNumber(val);
-    for (let i = 0; i < count; i++) {
-      rows += "[ ] Item " + (nextN + i) + " \u2014 " + sym + " 0.00\n";
-    }
-    ta.value = before + nl + rows + after;
-    // Select "Item N" of the first new row
-    const firstItemStart = (before + nl).length + "[ ] ".length;
-    ta.setSelectionRange(firstItemStart, firstItemStart + ("Item " + nextN).length);
-    ta.dispatchEvent(new Event("input", { bubbles: true }));
-    _setInputMode(ta, "text");
-    _showAddItemChip(textareaId);
-    const tagSel = document.getElementById("noteTag");
-    if (tagSel) { tagSel.value = "checklist"; markNoteTagManual(); }
-    toast("\u20B1 List added \u2014 tap a placeholder to edit, Enter to add rows, Tab to jump between fields.");
-  });
+const _clbState = {};
+
+function _getClb(taId) {
+  if (!_clbState[taId]) {
+    _clbState[taId] = { active: false, view: 'table', items: [], prefix: "", suffix: "" };
+  }
+  return _clbState[taId];
 }
 
-// Append a new priced-checklist row directly after the current list cluster
-function tbAddPriceRow(textareaId) {
-  const ta = _tbEl(textareaId); if (!ta) return;
-  const sym = getCurrency();
-  const val = ta.value;
-  const curPos = ta.selectionStart;
-  const curLine = _currentLine(ta, curPos);
-  const lines = val.split("\n");
-  // Find the contiguous block of checklist lines surrounding the cursor so we
-  // insert at the end of THAT block, not after unrelated text below.
-  const insertLineIdx = _endOfChecklistCluster(lines, curLine.index);
-  const nextN = _nextItemNumber(val);
-  const newRow = "[ ] Item " + nextN + " \u2014 " + sym + " 0.00\n";
-  // Build new content: slice lines, splice in newRow after the cluster
-  const before = lines.slice(0, insertLineIdx + 1).join("\n");
-  const afterLines = lines.slice(insertLineIdx + 1);
-  const afterText = afterLines.length ? "\n" + afterLines.join("\n") : "";
-  // Ensure we end the prior line with a newline
-  const prefix = (before.length === 0 || before.endsWith("\n")) ? "" : "\n";
-  ta.value = before + prefix + newRow + afterText;
-  // Position cursor on the new "Item N" placeholder
-  const start = (before + prefix + "[ ] ").length;
-  ta.focus();
-  ta.setSelectionRange(start, start + ("Item " + nextN).length);
-  _setInputMode(ta, "text");
-  ta.dispatchEvent(new Event("input", { bubbles: true }));
+function _resetClBuilder(taId) {
+  _clbState[taId] = { active: false, view: 'table', items: [], prefix: "", suffix: "" };
+  const wrap = document.getElementById("clBuilder_" + taId);
+  const edWrap = document.getElementById("editorWrap_" + taId);
+  if (wrap) { wrap.style.display = "none"; wrap.innerHTML = ""; }
+  if (edWrap) edWrap.style.display = "";
 }
 
-function _nextItemNumber(val) {
-  let maxN = 0;
-  const re = /^\s*\[[ xX]\]\s*Item\s+(\d+)/gim;
-  let m;
-  while ((m = re.exec(val)) !== null) maxN = Math.max(maxN, parseInt(m[1], 10));
-  // Also count untitled checklist rows with prices so numbers stay sane
-  return maxN + 1;
-}
+function _parseNoteIntoClb(text) {
+  const lines = (text || "").split(/\r?\n/);
+  const items = [];
+  const prefixLines = [];
+  const suffixLines = [];
+  let foundFirstChecklist = false;
 
-function _endOfChecklistCluster(lines, cursorIdx) {
-  // Walk forward/backward to find the extent of the contiguous checklist block
-  // that contains (or is adjacent to) the cursor. Returns the line index AFTER
-  // the last checklist line in the cluster — where a new row should be inserted.
-  let i;
-  // If cursor is on a checklist line, start there; else scan back up to 2 lines
-  if (_CHECKLIST_RE.test(lines[cursorIdx] || "")) {
-    i = cursorIdx;
-  } else {
-    i = cursorIdx;
-    while (i > 0 && !_CHECKLIST_RE.test(lines[i] || "") && (cursorIdx - i) < 2) i--;
-    if (!_CHECKLIST_RE.test(lines[i] || "")) {
-      // No adjacent checklist — append at end of document
-      return lines.length - 1;
+  for (let i = 0; i < lines.length; i++) {
+    const raw = lines[i];
+    const checkM = raw.match(/^\s*\[([ xX])\]\s*(.*)$/);
+    if (checkM) {
+      foundFirstChecklist = true;
+      const checked = checkM[1].toLowerCase() === 'x';
+      const content = checkM[2] || "";
+      
+      let desc = content.trim();
+      let price = "";
+      const priceM = desc.match(/^(.*?)\s*[-–—:]+\s*(?:[^\d\s]+\s*)?(\d[\d,]*(?:\.\d{1,2})?)\s*$/);
+      if (priceM) {
+        desc = priceM[1].trim();
+        const pVal = priceM[2].replace(/,/g, "");
+        if (pVal !== "0" && pVal !== "0.00" && pVal !== "0.0") {
+          price = pVal;
+        }
+      }
+      
+      let qty = 1;
+      const qtyM = desc.match(/^(.*?)\s*[x×*](\d+)\s*$/i) || desc.match(/^(.*?)\s*\((\d+)\)\s*$/);
+      if (qtyM) {
+        desc = qtyM[1].trim();
+        qty = parseInt(qtyM[2]) || 1;
+      }
+
+      items.push({ desc, qty, price, checked });
+    } else {
+      if (!foundFirstChecklist) {
+        prefixLines.push(raw);
+      } else {
+        suffixLines.push(raw);
+      }
     }
   }
-  while (i + 1 < lines.length && _CHECKLIST_RE.test(lines[i + 1])) i++;
-  return i;
+
+  return {
+    items,
+    prefix: prefixLines.join("\n").replace(/\s+$/, ""),
+    suffix: suffixLines.join("\n").replace(/^\s+/, "")
+  };
 }
 
-function _nextBlankLinePos(val, fromPos) {
-  // Find position after next blank line starting at fromPos; fall back to end
-  const rest = val.substring(fromPos);
-  const m = rest.match(/\n\s*\n/);
-  if (m) return fromPos + m.index + m[0].length;
-  return val.length;
+function _serializeClbToNote(taId) {
+  const state = _getClb(taId);
+  const sym = getCurrency();
+  const lines = [];
+
+  if (state.prefix && state.prefix.trim()) {
+    lines.push(state.prefix.trim());
+    lines.push("");
+  }
+
+  state.items.forEach(it => {
+    const desc = (it.desc || "").trim();
+    if (!desc && !it.price) return;
+    const chk = it.checked ? "[x] " : "[ ] ";
+    const d = desc || "Item";
+    const qStr = (it.qty && it.qty > 1) ? (" x" + it.qty) : "";
+    const pVal = parseFloat((it.price || "").toString().replace(/,/g, ""));
+    const pStr = (!isNaN(pVal) && pVal > 0) ? (" \u2014 " + sym + " " + pVal.toFixed(2)) : "";
+    lines.push(chk + d + qStr + pStr);
+  });
+
+  if (state.suffix && state.suffix.trim()) {
+    lines.push("");
+    lines.push(state.suffix.trim());
+  }
+
+  return lines.join("\n");
 }
 
-// Show/hide the "+ Add item" FAB
-function _showAddItemChip(textareaId, forceShow) {
-  const fab = document.getElementById("addItemFab_" + textareaId);
-  if (!fab) return;
-  const ta = _tbEl(textareaId);
-  const hasChecklist = ta && /^\s*\[[ xX]\]\s+/m.test(ta.value);
-  // Only show the FAB if there's any checklist line AND there's room
-  fab.style.display = (forceShow || hasChecklist) ? "inline-flex" : "none";
+function _activateClBuilder(taId) {
+  const ta = document.getElementById(taId);
+  if (!ta) return;
+  const state = _getClb(taId);
+  state.active = true;
+  state.view = 'table';
+
+  const parsed = _parseNoteIntoClb(ta.value);
+  state.prefix = parsed.prefix;
+  state.suffix = parsed.suffix;
+
+  if (parsed.items.length > 0) {
+    state.items = parsed.items;
+  } else {
+    state.items = [
+      { desc: "", qty: 1, price: "", checked: false },
+      { desc: "", qty: 1, price: "", checked: false },
+      { desc: "", qty: 1, price: "", checked: false }
+    ];
+  }
+
+  _renderClBuilder(taId);
+  _syncClBuilderToTextarea(taId);
+
+  setTimeout(() => {
+    const firstInput = document.querySelector("#clBuilder_" + taId + " .clb-input-desc");
+    if (firstInput) firstInput.focus();
+  }, 50);
+}
+
+function _syncClBuilderToTextarea(taId) {
+  const ta = document.getElementById(taId);
+  if (!ta) return;
+  const noteText = _serializeClbToNote(taId);
+  ta.value = noteText;
+  autoGrowTextarea(ta);
+}
+
+function _renderClBuilder(taId) {
+  const wrap = document.getElementById("clBuilder_" + taId);
+  const edWrap = document.getElementById("editorWrap_" + taId);
+  if (!wrap) return;
+
+  const state = _getClb(taId);
+  if (!state.active) {
+    wrap.style.display = "none";
+    if (edWrap) edWrap.style.display = "";
+    return;
+  }
+
+  wrap.style.display = "block";
+  if (state.view === "text") {
+    if (edWrap) edWrap.style.display = "";
+  } else {
+    if (edWrap) edWrap.style.display = "none";
+  }
+
+  const sym = getCurrency();
+  let grandTotal = 0;
+  state.items.forEach(it => {
+    const p = parseFloat((it.price || "").toString().replace(/,/g, "")) || 0;
+    const q = parseInt(it.qty) || 1;
+    if (p > 0) grandTotal += p * q;
+  });
+
+  let rowsHtml = "";
+  state.items.forEach((it, idx) => {
+    const p = parseFloat((it.price || "").toString().replace(/,/g, "")) || 0;
+    const q = parseInt(it.qty) || 1;
+    const lineTotal = p > 0 ? (sym + " " + (p * q).toFixed(2)) : "\u2014";
+    rowsHtml +=
+      '<tr class="clb-row ' + (it.checked ? 'is-checked' : '') + '" data-idx="' + idx + '">' +
+        '<td class="clb-td-num">' + (idx + 1) + '</td>' +
+        '<td class="clb-td-check">' +
+          '<input type="checkbox" ' + (it.checked ? 'checked' : '') + ' onchange="_clbToggleRowCheck(\x27' + taId + '\x27, ' + idx + ', this.checked)" title="Check item">' +
+        '</td>' +
+        '<td class="clb-td-desc">' +
+          '<input type="text" class="clb-input clb-input-desc" placeholder="Item name (e.g. Milk)" value="' + escHtml(it.desc || '') + '" oninput="_clbUpdateRowField(\x27' + taId + '\x27, ' + idx + ', \x27desc\x27, this.value)" onkeydown="_clbOnRowKeydown(event, \x27' + taId + '\x27, ' + idx + ', \x27desc\x27)">' +
+        '</td>' +
+        '<td class="clb-td-qty">' +
+          '<input type="number" min="1" max="999" class="clb-input clb-input-qty" value="' + (it.qty || 1) + '" oninput="_clbUpdateRowField(\x27' + taId + '\x27, ' + idx + ', \x27qty\x27, this.value)" onkeydown="_clbOnRowKeydown(event, \x27' + taId + '\x27, ' + idx + ', \x27qty\x27)">' +
+        '</td>' +
+        '<td class="clb-td-price">' +
+          '<div class="clb-price-input-wrap">' +
+            '<span class="clb-price-sym">' + sym + '</span>' +
+            '<input type="text" inputmode="decimal" class="clb-input clb-input-price" placeholder="0.00" value="' + (it.price || '') + '" oninput="_clbUpdateRowField(\x27' + taId + '\x27, ' + idx + ', \x27price\x27, this.value)" onkeydown="_clbOnRowKeydown(event, \x27' + taId + '\x27, ' + idx + ', \x27price\x27)">' +
+          '</div>' +
+        '</td>' +
+        '<td class="clb-td-total">' +
+          '<span class="clb-row-total">' + lineTotal + '</span>' +
+        '</td>' +
+        '<td class="clb-td-del">' +
+          '<button type="button" class="clb-del-btn" onclick="_clbRemoveRow(\x27' + taId + '\x27, ' + idx + ')" title="Remove item">' +
+            '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>' +
+          '</button>' +
+        '</td>' +
+      '</tr>';
+  });
+
+  wrap.innerHTML =
+    '<div class="clb-header">' +
+      '<div class="clb-title">' +
+        '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3 7-7"/><path d="M20 12v7a2 2 0 01-2 2H6a2 2 0 01-2-2V5a2 2 0 012-2h8"/><line x1="3.5" y1="10" x2="8.5" y2="10"/><line x1="3.5" y1="15" x2="8.5" y2="15"/></svg>' +
+        '<span>Interactive \u20B1 List</span>' +
+      '</div>' +
+      '<div class="clb-modes">' +
+        '<button type="button" class="clb-view-btn ' + (state.view === 'table' ? 'active' : '') + '" onclick="_setClBuilderView(\x27' + taId + '\x27, \x27table\x27)">Table UI</button>' +
+        '<button type="button" class="clb-view-btn ' + (state.view === 'text' ? 'active' : '') + '" onclick="_setClBuilderView(\x27' + taId + '\x27, \x27text\x27)">Markdown Text</button>' +
+      '</div>' +
+    '</div>' +
+    (state.view === 'table' ?
+      ('<div class="clb-table-wrap">' +
+        '<table class="clb-table">' +
+          '<thead>' +
+            '<tr>' +
+              '<th style="width:26px;text-align:center">#</th>' +
+              '<th style="width:30px;text-align:center">\u2713</th>' +
+              '<th>Item Description</th>' +
+              '<th style="width:58px;text-align:center">Qty</th>' +
+              '<th style="width:96px;text-align:right">Price (' + sym + ')</th>' +
+              '<th style="width:78px;text-align:right">Total</th>' +
+              '<th style="width:30px;text-align:center"></th>' +
+            '</tr>' +
+          '</thead>' +
+          '<tbody>' + rowsHtml + '</tbody>' +
+        '</table>' +
+      '</div>' +
+      '<div class="clb-foot">' +
+        '<button type="button" class="clb-add-btn" onclick="_clbAddRow(\x27' + taId + '\x27)">' +
+          '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>' +
+          'Add item' +
+        '</button>' +
+        '<div class="clb-grand-total">Total: <strong>' + sym + ' ' + grandTotal.toFixed(2) + '</strong></div>' +
+      '</div>')
+    :
+      ('<div class="clb-text-mode-hint">' +
+        'Editing in Markdown text mode below. Switch back to <b>Table UI</b> anytime to use the structured table.' +
+      '</div>')
+    );
+}
+
+function _setClBuilderView(taId, view) {
+  const state = _getClb(taId);
+  if (view === 'table' && state.view === 'text') {
+    const ta = document.getElementById(taId);
+    if (ta) {
+      const parsed = _parseNoteIntoClb(ta.value);
+      state.items = parsed.items.length > 0 ? parsed.items : state.items;
+      state.prefix = parsed.prefix;
+      state.suffix = parsed.suffix;
+    }
+  } else if (view === 'text' && state.view === 'table') {
+    _syncClBuilderToTextarea(taId);
+  }
+  state.view = view;
+  _renderClBuilder(taId);
+  if (view === 'text') {
+    const ta = document.getElementById(taId);
+    if (ta) ta.focus();
+  }
+}
+
+function _clbAddRow(taId, desc = "", qty = 1, price = "", checked = false) {
+  const state = _getClb(taId);
+  state.items.push({ desc, qty, price, checked });
+  _renderClBuilder(taId);
+  _syncClBuilderToTextarea(taId);
+  setTimeout(() => {
+    const rows = document.querySelectorAll("#clBuilder_" + taId + " .clb-row");
+    const lastRow = rows[rows.length - 1];
+    if (lastRow) {
+      const descInp = lastRow.querySelector(".clb-input-desc");
+      if (descInp) descInp.focus();
+    }
+  }, 30);
+}
+
+function _clbRemoveRow(taId, idx) {
+  const state = _getClb(taId);
+  if (state.items.length <= 1) {
+    state.items[0] = { desc: "", qty: 1, price: "", checked: false };
+  } else {
+    state.items.splice(idx, 1);
+  }
+  _renderClBuilder(taId);
+  _syncClBuilderToTextarea(taId);
+}
+
+function _clbUpdateRowField(taId, idx, field, val) {
+  const state = _getClb(taId);
+  if (!state.items[idx]) return;
+
+  if (field === "qty") {
+    const q = parseInt(val) || 1;
+    state.items[idx].qty = Math.max(1, q);
+  } else if (field === "price") {
+    state.items[idx].price = val;
+  } else {
+    state.items[idx][field] = val;
+  }
+
+  const wrap = document.getElementById("clBuilder_" + taId);
+  if (wrap) {
+    const sym = getCurrency();
+    const rowEl = wrap.querySelector(`.clb-row[data-idx="${idx}"]`);
+    if (rowEl) {
+      const p = parseFloat((state.items[idx].price || "").toString().replace(/,/g, "")) || 0;
+      const q = parseInt(state.items[idx].qty) || 1;
+      const totalCell = rowEl.querySelector(".clb-row-total");
+      if (totalCell) {
+        totalCell.textContent = p > 0 ? (sym + " " + (p * q).toFixed(2)) : "\u2014";
+      }
+    }
+    let grandTotal = 0;
+    state.items.forEach(it => {
+      const p = parseFloat((it.price || "").toString().replace(/,/g, "")) || 0;
+      const q = parseInt(it.qty) || 1;
+      if (p > 0) grandTotal += p * q;
+    });
+    const gtEl = wrap.querySelector(".clb-grand-total strong");
+    if (gtEl) gtEl.textContent = sym + " " + grandTotal.toFixed(2);
+  }
+
+  _syncClBuilderToTextarea(taId);
+}
+
+function _clbToggleRowCheck(taId, idx, checked) {
+  const state = _getClb(taId);
+  if (!state.items[idx]) return;
+  state.items[idx].checked = !!checked;
+  const wrap = document.getElementById("clBuilder_" + taId);
+  if (wrap) {
+    const rowEl = wrap.querySelector(`.clb-row[data-idx="${idx}"]`);
+    if (rowEl) rowEl.classList.toggle("is-checked", !!checked);
+  }
+  _syncClBuilderToTextarea(taId);
+}
+
+function _clbOnRowKeydown(e, taId, idx, field) {
+  if (e.key === "Enter") {
+    e.preventDefault();
+    const state = _getClb(taId);
+    if (idx === state.items.length - 1) {
+      _clbAddRow(taId);
+    } else {
+      const nextRow = document.querySelector("#clBuilder_" + taId + " .clb-row[data-idx=\"" + (idx + 1) + "\"]");
+      if (nextRow) {
+        const nextDesc = nextRow.querySelector(".clb-input-desc");
+        if (nextDesc) nextDesc.focus();
+      }
+    }
+  }
+}
+
+function tbInsertPriceList(textareaId) {
+  const tagSel = document.getElementById("noteTag");
+  if (tagSel) { tagSel.value = "checklist"; markNoteTagManual(); }
+  _activateClBuilder(textareaId);
+  toast("\u20B1 List ready \u2014 enter items, quantities, and prices");
 }
 
 function _setInputMode(ta, mode) {
@@ -12305,11 +12816,11 @@ function onTextareaKeydown(e, textareaId) {
       return;
     }
 
-    // Existing: price-list Enter
+    // Markdown checklist Enter
     const { line } = _currentLine(ta, ta.selectionStart);
     if (_symRe().test(line) || _CHECKLIST_RE.test(line)) {
       e.preventDefault();
-      tbAddPriceRow(textareaId);
+      tbInsertLine(textareaId, "[ ] ");
       return;
     }
   }
@@ -12384,54 +12895,6 @@ function _parseChecklistItems(text) {
     items.push({ line: i, checked, desc, amt, qty });
   }
   return items;
-}
-
-// ─── COUNT PROMPT MODAL (−/+ picker for ₱ List count) ────────
-function _showCountPrompt(cb) {
-  // Remove any existing prompt first
-  const existing = document.getElementById('_countPromptOverlay');
-  if (existing) existing.remove();
-
-  let count = 3;
-  const overlay = document.createElement('div');
-  overlay.id = '_countPromptOverlay';
-  overlay.style.cssText = 'position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.45);';
-
-  function render() {
-    overlay.innerHTML =
-      '<div style="background:var(--card);border:1.5px solid var(--brd);border-radius:18px;padding:24px 28px 20px;min-width:240px;max-width:90vw;box-shadow:0 8px 40px rgba(0,0,0,0.28);text-align:center;">' +
-        '<div style="font-size:14px;font-weight:700;color:var(--txt);margin-bottom:4px;">How many items?</div>' +
-        '<div style="font-size:11px;color:var(--txt2);margin-bottom:14px;">You can add more later</div>' +
-        '<div class="count-prompt-wrap">' +
-          '<button type="button" onclick="window._cpDec()" aria-label="Decrease">−</button>' +
-          '<span class="count-prompt-val" id="_cpVal">' + count + '</span>' +
-          '<button type="button" onclick="window._cpInc()" aria-label="Increase">+</button>' +
-        '</div>' +
-        '<div class="count-prompt-sub">1 – 30 items</div>' +
-        '<div style="display:flex;gap:10px;margin-top:6px;justify-content:center;">' +
-          '<button type="button" onclick="window._cpCancel()" style="padding:9px 20px;border-radius:10px;border:1.5px solid var(--brd);background:var(--bg);color:var(--txt2);font-size:13px;cursor:pointer;">Cancel</button>' +
-          '<button type="button" onclick="window._cpConfirm()" style="padding:9px 22px;border-radius:10px;border:none;background:var(--pri);color:var(--on-pri);font-size:13px;font-weight:700;cursor:pointer;">Insert</button>' +
-        '</div>' +
-      '</div>';
-  }
-
-  window._cpDec = () => { count = Math.max(1, count - 1); document.getElementById('_cpVal').textContent = count; };
-  window._cpInc = () => { count = Math.min(30, count + 1); document.getElementById('_cpVal').textContent = count; };
-  window._cpCancel = () => { overlay.remove(); delete window._cpDec; delete window._cpInc; delete window._cpCancel; delete window._cpConfirm; };
-  window._cpConfirm = () => {
-    const n = count;
-    overlay.remove();
-    delete window._cpDec; delete window._cpInc; delete window._cpCancel; delete window._cpConfirm;
-    cb(n);
-  };
-
-  // Close on backdrop click
-  overlay.addEventListener('click', e => { if (e.target === overlay) window._cpCancel(); });
-
-  render();
-  document.body.appendChild(overlay);
-  // Focus the Insert button
-  setTimeout(() => { const btn = overlay.querySelector('button:last-child'); if (btn) btn.focus(); }, 50);
 }
 
 // ─── HASH (nag-guard dedup) ────────────────────────────────────
@@ -13119,11 +13582,9 @@ function renderNoteModal() {
           '<span class="tb-sep"></span>' +
           '<button type="button" class="tb-btn tb-wide" onclick="tbInsertPriceList(\'noteEditText\')" title="Insert a priced checklist"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3 7-7"/><path d="M20 12v7a2 2 0 01-2 2H6a2 2 0 01-2-2V5a2 2 0 012-2h8"/><line x1="3.5" y1="10" x2="8.5" y2="10"/><line x1="3.5" y1="15" x2="8.5" y2="15"/></svg>₱ List</button>' +
         '</div>' +
+        '<div id="clBuilder_noteEditText" class="cl-builder-wrap" style="display:none"></div>' +
         '<div class="editor-wrap" id="editorWrap_noteEditText">' +
-          '<textarea id="noteEditText" oninput="onNoteInput(this)" onblur="onNoteBlur(this)" onclick="onTextareaClick(event)" onkeydown="onTextareaKeydown(event,\'noteEditText\')" onkeyup="onTextareaKeyup(event,\'noteEditText\')" inputmode="text" style="border-top:none;border-radius:0 0 12px 12px;padding-bottom:32px">' + escHtml(note.text || "") + '</textarea>' +
-          '<button type="button" class="add-item-fab" id="addItemFab_noteEditText" onclick="tbAddPriceRow(\'noteEditText\')" style="display:none" title="Add another item to this ₱ list">' +
-            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Add item' +
-          '</button>' +
+          '<textarea id="noteEditText" oninput="onNoteInput(this)" onblur="onNoteBlur(this)" onclick="onTextareaClick(event)" onkeydown="onTextareaKeydown(event,\'noteEditText\')" onkeyup="onTextareaKeyup(event,\'noteEditText\')" inputmode="text" style="border-top:none;border-radius:0 0 12px 12px;padding:12px 14px">' + escHtml(note.text || "") + '</textarea>' +
         '</div>' +
       '</div>';
     footEl.innerHTML =
@@ -13138,9 +13599,12 @@ function renderNoteModal() {
     const ta = document.getElementById("noteEditText");
     if (ta) {
       autoGrowTextarea(ta);
-      // Try to build live checklist UI if the note has checklist items
-      ta.focus();
-      ta.setSelectionRange(ta.value.length, ta.value.length);
+      if (/^\s*\[[ xX]\]\s+/m.test(note.text || "")) {
+        _activateClBuilder("noteEditText");
+      } else {
+        ta.focus();
+        ta.setSelectionRange(ta.value.length, ta.value.length);
+      }
     }
     return;
   }
@@ -13352,10 +13816,15 @@ function startNoteModalEdit() {
 
 function cancelNoteModalEdit() {
   _noteModalEditing = false;
+  _resetClBuilder('noteEditText');
   renderNoteModal();
 }
 
 function saveNoteModalEdit() {
+  const state = _getClb('noteEditText');
+  if (state.active) {
+    _syncClBuilderToTextarea('noteEditText');
+  }
   const notes = JSON.parse(localStorage.getItem("bt_notes") || "[]");
   const note = notes.find(n => n.id === _openNoteId);
   if (!note) return;
@@ -13374,6 +13843,7 @@ function saveNoteModalEdit() {
   note.edited = new Date().toISOString();
   localStorage.setItem("bt_notes", JSON.stringify(notes));
   _noteModalEditing = false;
+  _resetClBuilder('noteEditText');
   renderNoteModal();
   renderNotes();
   toast("Note saved!");

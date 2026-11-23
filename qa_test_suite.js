@@ -16,6 +16,7 @@ const localStorage = {
 const documentElements = new Map();
 const makeMockElement = (initialId = '') => {
   const classes = new Set();
+  const attrs = new Map();
   let _id = initialId;
   let _innerHTML = '';
   let _textContent = '';
@@ -73,8 +74,8 @@ const makeMockElement = (initialId = '') => {
         else { classes.add(c); return true; }
       }
     },
-    setAttribute: () => {},
-    getAttribute: () => '',
+    setAttribute: (k, v) => attrs.set(k, String(v)),
+    getAttribute: (k) => attrs.get(k) || '',
     addEventListener: () => {},
     focus: () => {},
     select: () => {},
@@ -95,7 +96,11 @@ const makeMockElement = (initialId = '') => {
       }
       return null;
     },
-    querySelector: () => null,
+    querySelector: (sel) => {
+      const targetClass = sel.replace(/^[#.]/, '');
+      const child = (el.children || []).find(c => c.classList && c.classList.contains(targetClass));
+      return child || makeMockElement(targetClass);
+    },
     querySelectorAll: () => [],
     children: []
   };
@@ -1182,6 +1187,111 @@ assert(indexHtml.includes('.note-modal.is-maximized .note-modal-body'), "index.h
 assert(indexHtml.includes('.note-mood .mood-dismiss-btn'), "index.html styles subdued dismiss button for gentle reminder");
 assert(indexHtml.includes('.note-mood .mood-opt-out'), "index.html styles 'Don't show this again' opt-out container");
 
+
+
+// ─── TEST SUITE 21: Compose Modal Fullscreen & Direct UI Checklist Builder ───
+console.log("\n─── TEST SUITE 21: Compose Modal Fullscreen & Direct UI Checklist Builder ───");
+
+// 1. Verify index.html contains #composeModalMaxBtn and Direct Builder container
+assert(indexHtml.includes('id="composeModalMaxBtn"'), "index.html contains #composeModalMaxBtn maximize button");
+assert(indexHtml.includes('id="clBuilder_noteInput"'), "index.html contains #clBuilder_noteInput direct builder container");
+assert(!indexHtml.includes('id="addItemFab_noteInput"'), "Redundant #addItemFab_noteInput is removed from index.html");
+assert(!indexHtml.includes('id="addItemFab_noteEditText"'), "Redundant #addItemFab_noteEditText is removed from index.html");
+assert(indexHtml.includes('.compose-modal-body'), "index.html contains .compose-modal-body class for maximized styling");
+
+// 2. Test toggleComposeModalMaximize
+const composeOv = document.getElementById("composeOverlay");
+const compModal = makeMockElement("compModal");
+compModal.classList.add("note-modal");
+composeOv.appendChild(compModal);
+const compMaxBtn = document.getElementById("composeModalMaxBtn");
+
+toggleComposeModalMaximize(true);
+assert(composeOv.classList.contains("is-maximized"), "toggleComposeModalMaximize(true) adds is-maximized to #composeOverlay");
+assert(compModal.classList.contains("is-maximized"), "toggleComposeModalMaximize(true) adds is-maximized to .note-modal");
+assert(compMaxBtn.title === "Exit full screen", "Maximize button tooltip changes to 'Exit full screen'");
+assert(compMaxBtn.getAttribute("aria-label") === "Exit full screen", "Maximize button aria-label changes to 'Exit full screen'");
+
+toggleComposeModalMaximize(false);
+assert(!composeOv.classList.contains("is-maximized"), "toggleComposeModalMaximize(false) removes is-maximized from #composeOverlay");
+assert(!compModal.classList.contains("is-maximized"), "toggleComposeModalMaximize(false) removes is-maximized from .note-modal");
+assert(compMaxBtn.title === "Full screen", "Maximize button tooltip resets to 'Full screen'");
+
+// openComposeModal resets maximize state
+toggleComposeModalMaximize(true);
+openComposeModal();
+assert(!composeOv.classList.contains("is-maximized"), "openComposeModal resets maximize state");
+closeComposeModal();
+
+// 3. Test _parseNoteIntoClb
+const testNoteText = "Shopping for party:\n[ ] Fresh Milk x2 — ₱ 85.00\n[x] Artisan Bread — ₱ 65.00\n[ ] Toothpaste\nDon't forget the receipt!";
+const parsedClb = _parseNoteIntoClb(testNoteText);
+assert(parsedClb.items.length === 3, "Parsed exactly 3 checklist items from mixed text");
+assert(parsedClb.items[0].desc === "Fresh Milk", "Item 1 desc parsed as 'Fresh Milk'");
+assert(parsedClb.items[0].qty === 2, "Item 1 qty parsed as 2 (got " + parsedClb.items[0].qty + ")");
+assert(parsedClb.items[0].price === "85.00", "Item 1 price parsed as '85.00'");
+assert(parsedClb.items[0].checked === false, "Item 1 checked is false");
+assert(parsedClb.items[1].desc === "Artisan Bread", "Item 2 desc parsed as 'Artisan Bread'");
+assert(parsedClb.items[1].qty === 1, "Item 2 qty parsed as 1");
+assert(parsedClb.items[1].price === "65.00", "Item 2 price parsed as '65.00'");
+assert(parsedClb.items[1].checked === true, "Item 2 checked is true");
+assert(parsedClb.items[2].desc === "Toothpaste", "Item 3 desc parsed as 'Toothpaste'");
+assert(parsedClb.items[2].price === "", "Item 3 price is empty");
+assert(parsedClb.prefix === "Shopping for party:", "Prefix preserved intact");
+assert(parsedClb.suffix === "Don't forget the receipt!", "Suffix preserved intact");
+
+// 4. Test _serializeClbToNote
+const curSym = getCurrency();
+const serializedClb = _serializeClbToNote('noteInput');
+_getClb('noteInput').prefix = parsedClb.prefix;
+_getClb('noteInput').items = parsedClb.items;
+_getClb('noteInput').suffix = parsedClb.suffix;
+const reSerialized = _serializeClbToNote('noteInput');
+assert(reSerialized.includes("[ ] Fresh Milk x2 — " + curSym + " 85.00"), "Serialized contains formatted quantity x2 and price");
+assert(reSerialized.includes("[x] Artisan Bread — " + curSym + " 65.00"), "Serialized contains checked item with price");
+assert(reSerialized.includes("[ ] Toothpaste"), "Serialized contains unpriced item");
+
+// 5. Test Direct Checklist Builder row manipulation
+_resetClBuilder('noteInput');
+_activateClBuilder('noteInput');
+const clbState = _getClb('noteInput');
+assert(clbState.active === true, "_activateClBuilder marks state active");
+assert(clbState.items.length === 3, "_activateClBuilder initializes with 3 clean rows for fresh note");
+
+_clbUpdateRowField('noteInput', 0, 'desc', 'Apples');
+_clbUpdateRowField('noteInput', 0, 'qty', 3);
+_clbUpdateRowField('noteInput', 0, 'price', '50.00');
+assert(clbState.items[0].desc === 'Apples', "Row 0 description updated to Apples");
+assert(clbState.items[0].qty === 3, "Row 0 qty updated to 3");
+assert(clbState.items[0].price === '50.00', "Row 0 price updated to 50.00");
+
+// Add row
+_clbAddRow('noteInput', 'Bananas', 2, '40.00', false);
+assert(clbState.items.length === 4, "_clbAddRow adds 4th item");
+assert(clbState.items[3].desc === 'Bananas', "4th item desc is Bananas");
+
+// Check toggle
+_clbToggleRowCheck('noteInput', 3, true);
+assert(clbState.items[3].checked === true, "_clbToggleRowCheck sets checked to true");
+
+// Remove row
+_clbRemoveRow('noteInput', 1);
+assert(clbState.items.length === 3, "_clbRemoveRow removed row at index 1");
+
+// View toggle (table vs text)
+_setClBuilderView('noteInput', 'text');
+assert(clbState.view === 'text', "_setClBuilderView switches to text mode");
+_setClBuilderView('noteInput', 'table');
+assert(clbState.view === 'table', "_setClBuilderView switches back to table mode");
+
+// Test tbInsertPriceList
+tbInsertPriceList('noteInput');
+assert(document.getElementById('noteTag').value === 'checklist', "tbInsertPriceList auto-selects 'checklist' tag");
+assert(_getClb('noteInput').active === true, "tbInsertPriceList activates direct builder");
+
+// Reset builder
+_resetClBuilder('noteInput');
+assert(_getClb('noteInput').active === false, "_resetClBuilder deactivates builder");
 
 // ─── SUMMARY ────────────────────────────────────────────────
 console.log("\n=================================================");
