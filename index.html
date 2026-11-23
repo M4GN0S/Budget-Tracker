@@ -1264,18 +1264,33 @@ tbody tr:hover td{background:var(--pri-l)}
 
 /* ─── Unified Office-Style Document Editor & Direct Checklist Table ─── */
 .cl-builder-wrap {
-  border: 1.5px solid var(--brd);
-  border-radius: 10px;
-  background: var(--bg);
-  padding: 10px 14px;
+  border: none !important;
+  background: transparent !important;
+  padding: 0 !important;
+  margin: 0 !important;
   box-sizing: border-box;
-  min-height: 140px;
-  transition: border-color .15s ease, box-shadow .15s ease;
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 4px;
+  width: 100%;
 }
-.cl-builder-wrap:focus-within {
+.compose-editor-scroll {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  min-height: 180px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px 14px 40px;
+  border: 1.5px solid var(--brd);
+  border-radius: 12px;
+  background: var(--bg);
+  box-sizing: border-box;
+  transition: border-color .15s ease, box-shadow .15s ease;
+}
+.compose-editor-scroll:focus-within {
   border-color: var(--pri);
   box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.12);
 }
@@ -1295,15 +1310,14 @@ tbody tr:hover td{background:var(--pri-l)}
   box-sizing: border-box;
   display: block;
   margin: 0;
-  padding: 0;
+  padding: 2px 0;
+  field-sizing: content;
 }
 .doc-canvas-lead {
-  padding: 2px 0 6px 0;
   min-height: 28px;
 }
 .doc-canvas-trail {
-  padding: 6px 0 2px 0;
-  min-height: 44px;
+  min-height: 48px;
 }
 .doc-canvas-lead::placeholder,
 .doc-canvas-trail::placeholder {
@@ -12236,13 +12250,17 @@ let _suggestDebounce = null;
 function autoGrowTextarea(el) {
   if (!el) return;
   el.style.height = "auto";
+  const scrollH = el.scrollHeight;
   if (el.classList && (el.classList.contains("doc-canvas-lead") || el.classList.contains("doc-canvas-trail"))) {
-    el.style.height = Math.max(el.scrollHeight || 0, el.classList.contains("doc-canvas-trail") ? 48 : 28) + "px";
+    el.style.height = Math.max(scrollH || 0, el.classList.contains("doc-canvas-trail") ? 48 : 28) + "px";
+    el.style.overflowY = "hidden";
+  } else if (el.id === "noteInput" || el.id === "noteEditText") {
+    el.style.height = Math.max(scrollH || 0, 160) + "px";
     el.style.overflowY = "hidden";
   } else {
     const max = (typeof getComputedStyle !== 'undefined' ? parseInt(getComputedStyle(el).maxHeight, 10) : 420) || 99999;
-    el.style.height = Math.min(el.scrollHeight || 100, max) + "px";
-    el.style.overflowY = (el.scrollHeight || 0) > max ? "auto" : "hidden";
+    el.style.height = Math.min(scrollH || 100, max) + "px";
+    el.style.overflowY = (scrollH || 0) > max ? "auto" : "hidden";
   }
 }
 
