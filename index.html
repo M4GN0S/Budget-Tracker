@@ -477,72 +477,41 @@ input[type="number"]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0
 }
 
 .stat{
-  background:var(--card);border-radius:var(--rad);
-  padding:10px 12px;box-shadow:var(--sh);
-  position:relative;overflow:visible;
-  border:1px solid var(--brd);
-  transition:transform .2s,box-shadow .2s,border-color .2s;
-  display:flex;flex-direction:column;align-items:stretch;
+  background:var(--card);border-radius:12px;
+  padding:12px 14px;box-shadow:var(--sh);
+  position:relative;overflow:hidden;
+  border:1.5px solid var(--brd);
+  transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease;
+  display:flex;flex-direction:column;justify-content:space-between;
+  min-height:92px;box-sizing:border-box;
   cursor:default;
 }
-.stat:hover{transform:translateY(-1px);box-shadow:var(--sh)}
+.stat:hover{transform:translateY(-2px);box-shadow:var(--shd-md);border-color:var(--brd2)}
 .stat[onclick]{cursor:pointer}
 .stat-icon{
-  width:20px;height:20px;border-radius:6px;
+  width:22px;height:22px;border-radius:6px;
   display:inline-flex;align-items:center;justify-content:center;
   flex-shrink:0;margin-right:6px;color:var(--txt2);
 }
-.stat-nw .stat-icon{background:var(--pri-l);color:var(--pri-d)}
-.stat-dr .stat-icon{background:var(--acc-l);color:var(--acc)}
 .stat-top{
   display:flex;align-items:center;justify-content:space-between;
-  margin-bottom:2px;
+  margin-bottom:4px;min-height:22px;
 }
-.stat-top-left{display:flex;align-items:center;min-width:0}
+.stat-top-left{display:flex;align-items:center;min-width:0;gap:4px}
 
 /* Typography split: Inter/sans-serif labels, SF Mono numbers */
-.stat .lbl{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:10px;text-transform:uppercase;letter-spacing:.8px;color:var(--txt2);font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.stat .amt{font-family:'SF Mono',Consolas,monospace;font-size:clamp(15px,2vw,20px);font-weight:800;margin:1px 0 0;letter-spacing:-.5px;color:var(--txt);text-align:left}
-.stat .sub{font-size:10px;color:var(--txt2);line-height:1.3;text-align:left}
-.stat .sub{font-size:11px;color:var(--txt2);line-height:1.4}
+.stat .lbl{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:10.5px;text-transform:uppercase;letter-spacing:.7px;color:var(--txt2);font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.stat .amt{font-family:'SF Mono',Consolas,monospace;font-size:clamp(14px,1.35vw,18px);font-weight:800;margin:4px 0 2px;letter-spacing:-.4px;color:var(--txt);text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.25}
+.stat .sub{font-size:11px;font-weight:600;color:var(--txt2);line-height:1.3;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
-/* Assets card — deep green container + mint glow */
-/* Net Worth card */
 .stat.stat-nw .stat-icon{background:var(--pri-l);color:var(--pri-d)}
-.stat.stat-nw .lbl{color:var(--pri-d)}
-
-/* Debt Ratio card */
 .stat.stat-dr .stat-icon{background:var(--acc-l);color:var(--acc)}
-.stat.stat-dr .lbl{color:var(--acc)}
+.stat.stat-assets .stat-icon{background:var(--suc-l);color:var(--suc)}
+.stat.stat-liab .stat-icon{background:var(--dan-l);color:var(--dan)}
+.stat.stat-cf .stat-icon{background:var(--pri-l);color:var(--pri-d)}
 
-.stat.stat-assets{
-  background:#1F2E24;
-  border:1px solid rgba(140,205,160,.35);
-  box-shadow:0 0 22px rgba(140,205,160,.18),inset 0 1px 0 rgba(255,255,255,.06);
-}
-.stat.stat-assets:hover{box-shadow:0 0 30px rgba(140,205,160,.3),inset 0 1px 0 rgba(255,255,255,.06)}
-.stat.stat-assets .stat-icon{background:rgba(140,205,160,.16);color:#8CCDA0}
-.stat.stat-assets .lbl{color:rgba(140,205,160,.85)}
-.stat.stat-assets .amt{color:#EAF9EF}
-.stat.stat-assets .sub{color:rgba(140,205,160,.6)}
-.stat.stat-assets .stat-corner-add{background:rgba(140,205,160,.12);border-color:rgba(140,205,160,.4);color:#8CCDA0}
-.stat.stat-assets .stat-corner-add:hover{background:rgba(140,205,160,.22);border-color:#8CCDA0;color:#EAF9EF}
-
-/* Liabilities card — deep warm charcoal + red glow, bright text for contrast */
-.stat.stat-liab{
-  background:#342E2A;
-  border:1px solid rgba(224,141,132,.35);
-  box-shadow:0 0 22px rgba(224,141,132,.2),inset 0 1px 0 rgba(255,255,255,.05);
-}
-.stat.stat-liab:hover{box-shadow:0 0 30px rgba(224,141,132,.32),inset 0 1px 0 rgba(255,255,255,.05)}
-.stat.stat-liab .stat-icon{background:rgba(224,141,132,.16);color:#FFB4AC}
-.stat.stat-liab .lbl{color:rgba(255,237,237,.8)}
-.stat.stat-liab .amt{color:#FFEDED}
-.stat.stat-liab .sub{color:rgba(255,237,237,.6)}
-
-
-.stat.stat-liab .stat-corner-add{background:rgba(224,141,132,.12);border-color:rgba(224,141,132,.4);color:#FFB4AC}
-.stat.stat-liab .stat-corner-add:hover{background:rgba(224,141,132,.22);border-color:#FFB4AC;color:#FFEDED}
+.stat.stat-assets .stat-corner-add:hover{border-color:var(--suc);color:var(--suc);background:var(--suc-l)}
+.stat.stat-liab .stat-corner-add:hover{border-color:var(--dan);color:var(--dan);background:var(--dan-l)}
 
 
 /* Settings Budget Ratio Cards */
@@ -2448,42 +2417,44 @@ footer .footer-links a:hover{color:var(--pri-d)}
     </div>
 
     <!-- ── Month / Period Navigator ── -->
-    <div class="period-navigator-bar" id="periodNavigatorBar" style="display:flex;align-items:center;justify-content:space-between;background:var(--card);border:1px solid var(--brd);border-radius:var(--rad);padding:10px 14px;margin-bottom:12px;box-shadow:var(--sh)">
-      <button class="btn-period-nav" id="periodNavPrevBtn" onclick="navPeriod(-1)" title="Previous Month" style="background:var(--bg);border:1px solid var(--brd);border-radius:8px;width:32px;height:32px;cursor:pointer;color:var(--txt);display:flex;align-items:center;justify-content:center;transition:all .15s" onmouseover="this.style.borderColor='var(--pri)';this.style.color='var(--pri-d)'" onmouseout="this.style.borderColor='var(--brd)';this.style.color='var(--txt)'">
+    <div class="period-navigator-bar" id="periodNavigatorBar" style="display:flex;align-items:center;justify-content:space-between;background:var(--card);border:1.5px solid var(--brd);border-radius:12px;padding:8px 12px;margin-bottom:12px;box-shadow:var(--sh)">
+      <button class="btn-period-nav" id="periodNavPrevBtn" onclick="navPeriod(-1)" title="Previous Month" style="background:var(--bg);border:1px solid var(--brd);border-radius:8px;width:32px;height:32px;cursor:pointer;color:var(--txt);display:inline-flex;align-items:center;justify-content:center;transition:all .15s" onmouseover="this.style.borderColor='var(--pri)';this.style.color='var(--pri-d)'" onmouseout="this.style.borderColor='var(--brd)';this.style.color='var(--txt)'">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
       </button>
       <div style="display:flex;align-items:center;gap:8px;text-align:center">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--pri-d)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-        <span id="periodNavTitle" style="font-size:13px;font-weight:800;color:var(--txt)">November 2026</span>
-        <span id="periodNavBadge" style="font-size:9.5px;font-weight:700;padding:2px 7px;border-radius:10px;background:var(--pri-l);color:var(--pri-d);border:1px solid var(--pri)">Current</span>
+        <span style="display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:6px;background:var(--pri-l);color:var(--pri-d);flex-shrink:0">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        </span>
+        <span id="periodNavTitle" style="font-size:13.5px;font-weight:800;color:var(--txt);letter-spacing:-.2px">November 2026</span>
+        <span id="periodNavBadge" style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;background:var(--pri-l);color:var(--pri-d);border:1px solid var(--pri)">Current</span>
       </div>
       <div style="display:flex;align-items:center;gap:6px">
         <button id="periodNavTodayBtn" onclick="navPeriod(0)" title="Jump to Current Month" style="display:none;background:var(--pri-l);border:1px solid var(--pri);border-radius:8px;padding:4px 10px;font-size:10px;font-weight:700;color:var(--pri-d);cursor:pointer;font-family:inherit">Today</button>
-        <button class="btn-period-nav" id="periodNavNextBtn" onclick="navPeriod(1)" title="Next Month" style="background:var(--bg);border:1px solid var(--brd);border-radius:8px;width:32px;height:32px;cursor:pointer;color:var(--txt);display:flex;align-items:center;justify-content:center;transition:all .15s" onmouseover="this.style.borderColor='var(--pri)';this.style.color='var(--pri-d)'" onmouseout="this.style.borderColor='var(--brd)';this.style.color='var(--txt)'">
+        <button class="btn-period-nav" id="periodNavNextBtn" onclick="navPeriod(1)" title="Next Month" style="background:var(--bg);border:1px solid var(--brd);border-radius:8px;width:32px;height:32px;cursor:pointer;color:var(--txt);display:inline-flex;align-items:center;justify-content:center;transition:all .15s" onmouseover="this.style.borderColor='var(--pri)';this.style.color='var(--pri-d)'" onmouseout="this.style.borderColor='var(--brd)';this.style.color='var(--txt)'">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
         </button>
       </div>
     </div>
 
-    <!-- Top Metrics: Net Worth, Debt Ratio, Assets, Liabilities -->
+    <!-- Top Metrics: Net Worth, Debt Ratio, Assets, Liabilities, Cashflow -->
     <div class="stats">
       <div class="stat stat-nw" onclick="showTab('goals',document.querySelector('[data-tab=goals]'))" title="View full Net Worth details">
         <div class="stat-top">
           <div class="stat-top-left">
-            <div class="stat-icon"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/></svg></div>
+            <div class="stat-icon"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/></svg></div>
             <div class="lbl">Net Worth</div>
           </div>
           <button class="stat-corner-add" onclick="event.stopPropagation();showTab('goals',document.querySelector('[data-tab=goals]'))" title="View Net Worth details">
-            <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
           </button>
         </div>
         <div class="amt" id="dashStatNw">—</div>
-        <div class="sub" id="dashStatNwSub">Assets - Liabilities</div>
+        <div class="sub" id="dashStatNwSub">Assets − Liabilities</div>
       </div>
       <div class="stat stat-dr">
         <div class="stat-top">
           <div class="stat-top-left">
-            <div class="stat-icon"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="M7 21h10"/><path d="M12 3v18"/><path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2"/></svg></div>
+            <div class="stat-icon"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="M7 21h10"/><path d="M12 3v18"/><path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2"/></svg></div>
             <div class="lbl">Debt Ratio</div>
           </div>
         </div>
@@ -2493,11 +2464,11 @@ footer .footer-links a:hover{color:var(--pri-d)}
       <div class="stat stat-assets" onclick="showTab('goals',document.querySelector('[data-tab=goals]'))" title="View Assets">
         <div class="stat-top">
           <div class="stat-top-left">
-            <div class="stat-icon"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/></svg></div>
+            <div class="stat-icon"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/></svg></div>
             <div class="lbl">Total Assets</div>
           </div>
-          <button class="stat-corner-add" onclick="event.stopPropagation();openNwQuickAdd()" title="Quick Add">
-            <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          <button class="stat-corner-add" onclick="event.stopPropagation();openNwQuickAdd()" title="Quick Add Asset">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
           </button>
         </div>
         <div class="amt" id="dashStatAssets">$0</div>
@@ -2506,11 +2477,11 @@ footer .footer-links a:hover{color:var(--pri-d)}
       <div class="stat stat-liab" onclick="showTab('goals',document.querySelector('[data-tab=goals]'))" title="View Liabilities">
         <div class="stat-top">
           <div class="stat-top-left">
-            <div class="stat-icon"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg></div>
+            <div class="stat-icon"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg></div>
             <div class="lbl">Total Liabilities</div>
           </div>
-          <button class="stat-corner-add" onclick="event.stopPropagation();openNwQuickAdd()" title="Quick Add">
-            <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          <button class="stat-corner-add" onclick="event.stopPropagation();openNwQuickAdd()" title="Quick Add Liability">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
           </button>
         </div>
         <div class="amt" id="dashStatLiab">$0</div>
@@ -2519,7 +2490,7 @@ footer .footer-links a:hover{color:var(--pri-d)}
       <div class="stat stat-cf">
         <div class="stat-top">
           <div class="stat-top-left">
-            <div class="stat-icon"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></div>
+            <div class="stat-icon"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></div>
             <div class="lbl">Cashflow</div>
           </div>
         </div>
@@ -2529,24 +2500,25 @@ footer .footer-links a:hover{color:var(--pri-d)}
     </div>
 
     <!-- Financial Health Score -->
-    <div class="card" id="healthScoreCard" style="padding:12px 14px;margin-bottom:10px">
-      <div style="display:flex;align-items:center;gap:16px">
-        <div style="position:relative;width:72px;height:72px;flex-shrink:0">
-          <svg width="72" height="72" viewBox="0 0 80 80">
-            <circle cx="40" cy="40" r="33" fill="none" stroke="var(--brd)" stroke-width="6" opacity=".4"/>
-            <circle cx="40" cy="40" r="33" fill="none" stroke="var(--suc)" stroke-width="6" stroke-dasharray="207.3" stroke-dashoffset="207.3" stroke-linecap="round" transform="rotate(-90 40 40)" id="healthScoreRing"/>
+    <div class="card" id="healthScoreCard" style="padding:16px 20px;margin-bottom:14px;border-radius:14px;background:var(--card);border:1.5px solid var(--brd);box-shadow:var(--sh)">
+      <div style="display:flex;align-items:center;gap:20px">
+        <div style="position:relative;width:76px;height:76px;flex-shrink:0">
+          <svg width="76" height="76" viewBox="0 0 80 80">
+            <circle cx="40" cy="40" r="33" fill="none" stroke="var(--brd)" stroke-width="6.5" opacity=".4"/>
+            <circle cx="40" cy="40" r="33" fill="none" stroke="var(--suc)" stroke-width="6.5" stroke-dasharray="207.3" stroke-dashoffset="207.3" stroke-linecap="round" transform="rotate(-90 40 40)" id="healthScoreRing"/>
           </svg>
-          <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column">
-            <span id="healthScoreValue" style="font-size:20px;font-weight:900;font-family:'SF Mono',monospace;color:var(--txt);line-height:1">—</span>
+          <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;text-align:center">
+            <span id="healthScoreValue" style="font-size:22px;font-weight:900;font-family:'SF Mono',monospace;color:var(--txt);line-height:1">—</span>
+            <span style="font-size:8px;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:var(--txt2);margin-top:2px">Score</span>
           </div>
         </div>
         <div style="flex:1;min-width:0">
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:2px">
-            <span style="font-size:12px;font-weight:800;color:var(--txt)">Budget Health</span>
-            <span id="healthScoreTier" style="font-size:10px;font-weight:700;padding:3px 10px;border-radius:12px;background:var(--suc-l);color:var(--suc)">Evaluating...</span>
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:3px">
+            <span style="font-size:13.5px;font-weight:800;color:var(--txt);letter-spacing:-.2px">Budget Health</span>
+            <span id="healthScoreTier" style="font-size:10.5px;font-weight:700;padding:2px 10px;border-radius:12px;background:var(--suc-l);color:var(--suc);border:1px solid currentColor">Evaluating...</span>
           </div>
-          <p style="font-size:10px;color:var(--txt2);margin:0 0 6px;line-height:1.4">Evaluated against your custom budget rule parameters.</p>
-          <div id="healthScoreRecs" style="display:flex;flex-direction:column;gap:3px;font-size:10px;color:var(--txt2)"></div>
+          <p style="font-size:11px;color:var(--txt2);margin:0 0 8px;line-height:1.4">Evaluated against your custom budget rule parameters.</p>
+          <div id="healthScoreRecs" style="display:flex;flex-direction:column;gap:5px"></div>
         </div>
       </div>
     </div>
@@ -8328,15 +8300,15 @@ function updateDashboard() {
   var cfEl = document.getElementById("dashStatCf");
   var cfSubEl = document.getElementById("dashStatCfSub");
   if (cfEl && income > 0) {
-    cfEl.textContent = (remaining < 0 ? "-" : "+") + fmt(Math.abs(remaining));
+    cfEl.textContent = (remaining < 0 ? "−" : "") + fmt(Math.abs(remaining));
     cfEl.style.color = remaining >= 0 ? "var(--suc)" : "var(--dan)";
     if (cfSubEl) cfSubEl.textContent = remaining >= 0 ? "Surplus available" : "Overspent";
   } else if (cfEl) {
-    cfEl.textContent = "--";
+    cfEl.textContent = "—";
     cfEl.style.color = "var(--txt2)";
     if (cfSubEl) cfSubEl.textContent = "Set income above";
   }
-  remEl.textContent = (remaining < 0 ? "-" : "") + fmt(remaining);
+  remEl.textContent = (remaining < 0 ? "−" : "") + fmt(remaining);
   remEl.style.color = remaining >= 0 ? "var(--suc)" : "var(--dan)";
 
   // Donut
@@ -8415,25 +8387,39 @@ function updateHealthScore(nSpent, wSpent, sSpent, nBudget, wBudget, sBudget, in
   const tierEl = document.getElementById("healthScoreTier");
   if (tierEl) { tierEl.textContent = tier; tierEl.style.background = tierBg; tierEl.style.color = tierColor; }
 
-  // Recommendations
+  // Recommendations with clean structure and semantic category indicators
   const recsEl = document.getElementById("healthScoreRecs");
   if (!recsEl) return;
   const recs = [];
-  if (nPct > 50) recs.push('<span style="display:flex;align-items:flex-start;gap:4px"><span style="display:inline-block;width:4px;height:4px;border-radius:50%;background:'+tierColor+';margin-top:4px;flex-shrink:0"></span><span><strong>Needs</strong> at ' + Math.round(nPct) + '% — over ' + nTarget + '% target. Keeping essentials tight frees up flexibility.</span></span>');
-  else recs.push('<span style="display:flex;align-items:flex-start;gap:4px"><span style="display:inline-block;width:4px;height:4px;border-radius:50%;background:'+tierColor+';margin-top:4px;flex-shrink:0"></span><span><strong>Needs</strong> at ' + Math.round(nPct) + '% — well within the ' + nTarget + '% target.</span></span>');
 
-  if (wPct < 30) recs.push('<span style="display:flex;align-items:flex-start;gap:4px"><span style="display:inline-block;width:4px;height:4px;border-radius:50%;background:'+tierColor+';margin-top:4px;flex-shrink:0"></span><span><strong>Lifestyle spending</strong> is disciplined at ' + Math.round(wPct) + '%. Great moderation!</span></span>');
-  else recs.push('<span style="display:flex;align-items:flex-start;gap:4px"><span style="display:inline-block;width:4px;height:4px;border-radius:50%;background:'+tierColor+';margin-top:4px;flex-shrink:0"></span><span><strong>Wants</strong> at ' + Math.round(wPct) + '% — over ' + wTarget + '% target. Look at dining, shopping and entertainment.</span></span>');
+  const makeRec = (dotColor, text) => {
+    return `<div style="display:flex;align-items:flex-start;gap:8px;font-size:11.5px;line-height:1.45;color:var(--txt)">
+      <span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:${dotColor};box-shadow:0 0 6px ${dotColor};margin-top:5px;flex-shrink:0"></span>
+      <span style="color:var(--txt2);flex:1">${text}</span>
+    </div>`;
+  };
 
-  if (sPct < 20 && income > 0) {
+  if (nPct > nTarget) {
+    recs.push(makeRec("var(--dan)", `<strong style="color:var(--txt)">Needs</strong> at ${Math.round(nPct)}% — over ${nTarget}% target. Keeping essentials tight frees up flexibility.`));
+  } else {
+    recs.push(makeRec("var(--suc)", `<strong style="color:var(--txt)">Needs</strong> at ${Math.round(nPct)}% — well within the ${nTarget}% target.`));
+  }
+
+  if (wPct <= wTarget) {
+    recs.push(makeRec("var(--suc)", `<strong style="color:var(--txt)">Lifestyle spending</strong> is disciplined at ${Math.round(wPct)}%. Great moderation!`));
+  } else {
+    recs.push(makeRec("var(--acc)", `<strong style="color:var(--txt)">Wants</strong> at ${Math.round(wPct)}% — over ${wTarget}% target. Look at dining, shopping and entertainment.`));
+  }
+
+  if (sPct < sTarget && income > 0) {
     const shortfall = income * sTarget / 100 - sSpent;
     if (shortfall > 0 && wPct > 0) {
-      recs.push('<span style="display:flex;align-items:flex-start;gap:4px"><span style="display:inline-block;width:4px;height:4px;border-radius:50%;background:'+tierColor+';margin-top:4px;flex-shrink:0"></span><span><strong>Savings</strong> under ' + sTarget + '% target. Trimming ' + fmt(shortfall) + '/mo from Wants closes the gap.</span></span>');
+      recs.push(makeRec("var(--acc)", `<strong style="color:var(--txt)">Savings</strong> under ${sTarget}% target. Trimming ${fmt(shortfall)}/mo from Wants closes the gap.`));
     } else {
-      recs.push('<span style="display:flex;align-items:flex-start;gap:4px"><span style="display:inline-block;width:4px;height:4px;border-radius:50%;background:'+tierColor+';margin-top:4px;flex-shrink:0"></span><span><strong>Savings</strong> under ' + sTarget + '% target. Try automatic transfers to build the habit.</span></span>');
+      recs.push(makeRec("var(--acc)", `<strong style="color:var(--txt)">Savings</strong> under ${sTarget}% target. Try automatic transfers to build the habit.`));
     }
   } else {
-    recs.push('<span style="display:flex;align-items:flex-start;gap:4px"><span style="display:inline-block;width:4px;height:4px;border-radius:50%;background:'+tierColor+';margin-top:4px;flex-shrink:0"></span><span><strong>Savings rate</strong> at ' + Math.round(sPct) + '% — right on or above benchmark.</span></span>');
+    recs.push(makeRec("var(--suc)", `<strong style="color:var(--txt)">Savings rate</strong> at ${Math.round(sPct)}% — right on or above benchmark.`));
   }
 
   recsEl.innerHTML = recs.join("");
@@ -8899,7 +8885,7 @@ function _renderDashNetWorth() {
   // Net Worth card
   const nwEl = document.getElementById("dashStatNw");
   if (nwEl) {
-    nwEl.textContent = (nw < 0 ? "-" : "") + fmt(Math.abs(nw));
+    nwEl.textContent = (nw < 0 ? "−" : "") + fmt(Math.abs(nw));
     nwEl.style.color = nw >= 0 ? "var(--suc)" : "var(--dan)";
   }
   const nwSubEl = document.getElementById("dashStatNwSub");
@@ -8907,12 +8893,12 @@ function _renderDashNetWorth() {
     const prev = parseFloat(localStorage.getItem("bt_nw_prev") || "0");
     const diff = nw - prev;
     if (items.length === 0) {
-      nwSubEl.textContent = "Assets - Liabilities";
+      nwSubEl.textContent = "Assets − Liabilities";
     } else if (Math.abs(diff) < 1) {
       nwSubEl.textContent = "No change vs last snapshot";
     } else {
       const color = diff > 0 ? "var(--suc)" : "var(--dan)";
-      nwSubEl.innerHTML = "<span style='color:" + color + ";font-weight:700'>" + (diff > 0 ? "↑ +" : "↓ -") + fmt(Math.abs(diff)) + "</span> vs last";
+      nwSubEl.innerHTML = "<span style='color:" + color + ";font-weight:700'>" + (diff > 0 ? "↑ +" : "↓ −") + fmt(Math.abs(diff)) + "</span> vs last";
     }
   }
 
@@ -8935,13 +8921,19 @@ function _renderDashNetWorth() {
   // Assets card
   const asEl = document.getElementById("dashStatAssets");
   const asSubEl = document.getElementById("dashStatAssetsSub");
-  if (asEl) asEl.textContent = fmt(assets);
+  if (asEl) {
+    asEl.textContent = fmt(assets);
+    asEl.style.color = "var(--txt)";
+  }
   if (asSubEl) asSubEl.textContent = assetItems.length + (assetItems.length === 1 ? " item" : " items");
 
   // Liabilities card
   const liEl = document.getElementById("dashStatLiab");
   const liSubEl = document.getElementById("dashStatLiabSub");
-  if (liEl) liEl.textContent = fmt(liab);
+  if (liEl) {
+    liEl.textContent = fmt(liab);
+    liEl.style.color = "var(--txt)";
+  }
   if (liSubEl) liSubEl.textContent = liabItems.length + (liabItems.length === 1 ? " item" : " items");
 }
 

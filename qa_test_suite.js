@@ -1008,6 +1008,84 @@ const finalInc = finalSources.find(s => s.id === 888);
 assert(finalInc.label === "Consulting & Design", "Updated income name persisted");
 
 
+// ─── SUITE 19: DASHBOARD TOP METRICS & BUDGET HEALTH CARD REDESIGN ─
+console.log("\n─── TEST SUITE 19: Dashboard Top Stat Cards & Budget Health Card Layout & Formatting ───");
+
+// 1. Verify Net Worth card formatting for negative and positive values
+localStorage.setItem("bt_networth", JSON.stringify([
+  { id: 1, type: "asset", name: "Savings", amt: 100000 },
+  { id: 2, type: "liability", name: "Mortgage", amt: 7171800 }
+]));
+_renderDashNetWorth();
+const dashNwEl = document.getElementById("dashStatNw");
+assert(dashNwEl !== null, "dashStatNw element exists in DOM");
+assert(dashNwEl.textContent.startsWith("\u2212") || dashNwEl.textContent.includes("\u2212"), "Negative net worth uses non-breaking unicode minus sign (\\u2212)");
+assert(!dashNwEl.textContent.includes("- ") && !dashNwEl.textContent.startsWith("-\n"), "Minus sign is attached cleanly without trailing line breaks");
+
+// Positive Net Worth
+localStorage.setItem("bt_networth", JSON.stringify([
+  { id: 1, type: "asset", name: "Savings", amt: 500000 },
+  { id: 2, type: "liability", name: "Credit Card", amt: 50000 }
+]));
+_renderDashNetWorth();
+assert(!dashNwEl.textContent.includes("\u2212") && !dashNwEl.textContent.includes("-"), "Positive net worth does not contain minus sign");
+assert(dashNwEl.style.color === "var(--suc)", "Positive net worth uses success color var(--suc)");
+
+// 2. Verify Cashflow card formatting for positive and negative cashflow
+const currentPeriodMonth = (new Date()).toISOString().slice(0, 7);
+currentViewMonth = currentPeriodMonth;
+document.getElementById("incomeInput").value = "6000";
+saveData({
+  income: 6000,
+  expenses: [{ id: 1, date: `${currentPeriodMonth}-01`, desc: "Rent", cat: "Needs", sub: "Housing", amt: 2000 }],
+  goals: []
+});
+updateDashboard();
+const dashCfEl = document.getElementById("dashStatCf");
+const dashCfSubEl = document.getElementById("dashStatCfSub");
+assert(dashCfEl !== null, "dashStatCf element exists in DOM");
+assert(!dashCfEl.textContent.startsWith("+"), "Positive cashflow does not prepend raw '+' directly to currency symbol");
+assert(dashCfEl.style.color === "var(--suc)", "Positive cashflow uses success color var(--suc)");
+assert(dashCfSubEl.textContent === "Surplus available", "Positive cashflow displays 'Surplus available' subtitle");
+
+// Negative cashflow (Overspent)
+document.getElementById("incomeInput").value = "2000";
+saveData({
+  income: 2000,
+  expenses: [{ id: 1, date: `${currentPeriodMonth}-01`, desc: "Emergency repair", cat: "Needs", sub: "Housing", amt: 3500 }],
+  goals: []
+});
+updateDashboard();
+assert(dashCfEl.textContent.startsWith("\u2212"), "Negative cashflow uses non-breaking unicode minus sign (\\u2212)");
+assert(dashCfEl.style.color === "var(--dan)", "Negative cashflow uses danger color var(--dan)");
+assert(dashCfSubEl.textContent === "Overspent", "Negative cashflow displays 'Overspent' subtitle");
+
+// 3. Verify Budget Health Card structure and recommendation list rendering
+updateHealthScore(1500, 500, 1000, 2500, 1500, 1000, 5000);
+const healthCard = document.getElementById("healthScoreCard");
+const healthVal = document.getElementById("healthScoreValue");
+const healthTier = document.getElementById("healthScoreTier");
+const healthRecs = document.getElementById("healthScoreRecs");
+assert(healthCard !== null, "healthScoreCard element exists in DOM");
+assert(healthVal !== null && String(healthVal.textContent).length > 0 && String(healthVal.textContent) !== "—", "healthScoreValue displays calculated score");
+assert(healthTier !== null && healthTier.textContent.length > 0, "healthScoreTier displays health category");
+assert(healthRecs !== null && (healthRecs.innerHTML.match(/<div/g) || []).length === 3, "healthScoreRecs renders exactly 3 structured recommendation items");
+assert(healthRecs.innerHTML.includes("<strong style=\"color:var(--txt)\">Needs</strong>"), "Needs recommendation is highlighted with clean strong tag");
+assert(healthRecs.innerHTML.includes("<strong style=\"color:var(--txt)\">Lifestyle spending</strong>") || healthRecs.innerHTML.includes("<strong style=\"color:var(--txt)\">Wants</strong>"), "Wants recommendation is highlighted with clean strong tag");
+assert(healthRecs.innerHTML.includes("<strong style=\"color:var(--txt)\">Savings"), "Savings recommendation is highlighted with clean strong tag");
+
+// 4. Verify Period Navigator and 5 Top Stat Cards grid in index.html
+const indexHtmlContent = fs.readFileSync('index.html', 'utf8');
+assert(indexHtmlContent.includes('class="period-navigator-bar"'), "Period navigator bar exists with period-navigator-bar class");
+assert(indexHtmlContent.includes('id="periodNavTitle"'), "Period navigator contains title element");
+assert(indexHtmlContent.includes('id="periodNavBadge"'), "Period navigator contains badge pill");
+assert(indexHtmlContent.includes('class="stat stat-nw"'), "Top metrics contains Net Worth card");
+assert(indexHtmlContent.includes('class="stat stat-dr"'), "Top metrics contains Debt Ratio card");
+assert(indexHtmlContent.includes('class="stat stat-assets"'), "Top metrics contains Assets card");
+assert(indexHtmlContent.includes('class="stat stat-liab"'), "Top metrics contains Liabilities card");
+assert(indexHtmlContent.includes('class="stat stat-cf"'), "Top metrics contains Cashflow card");
+
+
 // ─── SUMMARY ────────────────────────────────────────────────
 console.log("\n=================================================");
 console.log(`  QA TEST RUN COMPLETE: ${passed} PASSED, ${failed} FAILED`);

@@ -1,10 +1,10 @@
 # DEVLOG — L'Atelier de Luz | Budget Tracker PWA
 
-## Current State: v261
+## Current State: v262
 
 | Metric | Value |
 |---|---|
-| SW cache | `budget-tracker-v261` |
+| SW cache | `budget-tracker-v262` |
 | File | `index.html` + `sw.js` |
 | App version | 1.9.9 |
 | Panels | 7 (`dashboard`, `expenses`, `history`, `goals`, `notes`, `ai`, `data`) |
@@ -36,6 +36,44 @@
   2. Transaction history must always open via `_showNwHistPopup(itemType, itemId)` modal overlay, supporting `'goal'`, `'asset'`, `'liability'`, and `'income'`.
   3. Inline expanding accordion tables under cards are deprecated in favor of the clean modal popup experience.
   4. Automated QA in `qa_test_suite.js` (Suite 18) verifies history trigger modal attributes, lack of inline history tables, and modal transaction edit/delete behaviors.
+
+### Rule 4: Top Stat Cards Typography, Non-Breaking Unicode Signs, & Unbroken Numbers
+- **Problem**: In top metrics cards (Net Worth, Debt Ratio, Assets, Liabilities, Cashflow), wide negative currency figures (e.g. `₱ 7,071,800.00`) previously broke across lines, detaching the `-` sign onto its own line (`-` on line 1, `₱ 7,071,800.00` on line 2), while Cashflow concatenated raw `+` onto currency symbols (e.g. `+₱`). In addition, hardcoded dark green and brown container cards (#1F2E24, #342E2A) broke dashboard theme cohesion.
+- **Enforcement**:
+  1. Negative figures must use non-breaking unicode minus sign `\u2212` (`−`) and `.stat .amt` must enforce `white-space: nowrap`, `overflow: hidden`, `text-overflow: ellipsis`, and font clamping `clamp(14px, 1.35vw, 18px)` to prevent ugly line breaks.
+  2. Positive cashflow figures must not prepend raw `+` signs to formatted currency; instead, clean semantic color (`var(--suc)`) and subtitle status badges indicate surplus or overspent state.
+  3. All 5 top metrics cards must share the standard theme background (`var(--card)`), rounded corners (`12px`), borders (`1.5px solid var(--brd)`), and hover lift (`translateY(-2px)`).
+  4. Automated QA in `qa_test_suite.js` (Suite 19) asserts unicode minus sign usage, unbroken typography, badge indicators, and consistent markup.
+
+---
+
+## v262 Changelog (from v261) — Dashboard Top Stat Cards & Budget Health Card Redesign & Polish
+
+### 1. Fixed Net Worth & Cashflow Card Sign Wrapping & Formatting
+- Replaced ASCII hyphen with non-breaking unicode minus sign `\u2212` (`−`) across Net Worth (`_renderDashNetWorth`) and Cashflow (`updateDashboard`).
+- Enforced `white-space: nowrap`, `overflow: hidden`, `text-overflow: ellipsis`, and dynamic font clamping (`clamp(14px, 1.35vw, 18px)`) on `.stat .amt` and `.stat .sub` to prevent figures from breaking across multiple lines.
+- Cleaned up Cashflow card amount formatting by removing raw `+` concatenation (`+₱`) and relying on semantic color and clear status subtitles (`Surplus available` / `Overspent`).
+
+### 2. Unified 5 Top Stat Cards Grid Design
+- Modernized the 5-column metric grid (`.stat.stat-nw`, `.stat.stat-dr`, `.stat.stat-assets`, `.stat.stat-liab`, `.stat.stat-cf`) with uniform heights (`min-height: 92px`), 12px rounded corners, 1.5px borders (`var(--brd)`), and smooth hover elevation (`translateY(-2px)` with `var(--shd-md)`).
+- Harmonized card backgrounds to `var(--card)` with crisp tinted icon badges (`var(--pri-l)`, `var(--acc-l)`, `var(--suc-l)`, `var(--dan-l)`).
+- Standardized corner action buttons (`.stat-corner-add`) for Assets (`openNwQuickAdd()`), Liabilities (`openNwQuickAdd()`), and Net Worth (`showTab('goals')`).
+
+### 3. Budget Health Card Redesign & Visual Hierarchy
+- Upgraded the circular score gauge with a crisp 76px SVG ring with 6.5px stroke width, high-contrast centered score value (`22px` SF Mono bold), and uppercase `"SCORE"` subtitle.
+- Baseline-aligned header title and dynamic status tier pill badge (`Mastery`, `Great`, `Steady`, `Starter`).
+- Structured recommendation items with glowing semantic dot indicators (`var(--suc)`, `var(--acc)`, `var(--dan)`), bold category keywords (`Needs`, `Lifestyle spending`, `Savings`), and balanced line height (`1.45`).
+
+### 4. Period Navigator Bar Alignment
+- Centered calendar icon pill, active month title (`13.5px` weight 800), and `"Current"` status badge with consistent 12px padding and theme borders.
+
+### 5. Automated QA Test Suite
+- Added **Test Suite 19** verifying:
+  - Net Worth unicode minus sign formatting and unbroken layout.
+  - Cashflow positive and negative sign formatting and subtitle badges.
+  - Budget Health score value calculation and recommendation row structure.
+  - Presence and consistency of all 5 stat cards and Period Navigator.
+- All 214 automated QA tests passing (214/214).
 
 ---
 
