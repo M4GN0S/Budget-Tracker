@@ -1089,18 +1089,20 @@ assert(indexHtmlContent.includes('class="stat stat-cf"'), "Top metrics contains 
 // ─── SUITE 20: JOURNAL NOTE MODAL MAXIMIZE/MINIMIZE & SUBDUED RELATED NOTES ─
 console.log("\n─── TEST SUITE 20: Journal Note Modal Maximize/Minimize & Subdued Related Notes ───");
 
-// 1. Verify Maximize/Minimize toggle function
+// 1. Verify Maximize/Minimize toggle function & fresh-open state reset
 toggleNoteModalMaximize(true);
 const modalEl = document.querySelector(".note-modal");
 const maxBtnEl = document.getElementById("noteModalMaxBtn");
 assert(modalEl.classList.contains("is-maximized"), "toggleNoteModalMaximize(true) adds is-maximized class to .note-modal");
-assert(localStorage.getItem("bt_note_modal_max") === "1", "toggleNoteModalMaximize(true) persists '1' to localStorage bt_note_modal_max");
 assert(maxBtnEl.title === "Exit full screen", "Maximize button tooltip changes to 'Exit full screen'");
 
-toggleNoteModalMaximize(false);
-assert(!modalEl.classList.contains("is-maximized"), "toggleNoteModalMaximize(false) removes is-maximized class");
-assert(localStorage.getItem("bt_note_modal_max") === "0", "toggleNoteModalMaximize(false) persists '0' to localStorage");
-assert(maxBtnEl.title === "Full screen", "Maximize button tooltip resets to 'Full screen'");
+// Simulate opening another note: must reset maximize state so fullscreen never carries over automatically
+localStorage.setItem("bt_notes", JSON.stringify([
+  { id: 998, title: "Next Note", text: "Some notes", tag: "idea", date: new Date().toISOString() }
+]));
+openNoteModal(998);
+assert(!modalEl.classList.contains("is-maximized"), "openNoteModal(id) resets maximize state so fullscreen does not carry over");
+assert(maxBtnEl.title === "Full screen", "Maximize button tooltip resets to 'Full screen' on new note open");
 
 // 2. Verify formatNoteBody checklist table output and direct itemIdx parameter
 const sampleNoteText = "End of Month Action Items\n[ ] Transfer ₱ 15,000.00 to savings x2 — ₱15000.00\n[x] Keep ₱ 48,200.00 for remaining bills — ₱48200.00";
@@ -1112,7 +1114,15 @@ assert(formattedBody.includes('class="nb-price-input"'), "formatNoteBody renders
 assert(formattedBody.includes('toggleNoteCheck(999,this,0)'), "Checkbox onchange passes direct itemIdx 0 to toggleNoteCheck");
 assert(formattedBody.includes('toggleNoteCheck(999,this,1)'), "Checkbox onchange passes direct itemIdx 1 to toggleNoteCheck");
 
-// 3. Verify toggleNoteCheck with directIdx
+// 3. Verify price regex handles currency symbol with space (e.g. "Wine — ₱ 200.00")
+const spacedCurrencyNote = "Grocery List\n[ ] Wine — ₱ 200.00\n[x] Cheese — $ 45.50\n[ ] Bread - PHP 80.00";
+const spacedBody = formatNoteBody(spacedCurrencyNote, 997);
+assert(spacedBody.includes('>Wine<'), "formatNoteBody cleanly separates description 'Wine' from price with spaced currency");
+assert(spacedBody.includes('value="200.00"'), "formatNoteBody parses amount 200.00 into price input value");
+assert(spacedBody.includes('>Cheese<'), "formatNoteBody cleanly separates description 'Cheese'");
+assert(spacedBody.includes('value="45.50"'), "formatNoteBody parses amount 45.50 into price input value");
+
+// 4. Verify toggleNoteCheck with directIdx
 localStorage.setItem("bt_notes", JSON.stringify([
   { id: 999, title: "End of Month Action Items", text: "[ ] Item 1\n[ ] Item 2\n[ ] Item 3", tag: "checklist", date: new Date().toISOString() }
 ]));
@@ -1123,7 +1133,7 @@ const updatedNotes = JSON.parse(localStorage.getItem("bt_notes") || "[]");
 const targetNote = updatedNotes.find(n => n.id === 999);
 assert(targetNote.text.includes("[ ] Item 1\n[x] Item 2\n[ ] Item 3"), "toggleNoteCheck with directIdx 1 toggles exactly Item 2 without off-by-one errors");
 
-// 4. Verify Subdued Related Notes header and markup
+// 5. Verify Subdued Related Notes header and markup
 localStorage.setItem("bt_notes", JSON.stringify([
   { id: 901, title: "Next Month's Budget Checklist", text: "Details here", tag: "checklist", date: new Date().toISOString() },
   { id: 902, title: "Next Month's Savings Checklist", text: "Details here", tag: "checklist", date: new Date().toISOString() },
@@ -1136,13 +1146,16 @@ assert(relWrap.innerHTML.includes("Related notes"), "Related notes container dis
 assert(relWrap.innerHTML.includes("rel-collapse"), "Related notes container includes collapse toggle button");
 assert(relWrap.innerHTML.includes("note-related-list"), "Related notes container uses note-related-list container");
 
-// 5. Verify index.html contains Maximize button markup and mobile/tablet permanent fullscreen CSS
+// 6. Verify index.html contains Maximize button markup, mobile/tablet permanent fullscreen CSS, and checked row styles
 const indexHtml = fs.readFileSync('index.html', 'utf8');
 assert(indexHtml.includes('id="noteModalMaxBtn"'), "index.html contains #noteModalMaxBtn maximize button");
 assert(indexHtml.includes('class="icon-max"'), "Maximize button contains icon-max");
 assert(indexHtml.includes('class="icon-restore"'), "Maximize button contains icon-restore");
 assert(indexHtml.includes('@media(max-width:900px)'), "index.html contains responsive media query for mobile phones and tablets");
 assert(indexHtml.includes('.btn-modal-max{display:none !important}'), "Maximize button is hidden on mobile & tablets where modal is permanently fullscreen");
+assert(indexHtml.includes('.nb-cl-row.checked td'), "index.html styles checked checklist table rows with distinct background in all themes");
+assert(indexHtml.includes('.note-modal-body .note-check.checked'), "index.html styles checked markdown checklist items with distinct background in all themes");
+assert(indexHtml.includes('.note-modal.is-maximized .note-modal-body'), "index.html includes constrained max-width reading container for maximized view");
 
 
 // ─── SUMMARY ────────────────────────────────────────────────

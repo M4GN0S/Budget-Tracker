@@ -1019,6 +1019,15 @@ tbody tr:hover td{background:var(--pri-l)}
 .note-overlay.is-maximized{padding:0 !important;align-items:stretch !important;justify-content:stretch !important}
 .note-modal{background:var(--card);border-radius:20px;max-width:680px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.35),0 0 1px rgba(0,0,0,.15);animation:modalIn .3s cubic-bezier(.4,0,.2,1);margin:auto;display:flex;flex-direction:column;max-height:90vh;position:relative;overflow:hidden;border:1px solid var(--brd);transition:max-width .2s ease,max-height .2s ease,border-radius .2s ease}
 .note-modal.is-maximized,.note-overlay.is-maximized .note-modal{width:100% !important;max-width:100% !important;height:100% !important;height:100dvh !important;max-height:100dvh !important;border-radius:0 !important;margin:0 !important;border:none !important;box-shadow:none !important}
+.note-modal.is-maximized .note-modal-head,
+.note-modal.is-maximized .note-modal-title,
+.note-modal.is-maximized .note-modal-date,
+.note-modal.is-maximized .note-tldr,
+.note-modal.is-maximized .note-modal-body,
+.note-modal.is-maximized .note-mood,
+.note-modal.is-maximized .note-related,
+.note-modal.is-maximized .note-modal-foot,
+.note-modal.is-maximized .note-modal-hint{max-width:860px;width:100%;margin-left:auto;margin-right:auto;box-sizing:border-box}
 .note-modal-head{padding:20px 28px 0;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-shrink:0}
 .note-modal-head .nm-meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .note-modal-head-actions{display:flex;align-items:center;gap:6px;flex-shrink:0}
@@ -1041,10 +1050,12 @@ tbody tr:hover td{background:var(--pri-l)}
 .note-modal-body .nb-bullets li:last-child{margin-bottom:0}
 /* Checklist rows */
 .note-modal-body .nb-check{margin-bottom:4px}
-.note-modal-body .note-check{display:flex;align-items:flex-start;gap:12px;cursor:pointer;padding:6px 0;line-height:1.55;font-size:15px}
-.note-modal-body .note-check input[type="checkbox"]{width:18px;height:18px;accent-color:var(--pri);cursor:pointer;margin:2px 0 0;flex-shrink:0}
+.note-modal-body .note-check{display:flex;align-items:flex-start;gap:12px;cursor:pointer;padding:6px 10px;margin:3px 0;border-radius:8px;line-height:1.55;font-size:15px;border-left:3.5px solid transparent;transition:background .15s ease, border-color .15s ease}
+.note-modal-body .note-check:hover{background:var(--bg)}
+.note-modal-body .note-check input[type="checkbox"]{width:18px;height:18px;accent-color:var(--suc);cursor:pointer;margin:2px 0 0;flex-shrink:0}
 .note-modal-body .note-check span{flex:1}
-.note-modal-body .note-check.checked span{text-decoration:line-through;opacity:.45}
+.note-modal-body .note-check.checked{background:var(--suc-l);border-left:3.5px solid var(--suc)}
+.note-modal-body .note-check.checked span{text-decoration:line-through;opacity:.5;color:var(--txt2)}
 .note-modal-body strong{font-weight:700;color:var(--txt)}
 .note-modal-body em{font-style:italic}
 .note-modal-foot{padding:12px 28px 18px;display:flex;gap:8px;flex-wrap:wrap;border-top:1px solid var(--brd);flex-shrink:0;background:var(--card)}
@@ -2170,14 +2181,15 @@ footer .footer-links a:hover{color:var(--pri-d)}
   overflow: hidden;
   background: var(--card);
   box-shadow: var(--sh);
+  max-width: 100%;
 }
 .nb-cl-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
-.nb-cl-table col.c-num   { width: 32px; }
-.nb-cl-table col.c-check { width: 34px; }
+.nb-cl-table col.c-num   { width: 34px; }
+.nb-cl-table col.c-check { width: 38px; }
 .nb-cl-table col.c-desc  { width: auto; }
-.nb-cl-table col.c-qty   { width: 56px; }
-.nb-cl-table col.c-price { width: 94px; }
-.nb-cl-table col.c-total { width: 72px; }
+.nb-cl-table col.c-qty   { width: 60px; }
+.nb-cl-table col.c-price { width: 96px; }
+.nb-cl-table col.c-total { width: 78px; }
 /* Header */
 .nb-cl-table thead tr { background: var(--bg); }
 .nb-cl-table th {
@@ -2194,17 +2206,46 @@ footer .footer-links a:hover{color:var(--pri-d)}
 .nb-cl-th-price { text-align: right; padding-right: 6px; }
 .nb-cl-th-total { text-align: right; padding-right: 12px; }
 /* Body rows */
-.nb-cl-row { border-bottom: 1px solid var(--brd); transition: background .12s; }
+.nb-cl-row { border-bottom: 1px solid var(--brd); transition: background .12s; background: var(--card); }
 .nb-cl-row:last-child { border-bottom: none; }
-.nb-cl-row:hover { background: var(--bg); }
-.nb-cl-row.checked .nb-cl-desc, .nb-cl-row.checked .nb-cl-td-desc { text-decoration: line-through; opacity: .45; }
+.nb-cl-row td { background: var(--card); transition: background .12s; }
+.nb-cl-row:hover td { background: var(--bg); }
+
+/* Completed / Checked rows: distinct tinted background in light & dark mode */
+.nb-cl-row.checked td {
+  background: var(--suc-l) !important;
+}
+.nb-cl-row.checked:hover td {
+  filter: brightness(0.97);
+}
+.nb-cl-row.checked .nb-cl-desc, .nb-cl-row.checked .nb-cl-td-desc {
+  text-decoration: line-through;
+  opacity: .5;
+  color: var(--txt2);
+}
+.nb-cl-row.checked .nb-cl-td-num {
+  opacity: .6;
+  border-left: 3.5px solid var(--suc);
+  font-weight: 800;
+}
+.nb-cl-row .nb-cl-td-num {
+  border-left: 3.5px solid transparent;
+}
+.nb-cl-row.checked .nb-qty-input,
+.nb-cl-row.checked .nb-price-input {
+  opacity: .5;
+  background: transparent;
+}
+.nb-cl-row.checked .nb-line-total {
+  opacity: .5;
+}
 /* Cells */
 .nb-cl-td-num {
   text-align: center; padding: 10px 4px;
   font-size: 12px; font-weight: 700; color: var(--txt2);
 }
 .nb-cl-td-check { text-align: center; padding: 10px 4px; }
-.nb-check-box { width: 18px; height: 18px; accent-color: var(--pri); cursor: pointer; vertical-align: middle; }
+.nb-check-box { width: 18px; height: 18px; accent-color: var(--suc); cursor: pointer; vertical-align: middle; }
 .nb-cl-td-desc  { padding: 10px 8px 10px 10px; font-size: 14.5px; font-weight: 600; color: var(--txt); line-height: 1.5; word-break: break-word; }
 .nb-cl-td-qty   { padding: 8px 4px; text-align: center; }
 .nb-cl-td-price { padding: 8px 6px 8px 4px; text-align: right; }
@@ -12783,7 +12824,7 @@ function findDuplicateNote(draftTitle, draftBody, threshold) {
 function summaryStripText(raw) {
   return (raw || "")
     .replace(/\[(x| )\]/gi, " ")          // checkbox markers
-    .replace(/\s*[-\u2013\u2014]+\s*[^\d\s]*\d[\d,]*(?:\.\d{1,2})?\s*$/gm, "")  // price portions from checklist items
+    .replace(/\s*[-\u2013\u2014:]+\s*(?:[^\d\s]+\s*)?\d[\d,]*(?:\.\d{1,2})?\s*$/gm, "")  // price portions from checklist items
     .replace(/^[\s>]*[-•*]\s+/gm, "")        // leading bullets
     .replace(/\*\*(.*?)\*\*/g, "$1")          // bold
     .replace(/\*(.*?)\*/g, "$1")              // italic
@@ -12974,10 +13015,6 @@ function toggleNoteModalMaximize(forceState) {
     if (iconMax) iconMax.style.display = _noteModalMaximized ? "none" : "block";
     if (iconRestore) iconRestore.style.display = _noteModalMaximized ? "block" : "none";
   }
-
-  try {
-    localStorage.setItem("bt_note_modal_max", _noteModalMaximized ? "1" : "0");
-  } catch (e) {}
 }
 
 function openNoteModal(id) {
@@ -12986,11 +13023,8 @@ function openNoteModal(id) {
   _openNoteId = id;
   _noteModalEditing = false;
 
-  // Restore maximize preference
-  try {
-    const isMax = localStorage.getItem("bt_note_modal_max") === "1";
-    toggleNoteModalMaximize(isMax);
-  } catch (e) {}
+  // Always reset to standard windowed modal (do not carry over fullscreen from prior notes)
+  toggleNoteModalMaximize(false);
 
   renderNoteModal();
   const ov = document.getElementById("noteOverlay");
@@ -13006,6 +13040,7 @@ function closeNoteModal() {
   document.body.style.overflow = "";
   _openNoteId = null;
   _noteModalEditing = false;
+  toggleNoteModalMaximize(false);
 }
 
 // ─── LIVE CHECKLIST EDITOR ──────────────────────────────────────
@@ -13526,7 +13561,7 @@ function updateNoteItemPrice(noteId, itemIndex, newVal, tableId) {
   for (let i = 0; i < lines.length; i++) {
     if (/^\s*\[[ xX]\]\s/i.test(lines[i])) {
       if (checkCount === itemIndex) {
-        const stripped = lines[i].replace(/\s*[-\u2013\u2014]+\s*[^\d\s]*\d[\d,.]*\s*$/, "").trimEnd();
+        const stripped = lines[i].replace(/\s*[-\u2013\u2014:]+\s*(?:[^\d\s]+\s*)?\d[\d,.]*\s*$/, "").trimEnd();
         lines[i] = stripped + " — " + sym + parsed.toFixed(2);
         break;
       }
@@ -13557,7 +13592,7 @@ function updateNoteItemQty(noteId, itemIndex, newQty, tableId) {
         const prefix  = prefixM ? prefixM[1] : "[ ] ";
         let rest = lines[i].slice(prefix.length);
         // Strip amount first
-        const amtM = rest.match(/^(.*?)\s*[-\u2013\u2014]+\s*[^\d\s]*\d[\d,.]*\s*$/);
+        const amtM = rest.match(/^(.*?)\s*[-\u2013\u2014:]+\s*(?:[^\d\s]+\s*)?\d[\d,.]*\s*$/);
         let amtSuffix = "";
         if (amtM) { amtSuffix = rest.slice(amtM[1].length); rest = amtM[1].trim(); }
         // Strip old qty
@@ -13620,17 +13655,18 @@ function formatNoteBody(text, noteId) {
   let i = 0;
   let checkItemIndex = 0; // global index for price-edit targeting
 
-  // Parse price from a checklist item text: "cake — $ 0.00" → {desc:"cake", amt:"0.00"}
+  // Parse price from a checklist item text: "cake — $ 0.00" or "Wine — ₱ 200.00" → {desc:"Wine", amt:"200.00"}
   function splitCheckItem(raw) {
-    // Strip amount: "— $ 0.00" or "— ₱300" etc.
-    const amtM = raw.match(/^(.*?)\s*[-\u2013\u2014]+\s*[^\d\s]*(\d[\d,]*(?:\.\d{1,2})?)\s*$/);
+    // Strip amount: "— $ 0.00", "— ₱ 200.00", "— ₱300", ": 200.00", etc.
+    const amtM = raw.match(/^(.*?)\s*[-\u2013\u2014:]+\s*(?:[^\d\s]+\s*)?(\d[\d,]*(?:\.\d{1,2})?)\s*$/);
     if (amtM) {
       const amt = amtM[2].replace(/,/g,"");
+      const desc = amtM[1].trim();
       // Treat "0" or "0.00" as no price set
       if (amt === "0" || amt === "0.00" || amt === "0.0") {
-        return { desc: raw.trim(), amt: null };
+        return { desc: desc || raw.trim(), amt: null };
       }
-      return { desc: amtM[1].trim(), amt: amt };
+      return { desc: desc || raw.trim(), amt: amt };
     }
     return { desc: raw.trim(), amt: null };
   }

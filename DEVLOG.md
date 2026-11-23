@@ -1,10 +1,10 @@
 # DEVLOG — L'Atelier de Luz | Budget Tracker PWA
 
-## Current State: v263
+## Current State: v264
 
 | Metric | Value |
 |---|---|
-| SW cache | `budget-tracker-v263` |
+| SW cache | `budget-tracker-v264` |
 | File | `index.html` + `sw.js` |
 | App version | 1.9.9 |
 | Panels | 7 (`dashboard`, `expenses`, `history`, `goals`, `notes`, `ai`, `data`) |
@@ -50,46 +50,43 @@
 - **Enforcement**:
   1. Related Notes must be subdued and compact: minimal padding (`8px 28px 4px`), sleek item cards (`padding: 5px 9px`), small tag badges (`font-size: 7.5px`), and collapsible headers with note count (`Related notes (N)`).
   2. Note content and body must be prominent and spacious: `.note-modal-title` (`clamp(20px, 2.2vw, 24px)`), `.note-modal-body` (`font-size: 15px; line-height: 1.75;`), and checklist tables wrapped in clear card containers (`.nb-checklist-wrap`).
-  3. Maximize/Minimize toggle button (`#noteModalMaxBtn`) must be present in the modal header for desktop devices with state persistence in localStorage (`bt_note_modal_max`).
-  4. Mobile phones and tablets (screen width ≤ 900px) must open journal notes in **permanent full screen** (`100dvh`, fixed inset 0, full height scrollable body, with maximize button hidden).
-  5. Checklist row checkbox onchange callbacks must pass direct `itemIdx` to prevent off-by-one errors when notes lack explicit titles.
-  6. Automated QA in `qa_test_suite.js` (Suite 20) verifies maximize/restore toggling, checklist table generation with direct indices, subdued related notes structure, and responsive mobile/tablet fullscreen rules.
+  3. Maximize/Minimize toggle button (`#noteModalMaxBtn`) must be present in the modal header for desktop devices.
+  4. Opening any note must always start in **standard windowed mode** — the fullscreen state must **never carry over** automatically between notes. Fullscreen only activates on explicit user click.
+  5. Mobile phones and tablets (screen width ≤ 900px) must open journal notes in **permanent full screen** (`100dvh`, fixed inset 0, full height scrollable body, with maximize button hidden).
+  6. Checklist row checkbox onchange callbacks must pass direct `itemIdx` to prevent off-by-one errors when notes lack explicit titles.
+  7. Automated QA in `qa_test_suite.js` (Suite 20) verifies maximize/restore toggling, checklist table generation with direct indices, subdued related notes structure, and responsive mobile/tablet fullscreen rules.
+
+### Rule 6: Checklist Item Distinct Checked Backgrounds, Wide Screen Layout & Spaced Currency Parsing
+- **Problem**: Completed checklist items lacked clear visual distinction from pending tasks; on wide screens or in full-screen modal view, checklist tables stretched edge-to-edge leaving huge empty space between item names and prices; and currency strings with spaces (e.g. `— ₱ 200.00`) broke regex splitting, leaving prices inside item descriptions.
+- **Enforcement**:
+  1. **Checked Items Styling**: Checked rows (`.nb-cl-row.checked td` and `.note-check.checked`) must have a distinct tinted background (`var(--suc-l)`), left border accent (`3.5px solid var(--suc)`), and dimmed strikethrough text in both Light Mode and Dark Mode.
+  2. **Max-Width Reading Container**: In fullscreen / maximized mode, all modal content (`.note-modal-head`, `.note-modal-title`, `.note-modal-body`, `.note-modal-foot`) must be constrained to `max-width: 860px; margin: 0 auto; width: 100%;` to prevent awkward stretching on ultra-wide displays.
+  3. **Robust Currency & Price Regex**: `splitCheckItem`, `updateNoteItemPrice`, and `updateNoteItemQty` must use `[-\u2013\u2014:]+\s*(?:[^\d\s]+\s*)?(\d[\d,]*(?:\.\d{1,2})?)` to properly extract descriptions and numeric amounts regardless of spaces or currency symbols.
+  4. Automated QA in `qa_test_suite.js` (Suite 20) validates spaced currency parsing, checked row styles, and reading container constraints.
 
 ---
 
-## v263 Changelog (from v262) — Journal Note Viewer Modal Redesign, Maximize Controls & Fullscreen Responsive Engine
+## v264 Changelog (from v263) — Modal State Reset, Checked Item Distinction, Wide Layout & Currency Regex Fixes
 
-### 1. Subdued & Compact Related Notes Section
-- Restyled the Related Notes container in the Journal note viewer modal to be sleek, subdued, and non-intrusive.
-- Reduced item height with compact padding (`5px 9px`), smaller text (`11.5px`), micro tag badge pills (`7.5px`), and subtle border styling.
-- Added note count indicator (`Related notes (N)`) and preserved smooth collapse/expand toggle controls.
+### 1. Fresh Modal Opening State Reset (No Maximize Carry-Over)
+- Removed automatic `localStorage` maximization restoration so opening a note always starts in standard windowed view.
+- Added `toggleNoteModalMaximize(false)` on both `openNoteModal(id)` and `closeNoteModal()` to guarantee that closing a maximized note never forces subsequent notes into fullscreen mode. Fullscreen only applies when the user explicitly clicks the Fullscreen button.
 
-### 2. Bigger & More Spacious Note Body & Checklist Typography
-- Increased modal title font size to `clamp(20px, 2.2vw, 24px)` with weight 900 and tightened letter spacing.
-- Upgraded `.note-modal-body` base font size from 14px to 15px with relaxed `1.75` line height for paragraphs, lists, and markdown blocks.
-- Upgraded checklist tables into clean bordered card containers (`.nb-checklist-wrap`) with larger item descriptions (`14.5px`), clear quantity/price inputs (`12.5px`), and a prominent Grand Total bar (`15px` bold).
+### 2. Distinct Checked Item Background Styling (Light & Dark Mode)
+- Styled completed checklist rows (`.nb-cl-row.checked td`) and simple markdown checklist items (`.note-check.checked`) with a distinct tinted background (`var(--suc-l)`), green left border indicator (`3.5px solid var(--suc)`), and subdued strikethrough text (`opacity: 0.5`).
+- Unchecked rows maintain clean high-contrast card backgrounds (`var(--card)`) with crisp typography, making pending tasks immediately obvious at a glance in both Light Mode (Sage, Blush, Ocean, Lavender) and Dark Mode.
 
-### 3. Desktop Maximize & Minimize Button
-- Added `#noteModalMaxBtn` toggle button in the modal header next to the close button.
-- Toggling maximization expands the modal to near-fullscreen desktop overlay (`inset: 16px; width: auto; max-width: none; height: auto; max-height: none;`).
-- Dynamically swaps between Maximize (`.icon-max`) and Restore (`.icon-restore`) SVG icons with tooltips and persists user preference to `localStorage.getItem("bt_note_modal_max")`.
+### 3. Clean Constrained Layout on Wide Screens & Fullscreen Mode
+- Added centered max-width reading container rules (`max-width: 860px; margin: 0 auto; width: 100%;`) for `.note-modal.is-maximized .note-modal-body`, header, title, and footer.
+- Prevented checklist tables from stretching awkwardly across ultra-wide monitors, ensuring item names, quantities, and prices stay closely aligned and readable.
 
-### 4. Permanent Fullscreen on Mobile Phones & Tablets
-- Implemented `@media (max-width: 900px)` responsive stylesheet making the Journal note modal permanently full screen on all phone and tablet viewports (`100dvh`, fixed `inset: 0`, edge-to-edge layout, scrollable body with momentum scrolling).
-- Cleanly hid the maximize button on mobile/tablets where fullscreen is already permanent.
+### 4. Robust Currency & Price Regex Parsing (Spaced Currency Support)
+- Updated `splitCheckItem`, `updateNoteItemPrice`, and `updateNoteItemQty` regexes to support currency symbols separated by whitespace (e.g. `Wine — ₱ 200.00`, `Bread - PHP 80.00`, `Cheese — $ 45.50`).
+- Descriptions and prices now parse cleanly without leaving currency markers inside the item name or displaying `0.00` in the price column.
 
-### 5. Bug Fixes in Journal CSS & Checklist Event Handling
-- Removed an orphaned closing brace `}` in CSS around line 2157 that previously broke subsequent table stylesheet rules.
-- Updated `toggleNoteCheck` and `formatNoteBody` to pass direct checklist `itemIdx` (e.g. `toggleNoteCheck(noteId, this, itemIdx)`), eliminating off-by-one line matching bugs when notes don't have explicit titles.
-
-### 6. Automated QA Test Suite
-- Added **Test Suite 20** covering:
-  - Maximize and restore toggle state transitions and localStorage persistence.
-  - Checklist table formatting and direct item index parameter verification.
-  - `toggleNoteCheck` direct item index toggle accuracy without off-by-one errors.
-  - Subdued related notes container markup, label, and collapse button.
-  - Presence of `#noteModalMaxBtn` markup and responsive mobile/tablet fullscreen CSS.
-- All 236 automated QA tests passing (236/236).
+### 5. Automated QA Test Suite Expansion
+- Expanded **Test Suite 20** in `qa_test_suite.js` to 241 passing tests (241/241 across 20 suites) verifying fresh-open modal reset, spaced currency splitting, and checked row styles.
+- Bumped Service Worker cache version to `budget-tracker-v264`.
 
 ---
 
