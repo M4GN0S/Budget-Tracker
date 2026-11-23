@@ -1,10 +1,10 @@
 # DEVLOG — L'Atelier de Luz | Budget Tracker PWA
 
-## Current State: v264
+## Current State: v265
 
 | Metric | Value |
 |---|---|
-| SW cache | `budget-tracker-v264` |
+| SW cache | `budget-tracker-v265` |
 | File | `index.html` + `sw.js` |
 | App version | 1.9.9 |
 | Panels | 7 (`dashboard`, `expenses`, `history`, `goals`, `notes`, `ai`, `data`) |
@@ -64,15 +64,37 @@
   3. **Robust Currency & Price Regex**: `splitCheckItem`, `updateNoteItemPrice`, and `updateNoteItemQty` must use `[-\u2013\u2014:]+\s*(?:[^\d\s]+\s*)?(\d[\d,]*(?:\.\d{1,2})?)` to properly extract descriptions and numeric amounts regardless of spaces or currency symbols.
   4. Automated QA in `qa_test_suite.js` (Suite 20) validates spaced currency parsing, checked row styles, and reading container constraints.
 
+### Rule 7: Subdued Auto-Summary & Dismissable Gentle Reminder with Permanent Opt-Out
+- **Problem**: Auto-Summary TL;DR boxes and "A Gentle Note" reminder cards were overly prominent with heavy colored borders, distracting from primary note content and frustrating users who prefer not to see sentiment nudges.
+- **Enforcement**:
+  1. **Subdued Summary**: Rendered as a calm, compact neutral pill (`margin: 2px 28px 8px; padding: 6px 10px; background: var(--bg); border: 1px solid var(--brd);`), with subtle uppercase label (`8.5px`), standard non-italic text (`11.5px`), and smooth collapse toggle.
+  2. **Subdued Gentle Note**: Muted background (`var(--bg)`), small header (`8.5px`), compact typography (`11.5px`), and sleek action button.
+  3. **Dismiss & Permanent Opt-Out**: Includes a direct Dismiss button (`dismissMoodNudge`) and a persistent `"Don't show this again"` checkbox (`toggleMoodNudgeOptOut`) storing `localStorage.setItem("bt_dismiss_mood_nudge", "1")` so nudges never re-appear when opted out.
+  4. Automated QA in `qa_test_suite.js` (Suite 20) validates summary styles, dismiss action, and opt-out localStorage persistence.
+
 ---
 
-## v264 Changelog (from v263) — Modal State Reset, Checked Item Distinction, Wide Layout & Currency Regex Fixes
+## v265 Changelog (from v264) — Subdued Summary, Dismissable Gentle Reminder & Opt-Out Checkbox
 
-### 1. Fresh Modal Opening State Reset (No Maximize Carry-Over)
-- Removed automatic `localStorage` maximization restoration so opening a note always starts in standard windowed view.
-- Added `toggleNoteModalMaximize(false)` on both `openNoteModal(id)` and `closeNoteModal()` to guarantee that closing a maximized note never forces subsequent notes into fullscreen mode. Fullscreen only applies when the user explicitly clicks the Fullscreen button.
+### 1. Subdued & Compact Auto-Summary Box
+- Redesigned `.note-tldr` from a loud gold/brown accent box to a sleek, subdued neutral card (`background: var(--bg); border: 1px solid var(--brd); border-radius: 8px;`).
+- Changed summary text from loud bold italic to clean, calm `11.5px` typography (`font-style: normal; color: var(--txt2);`).
+- Reduced vertical footprint and margins for both desktop and mobile (`@media(max-width:900px)`).
 
-### 2. Distinct Checked Item Background Styling (Light & Dark Mode)
+### 2. Subdued Gentle Note Card & Direct Dismiss Action
+- Restyled `.note-mood` into a minimal, non-intrusive container with soft neutral background and subtle border.
+- Added a dedicated **Dismiss** (`✕`) button allowing users to immediately close the gentle note helper on the current entry.
+
+### 3. "Don't show this again" Permanent Opt-Out
+- Added a checkbox tick box: `[ ] Don't show this again` (`.mood-opt-out`) integrated into the gentle note card.
+- Ticking the box persists the preference to `localStorage.setItem("bt_dismiss_mood_nudge", "1")`.
+- `renderMoodNudge` and `renderComposeMoodNudge` strictly honor the opt-out flag and suppress all gentle reminder cards across the app when enabled.
+
+### 4. Automated QA Test Suite Expansion
+- Expanded **Test Suite 20** in `qa_test_suite.js` to 250 passing tests (250/250 across 20 suites) verifying subdued summary markup, dismiss handlers, and opt-out persistence.
+- Bumped Service Worker cache version to `budget-tracker-v265`.
+
+---
 - Styled completed checklist rows (`.nb-cl-row.checked td`) and simple markdown checklist items (`.note-check.checked`) with a distinct tinted background (`var(--suc-l)`), green left border indicator (`3.5px solid var(--suc)`), and subdued strikethrough text (`opacity: 0.5`).
 - Unchecked rows maintain clean high-contrast card backgrounds (`var(--card)`) with crisp typography, making pending tasks immediately obvious at a glance in both Light Mode (Sage, Blush, Ocean, Lavender) and Dark Mode.
 

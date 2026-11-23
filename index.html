@@ -1157,24 +1157,38 @@ tbody tr:hover td{background:var(--pri-l)}
 .note-dup-warn .dup-btn-ghost:hover{background:var(--bg);color:var(--txt)}
 .note-dup-warn .dup-btn-pri{background:var(--acc);color:var(--card);border-color:var(--acc)}
 .note-dup-warn .dup-btn-pri:hover{filter:brightness(1.06)}
-/* Auto-summary TL;DR banner (inside journal modal) */
-.note-tldr{margin:2px 24px 6px;padding:11px 14px;background:var(--acc-l);border:1px solid var(--acc);border-left:3px solid var(--acc);border-radius:10px;display:flex;flex-direction:column;gap:5px;position:relative}
-.note-tldr .tldr-label{font-size:10px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;color:var(--acc);display:flex;align-items:center;gap:6px}
-.note-tldr .tldr-text{font-size:13.5px;line-height:1.5;color:var(--txt);font-style:italic}
-.note-tldr .tldr-collapse{position:absolute;top:8px;right:8px;background:none;border:none;color:var(--acc);cursor:pointer;padding:4px;border-radius:4px;display:flex;align-items:center;justify-content:center;transition:.15s}
-.note-tldr .tldr-collapse:hover{background:var(--acc);color:#fff}
+/* Auto-summary TL;DR banner (inside journal modal) - Subdued & sleek */
+.note-tldr{margin:2px 28px 8px;padding:6px 10px;background:var(--bg);border:1px solid var(--brd);border-radius:8px;display:flex;flex-direction:column;gap:3px;position:relative;transition:all .15s ease}
+.note-tldr .tldr-top{display:flex;align-items:center;justify-content:space-between}
+.note-tldr .tldr-label{font-size:8.5px;font-weight:800;letter-spacing:.6px;text-transform:uppercase;color:var(--txt2);display:flex;align-items:center;gap:4px}
+.note-tldr .tldr-label svg{color:var(--txt2);opacity:.7}
+.note-tldr .tldr-text{font-size:11.5px;line-height:1.4;color:var(--txt2);font-style:normal;font-weight:500}
+.note-tldr .tldr-collapse{background:none;border:none;color:var(--txt2);opacity:.6;cursor:pointer;padding:1px 3px;border-radius:4px;display:flex;align-items:center;justify-content:center;transition:.15s}
+.note-tldr .tldr-collapse:hover{background:var(--card);color:var(--txt);opacity:1}
 .note-tldr .tldr-collapse .chev-down{display:block}
 .note-tldr .tldr-collapse .chev-up{display:none}
 .note-tldr.collapsed .tldr-text{display:none}
-.note-tldr.collapsed{padding-bottom:8px}
+.note-tldr.collapsed{padding-bottom:4px}
 .note-tldr.collapsed .tldr-collapse .chev-down{display:none}
 .note-tldr.collapsed .tldr-collapse .chev-up{display:block}
-/* Supportive sentiment nudge (inside journal modal) */
-.note-mood{margin:10px 24px 4px;padding:14px 16px;background:linear-gradient(135deg,var(--pri-l,rgba(126,154,142,.12)),rgba(126,154,142,.06));border:1px solid color-mix(in srgb, var(--pri) 35%, var(--brd));border-left:3px solid var(--pri);border-radius:12px}
-.note-mood .mood-head{display:flex;align-items:center;gap:7px;font-size:11px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;color:var(--pri);margin-bottom:7px}
-.note-mood .mood-body{font-size:13.5px;line-height:1.55;color:var(--txt);margin-bottom:12px}
-.note-mood .mood-btn{display:inline-flex;align-items:center;gap:7px;font-family:inherit;font-size:12.5px;font-weight:700;color:var(--on-pri,#fff);background:var(--pri);border:1.5px solid var(--pri);border-radius:10px;padding:9px 14px;cursor:pointer;transition:.15s}
-.note-mood .mood-btn:hover{filter:brightness(1.07);transform:translateY(-1px)}
+@media(max-width:900px){.note-tldr{margin-left:18px;margin-right:18px}}
+
+/* Supportive sentiment nudge (inside journal modal) - Subdued, compact & dismissable */
+.note-mood{margin:6px 28px 4px;padding:8px 12px;background:var(--bg);border:1px solid var(--brd);border-radius:8px;display:flex;flex-direction:column;gap:4px;position:relative;transition:all .15s ease}
+.note-mood .mood-top{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.note-mood .mood-head{display:flex;align-items:center;gap:4px;font-size:8.5px;font-weight:800;letter-spacing:.6px;text-transform:uppercase;color:var(--txt2)}
+.note-mood .mood-head svg{color:var(--pri);opacity:.8}
+.note-mood .mood-dismiss-btn{background:none;border:1px solid transparent;color:var(--txt2);opacity:.7;cursor:pointer;padding:1px 6px;border-radius:4px;display:inline-flex;align-items:center;gap:3px;font-size:10px;font-weight:600;font-family:inherit;transition:.15s}
+.note-mood .mood-dismiss-btn:hover{background:var(--card);border-color:var(--brd);color:var(--dan);opacity:1}
+.note-mood .mood-body{font-size:11.5px;line-height:1.45;color:var(--txt2);margin:0;font-weight:500}
+.note-mood .mood-actions{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-top:2px;padding-top:4px;border-top:1px dashed var(--brd)}
+.note-mood .mood-btn{display:inline-flex;align-items:center;gap:4px;font-family:inherit;font-size:10.5px;font-weight:700;color:var(--pri-d);background:var(--pri-l);border:1px solid var(--pri);border-radius:6px;padding:3px 8px;cursor:pointer;transition:.15s}
+.note-mood .mood-btn:hover{filter:brightness(1.05);transform:translateY(-1px)}
+.note-mood .mood-opt-out{display:inline-flex;align-items:center;gap:5px;font-size:10.5px;color:var(--txt2);cursor:pointer;user-select:none}
+.note-mood .mood-opt-out input[type="checkbox"]{width:13px;height:13px;accent-color:var(--pri);cursor:pointer;margin:0}
+.note-mood .mood-opt-out span{opacity:.85}
+.note-mood .mood-opt-out:hover span{opacity:1;color:var(--txt)}
+@media(max-width:900px){.note-mood{margin-left:18px;margin-right:18px}}
 /* Privacy / security disclaimer under the journal composer */
 .note-privacy-note{display:flex;align-items:flex-start;gap:8px;margin:2px 2px 0;padding:9px 12px;border:1px solid var(--brd);border-radius:10px;background:var(--bg);font-size:11px;line-height:1.5;color:var(--txt2)}
 .note-privacy-note svg{flex:none;margin-top:1px;color:var(--acc)}
@@ -12558,8 +12572,8 @@ function scheduleComposeMoodNudge() {
 function renderComposeMoodNudge() {
   const wrap = document.getElementById("composeMoodNudge");
   if (!wrap) return;
-  // Hard gate: never show to users who haven't set up an AI advisor.
-  if (!aiIsConfigured() || _composeMoodDismissed) {
+  // Hard gate: never show to users who haven't set up an AI advisor, or if permanently dismissed
+  if (!aiIsConfigured() || _composeMoodDismissed || localStorage.getItem("bt_dismiss_mood_nudge") === "1") {
     wrap.style.display = "none"; wrap.innerHTML = ""; return;
   }
   const title = (document.getElementById("noteTitle")?.value || "");
@@ -13159,13 +13173,16 @@ function renderNoteModal() {
   const tldrEl = document.getElementById("noteModalTldr");
   if (tldrEl) {
     const summary = summarizeText(getNoteTitle(note) + ". " + bodyText);
-    const tldrIcon = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="14" y2="12"/><line x1="4" y1="18" x2="10" y2="18"/></svg>';
-    const chevDown = '<svg class="chev-down" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>';
-    const chevUp = '<svg class="chev-up" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="18 15 12 9 6 15"/></svg>';
+    const tldrIcon = '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="14" y2="12"/><line x1="4" y1="18" x2="10" y2="18"/></svg>';
+    const chevDown = '<svg class="chev-down" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>';
+    const chevUp = '<svg class="chev-up" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="18 15 12 9 6 15"/></svg>';
     if (summary) {
-      tldrEl.innerHTML = '<span class="tldr-label">' + tldrIcon + 'Summary</span>' +
-        '<span class="tldr-text">' + escHtml(summary) + '</span>' +
-        '<button class="tldr-collapse" onclick="this.closest(\'.note-tldr\').classList.toggle(\'collapsed\')" title="Minimize">' + chevDown + chevUp + '</button>';
+      tldrEl.innerHTML =
+        '<div class="tldr-top">' +
+          '<div class="tldr-label">' + tldrIcon + '<span>Summary</span></div>' +
+          '<button type="button" class="tldr-collapse" onclick="this.closest(\'.note-tldr\').classList.toggle(\'collapsed\')" title="Toggle summary">' + chevDown + chevUp + '</button>' +
+        '</div>' +
+        '<div class="tldr-text">' + escHtml(summary) + '</div>';
       tldrEl.style.display = "flex";
       tldrEl.classList.remove("collapsed");
     } else {
@@ -13232,6 +13249,12 @@ function aiIsConfigured() {
 function renderMoodNudge(note) {
   const wrap = document.getElementById("noteModalMood");
   if (!wrap) return;
+  // If user permanently opted out with "Don't show this again"
+  if (localStorage.getItem("bt_dismiss_mood_nudge") === "1") {
+    wrap.style.display = "none";
+    wrap.innerHTML = "";
+    return;
+  }
   // Supportive AI nudge is opt-in: only for users who set up an AI advisor.
   if (!aiIsConfigured()) { wrap.style.display = "none"; wrap.innerHTML = ""; return; }
   const mood = analyzeSentiment(getNoteTitle(note) + ". " + (note.text || ""));
@@ -13239,13 +13262,46 @@ function renderMoodNudge(note) {
 
   // Pick a stable message per note so it doesn't change on every re-render
   const msg = MOOD_NUDGE_MESSAGES[Math.abs(note.id || 0) % MOOD_NUDGE_MESSAGES.length];
-  const heartIcon = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>';
-  const chatIcon = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>';
+  const heartIcon = '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>';
+  const chatIcon = '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>';
+  const closeIcon = '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
+
   wrap.innerHTML =
-    '<div class="mood-head">' + heartIcon + 'A gentle note' + '</div>' +
+    '<div class="mood-top">' +
+      '<div class="mood-head">' + heartIcon + '<span>A gentle note</span></div>' +
+      '<button type="button" class="mood-dismiss-btn" onclick="dismissMoodNudge(event)" title="Dismiss" aria-label="Dismiss gentle note">' +
+        closeIcon + '<span>Dismiss</span>' +
+      '</button>' +
+    '</div>' +
     '<div class="mood-body">' + escHtml(msg) + '</div>' +
-    '<button class="mood-btn" onclick="nudgeAiAboutNote(' + note.id + ')">' + chatIcon + 'Talk it through with your AI advisor</button>';
+    '<div class="mood-actions">' +
+      '<button type="button" class="mood-btn" onclick="nudgeAiAboutNote(' + note.id + ')">' + chatIcon + 'Talk it through with AI</button>' +
+      '<label class="mood-opt-out" title="Permanently hide gentle notes"><input type="checkbox" onchange="toggleMoodNudgeOptOut(this.checked)"><span>Don\'t show this again</span></label>' +
+    '</div>';
   wrap.style.display = "block";
+}
+
+function dismissMoodNudge(event) {
+  if (event) event.stopPropagation();
+  const wrap = document.getElementById("noteModalMood");
+  if (wrap) {
+    const cb = wrap.querySelector(".mood-opt-out input[type='checkbox']");
+    if (cb && cb.checked) {
+      try { localStorage.setItem("bt_dismiss_mood_nudge", "1"); } catch(e) {}
+    }
+    wrap.style.display = "none";
+    wrap.innerHTML = "";
+  }
+}
+
+function toggleMoodNudgeOptOut(checked) {
+  try {
+    if (checked) {
+      localStorage.setItem("bt_dismiss_mood_nudge", "1");
+    } else {
+      localStorage.removeItem("bt_dismiss_mood_nudge");
+    }
+  } catch(e) {}
 }
 
 // Opens the AI advisor pre-loaded with a supportive, context-aware prompt

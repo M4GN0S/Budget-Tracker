@@ -1146,7 +1146,30 @@ assert(relWrap.innerHTML.includes("Related notes"), "Related notes container dis
 assert(relWrap.innerHTML.includes("rel-collapse"), "Related notes container includes collapse toggle button");
 assert(relWrap.innerHTML.includes("note-related-list"), "Related notes container uses note-related-list container");
 
-// 6. Verify index.html contains Maximize button markup, mobile/tablet permanent fullscreen CSS, and checked row styles
+// 6. Verify Subdued Summary and Dismissable Gentle Reminder with Opt-Out
+localStorage.setItem("bt_ai_config", JSON.stringify({ provider: "openai", key: obfuscate("sk-mock-key-12345") }));
+localStorage.removeItem("bt_dismiss_mood_nudge");
+const stressedNote = { id: 955, title: "Overwhelmed with bills and debt", text: "I am feeling so stressed and overwhelmed by all these expenses.", tag: "reflection", date: new Date().toISOString() };
+renderMoodNudge(stressedNote);
+const moodWrap = document.getElementById("noteModalMood");
+assert(moodWrap !== null && moodWrap.style.display !== "none", "Mood nudge rendered for stressed note when AI configured");
+assert(moodWrap.innerHTML.includes("mood-dismiss-btn"), "Mood nudge contains dismiss button");
+assert(moodWrap.innerHTML.includes("Don't show this again"), "Mood nudge contains 'Don't show this again' checkbox label");
+assert(moodWrap.innerHTML.includes("mood-opt-out"), "Mood nudge uses mood-opt-out styling container");
+
+// Test toggleMoodNudgeOptOut(true)
+toggleMoodNudgeOptOut(true);
+assert(localStorage.getItem("bt_dismiss_mood_nudge") === "1", "toggleMoodNudgeOptOut(true) persists '1' to localStorage bt_dismiss_mood_nudge");
+
+// Re-render when opted out: must not display
+renderMoodNudge(stressedNote);
+assert(moodWrap.style.display === "none", "renderMoodNudge does not display when user opted out with bt_dismiss_mood_nudge");
+
+// Test toggleMoodNudgeOptOut(false)
+toggleMoodNudgeOptOut(false);
+assert(localStorage.getItem("bt_dismiss_mood_nudge") === null, "toggleMoodNudgeOptOut(false) removes bt_dismiss_mood_nudge from localStorage");
+
+// 7. Verify index.html contains Maximize button markup, mobile/tablet permanent fullscreen CSS, and checked row styles
 const indexHtml = fs.readFileSync('index.html', 'utf8');
 assert(indexHtml.includes('id="noteModalMaxBtn"'), "index.html contains #noteModalMaxBtn maximize button");
 assert(indexHtml.includes('class="icon-max"'), "Maximize button contains icon-max");
@@ -1156,6 +1179,8 @@ assert(indexHtml.includes('.btn-modal-max{display:none !important}'), "Maximize 
 assert(indexHtml.includes('.nb-cl-row.checked td'), "index.html styles checked checklist table rows with distinct background in all themes");
 assert(indexHtml.includes('.note-modal-body .note-check.checked'), "index.html styles checked markdown checklist items with distinct background in all themes");
 assert(indexHtml.includes('.note-modal.is-maximized .note-modal-body'), "index.html includes constrained max-width reading container for maximized view");
+assert(indexHtml.includes('.note-mood .mood-dismiss-btn'), "index.html styles subdued dismiss button for gentle reminder");
+assert(indexHtml.includes('.note-mood .mood-opt-out'), "index.html styles 'Don't show this again' opt-out container");
 
 
 // ─── SUMMARY ────────────────────────────────────────────────
