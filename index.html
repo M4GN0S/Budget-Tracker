@@ -1016,15 +1016,14 @@ tbody tr:hover td{background:var(--pri-l)}
 /* ─── Journal Entry Modal ─── */
 .note-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);z-index:1000;display:none;align-items:center;justify-content:center;padding:24px 16px;overflow-y:auto}
 .note-overlay.show{display:flex}
-.note-modal{background:var(--card);border-radius:20px;max-width:680px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.35),0 0 1px rgba(0,0,0,.15);animation:modalIn .3s cubic-bezier(.4,0,.2,1);margin:auto;display:flex;flex-direction:column;max-height:90vh;position:relative;overflow:hidden;border:1px solid var(--brd);transition:all .22s cubic-bezier(.4,0,.2,1)}
-.note-modal.is-maximized{position:fixed;inset:16px;width:auto !important;max-width:none !important;height:auto !important;max-height:none !important;border-radius:16px;margin:0 !important;z-index:1001;box-shadow:0 24px 80px rgba(0,0,0,.5)}
+.note-overlay.is-maximized{padding:0 !important;align-items:stretch !important;justify-content:stretch !important}
+.note-modal{background:var(--card);border-radius:20px;max-width:680px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.35),0 0 1px rgba(0,0,0,.15);animation:modalIn .3s cubic-bezier(.4,0,.2,1);margin:auto;display:flex;flex-direction:column;max-height:90vh;position:relative;overflow:hidden;border:1px solid var(--brd);transition:max-width .2s ease,max-height .2s ease,border-radius .2s ease}
+.note-modal.is-maximized,.note-overlay.is-maximized .note-modal{width:100% !important;max-width:100% !important;height:100% !important;height:100dvh !important;max-height:100dvh !important;border-radius:0 !important;margin:0 !important;border:none !important;box-shadow:none !important}
 .note-modal-head{padding:20px 28px 0;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-shrink:0}
 .note-modal-head .nm-meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .note-modal-head-actions{display:flex;align-items:center;gap:6px;flex-shrink:0}
 .btn-modal-max{background:var(--bg);color:var(--txt2);width:32px;height:32px;border-radius:8px;display:inline-flex;align-items:center;justify-content:center;transition:.18s;cursor:pointer;border:1px solid var(--brd);padding:0}
 .btn-modal-max:hover{background:var(--pri-l);border-color:var(--pri);color:var(--pri-d)}
-.note-modal.is-maximized .btn-modal-max .icon-max{display:none !important}
-.note-modal.is-maximized .btn-modal-max .icon-restore{display:block !important}
 .note-modal-head .close-modal{flex-shrink:0;background:var(--bg);color:var(--txt2);width:32px;height:32px;border-radius:8px;font-size:16px;display:flex;align-items:center;justify-content:center;transition:.2s;cursor:pointer;border:1px solid var(--brd);padding:0}
 .note-modal-head .close-modal:hover{background:var(--dan-l);border-color:var(--dan);color:var(--dan)}
 .note-modal-title{font-size:clamp(20px,2.2vw,24px);font-weight:900;line-height:1.25;padding:12px 28px 4px;color:var(--txt);letter-spacing:-.4px;flex-shrink:0}
@@ -1221,30 +1220,31 @@ tbody tr:hover td{background:var(--pri-l)}
 .count-prompt-val{min-width:40px;text-align:center;font-size:22px;font-weight:900;color:var(--txt)}
 .count-prompt-sub{font-size:11px;color:var(--txt2);text-align:center;margin-bottom:14px}
 /* Related notes (inside journal modal) */
-/* Related notes (inside journal modal) - Subdued & Sleek */
-.note-related{padding:8px 28px 4px;border-top:1px solid var(--brd);margin-top:4px;position:relative;flex-shrink:0;background:var(--card)}
-.note-related-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
-.note-related-label{font-size:9.5px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;color:var(--txt2);display:flex;align-items:center;gap:5px}
-.note-related-list{display:flex;flex-direction:column;gap:4px;margin-bottom:6px}
-.note-related-item{display:flex;align-items:center;gap:8px;padding:5px 9px;border:1px solid var(--brd);border-radius:8px;cursor:pointer;transition:all .15s ease;background:var(--bg)}
+/* Related notes (inside journal modal) - Ultra-Subdued, Compact & Sleek */
+.note-related{padding:4px 28px 2px;border-top:1px solid var(--brd);margin-top:2px;position:relative;flex-shrink:0;background:var(--card)}
+.note-related-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:3px}
+.note-related-label{font-size:8.5px;font-weight:800;letter-spacing:.7px;text-transform:uppercase;color:var(--txt2);display:flex;align-items:center;gap:4px}
+.note-related-list{display:flex;flex-direction:column;gap:3px;margin-bottom:4px}
+.note-related-item{display:flex;align-items:center;gap:6px;padding:3px 8px;border:1px solid var(--brd);border-radius:6px;cursor:pointer;transition:all .12s ease;background:var(--bg);min-height:22px}
 .note-related-item:hover{border-color:var(--pri);background:var(--card);box-shadow:var(--sh)}
 .note-related-item:hover .nri-title{color:var(--pri-d)}
-.note-related-item .nri-title{flex:1;min-width:0;font-size:11.5px;font-weight:600;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:color .15s}
-.note-related-item .nri-tag{flex-shrink:0;font-size:7.5px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;padding:1px 5px;border-radius:4px;background:var(--pri-l);color:var(--pri-d)}
+.note-related-item .nri-title{flex:1;min-width:0;font-size:10.5px;font-weight:600;color:var(--txt2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:color .12s;line-height:1.3}
+.note-related-item .nri-tag{flex-shrink:0;font-size:7px;font-weight:800;text-transform:uppercase;letter-spacing:.3px;padding:0 4px;border-radius:3px;height:14px;line-height:14px;background:var(--pri-l);color:var(--pri-d)}
 .note-related-item .nri-tag.goal{background:var(--suc-l);color:var(--suc)}
 .note-related-item .nri-tag.reminder{background:var(--acc-l);color:var(--acc)}
 .note-related-item .nri-tag.idea{background:#F0ECF5;color:#7A6899}
 .note-related-item .nri-tag.receipt{background:var(--dan-l);color:var(--dan)}
 .note-related-item .nri-tag.checklist{background:var(--suc-l);color:var(--suc)}
 .note-related-item .nri-tag.tip{background:var(--acc-l);color:var(--acc)}
-.note-related-item .nri-chev{flex-shrink:0;color:var(--txt2);opacity:.4;display:flex}
+.note-related-item .nri-chev{flex-shrink:0;color:var(--txt2);opacity:.35;display:flex}
+.note-related-item .nri-chev svg{width:10px;height:10px}
 @media(max-width:900px){.note-related{padding-left:18px;padding-right:18px}}
-.note-related .rel-collapse{background:none;border:1px solid transparent;color:var(--txt2);cursor:pointer;padding:2px 4px;border-radius:4px;display:flex;align-items:center;justify-content:center;transition:.15s}
+.note-related .rel-collapse{background:none;border:1px solid transparent;color:var(--txt2);cursor:pointer;padding:1px 3px;border-radius:4px;display:flex;align-items:center;justify-content:center;transition:.15s}
 .note-related .rel-collapse:hover{background:var(--bg);border-color:var(--brd);color:var(--txt)}
 .note-related .rel-collapse .chev-down{display:block}
 .note-related .rel-collapse .chev-up{display:none}
 .note-related.collapsed .note-related-list{display:none}
-.note-related.collapsed{padding-bottom:6px}
+.note-related.collapsed{padding-bottom:4px}
 .note-related.collapsed .rel-collapse .chev-down{display:none}
 .note-related.collapsed .rel-collapse .chev-up{display:block}
 .tag-filters{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:12px}
@@ -3908,7 +3908,7 @@ footer .footer-links a:hover{color:var(--pri-d)}
     <div class="note-modal-head">
       <div class="nm-meta" id="noteModalMeta"></div>
       <div class="note-modal-head-actions">
-        <button class="btn-modal-max" id="noteModalMaxBtn" onclick="toggleNoteModalMaximize()" aria-label="Toggle Fullscreen" title="Maximize note">
+        <button class="btn-modal-max" id="noteModalMaxBtn" onclick="event.stopPropagation();toggleNoteModalMaximize()" aria-label="Toggle Fullscreen" title="Full screen">
           <svg class="icon-max" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
           <svg class="icon-restore" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><path d="M4 14h6v6M20 10h-6V4M14 10l7-7M10 14l-7 7"/></svg>
         </button>
@@ -12952,19 +12952,29 @@ function getNoteById(id) {
 }
 
 function toggleNoteModalMaximize(forceState) {
+  const overlay = document.getElementById("noteOverlay");
   const modal = document.querySelector(".note-modal");
   const maxBtn = document.getElementById("noteModalMaxBtn");
   if (!modal) return;
+
   if (typeof forceState === "boolean") {
     _noteModalMaximized = forceState;
   } else {
     _noteModalMaximized = !_noteModalMaximized;
   }
+
   modal.classList.toggle("is-maximized", _noteModalMaximized);
+  if (overlay) overlay.classList.toggle("is-maximized", _noteModalMaximized);
+
   if (maxBtn) {
-    maxBtn.title = _noteModalMaximized ? "Restore size" : "Maximize note";
-    maxBtn.setAttribute("aria-label", _noteModalMaximized ? "Restore size" : "Maximize note");
+    maxBtn.title = _noteModalMaximized ? "Exit full screen" : "Full screen";
+    maxBtn.setAttribute("aria-label", _noteModalMaximized ? "Exit full screen" : "Full screen");
+    const iconMax = maxBtn.querySelector(".icon-max");
+    const iconRestore = maxBtn.querySelector(".icon-restore");
+    if (iconMax) iconMax.style.display = _noteModalMaximized ? "none" : "block";
+    if (iconRestore) iconRestore.style.display = _noteModalMaximized ? "block" : "none";
   }
+
   try {
     localStorage.setItem("bt_note_modal_max", _noteModalMaximized ? "1" : "0");
   } catch (e) {}

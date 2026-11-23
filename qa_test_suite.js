@@ -1095,12 +1095,12 @@ const modalEl = document.querySelector(".note-modal");
 const maxBtnEl = document.getElementById("noteModalMaxBtn");
 assert(modalEl.classList.contains("is-maximized"), "toggleNoteModalMaximize(true) adds is-maximized class to .note-modal");
 assert(localStorage.getItem("bt_note_modal_max") === "1", "toggleNoteModalMaximize(true) persists '1' to localStorage bt_note_modal_max");
-assert(maxBtnEl.title === "Restore size", "Maximize button tooltip changes to 'Restore size'");
+assert(maxBtnEl.title === "Exit full screen", "Maximize button tooltip changes to 'Exit full screen'");
 
 toggleNoteModalMaximize(false);
 assert(!modalEl.classList.contains("is-maximized"), "toggleNoteModalMaximize(false) removes is-maximized class");
 assert(localStorage.getItem("bt_note_modal_max") === "0", "toggleNoteModalMaximize(false) persists '0' to localStorage");
-assert(maxBtnEl.title === "Maximize note", "Maximize button tooltip resets to 'Maximize note'");
+assert(maxBtnEl.title === "Full screen", "Maximize button tooltip resets to 'Full screen'");
 
 // 2. Verify formatNoteBody checklist table output and direct itemIdx parameter
 const sampleNoteText = "End of Month Action Items\n[ ] Transfer ₱ 15,000.00 to savings x2 — ₱15000.00\n[x] Keep ₱ 48,200.00 for remaining bills — ₱48200.00";
