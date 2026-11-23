@@ -1225,14 +1225,44 @@ tbody tr:hover td{background:var(--pri-l)}
 /* Editor wrap */
 .editor-wrap{position:relative}
 
-/* ─── Direct Interactive Checklist Builder ─── */
+/* ─── Unified Office-Style Document Editor & Direct Checklist Table ─── */
+.doc-unified-builder {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.doc-section-text {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1.5px solid var(--brd);
+  border-radius: 10px;
+  font-size: 13.5px;
+  line-height: 1.6;
+  font-family: inherit;
+  outline: none;
+  background: var(--bg);
+  color: var(--txt);
+  resize: none;
+  overflow: hidden;
+  box-sizing: border-box;
+  transition: border-color .15s, background .15s;
+}
+.doc-section-text:focus {
+  border-color: var(--pri);
+  background: var(--card);
+}
+.doc-lead {
+  min-height: 48px;
+}
+.doc-trail {
+  min-height: 72px;
+}
 .cl-builder-wrap {
   border: 1.5px solid var(--brd);
   border-radius: 12px;
   background: var(--card);
   overflow: hidden;
   box-shadow: 0 2px 10px rgba(0,0,0,.04);
-  margin-bottom: 2px;
 }
 .clb-header {
   display: flex;
@@ -1256,35 +1286,27 @@ tbody tr:hover td{background:var(--pri-l)}
 .clb-title svg {
   color: var(--pri);
 }
-.clb-modes {
-  display: flex;
-  gap: 4px;
-  background: var(--card);
-  padding: 2px;
-  border-radius: 8px;
-  border: 1px solid var(--brd);
-}
-.clb-view-btn {
+.clb-del-table-btn {
   background: transparent;
-  border: none;
-  font-size: 11px;
-  font-weight: 700;
-  color: var(--txt2);
-  padding: 4px 10px;
+  border: 1px solid var(--brd);
   border-radius: 6px;
+  color: var(--txt2);
+  font-size: 10.5px;
+  font-weight: 700;
+  padding: 3px 8px;
   cursor: pointer;
   font-family: inherit;
   transition: all .15s;
 }
-.clb-view-btn.active {
-  background: var(--pri);
-  color: var(--on-pri);
-  box-shadow: 0 1px 4px rgba(0,0,0,.15);
+.clb-del-table-btn:hover {
+  background: var(--dan-l);
+  border-color: var(--dan);
+  color: var(--dan);
 }
 .clb-table-wrap {
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
-  max-height: 280px;
+  max-height: 320px;
   overflow-y: auto;
 }
 .clb-table {
@@ -1468,13 +1490,6 @@ tbody tr:hover td{background:var(--pri-l)}
 .clb-grand-total strong {
   color: var(--txt);
   font-weight: 900;
-}
-.clb-text-mode-hint {
-  padding: 10px 14px;
-  font-size: 11.5px;
-  color: var(--txt2);
-  background: var(--bg);
-  line-height: 1.5;
 }
 @media(max-width:520px){
   .clb-table th:first-child,
@@ -12256,7 +12271,7 @@ function tbInsertLine(textareaId, prefix) {
 // Insert a heading (### ) on a new line
 function tbInsertHeading(textareaId) { tbInsertLine(textareaId, "### "); }
 
-// ─── DIRECT INTERACTIVE CHECKLIST BUILDER (₱ LIST) ──────────
+// ─── UNIFIED DIRECT DOCUMENT & CHECKLIST BUILDER (₱ LIST) ────
 // Cached currency-symbol regex
 let _symReCache = { sym:null, src:null };
 function _symRe() {
@@ -12275,17 +12290,28 @@ const _clbState = {};
 
 function _getClb(taId) {
   if (!_clbState[taId]) {
-    _clbState[taId] = { active: false, view: 'table', items: [], prefix: "", suffix: "" };
+    _clbState[taId] = { active: false, items: [], prefix: "", suffix: "" };
   }
   return _clbState[taId];
 }
 
 function _resetClBuilder(taId) {
-  _clbState[taId] = { active: false, view: 'table', items: [], prefix: "", suffix: "" };
+  _clbState[taId] = { active: false, items: [], prefix: "", suffix: "" };
   const wrap = document.getElementById("clBuilder_" + taId);
   const edWrap = document.getElementById("editorWrap_" + taId);
   if (wrap) { wrap.style.display = "none"; wrap.innerHTML = ""; }
   if (edWrap) edWrap.style.display = "";
+}
+
+function _removeClBuilder(taId) {
+  const ta = document.getElementById(taId);
+  if (!ta) return;
+  const text = _serializeClbToNote(taId);
+  ta.value = text;
+  autoGrowTextarea(ta);
+  _resetClBuilder(taId);
+  ta.focus();
+  toast("Converted table to text");
 }
 
 function _parseNoteIntoClb(text) {
@@ -12372,7 +12398,6 @@ function _activateClBuilder(taId) {
   if (!ta) return;
   const state = _getClb(taId);
   state.active = true;
-  state.view = 'table';
 
   const parsed = _parseNoteIntoClb(ta.value);
   state.prefix = parsed.prefix;
@@ -12392,6 +12417,11 @@ function _activateClBuilder(taId) {
   _syncClBuilderToTextarea(taId);
 
   setTimeout(() => {
+    const lead = document.getElementById("clbLead_" + taId);
+    if (lead) autoGrowTextarea(lead);
+    const trail = document.getElementById("clbTrail_" + taId);
+    if (trail) autoGrowTextarea(trail);
+
     const firstInput = document.querySelector("#clBuilder_" + taId + " .clb-input-desc");
     if (firstInput) firstInput.focus();
   }, 50);
@@ -12405,6 +12435,20 @@ function _syncClBuilderToTextarea(taId) {
   autoGrowTextarea(ta);
 }
 
+function _onClbLeadInput(taId, el) {
+  const state = _getClb(taId);
+  state.prefix = el.value;
+  autoGrowTextarea(el);
+  _syncClBuilderToTextarea(taId);
+}
+
+function _onClbTrailInput(taId, el) {
+  const state = _getClb(taId);
+  state.suffix = el.value;
+  autoGrowTextarea(el);
+  _syncClBuilderToTextarea(taId);
+}
+
 function _renderClBuilder(taId) {
   const wrap = document.getElementById("clBuilder_" + taId);
   const edWrap = document.getElementById("editorWrap_" + taId);
@@ -12413,16 +12457,13 @@ function _renderClBuilder(taId) {
   const state = _getClb(taId);
   if (!state.active) {
     wrap.style.display = "none";
+    wrap.innerHTML = "";
     if (edWrap) edWrap.style.display = "";
     return;
   }
 
   wrap.style.display = "block";
-  if (state.view === "text") {
-    if (edWrap) edWrap.style.display = "";
-  } else {
-    if (edWrap) edWrap.style.display = "none";
-  }
+  if (edWrap) edWrap.style.display = "none";
 
   const sym = getCurrency();
   let grandTotal = 0;
@@ -12447,7 +12488,7 @@ function _renderClBuilder(taId) {
           '<input type="text" class="clb-input clb-input-desc" placeholder="Item name (e.g. Milk)" value="' + escHtml(it.desc || '') + '" oninput="_clbUpdateRowField(\x27' + taId + '\x27, ' + idx + ', \x27desc\x27, this.value)" onkeydown="_clbOnRowKeydown(event, \x27' + taId + '\x27, ' + idx + ', \x27desc\x27)">' +
         '</td>' +
         '<td class="clb-td-qty">' +
-          '<input type="number" min="1" max="999" class="clb-input clb-input-qty" value="' + (it.qty || 1) + '" oninput="_clbUpdateRowField(\x27' + taId + '\x27, ' + idx + ', \x27qty\x27, this.value)" onkeydown="_clbOnRowKeydown(event, \x27' + taId + '\x27, ' + idx + ', \x27qty\x27)">' +
+          '<input type="text" inputmode="numeric" class="clb-input clb-input-qty" value="' + (it.qty || 1) + '" oninput="_clbUpdateRowField(\x27' + taId + '\x27, ' + idx + ', \x27qty\x27, this.value)" onkeydown="_clbOnRowKeydown(event, \x27' + taId + '\x27, ' + idx + ', \x27qty\x27)">' +
         '</td>' +
         '<td class="clb-td-price">' +
           '<div class="clb-price-input-wrap">' +
@@ -12467,66 +12508,53 @@ function _renderClBuilder(taId) {
   });
 
   wrap.innerHTML =
-    '<div class="clb-header">' +
-      '<div class="clb-title">' +
-        '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3 7-7"/><path d="M20 12v7a2 2 0 01-2 2H6a2 2 0 01-2-2V5a2 2 0 012-2h8"/><line x1="3.5" y1="10" x2="8.5" y2="10"/><line x1="3.5" y1="15" x2="8.5" y2="15"/></svg>' +
-        '<span>Interactive \u20B1 List</span>' +
+    '<div class="doc-unified-builder">' +
+      '<div class="doc-lead-wrap">' +
+        '<textarea id="clbLead_' + taId + '" class="doc-section-text doc-lead" placeholder="Write anything before the table (optional)..." oninput="_onClbLeadInput(\x27' + taId + '\x27, this)">' + escHtml(state.prefix || '') + '</textarea>' +
       '</div>' +
-      '<div class="clb-modes">' +
-        '<button type="button" class="clb-view-btn ' + (state.view === 'table' ? 'active' : '') + '" onclick="_setClBuilderView(\x27' + taId + '\x27, \x27table\x27)">Table UI</button>' +
-        '<button type="button" class="clb-view-btn ' + (state.view === 'text' ? 'active' : '') + '" onclick="_setClBuilderView(\x27' + taId + '\x27, \x27text\x27)">Markdown Text</button>' +
+      '<div class="cl-builder-wrap">' +
+        '<div class="clb-header">' +
+          '<div class="clb-title">' +
+            '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3 7-7"/><path d="M20 12v7a2 2 0 01-2 2H6a2 2 0 01-2-2V5a2 2 0 012-2h8"/><line x1="3.5" y1="10" x2="8.5" y2="10"/><line x1="3.5" y1="15" x2="8.5" y2="15"/></svg>' +
+            '<span>Interactive \u20B1 List</span>' +
+          '</div>' +
+          '<button type="button" class="clb-del-table-btn" onclick="_removeClBuilder(\x27' + taId + '\x27)" title="Remove table and convert to text">Remove Table</button>' +
+        '</div>' +
+        '<div class="clb-table-wrap">' +
+          '<table class="clb-table">' +
+            '<thead>' +
+              '<tr>' +
+                '<th style="width:26px;text-align:center">#</th>' +
+                '<th style="width:30px;text-align:center">\u2713</th>' +
+                '<th>Item Description</th>' +
+                '<th style="width:58px;text-align:center">Qty</th>' +
+                '<th style="width:96px;text-align:right">Price (' + sym + ')</th>' +
+                '<th style="width:78px;text-align:right">Total</th>' +
+                '<th style="width:30px;text-align:center"></th>' +
+              '</tr>' +
+            '</thead>' +
+            '<tbody>' + rowsHtml + '</tbody>' +
+          '</table>' +
+        '</div>' +
+        '<div class="clb-foot">' +
+          '<button type="button" class="clb-add-btn" onclick="_clbAddRow(\x27' + taId + '\x27)">' +
+            '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>' +
+            'Add item' +
+          '</button>' +
+          '<div class="clb-grand-total">Total: <strong>' + sym + ' ' + grandTotal.toFixed(2) + '</strong></div>' +
+        '</div>' +
       '</div>' +
-    '</div>' +
-    (state.view === 'table' ?
-      ('<div class="clb-table-wrap">' +
-        '<table class="clb-table">' +
-          '<thead>' +
-            '<tr>' +
-              '<th style="width:26px;text-align:center">#</th>' +
-              '<th style="width:30px;text-align:center">\u2713</th>' +
-              '<th>Item Description</th>' +
-              '<th style="width:58px;text-align:center">Qty</th>' +
-              '<th style="width:96px;text-align:right">Price (' + sym + ')</th>' +
-              '<th style="width:78px;text-align:right">Total</th>' +
-              '<th style="width:30px;text-align:center"></th>' +
-            '</tr>' +
-          '</thead>' +
-          '<tbody>' + rowsHtml + '</tbody>' +
-        '</table>' +
+      '<div class="doc-trail-wrap">' +
+        '<textarea id="clbTrail_' + taId + '" class="doc-section-text doc-trail" placeholder="Write additional notes or next steps after the table..." oninput="_onClbTrailInput(\x27' + taId + '\x27, this)">' + escHtml(state.suffix || '') + '</textarea>' +
       '</div>' +
-      '<div class="clb-foot">' +
-        '<button type="button" class="clb-add-btn" onclick="_clbAddRow(\x27' + taId + '\x27)">' +
-          '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>' +
-          'Add item' +
-        '</button>' +
-        '<div class="clb-grand-total">Total: <strong>' + sym + ' ' + grandTotal.toFixed(2) + '</strong></div>' +
-      '</div>')
-    :
-      ('<div class="clb-text-mode-hint">' +
-        'Editing in Markdown text mode below. Switch back to <b>Table UI</b> anytime to use the structured table.' +
-      '</div>')
-    );
-}
+    '</div>';
 
-function _setClBuilderView(taId, view) {
-  const state = _getClb(taId);
-  if (view === 'table' && state.view === 'text') {
-    const ta = document.getElementById(taId);
-    if (ta) {
-      const parsed = _parseNoteIntoClb(ta.value);
-      state.items = parsed.items.length > 0 ? parsed.items : state.items;
-      state.prefix = parsed.prefix;
-      state.suffix = parsed.suffix;
-    }
-  } else if (view === 'text' && state.view === 'table') {
-    _syncClBuilderToTextarea(taId);
-  }
-  state.view = view;
-  _renderClBuilder(taId);
-  if (view === 'text') {
-    const ta = document.getElementById(taId);
-    if (ta) ta.focus();
-  }
+  setTimeout(() => {
+    const lead = document.getElementById("clbLead_" + taId);
+    if (lead) autoGrowTextarea(lead);
+    const trail = document.getElementById("clbTrail_" + taId);
+    if (trail) autoGrowTextarea(trail);
+  }, 10);
 }
 
 function _clbAddRow(taId, desc = "", qty = 1, price = "", checked = false) {
@@ -12610,6 +12638,11 @@ function _clbOnRowKeydown(e, taId, idx, field) {
     e.preventDefault();
     const state = _getClb(taId);
     if (idx === state.items.length - 1) {
+      const curItem = state.items[idx];
+      if (!curItem || (!curItem.desc && !curItem.price)) {
+        const trailEl = document.getElementById("clbTrail_" + taId);
+        if (trailEl) { trailEl.focus(); return; }
+      }
       _clbAddRow(taId);
     } else {
       const nextRow = document.querySelector("#clBuilder_" + taId + " .clb-row[data-idx=\"" + (idx + 1) + "\"]");
@@ -12625,15 +12658,12 @@ function tbInsertPriceList(textareaId) {
   const tagSel = document.getElementById("noteTag");
   if (tagSel) { tagSel.value = "checklist"; markNoteTagManual(); }
   _activateClBuilder(textareaId);
-  toast("\u20B1 List ready \u2014 enter items, quantities, and prices");
+  toast("\u20B1 List table added \u2014 edit in-line or write notes below");
 }
 
 function _setInputMode(ta, mode) {
-  // "decimal" gives iOS the number-row keyboard (1-9 top row + dot).
-  // Only switch when we're actually in a price zone; otherwise keep "text".
-  ta.setAttribute("inputmode", mode === "decimal" ? "decimal" : "text");
+  // Main note textarea keeps standard interchangeable text keyboard
 }
-
 // ── Price auto-formatter ──────────────────────────────────────────────────────
 // Called from onNoteInput whenever the textarea value changes.
 // Finds the line the cursor is on; if it's a price line, rewrites the raw digits
@@ -12725,23 +12755,7 @@ function onTextareaClick(e) {
 }
 
 function _selectPlaceholderAtCursor(ta) {
-  const pos = ta.selectionStart;
-  if (pos !== ta.selectionEnd) return; // user already has a selection, leave it alone
-  const { line, lineStart } = _currentLine(ta, pos);
-  const re = _symRe();
-  const m = line.match(re);
-  if (!m) {
-    // Not on a price line — restore text keyboard
-    _setInputMode(ta, "text");
-    return;
-  }
-  const { itemStart, itemEnd, priceStart, priceEnd } = _checklistRanges(m, lineStart);
-  if (pos >= priceStart && pos <= priceEnd) {
-    // Price zone — switch to decimal keyboard
-    _setInputMode(ta, "decimal");
-  } else {
-    _setInputMode(ta, "text");
-  }
+  // Keep standard interchangeable keyboard on all devices
 }
 
 function _currentLine(ta, pos) {
@@ -12860,7 +12874,6 @@ function _tabToNextPlaceholder(ta, dir) {
   if (target) {
     ta.focus();
     ta.setSelectionRange(target.start, target.end);
-    _setInputMode(ta, target.kind === "price" ? "decimal" : "text");
     return true;
   }
   return false;

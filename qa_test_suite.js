@@ -1278,16 +1278,25 @@ assert(clbState.items[3].checked === true, "_clbToggleRowCheck sets checked to t
 _clbRemoveRow('noteInput', 1);
 assert(clbState.items.length === 3, "_clbRemoveRow removed row at index 1");
 
-// View toggle (table vs text)
-_setClBuilderView('noteInput', 'text');
-assert(clbState.view === 'text', "_setClBuilderView switches to text mode");
-_setClBuilderView('noteInput', 'table');
-assert(clbState.view === 'table', "_setClBuilderView switches back to table mode");
+// Lead & Trail text manipulation in unified document flow
+const mockLead = makeMockElement("mockLead");
+mockLead.value = "Weekend Shopping List:";
+_onClbLeadInput('noteInput', mockLead);
+assert(clbState.prefix === "Weekend Shopping List:", "_onClbLeadInput updates lead prefix");
+
+const mockTrail = makeMockElement("mockTrail");
+mockTrail.value = "Bring eco bags and keep the receipt.";
+_onClbTrailInput('noteInput', mockTrail);
+assert(clbState.suffix === "Bring eco bags and keep the receipt.", "_onClbTrailInput updates trailing suffix");
 
 // Test tbInsertPriceList
 tbInsertPriceList('noteInput');
 assert(document.getElementById('noteTag').value === 'checklist', "tbInsertPriceList auto-selects 'checklist' tag");
 assert(_getClb('noteInput').active === true, "tbInsertPriceList activates direct builder");
+
+// Test _removeClBuilder
+_removeClBuilder('noteInput');
+assert(_getClb('noteInput').active === false, "_removeClBuilder deactivates builder and converts to plain text");
 
 // Reset builder
 _resetClBuilder('noteInput');
