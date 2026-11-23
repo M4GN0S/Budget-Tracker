@@ -4228,16 +4228,16 @@ footer .footer-links a:hover{color:var(--pri-d)}
           ₱ List
         </button>
       </div>
+      <!-- Tip bar (Fixed top header) -->
+      <div style="font-size:11px;color:var(--txt2);padding:4px 10px;background:rgba(0,0,0,.03);border:1px solid var(--brd);border-radius:8px;line-height:1.3;flex-shrink:0">Tip: Tap <b>₱ List</b> to insert an interactive table with quantities and prices.</div>
       <!-- Center Scrollable Text & Document Area -->
-      <div class="compose-editor-scroll">
+      <div class="compose-editor-scroll" style="padding-bottom:24px">
         <!-- Direct Interactive Checklist Builder container -->
         <div id="clBuilder_noteInput" class="cl-builder-wrap" style="display:none"></div>
         <!-- Textarea -->
         <div class="editor-wrap" id="editorWrap_noteInput" style="flex:1;display:flex;flex-direction:column">
           <textarea id="noteInput" onfocus="_setLastDocFocus('noteInput',this)" onclick="onTextareaClick(event);_setLastDocFocus('noteInput',this)" oninput="onNoteInput(this)" onblur="onNoteBlur(this)" onkeydown="onTextareaKeydown(event,'noteInput')" onkeyup="onTextareaKeyup(event,'noteInput')" placeholder="Write your note… tap a toolbar button to format, or just type naturally." inputmode="text" style="padding:10px 14px;border:1.5px solid var(--brd);border-radius:10px;font-size:13.5px;line-height:1.6;font-family:inherit;outline:none;background:var(--bg);color:var(--txt);resize:none;min-height:160px;width:100%;box-sizing:border-box;flex:1"></textarea>
         </div>
-        <!-- Tip bar -->
-        <p style="font-size:11px;color:var(--txt2);margin:0;padding:5px 10px;background:var(--bg);border:1.5px solid var(--brd);border-radius:10px;line-height:1.4;flex-shrink:0">Tip: <b>₱ List</b> creates an interactive priced list with quantities — check items to auto-add to Expenses.</p>
         <!-- Mood nudge -->
         <div class="compose-mood-nudge" id="composeMoodNudge" style="display:none"></div>
         <div class="note-dup-warn" id="noteDupWarn" style="display:none"></div>
@@ -12236,9 +12236,14 @@ let _suggestDebounce = null;
 function autoGrowTextarea(el) {
   if (!el) return;
   el.style.height = "auto";
-  const max = (typeof getComputedStyle !== 'undefined' ? parseInt(getComputedStyle(el).maxHeight, 10) : 420) || 99999;
-  el.style.height = Math.min(el.scrollHeight || 100, max) + "px";
-  el.style.overflowY = (el.scrollHeight || 0) > max ? "auto" : "hidden";
+  if (el.classList && (el.classList.contains("doc-canvas-lead") || el.classList.contains("doc-canvas-trail"))) {
+    el.style.height = Math.max(el.scrollHeight || 0, el.classList.contains("doc-canvas-trail") ? 48 : 28) + "px";
+    el.style.overflowY = "hidden";
+  } else {
+    const max = (typeof getComputedStyle !== 'undefined' ? parseInt(getComputedStyle(el).maxHeight, 10) : 420) || 99999;
+    el.style.height = Math.min(el.scrollHeight || 100, max) + "px";
+    el.style.overflowY = (el.scrollHeight || 0) > max ? "auto" : "hidden";
+  }
 }
 
 function onNoteInput(el) {
@@ -12323,11 +12328,6 @@ function tbWrap(textareaId, before, after, placeholder) {
 // Insert a new line with the given prefix (bullet, checkbox, numbered).
 // If cursor is in the middle of a line, moves to a new line first.
 function tbInsertLine(textareaId, prefix) {
-  const state = _clbState[textareaId];
-  if (state && state.active && prefix === "[ ] ") {
-    _clbAddRow(textareaId);
-    return;
-  }
   const ta = _tbEl(textareaId); if (!ta) return;
   ta.focus();
   const start = ta.selectionStart != null ? ta.selectionStart : (ta.value ? ta.value.length : 0);
@@ -12335,14 +12335,20 @@ function tbInsertLine(textareaId, prefix) {
   let before  = val.substring(0, start);
   const after = val.substring(start);
 
-  // Smart numbered list: detect "N. " prefix and auto-increment
+  // Smart numbered list: detect previous numbered list items and auto-increment
   let actualPrefix = prefix;
   if (/^\d+\.\s/.test(prefix)) {
-    const prevLines  = before.split("\n");
-    const prevLine   = prevLines[prevLines.length - 1] || "";
-    const prevNumM   = prevLine.match(/^(\d+)\./);
-    const nextNum    = prevNumM ? parseInt(prevNumM[1]) + 1 : 1;
-    actualPrefix = nextNum + ". ";
+    const prevLines = before.split("\n");
+    let maxNum = 0;
+    for (let li = prevLines.length - 1; li >= 0; li--) {
+      const pl = prevLines[li].trim();
+      if (!pl) break; // empty line separates list blocks
+      const pnM = pl.match(/^(\d+)\./);
+      if (pnM) {
+        maxNum = Math.max(maxNum, parseInt(pnM[1], 10));
+      }
+    }
+    actualPrefix = (maxNum > 0 ? (maxNum + 1) : 1) + ". ";
   }
 
   if (before.length === 0 || before.endsWith("\n")) {
@@ -12355,12 +12361,13 @@ function tbInsertLine(textareaId, prefix) {
   if (typeof ta.setSelectionRange === "function") {
     ta.setSelectionRange(pos, pos);
   }
+  autoGrowTextarea(ta);
   ta.dispatchEvent(new Event("input", { bubbles: true }));
-  if (state && state.active) {
+  if (_clbState[textareaId] && _clbState[textareaId].active) {
     if (ta.id === "clbLead_" + textareaId) {
-      state.prefix = ta.value;
+      _clbState[textareaId].prefix = ta.value;
     } else if (ta.id === "clbTrail_" + textareaId) {
-      state.suffix = ta.value;
+      _clbState[textareaId].suffix = ta.value;
     }
     _syncClBuilderToTextarea(textareaId);
   }
@@ -12606,7 +12613,7 @@ function _renderClBuilder(taId) {
   });
 
   wrap.innerHTML =
-    '<textarea id="clbLead_' + taId + '" class="doc-canvas-lead" placeholder="Write anything before the table (intro, context, notes)..." onfocus="_setLastDocFocus(\x27' + taId + '\x27, this)" onclick="_setLastDocFocus(\x27' + taId + '\x27, this)" oninput="_onClbLeadInput(\x27' + taId + '\x27, this)">' + escHtml(state.prefix || '') + '</textarea>' +
+    '<textarea id="clbLead_' + taId + '" class="doc-canvas-lead" placeholder="Write anything before the table (intro, context, notes)..." onfocus="_setLastDocFocus(\x27' + taId + '\x27, this)" onclick="_setLastDocFocus(\x27' + taId + '\x27, this)" oninput="_onClbLeadInput(\x27' + taId + '\x27, this)" onkeydown="onTextareaKeydown(event, \x27' + taId + '\x27)">' + escHtml(state.prefix || '') + '</textarea>' +
     '<div class="doc-table-block">' +
       '<div class="doc-table-scroll">' +
         '<table class="clb-table">' +
@@ -12635,7 +12642,7 @@ function _renderClBuilder(taId) {
         '<div class="doc-table-grand-total">Total: <strong>' + sym + ' ' + grandTotal.toFixed(2) + '</strong></div>' +
       '</div>' +
     '</div>' +
-    '<textarea id="clbTrail_' + taId + '" class="doc-canvas-trail" placeholder="Write additional notes or next steps after the table..." onfocus="_setLastDocFocus(\x27' + taId + '\x27, this)" onclick="_setLastDocFocus(\x27' + taId + '\x27, this)" oninput="_onClbTrailInput(\x27' + taId + '\x27, this)">' + escHtml(state.suffix || '') + '</textarea>';
+    '<textarea id="clbTrail_' + taId + '" class="doc-canvas-trail" placeholder="Write additional notes or next steps after the table..." onfocus="_setLastDocFocus(\x27' + taId + '\x27, this)" onclick="_setLastDocFocus(\x27' + taId + '\x27, this)" oninput="_onClbTrailInput(\x27' + taId + '\x27, this)" onkeydown="onTextareaKeydown(event, \x27' + taId + '\x27)">' + escHtml(state.suffix || '') + '</textarea>';
 
   setTimeout(() => {
     const lead = document.getElementById("clbLead_" + taId);
@@ -12883,46 +12890,83 @@ function onTextareaKeydown(e, textareaId) {
     const lines2  = before2.split("\n");
     const curLn   = lines2[lines2.length - 1] || "";
 
-    // Auto-continue numbered list
+    // Auto-continue numbered list (1. item)
     const numM2 = curLn.match(/^(\d+)\.\s(.*)$/);
     if (numM2) {
       e.preventDefault();
       if (numM2[2].trim() === "") {
-        // Empty line → exit list
+        // Empty item line → exit list cleanly
         const ls = curPos - curLn.length;
-        ta.value = ta.value.substring(0, ls) + "\n" + ta.value.substring(curPos);
-        ta.setSelectionRange(ls + 1, ls + 1);
+        ta.value = ta.value.substring(0, ls) + ta.value.substring(curPos);
+        ta.setSelectionRange(ls, ls);
       } else {
-        const ins = "\n" + (parseInt(numM2[1]) + 1) + ". ";
+        const nextNum = parseInt(numM2[1], 10) + 1;
+        const ins = "\n" + nextNum + ". ";
         ta.value  = ta.value.substring(0, curPos) + ins + ta.value.substring(curPos);
         ta.setSelectionRange(curPos + ins.length, curPos + ins.length);
       }
+      autoGrowTextarea(ta);
       ta.dispatchEvent(new Event("input", { bubbles: true }));
+      if (_clbState[textareaId] && _clbState[textareaId].active) {
+        if (ta.id === "clbLead_" + textareaId) {
+          _clbState[textareaId].prefix = ta.value;
+        } else if (ta.id === "clbTrail_" + textareaId) {
+          _clbState[textareaId].suffix = ta.value;
+        }
+        _syncClBuilderToTextarea(textareaId);
+      }
       return;
     }
 
-    // Auto-continue bullet list (- item)
-    const bulletM2 = curLn.match(/^([-•])\s(.*)$/);
+    // Auto-continue bullet list (- item, * item, • item)
+    const bulletM2 = curLn.match(/^([-•*])\s(.*)$/);
     if (bulletM2) {
       e.preventDefault();
       if (bulletM2[2].trim() === "") {
         const ls = curPos - curLn.length;
-        ta.value = ta.value.substring(0, ls) + "\n" + ta.value.substring(curPos);
-        ta.setSelectionRange(ls + 1, ls + 1);
+        ta.value = ta.value.substring(0, ls) + ta.value.substring(curPos);
+        ta.setSelectionRange(ls, ls);
       } else {
         const ins = "\n" + bulletM2[1] + " ";
         ta.value  = ta.value.substring(0, curPos) + ins + ta.value.substring(curPos);
         ta.setSelectionRange(curPos + ins.length, curPos + ins.length);
       }
+      autoGrowTextarea(ta);
       ta.dispatchEvent(new Event("input", { bubbles: true }));
+      if (_clbState[textareaId] && _clbState[textareaId].active) {
+        if (ta.id === "clbLead_" + textareaId) {
+          _clbState[textareaId].prefix = ta.value;
+        } else if (ta.id === "clbTrail_" + textareaId) {
+          _clbState[textareaId].suffix = ta.value;
+        }
+        _syncClBuilderToTextarea(textareaId);
+      }
       return;
     }
 
-    // Markdown checklist Enter
-    const { line } = _currentLine(ta, ta.selectionStart);
-    if (_symRe().test(line) || _CHECKLIST_RE.test(line)) {
+    // Auto-continue markdown checklist item ([ ] item)
+    const checkM2 = curLn.match(/^(\[[ xX]\])\s(.*)$/);
+    if (checkM2) {
       e.preventDefault();
-      tbInsertLine(textareaId, "[ ] ");
+      if (checkM2[2].trim() === "") {
+        const ls = curPos - curLn.length;
+        ta.value = ta.value.substring(0, ls) + ta.value.substring(curPos);
+        ta.setSelectionRange(ls, ls);
+      } else {
+        const ins = "\n[ ] ";
+        ta.value  = ta.value.substring(0, curPos) + ins + ta.value.substring(curPos);
+        ta.setSelectionRange(curPos + ins.length, curPos + ins.length);
+      }
+      autoGrowTextarea(ta);
+      ta.dispatchEvent(new Event("input", { bubbles: true }));
+      if (_clbState[textareaId] && _clbState[textareaId].active) {
+        if (ta.id === "clbLead_" + textareaId) {
+          _clbState[textareaId].prefix = ta.value;
+        } else if (ta.id === "clbTrail_" + textareaId) {
+          _clbState[textareaId].suffix = ta.value;
+        }
+        _syncClBuilderToTextarea(textareaId);
+      }
       return;
     }
   }

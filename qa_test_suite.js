@@ -1318,10 +1318,14 @@ tbInsertPriceList('noteInput');
 assert(document.getElementById('noteTag').value === 'checklist', "tbInsertPriceList auto-selects 'checklist' tag");
 assert(_getClb('noteInput').active === true, "tbInsertPriceList activates direct builder");
 
-// Test Checkbox toolbar button when builder active -> adds row
+// Test _clbAddRow directly adds item row
 const rowCountBefore = _getClb('noteInput').items.length;
+_clbAddRow('noteInput', 'Oranges', 2, '60.00', false);
+assert(_getClb('noteInput').items.length === rowCountBefore + 1, "_clbAddRow adds row to active table builder");
+
+// Test tbInsertLine with [ ] inserts markdown checkbox into trail notes without hijacking table
 tbInsertLine('noteInput', '[ ] ');
-assert(_getClb('noteInput').items.length === rowCountBefore + 1, "tbInsertLine with [ ] adds row to active table builder");
+assert(_getClb('noteInput').suffix.includes('[ ] '), "tbInsertLine with [ ] inserts checkbox prefix at cursor in document notes");
 
 // Test _removeClBuilder
 _removeClBuilder('noteInput');
