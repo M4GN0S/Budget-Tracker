@@ -1338,6 +1338,53 @@ assert(_getClb('noteInput').active === false, "_resetClBuilder deactivates build
 // Verify .compose-editor-scroll container exists in DOM
 assert(document.querySelector('.compose-editor-scroll') !== null, "compose-editor-scroll internal text scroll container exists in index.html");
 
+
+// ─── TEST SUITE 22: WYSIWYG Rich Document & Multi-Table Insertion Engine ───
+console.log("\n─── TEST SUITE 22: WYSIWYG Rich Document & Multi-Table Insertion Engine ───");
+
+// 1. Verify CSS styles for WYSIWYG editor and multi-table blocks in index.html
+assert(indexHtml.includes('.doc-wysiwyg-editor'), "index.html styles .doc-wysiwyg-editor rich contenteditable canvas");
+assert(indexHtml.includes('.doc-table-block'), "index.html styles .doc-table-block interactive table container");
+assert(indexHtml.includes('.doc-table-foot'), "index.html styles .doc-table-foot with action buttons and grand total");
+assert(indexHtml.includes('.doc-add-row-btn'), "index.html styles .doc-add-row-btn for adding rows inline");
+assert(indexHtml.includes('.doc-remove-table-btn'), "index.html styles .doc-remove-table-btn for table deletion");
+
+// 2. Test _createTableBlockHtml component generation
+const sampleTableHtml = _createTableBlockHtml("test_tbl_1", [
+  { desc: "Cement Bags", qty: 5, price: "250.00", checked: false },
+  { desc: "Sand (Cubic)", qty: 1, price: "800.00", checked: true }
+]);
+assert(sampleTableHtml.includes('class="doc-table-block"'), "_createTableBlockHtml generates .doc-table-block wrapper");
+assert(sampleTableHtml.includes('data-table-id="test_tbl_1"'), "_createTableBlockHtml sets data-table-id attribute");
+assert(sampleTableHtml.includes('Cement Bags'), "_createTableBlockHtml renders item description");
+assert(sampleTableHtml.includes('250.00'), "_createTableBlockHtml renders item unit price");
+assert(sampleTableHtml.includes('is-checked'), "_createTableBlockHtml marks checked rows with is-checked class");
+assert(sampleTableHtml.includes('Total:'), "_createTableBlockHtml renders grand total calculation");
+
+// 3. Test _loadTextToDoc parsing multiple tables and text sections
+const multiDocEl = makeMockElement("mockDocCanvas");
+const multiTableMarkdown = 
+  "### Hardware Supplies\n" +
+  "[ ] Cement Bags x5 — ₱ 250.00\n" +
+  "[x] Sand (Cubic) — ₱ 800.00\n\n" +
+  "### Groceries & Food\n" +
+  "[ ] Fresh Milk x2 — ₱ 85.00\n" +
+  "[ ] Eggs 1 Dozen — ₱ 120.00\n\n" +
+  "Remember to ask for official receipts!";
+
+_loadTextToDoc(multiDocEl, multiTableMarkdown);
+assert(multiDocEl.innerHTML.includes('doc-table-block'), "_loadTextToDoc generates interactive table blocks");
+assert(multiDocEl.innerHTML.includes('Hardware Supplies'), "_loadTextToDoc renders first heading");
+assert(multiDocEl.innerHTML.includes('Groceries &amp; Food') || multiDocEl.innerHTML.includes('Groceries'), "_loadTextToDoc renders second heading (HTML-escaped)");
+assert(multiDocEl.innerHTML.includes('Cement Bags'), "_loadTextToDoc parses Table 1 items");
+assert(multiDocEl.innerHTML.includes('Fresh Milk'), "_loadTextToDoc parses Table 2 items");
+assert(multiDocEl.innerHTML.includes('Remember to ask for official receipts!'), "_loadTextToDoc preserves trailing paragraph");
+
+// 4. Test _inlineMarkdownToHtml formatting helper
+const formattedHtml = _inlineMarkdownToHtml("This is **bold text** and *italic note*.");
+assert(formattedHtml.includes('<strong>bold text</strong>'), "_inlineMarkdownToHtml converts **bold** to <strong>");
+assert(formattedHtml.includes('<em>italic note</em>'), "_inlineMarkdownToHtml converts *italic* to <em>");
+
 // ─── SUMMARY ────────────────────────────────────────────────
 console.log("\n=================================================");
 console.log(`  QA TEST RUN COMPLETE: ${passed} PASSED, ${failed} FAILED`);

@@ -12293,7 +12293,8 @@ function onNoteBlur(el) {
   autoGrowTextarea(el);
 }
 
-// ─── TOOLBAR HELPERS (insert-at-cursor, wrap, etc.) ───────
+// ─── WYSIWYG RICH DOCUMENT & INTERACTIVE TABLES ENGINE ───────
+let _docTableCounter = 0;
 let _lastFocusedDocEl = {};
 
 function _setLastDocFocus(taId, el) {
@@ -12302,65 +12303,104 @@ function _setLastDocFocus(taId, el) {
 
 function _tbEl(id) {
   if (typeof id !== "string") return id;
-  const state = _clbState[id];
-  if (state && state.active) {
-    const last = _lastFocusedDocEl[id];
-    if (last && typeof document !== "undefined" && document.body && document.body.contains(last)) {
-      return last;
-    }
-    const trail = document.getElementById("clbTrail_" + id);
-    if (trail) return trail;
-    const lead = document.getElementById("clbLead_" + id);
-    if (lead) return lead;
-  }
+  const docEl = document.getElementById(id === "noteEditText" ? "noteEditTextDoc" : "noteInputDoc");
+  if (docEl && docEl.offsetParent !== null) return docEl;
   return document.getElementById(id);
 }
 
-// Wrap the current selection with before/after tokens (bold/italic). If nothing
-// selected, inserts sample text so the user has something to type over.
+// ─── WYSIWYG FORMATTING COMMANDS (Real visual styling) ───────
 function tbWrap(textareaId, before, after, placeholder) {
-  const ta = _tbEl(textareaId); if (!ta) return;
-  ta.focus();
-  const start = ta.selectionStart != null ? ta.selectionStart : (ta.value ? ta.value.length : 0);
-  const end   = ta.selectionEnd != null ? ta.selectionEnd : start;
-  const val   = ta.value || "";
-  const sel   = val.substring(start, end);
-  const insert = before + (sel || (placeholder || "text")) + after;
-  ta.value = val.substring(0, start) + insert + val.substring(end);
-  const newStart = start + before.length;
-  const newEnd = newStart + (sel || (placeholder || "text")).length;
-  if (typeof ta.setSelectionRange === "function") {
-    ta.setSelectionRange(newStart, newEnd);
-  }
-  ta.dispatchEvent(new Event("input", { bubbles: true }));
-  if (_clbState[textareaId] && _clbState[textareaId].active) {
-    if (ta.id === "clbLead_" + textareaId) {
-      _clbState[textareaId].prefix = ta.value;
-    } else if (ta.id === "clbTrail_" + textareaId) {
-      _clbState[textareaId].suffix = ta.value;
+  const docEl = document.getElementById(textareaId === "noteEditText" ? "noteEditTextDoc" : "noteInputDoc");
+  if (docEl && docEl.offsetParent !== null && typeof document !== "undefined" && typeof document.execCommand === "function") {
+    docEl.focus();
+    if (before === "**") {
+      document.execCommand("bold", false, null);
+    } else if (before === "*") {
+      document.execCommand("italic", false, null);
     }
-    _syncClBuilderToTextarea(textareaId);
+    _syncDocToTextarea(docEl);
+    return;
+  }
+  const ta = document.getElementById(textareaId);
+  if (!ta) return;
+  ta.focus();
+  const start = ta.selectionStart || 0, end = ta.selectionEnd || start;
+  const val = ta.value || "";
+  const sel = val.substring(start, end);
+  const ins = before + (sel || (placeholder || "text")) + after;
+  ta.value = val.substring(0, start) + ins + val.substring(end);
+  if (typeof ta.setSelectionRange === "function") {
+    ta.setSelectionRange(start + before.length, start + before.length + (sel || placeholder || "text").length);
+  }
+  autoGrowTextarea(ta);
+  if (typeof ta.dispatchEvent === "function") {
+    ta.dispatchEvent(new Event("input", { bubbles: true }));
   }
 }
 
-// Insert a new line with the given prefix (bullet, checkbox, numbered).
-// If cursor is in the middle of a line, moves to a new line first.
+function tbInsertHeading(textareaId) {
+  const docEl = document.getElementById(textareaId === "noteEditText" ? "noteEditTextDoc" : "noteInputDoc");
+  if (docEl && docEl.offsetParent !== null && typeof document !== "undefined" && typeof document.execCommand === "function") {
+    docEl.focus();
+    const sel = typeof window !== "undefined" && window.getSelection ? window.getSelection() : null;
+    const node = sel ? sel.anchorNode : null;
+    const parentHeading = node ? ((node.nodeType === 1 ? node : node.parentElement)?.closest("h3, .doc-h3")) : null;
+    if (parentHeading) {
+      document.execCommand("formatBlock", false, "<p>");
+    } else {
+      document.execCommand("formatBlock", false, "<h3>");
+    }
+    _syncDocToTextarea(docEl);
+    return;
+  }
+  tbInsertLine(textareaId, "### ");
+}
+
 function tbInsertLine(textareaId, prefix) {
-  const ta = _tbEl(textareaId); if (!ta) return;
+  const docEl = document.getElementById(textareaId === "noteEditText" ? "noteEditTextDoc" : "noteInputDoc");
+  if (docEl && docEl.offsetParent !== null && typeof document !== "undefined" && typeof document.execCommand === "function") {
+    docEl.focus();
+    if (prefix === "- " || prefix === "* ") {
+      document.execCommand("insertUnorderedList", false, null);
+      _syncDocToTextarea(docEl);
+      return;
+    } else if (/^\d+\.\s/.test(prefix)) {
+      document.execCommand("insertOrderedList", false, null);
+      _syncDocToTextarea(docEl);
+      return;
+    } else if (prefix === "[ ] ") {
+      const chkHtml = '<p><label class="doc-inline-check"><input type="checkbox"> <span>To-do item</span></label></p>';
+      _insertHtmlAtCursor(docEl, chkHtml);
+      _syncDocToTextarea(docEl);
+      return;
+    }
+  }
+
+  const clb = _getClb(textareaId);
+  if (clb && clb.active) {
+    if (clb.suffix) {
+      clb.suffix += "\n" + prefix;
+    } else {
+      clb.suffix = prefix;
+    }
+    return;
+  }
+
+  const ta = document.getElementById(textareaId);
+  if (!ta) return;
   ta.focus();
   const start = ta.selectionStart != null ? ta.selectionStart : (ta.value ? ta.value.length : 0);
   const val   = ta.value || "";
   let before  = val.substring(0, start);
   const after = val.substring(start);
 
-  // Smart numbered list: detect previous numbered list items and auto-increment
   let actualPrefix = prefix;
   if (/^\d+\.\s/.test(prefix)) {
     const prevLines = before.split("\n");
     let maxNum = 0;
     for (let li = prevLines.length - 1; li >= 0; li--) {
       const pl = prevLines[li].trim();
-      if (!pl) break; // empty line separates list blocks
+      if (!pl) break;
       const pnM = pl.match(/^(\d+)\./);
       if (pnM) {
         maxNum = Math.max(maxNum, parseInt(pnM[1], 10));
@@ -12380,259 +12420,106 @@ function tbInsertLine(textareaId, prefix) {
     ta.setSelectionRange(pos, pos);
   }
   autoGrowTextarea(ta);
-  ta.dispatchEvent(new Event("input", { bubbles: true }));
-  if (_clbState[textareaId] && _clbState[textareaId].active) {
-    if (ta.id === "clbLead_" + textareaId) {
-      _clbState[textareaId].prefix = ta.value;
-    } else if (ta.id === "clbTrail_" + textareaId) {
-      _clbState[textareaId].suffix = ta.value;
-    }
-    _syncClBuilderToTextarea(textareaId);
+  if (typeof ta.dispatchEvent === "function") {
+    ta.dispatchEvent(new Event("input", { bubbles: true }));
   }
 }
 
-// Insert a heading (### ) on a new line
-function tbInsertHeading(textareaId) { tbInsertLine(textareaId, "### "); }
+function tbInsertPriceList(textareaId) {
+  const tagSel = document.getElementById("noteTag");
+  if (tagSel) { tagSel.value = "checklist"; markNoteTagManual(); }
 
-// ─── UNIFIED DIRECT DOCUMENT & CHECKLIST BUILDER (₱ LIST) ────
-// Cached currency-symbol regex
-let _symReCache = { sym:null, src:null };
-function _symRe() {
-  const sym = getCurrency();
-  if (_symReCache.sym === sym) return _symReCache.src;
-  const esc = sym.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-  _symReCache = {
-    sym,
-    src: new RegExp("^(\\s*\\[[ xX]\\]\\s*)(.+?)(\\s*[-–—:]+\\s*)?(?:" + esc + "\\s*|PHP\\s*)?(\\d{1,3}(?:,\\d{3})*(?:\\.\\d{1,2})?|\\d+(?:\\.\\d{1,2})?)?\\s*$", "i")
-  };
-  return _symReCache.src;
-}
-const _CHECKLIST_RE = /^\s*\[[ xX]\]\s+/;
-
-const _clbState = {};
-
-function _getClb(taId) {
-  if (!_clbState[taId]) {
-    _clbState[taId] = { active: false, items: [], prefix: "", suffix: "" };
-  }
-  return _clbState[taId];
-}
-
-function _resetClBuilder(taId) {
-  _clbState[taId] = { active: false, items: [], prefix: "", suffix: "" };
-  const wrap = document.getElementById("clBuilder_" + taId);
-  const edWrap = document.getElementById("editorWrap_" + taId);
-  if (wrap) { wrap.style.display = "none"; wrap.innerHTML = ""; }
-  if (edWrap) edWrap.style.display = "";
-}
-
-function _removeClBuilder(taId) {
-  const ta = document.getElementById(taId);
-  if (!ta) return;
-  const text = _serializeClbToNote(taId);
-  ta.value = text;
-  autoGrowTextarea(ta);
-  _resetClBuilder(taId);
-  ta.focus();
-  toast("Converted table to text");
-}
-
-function _parseNoteIntoClb(text) {
-  const lines = (text || "").split(/\r?\n/);
-  const items = [];
-  const prefixLines = [];
-  const suffixLines = [];
-  let foundFirstChecklist = false;
-
-  for (let i = 0; i < lines.length; i++) {
-    const raw = lines[i];
-    const checkM = raw.match(/^\s*\[([ xX])\]\s*(.*)$/);
-    if (checkM) {
-      foundFirstChecklist = true;
-      const checked = checkM[1].toLowerCase() === 'x';
-      const content = checkM[2] || "";
-      
-      let desc = content.trim();
-      let price = "";
-      const priceM = desc.match(/^(.*?)\s*[-–—:]+\s*(?:[^\d\s]+\s*)?(\d[\d,]*(?:\.\d{1,2})?)\s*$/);
-      if (priceM) {
-        desc = priceM[1].trim();
-        const pVal = priceM[2].replace(/,/g, "");
-        if (pVal !== "0" && pVal !== "0.00" && pVal !== "0.0") {
-          price = pVal;
-        }
-      }
-      
-      let qty = 1;
-      const qtyM = desc.match(/^(.*?)\s*[x×*](\d+)\s*$/i) || desc.match(/^(.*?)\s*\((\d+)\)\s*$/);
-      if (qtyM) {
-        desc = qtyM[1].trim();
-        qty = parseInt(qtyM[2]) || 1;
-      }
-
-      items.push({ desc, qty, price, checked });
-    } else {
-      if (!foundFirstChecklist) {
-        prefixLines.push(raw);
-      } else {
-        suffixLines.push(raw);
-      }
-    }
-  }
-
-  return {
-    items,
-    prefix: prefixLines.join("\n").replace(/\s+$/, ""),
-    suffix: suffixLines.join("\n").replace(/^\s+/, "")
-  };
-}
-
-function _serializeClbToNote(taId) {
-  const state = _getClb(taId);
-  const sym = getCurrency();
-  const lines = [];
-
-  if (state.prefix && state.prefix.trim()) {
-    lines.push(state.prefix.trim());
-    lines.push("");
-  }
-
-  state.items.forEach(it => {
-    const desc = (it.desc || "").trim();
-    if (!desc && !it.price) return;
-    const chk = it.checked ? "[x] " : "[ ] ";
-    const d = desc || "Item";
-    const qStr = (it.qty && it.qty > 1) ? (" x" + it.qty) : "";
-    const pVal = parseFloat((it.price || "").toString().replace(/,/g, ""));
-    const pStr = (!isNaN(pVal) && pVal > 0) ? (" \u2014 " + sym + " " + pVal.toFixed(2)) : "";
-    lines.push(chk + d + qStr + pStr);
-  });
-
-  if (state.suffix && state.suffix.trim()) {
-    lines.push("");
-    lines.push(state.suffix.trim());
-  }
-
-  return lines.join("\n");
-}
-
-function _activateClBuilder(taId) {
-  const ta = document.getElementById(taId);
-  if (!ta) return;
-  const state = _getClb(taId);
-  state.active = true;
-
-  const parsed = _parseNoteIntoClb(ta.value);
-  state.prefix = parsed.prefix;
-  state.suffix = parsed.suffix;
-
-  if (parsed.items.length > 0) {
-    state.items = parsed.items;
-  } else {
-    state.items = [
-      { desc: "", qty: 1, price: "", checked: false },
-      { desc: "", qty: 1, price: "", checked: false },
-      { desc: "", qty: 1, price: "", checked: false }
-    ];
-  }
-
-  _renderClBuilder(taId);
-  _syncClBuilderToTextarea(taId);
-
-  setTimeout(() => {
-    const lead = document.getElementById("clbLead_" + taId);
-    if (lead) autoGrowTextarea(lead);
-    const trail = document.getElementById("clbTrail_" + taId);
-    if (trail) autoGrowTextarea(trail);
-
-    const firstInput = document.querySelector("#clBuilder_" + taId + " .clb-input-desc");
-    if (firstInput) firstInput.focus();
-  }, 50);
-}
-
-function _syncClBuilderToTextarea(taId) {
-  const ta = document.getElementById(taId);
-  if (!ta) return;
-  const noteText = _serializeClbToNote(taId);
-  ta.value = noteText;
-  autoGrowTextarea(ta);
-}
-
-function _onClbLeadInput(taId, el) {
-  const state = _getClb(taId);
-  state.prefix = el.value;
-  autoGrowTextarea(el);
-  _syncClBuilderToTextarea(taId);
-}
-
-function _onClbTrailInput(taId, el) {
-  const state = _getClb(taId);
-  state.suffix = el.value;
-  autoGrowTextarea(el);
-  _syncClBuilderToTextarea(taId);
-}
-
-function _renderClBuilder(taId) {
-  const wrap = document.getElementById("clBuilder_" + taId);
-  const edWrap = document.getElementById("editorWrap_" + taId);
-  if (!wrap) return;
-
-  const state = _getClb(taId);
-  if (!state.active) {
-    wrap.style.display = "none";
-    wrap.innerHTML = "";
-    if (edWrap) edWrap.style.display = "";
+  const docEl = document.getElementById(textareaId === "noteEditText" ? "noteEditTextDoc" : "noteInputDoc");
+  if (docEl && docEl.offsetParent !== null && typeof window !== "undefined" && window.getSelection) {
+    _docTableCounter++;
+    const tableHtml = _createTableBlockHtml("tbl_" + Date.now() + "_" + _docTableCounter);
+    _insertHtmlAtCursor(docEl, tableHtml);
+    _syncDocToTextarea(docEl);
+    toast("\u20B1 List table inserted \u2014 edit items in-place or write notes around it");
     return;
   }
 
-  wrap.style.display = "block";
-  if (edWrap) edWrap.style.display = "none";
+  _activateClBuilder(textareaId);
+  toast("\u20B1 List table added \u2014 edit in-line or write notes below");
+}
 
+function _insertHtmlAtCursor(docEl, htmlString) {
+  if (!docEl) return;
+  docEl.focus();
+  const sel = typeof window !== "undefined" && window.getSelection ? window.getSelection() : null;
+  if (sel && sel.rangeCount > 0) {
+    const range = sel.getRangeAt(0);
+    if (docEl.contains(range.commonAncestorContainer)) {
+      range.deleteContents();
+      const temp = document.createElement("div");
+      temp.innerHTML = htmlString + "<p><br></p>";
+      const frag = document.createDocumentFragment();
+      let node;
+      while ((node = temp.firstChild)) {
+        frag.appendChild(node);
+      }
+      range.insertNode(frag);
+      const firstInp = docEl.querySelector(".doc-table-block:last-of-type .clb-input-desc");
+      if (firstInp) setTimeout(() => firstInp.focus(), 25);
+      return;
+    }
+  }
+  const temp = document.createElement("div");
+  temp.innerHTML = htmlString + "<p><br></p>";
+  while (temp.firstChild) {
+    docEl.appendChild(temp.firstChild);
+  }
+  const firstInp = docEl.querySelector(".doc-table-block:last-of-type .clb-input-desc");
+  if (firstInp) setTimeout(() => firstInp.focus(), 25);
+}
+
+// ─── INTERACTIVE TABLE COMPONENT GENERATOR & ACTIONS ─────────
+function _createTableBlockHtml(tableId, items = null) {
   const sym = getCurrency();
+  const defaultItems = items || [
+    { desc: "", qty: 1, price: "", checked: false },
+    { desc: "", qty: 1, price: "", checked: false },
+    { desc: "", qty: 1, price: "", checked: false }
+  ];
+
+  let rowsHtml = "";
   let grandTotal = 0;
-  state.items.forEach(it => {
+  defaultItems.forEach((it, idx) => {
     const p = parseFloat((it.price || "").toString().replace(/,/g, "")) || 0;
     const q = parseInt(it.qty) || 1;
     if (p > 0) grandTotal += p * q;
-  });
-
-  let rowsHtml = "";
-  state.items.forEach((it, idx) => {
-    const p = parseFloat((it.price || "").toString().replace(/,/g, "")) || 0;
-    const q = parseInt(it.qty) || 1;
     const lineTotal = p > 0 ? (sym + " " + (p * q).toFixed(2)) : "\u2014";
     rowsHtml +=
       '<tr class="clb-row ' + (it.checked ? 'is-checked' : '') + '" data-idx="' + idx + '">' +
         '<td class="clb-td-num">' + (idx + 1) + '</td>' +
         '<td class="clb-td-check">' +
-          '<input type="checkbox" ' + (it.checked ? 'checked' : '') + ' onchange="_clbToggleRowCheck(\x27' + taId + '\x27, ' + idx + ', this.checked)" title="Check item">' +
+          '<input type="checkbox" ' + (it.checked ? 'checked' : '') + ' onchange="_docTableToggleCheck(this)" title="Check item">' +
         '</td>' +
         '<td class="clb-td-desc">' +
-          '<input type="text" class="clb-input clb-input-desc" placeholder="Item name (e.g. Milk)" value="' + escHtml(it.desc || '') + '" onfocus="_setLastDocFocus(\x27' + taId + '\x27, this)" onclick="_setLastDocFocus(\x27' + taId + '\x27, this)" oninput="_clbUpdateRowField(\x27' + taId + '\x27, ' + idx + ', \x27desc\x27, this.value)" onkeydown="_clbOnRowKeydown(event, \x27' + taId + '\x27, ' + idx + ', \x27desc\x27)">' +
+          '<input type="text" class="clb-input clb-input-desc" placeholder="Item name (e.g. Milk)" value="' + escHtml(it.desc || '') + '" oninput="_docTableOnInput(this)" onkeydown="_docTableRowKeydown(event, this)">' +
         '</td>' +
         '<td class="clb-td-qty">' +
-          '<input type="text" inputmode="numeric" class="clb-input clb-input-qty" value="' + (it.qty || 1) + '" oninput="_clbUpdateRowField(\x27' + taId + '\x27, ' + idx + ', \x27qty\x27, this.value)" onkeydown="_clbOnRowKeydown(event, \x27' + taId + '\x27, ' + idx + ', \x27qty\x27)">' +
+          '<input type="text" inputmode="numeric" class="clb-input clb-input-qty" value="' + (it.qty || 1) + '" oninput="_docTableOnInput(this)" onkeydown="_docTableRowKeydown(event, this)">' +
         '</td>' +
         '<td class="clb-td-price">' +
           '<div class="clb-price-input-wrap">' +
             '<span class="clb-price-sym">' + sym + '</span>' +
-            '<input type="text" inputmode="decimal" class="clb-input clb-input-price" placeholder="0.00" value="' + (it.price || '') + '" oninput="_clbUpdateRowField(\x27' + taId + '\x27, ' + idx + ', \x27price\x27, this.value)" onkeydown="_clbOnRowKeydown(event, \x27' + taId + '\x27, ' + idx + ', \x27price\x27)">' +
+            '<input type="text" inputmode="decimal" class="clb-input clb-input-price" placeholder="0.00" value="' + (it.price || '') + '" oninput="_docTableOnInput(this)" onkeydown="_docTableRowKeydown(event, this)">' +
           '</div>' +
         '</td>' +
         '<td class="clb-td-total">' +
           '<span class="clb-row-total">' + lineTotal + '</span>' +
         '</td>' +
         '<td class="clb-td-del">' +
-          '<button type="button" class="clb-del-btn" onclick="_clbRemoveRow(\x27' + taId + '\x27, ' + idx + ')" title="Remove item">' +
+          '<button type="button" class="clb-del-btn" onclick="_docTableRemoveRow(this)" title="Remove item">' +
             '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>' +
           '</button>' +
         '</td>' +
       '</tr>';
   });
 
-  wrap.innerHTML =
-    '<textarea id="clbLead_' + taId + '" class="doc-canvas-lead" placeholder="Write anything before the table (intro, context, notes)..." onfocus="_setLastDocFocus(\x27' + taId + '\x27, this)" onclick="_setLastDocFocus(\x27' + taId + '\x27, this)" oninput="_onClbLeadInput(\x27' + taId + '\x27, this)" onkeydown="onTextareaKeydown(event, \x27' + taId + '\x27)">' + escHtml(state.prefix || '') + '</textarea>' +
-    '<div class="doc-table-block">' +
+  return (
+    '<div class="doc-table-block" contenteditable="false" data-table-id="' + tableId + '">' +
       '<div class="doc-table-scroll">' +
         '<table class="clb-table">' +
           '<thead>' +
@@ -12651,132 +12538,437 @@ function _renderClBuilder(taId) {
       '</div>' +
       '<div class="doc-table-foot">' +
         '<div class="doc-table-foot-actions">' +
-          '<button type="button" class="doc-add-row-btn" onclick="_clbAddRow(\x27' + taId + '\x27)">' +
+          '<button type="button" class="doc-add-row-btn" onclick="_docTableAddRow(this)">' +
             '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>' +
             'Add item' +
           '</button>' +
-          '<button type="button" class="doc-remove-table-btn" onclick="_removeClBuilder(\x27' + taId + '\x27)" title="Convert table back to plain text">Remove Table</button>' +
+          '<button type="button" class="doc-remove-table-btn" onclick="_docTableRemoveTable(this)" title="Remove table">Remove Table</button>' +
         '</div>' +
         '<div class="doc-table-grand-total">Total: <strong>' + sym + ' ' + grandTotal.toFixed(2) + '</strong></div>' +
       '</div>' +
-    '</div>' +
-    '<textarea id="clbTrail_' + taId + '" class="doc-canvas-trail" placeholder="Write additional notes or next steps after the table..." onfocus="_setLastDocFocus(\x27' + taId + '\x27, this)" onclick="_setLastDocFocus(\x27' + taId + '\x27, this)" oninput="_onClbTrailInput(\x27' + taId + '\x27, this)" onkeydown="onTextareaKeydown(event, \x27' + taId + '\x27)">' + escHtml(state.suffix || '') + '</textarea>';
-
-  setTimeout(() => {
-    const lead = document.getElementById("clbLead_" + taId);
-    if (lead) autoGrowTextarea(lead);
-    const trail = document.getElementById("clbTrail_" + taId);
-    if (trail) autoGrowTextarea(trail);
-  }, 10);
+    '</div>'
+  );
 }
 
+function _docTableUpdateTotals(tableBlock) {
+  if (!tableBlock) return;
+  const sym = getCurrency();
+  const rows = tableBlock.querySelectorAll(".clb-row");
+  let grandTotal = 0;
+  rows.forEach((row, idx) => {
+    const numCell = row.querySelector(".clb-td-num");
+    if (numCell) numCell.textContent = idx + 1;
+    row.setAttribute("data-idx", idx);
+    const qtyInp = row.querySelector(".clb-input-qty");
+    const priceInp = row.querySelector(".clb-input-price");
+    const totalCell = row.querySelector(".clb-row-total");
+
+    const q = Math.max(1, parseInt(qtyInp ? qtyInp.value : 1) || 1);
+    const p = parseFloat((priceInp ? priceInp.value : "").toString().replace(/,/g, "")) || 0;
+    if (p > 0) grandTotal += p * q;
+    if (totalCell) {
+      totalCell.textContent = p > 0 ? (sym + " " + (p * q).toFixed(2)) : "\u2014";
+    }
+  });
+  const gtEl = tableBlock.querySelector(".doc-table-grand-total strong");
+  if (gtEl) gtEl.textContent = sym + " " + grandTotal.toFixed(2);
+
+  const docEl = tableBlock.closest(".doc-wysiwyg-editor");
+  if (docEl) _syncDocToTextarea(docEl);
+}
+
+function _docTableOnInput(inputEl) {
+  const tableBlock = inputEl.closest(".doc-table-block");
+  _docTableUpdateTotals(tableBlock);
+}
+
+function _docTableToggleCheck(chkEl) {
+  const row = chkEl.closest(".clb-row");
+  if (row) row.classList.toggle("is-checked", !!chkEl.checked);
+  const docEl = chkEl.closest(".doc-wysiwyg-editor");
+  if (docEl) _syncDocToTextarea(docEl);
+}
+
+function _docTableAddRow(btnEl, desc = "", qty = 1, price = "", checked = false) {
+  const tableBlock = btnEl.closest(".doc-table-block");
+  if (!tableBlock) return;
+  const tbody = tableBlock.querySelector("tbody");
+  if (!tbody) return;
+  const sym = getCurrency();
+  const idx = tbody.children.length;
+  const p = parseFloat((price || "").toString().replace(/,/g, "")) || 0;
+  const lineTotal = p > 0 ? (sym + " " + (p * qty).toFixed(2)) : "\u2014";
+
+  const tr = document.createElement("tr");
+  tr.className = "clb-row" + (checked ? " is-checked" : "");
+  tr.setAttribute("data-idx", idx);
+  tr.innerHTML =
+    '<td class="clb-td-num">' + (idx + 1) + '</td>' +
+    '<td class="clb-td-check">' +
+      '<input type="checkbox" ' + (checked ? 'checked' : '') + ' onchange="_docTableToggleCheck(this)" title="Check item">' +
+    '</td>' +
+    '<td class="clb-td-desc">' +
+      '<input type="text" class="clb-input clb-input-desc" placeholder="Item name (e.g. Milk)" value="' + escHtml(desc) + '" oninput="_docTableOnInput(this)" onkeydown="_docTableRowKeydown(event, this)">' +
+    '</td>' +
+    '<td class="clb-td-qty">' +
+      '<input type="text" inputmode="numeric" class="clb-input clb-input-qty" value="' + qty + '" oninput="_docTableOnInput(this)" onkeydown="_docTableRowKeydown(event, this)">' +
+    '</td>' +
+    '<td class="clb-td-price">' +
+      '<div class="clb-price-input-wrap">' +
+        '<span class="clb-price-sym">' + sym + '</span>' +
+        '<input type="text" inputmode="decimal" class="clb-input clb-input-price" placeholder="0.00" value="' + price + '" oninput="_docTableOnInput(this)" onkeydown="_docTableRowKeydown(event, this)">' +
+      '</div>' +
+    '</td>' +
+    '<td class="clb-td-total">' +
+      '<span class="clb-row-total">' + lineTotal + '</span>' +
+    '</td>' +
+    '<td class="clb-td-del">' +
+      '<button type="button" class="clb-del-btn" onclick="_docTableRemoveRow(this)" title="Remove item">' +
+        '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>' +
+      '</button>' +
+    '</td>';
+
+  tbody.appendChild(tr);
+  _docTableUpdateTotals(tableBlock);
+  const descInp = tr.querySelector(".clb-input-desc");
+  if (descInp) descInp.focus();
+}
+
+function _docTableRemoveRow(btnEl) {
+  const row = btnEl.closest(".clb-row");
+  const tableBlock = btnEl.closest(".doc-table-block");
+  if (!row || !tableBlock) return;
+  const tbody = tableBlock.querySelector("tbody");
+  if (tbody.children.length <= 1) {
+    const descInp = row.querySelector(".clb-input-desc");
+    const priceInp = row.querySelector(".clb-input-price");
+    if (descInp) descInp.value = "";
+    if (priceInp) priceInp.value = "";
+  } else {
+    row.remove();
+  }
+  _docTableUpdateTotals(tableBlock);
+}
+
+function _docTableRemoveTable(btnEl) {
+  const tableBlock = btnEl.closest(".doc-table-block");
+  const docEl = tableBlock ? tableBlock.closest(".doc-wysiwyg-editor") : null;
+  if (tableBlock) {
+    tableBlock.remove();
+    if (docEl) _syncDocToTextarea(docEl);
+    toast("Table removed");
+  }
+}
+
+function _docTableRowKeydown(e, inputEl) {
+  if (e.key === "Enter") {
+    e.preventDefault();
+    const row = inputEl.closest(".clb-row");
+    const tableBlock = inputEl.closest(".doc-table-block");
+    if (!row || !tableBlock) return;
+    const tbody = tableBlock.querySelector("tbody");
+    const allRows = Array.from(tbody.children);
+    const idx = allRows.indexOf(row);
+    if (idx === allRows.length - 1) {
+      _docTableAddRow(inputEl);
+    } else {
+      const nextDesc = allRows[idx + 1].querySelector(".clb-input-desc");
+      if (nextDesc) nextDesc.focus();
+    }
+  }
+}
+
+// ─── SERIALIZE & LOAD WYSIWYG DOCUMENT <-> MARKDOWN ──────────
+function _syncDocToTextarea(docEl) {
+  if (!docEl) return;
+  const targetTaId = docEl.id === "noteEditTextDoc" ? "noteEditText" : "noteInput";
+  const ta = document.getElementById(targetTaId);
+  if (!ta) return;
+
+  const lines = [];
+  const sym = getCurrency();
+
+  function walk(node) {
+    if (!node) return "";
+    if (node.nodeType === 3) {
+      return node.nodeValue;
+    }
+    if (node.nodeType !== 1) return "";
+
+    const tag = (node.tagName || "").toLowerCase();
+
+    // Table Block
+    if (node.classList && node.classList.contains("doc-table-block")) {
+      const rows = node.querySelectorAll(".clb-row");
+      const tableLines = [];
+      rows.forEach(row => {
+        const desc = (row.querySelector(".clb-input-desc")?.value || "").trim();
+        const qty = parseInt(row.querySelector(".clb-input-qty")?.value || "1") || 1;
+        const price = (row.querySelector(".clb-input-price")?.value || "").trim();
+        const chk = row.querySelector(".clb-td-check input[type='checkbox']")?.checked ? "[x] " : "[ ] ";
+        if (!desc && !price) return;
+        const d = desc || "Item";
+        const qStr = qty > 1 ? (" x" + qty) : "";
+        const pVal = parseFloat(price.replace(/,/g, ""));
+        const pStr = (!isNaN(pVal) && pVal > 0) ? (" \u2014 " + sym + " " + pVal.toFixed(2)) : "";
+        tableLines.push(chk + d + qStr + pStr);
+      });
+      return tableLines.join("\n");
+    }
+
+    // Heading
+    if (tag === "h1" || tag === "h2" || tag === "h3" || (node.classList && node.classList.contains("doc-h3"))) {
+      return "### " + (node.textContent || "").trim();
+    }
+
+    // Bold
+    if (tag === "strong" || tag === "b") {
+      const inner = Array.from(node.childNodes).map(walk).join("").trim();
+      return inner ? ("**" + inner + "**") : "";
+    }
+
+    // Italic
+    if (tag === "em" || tag === "i") {
+      const inner = Array.from(node.childNodes).map(walk).join("").trim();
+      return inner ? ("*" + inner + "*") : "";
+    }
+
+    // Lists
+    if (tag === "ul") {
+      const items = Array.from(node.children).filter(c => (c.tagName || "").toLowerCase() === "li");
+      return items.map(li => "- " + Array.from(li.childNodes).map(walk).join("").trim()).join("\n");
+    }
+    if (tag === "ol") {
+      const items = Array.from(node.children).filter(c => (c.tagName || "").toLowerCase() === "li");
+      return items.map((li, idx) => (idx + 1) + ". " + Array.from(li.childNodes).map(walk).join("").trim()).join("\n");
+    }
+
+    // Checkbox line
+    if (node.classList && node.classList.contains("doc-inline-check")) {
+      const chk = node.querySelector("input[type='checkbox']")?.checked ? "[x] " : "[ ] ";
+      const txt = (node.querySelector("span")?.textContent || node.textContent || "").replace(/^\[[ xX]\]\s*/, '').trim();
+      return chk + txt;
+    }
+
+    // Paragraph / Div
+    if (tag === "p" || tag === "div") {
+      const inner = Array.from(node.childNodes).map(walk).join("").trim();
+      return inner;
+    }
+
+    return Array.from(node.childNodes).map(walk).join("");
+  }
+
+  const childNodes = Array.from(docEl.childNodes);
+  if (childNodes.length === 0) {
+    ta.value = (docEl.textContent || "").trim();
+  } else {
+    childNodes.forEach(child => {
+      const res = walk(child);
+      if (res != null && res !== "") {
+        lines.push(res);
+      }
+    });
+    ta.value = lines.join("\n\n");
+  }
+
+  if (targetTaId === "noteInput") {
+    const titleEl = document.getElementById("noteTitle");
+    if (titleEl && !titleEl.value.trim() && ta.value.trim()) {
+      const s = suggestTitleFromText(ta.value.trim());
+      if (s) titleEl.placeholder = "Suggested: " + s + "  (tap Suggest)";
+    }
+    autoApplyNoteTag();
+  }
+}
+
+function _loadTextToDoc(docEl, text) {
+  if (!docEl) return;
+  const rawText = text || "";
+  if (!rawText.trim()) {
+    docEl.innerHTML = "<p><br></p>";
+    return;
+  }
+
+  const lines = rawText.split(/\r?\n/);
+  let html = "";
+  let i = 0;
+
+  while (i < lines.length) {
+    const raw = lines[i];
+    const line = raw.trim();
+
+    if (!line) {
+      i++;
+      continue;
+    }
+
+    // Heading: ###
+    const hM = line.match(/^(#{1,3})\s+(.+)$/);
+    if (hM) {
+      html += '<h3 class="doc-h3">' + escHtml(hM[2]) + '</h3>';
+      i++;
+      continue;
+    }
+
+    // Checklist Block / Table
+    const clM = line.match(/^\s*\[([ xX])\]\s*(.*)$/);
+    if (clM) {
+      const tableItems = [];
+      while (i < lines.length) {
+        const curM = lines[i].match(/^\s*\[([ xX])\]\s*(.*)$/);
+        if (!curM) break;
+        const checked = curM[1].toLowerCase() === 'x';
+        const content = curM[2] || "";
+        
+        let desc = content.trim();
+        let price = "";
+        const priceM = desc.match(/^(.*?)\s*[-–—:]+\s*(?:[^\d\s]+\s*)?(\d[\d,]*(?:\.\d{1,2})?)\s*$/);
+        if (priceM) {
+          desc = priceM[1].trim();
+          const pVal = priceM[2].replace(/,/g, "");
+          if (pVal !== "0" && pVal !== "0.00" && pVal !== "0.0") price = pVal;
+        }
+        
+        let qty = 1;
+        const qtyM = desc.match(/^(.*?)\s*[x×*](\d+)\s*$/i) || desc.match(/^(.*?)\s*\((\d+)\)\s*$/);
+        if (qtyM) {
+          desc = qtyM[1].trim();
+          qty = parseInt(qtyM[2]) || 1;
+        }
+
+        tableItems.push({ desc, qty, price, checked });
+        i++;
+      }
+
+      _docTableCounter++;
+      html += _createTableBlockHtml("tbl_" + Date.now() + "_" + _docTableCounter, tableItems);
+      continue;
+    }
+
+    // Bullet List
+    const bM = line.match(/^[-•*]\s+(.*)$/);
+    if (bM) {
+      html += '<ul class="doc-ul">';
+      while (i < lines.length) {
+        const curBM = lines[i].match(/^[-•*]\s+(.*)$/);
+        if (!curBM) break;
+        html += '<li>' + _inlineMarkdownToHtml(curBM[1]) + '</li>';
+        i++;
+      }
+      html += '</ul>';
+      continue;
+    }
+
+    // Numbered List
+    const nM = line.match(/^(\d+)\.\s+(.*)$/);
+    if (nM) {
+      html += '<ol class="doc-ol">';
+      while (i < lines.length) {
+        const curNM = lines[i].match(/^(\d+)\.\s+(.*)$/);
+        if (!curNM) break;
+        html += '<li>' + _inlineMarkdownToHtml(curNM[2]) + '</li>';
+        i++;
+      }
+      html += '</ol>';
+      continue;
+    }
+
+    // Regular paragraph
+    html += '<p>' + _inlineMarkdownToHtml(line) + '</p>';
+    i++;
+  }
+
+  docEl.innerHTML = html || "<p><br></p>";
+}
+
+function _inlineMarkdownToHtml(text) {
+  let s = escHtml(text || "");
+  s = s.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+  s = s.replace(/\*([^\*\n]+?)\*/g, '<em>$1</em>');
+  return s;
+}
+
+// ─── LEGACY BUILDER COMPATIBILITY STUBS ──────────────────────
+const _clbState = {};
+function _getClb(taId) {
+  if (!_clbState[taId]) _clbState[taId] = { active: false, items: [], prefix: "", suffix: "" };
+  return _clbState[taId];
+}
+function _resetClBuilder(taId) {
+  _clbState[taId] = { active: false, items: [], prefix: "", suffix: "" };
+}
+function _removeClBuilder(taId) {
+  _resetClBuilder(taId);
+}
+function _activateClBuilder(taId) {
+  _clbState[taId] = { active: true, items: [{ desc: "", qty: 1, price: "", checked: false }, { desc: "", qty: 1, price: "", checked: false }, { desc: "", qty: 1, price: "", checked: false }], prefix: "", suffix: "" };
+}
+function _syncClBuilderToTextarea(taId) {}
+function _onClbLeadInput(taId, el) { _getClb(taId).prefix = el.value; }
+function _onClbTrailInput(taId, el) { _getClb(taId).suffix = el.value; }
 function _clbAddRow(taId, desc = "", qty = 1, price = "", checked = false) {
   const state = _getClb(taId);
   state.items.push({ desc, qty, price, checked });
-  _renderClBuilder(taId);
-  _syncClBuilderToTextarea(taId);
-  setTimeout(() => {
-    const rows = document.querySelectorAll("#clBuilder_" + taId + " .clb-row");
-    const lastRow = rows[rows.length - 1];
-    if (lastRow) {
-      const descInp = lastRow.querySelector(".clb-input-desc");
-      if (descInp) descInp.focus();
-    }
-  }, 30);
 }
-
 function _clbRemoveRow(taId, idx) {
   const state = _getClb(taId);
-  if (state.items.length <= 1) {
-    state.items[0] = { desc: "", qty: 1, price: "", checked: false };
-  } else {
-    state.items.splice(idx, 1);
-  }
-  _renderClBuilder(taId);
-  _syncClBuilderToTextarea(taId);
+  if (state.items.length > 0) state.items.splice(idx, 1);
 }
-
 function _clbUpdateRowField(taId, idx, field, val) {
   const state = _getClb(taId);
-  if (!state.items[idx]) return;
-
-  if (field === "qty") {
-    const q = parseInt(val) || 1;
-    state.items[idx].qty = Math.max(1, q);
-  } else if (field === "price") {
-    state.items[idx].price = val;
-  } else {
-    state.items[idx][field] = val;
+  if (state.items[idx]) {
+    if (field === "qty") state.items[idx].qty = parseInt(val) || 1;
+    else state.items[idx][field] = val;
   }
-
-  const wrap = document.getElementById("clBuilder_" + taId);
-  if (wrap) {
-    const sym = getCurrency();
-    const rowEl = wrap.querySelector(`.clb-row[data-idx="${idx}"]`);
-    if (rowEl) {
-      const p = parseFloat((state.items[idx].price || "").toString().replace(/,/g, "")) || 0;
-      const q = parseInt(state.items[idx].qty) || 1;
-      const totalCell = rowEl.querySelector(".clb-row-total");
-      if (totalCell) {
-        totalCell.textContent = p > 0 ? (sym + " " + (p * q).toFixed(2)) : "\u2014";
-      }
-    }
-    let grandTotal = 0;
-    state.items.forEach(it => {
-      const p = parseFloat((it.price || "").toString().replace(/,/g, "")) || 0;
-      const q = parseInt(it.qty) || 1;
-      if (p > 0) grandTotal += p * q;
-    });
-    const gtEl = wrap.querySelector(".doc-table-grand-total strong");
-    if (gtEl) gtEl.textContent = sym + " " + grandTotal.toFixed(2);
-  }
-
-  _syncClBuilderToTextarea(taId);
 }
-
 function _clbToggleRowCheck(taId, idx, checked) {
   const state = _getClb(taId);
-  if (!state.items[idx]) return;
-  state.items[idx].checked = !!checked;
-  const wrap = document.getElementById("clBuilder_" + taId);
-  if (wrap) {
-    const rowEl = wrap.querySelector(`.clb-row[data-idx="${idx}"]`);
-    if (rowEl) rowEl.classList.toggle("is-checked", !!checked);
-  }
-  _syncClBuilderToTextarea(taId);
+  if (state.items[idx]) state.items[idx].checked = !!checked;
 }
-
-function _clbOnRowKeydown(e, taId, idx, field) {
-  if (e.key === "Enter") {
-    e.preventDefault();
-    const state = _getClb(taId);
-    if (idx === state.items.length - 1) {
-      const curItem = state.items[idx];
-      if (!curItem || (!curItem.desc && !curItem.price)) {
-        const trailEl = document.getElementById("clbTrail_" + taId);
-        if (trailEl) { trailEl.focus(); return; }
-      }
-      _clbAddRow(taId);
+function _parseNoteIntoClb(text) {
+  const lines = (text || "").split(/\r?\n/);
+  const items = [];
+  const prefixLines = [];
+  const suffixLines = [];
+  let found = false;
+  for (const raw of lines) {
+    const m = raw.match(/^\s*\[([ xX])\]\s*(.*)$/);
+    if (m) {
+      found = true;
+      let desc = (m[2] || "").trim();
+      let price = "";
+      const priceM = desc.match(/^(.*?)\s*[-–—:]+\s*(?:[^\d\s]+\s*)?(\d[\d,]*(?:\.\d{1,2})?)\s*$/);
+      if (priceM) { desc = priceM[1].trim(); price = priceM[2].replace(/,/g, ""); }
+      let qty = 1;
+      const qtyM = desc.match(/^(.*?)\s*[x×*](\d+)\s*$/i);
+      if (qtyM) { desc = qtyM[1].trim(); qty = parseInt(qtyM[2]) || 1; }
+      items.push({ desc, qty, price, checked: m[1].toLowerCase() === 'x' });
     } else {
-      const nextRow = document.querySelector("#clBuilder_" + taId + " .clb-row[data-idx=\"" + (idx + 1) + "\"]");
-      if (nextRow) {
-        const nextDesc = nextRow.querySelector(".clb-input-desc");
-        if (nextDesc) nextDesc.focus();
-      }
+      if (!found) prefixLines.push(raw);
+      else suffixLines.push(raw);
     }
   }
+  return { items, prefix: prefixLines.join("\n").trim(), suffix: suffixLines.join("\n").trim() };
 }
+function _serializeClbToNote(taId) {
+  const state = _getClb(taId);
+  const sym = getCurrency();
+  const lines = [];
+  if (state.prefix) lines.push(state.prefix);
+  state.items.forEach(it => {
+    const chk = it.checked ? "[x] " : "[ ] ";
+    const d = it.desc || "Item";
+    const qStr = it.qty > 1 ? (" x" + it.qty) : "";
+    const pVal = parseFloat((it.price || "").toString().replace(/,/g, ""));
+    const pStr = (!isNaN(pVal) && pVal > 0) ? (" \u2014 " + sym + " " + pVal.toFixed(2)) : "";
+    lines.push(chk + d + qStr + pStr);
+  });
+  if (state.suffix) lines.push(state.suffix);
+  return lines.join("\n");
+}
+function _setInputMode(ta, mode) {}
 
-function tbInsertPriceList(textareaId) {
-  const tagSel = document.getElementById("noteTag");
-  if (tagSel) { tagSel.value = "checklist"; markNoteTagManual(); }
-  _activateClBuilder(textareaId);
-  toast("\u20B1 List table added \u2014 edit in-line or write notes below");
-}
-
-function _setInputMode(ta, mode) {
-  // Main note textarea keeps standard interchangeable text keyboard
-}
 // ── Price auto-formatter ──────────────────────────────────────────────────────
 // Called from onNoteInput whenever the textarea value changes.
 // Finds the line the cursor is on; if it's a price line, rewrites the raw digits
