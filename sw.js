@@ -9,8 +9,8 @@
 //   The browser detects the SW file changed → downloads new version → updates cache.
 //   You don't need to manually bump version numbers anymore.
 //
-const CACHE_NAME = 'budget-tracker-v266';
-// Last updated: 2026-09-09 — Journal composer fullscreen & direct interactive checklist builder
+const CACHE_NAME = 'budget-tracker-v267';
+// Last updated: 2026-09-09 — Integrated seamless document canvas with inline table and responsive mobile scrolling
 
 const ASSETS = [
   './',

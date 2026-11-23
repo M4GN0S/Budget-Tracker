@@ -1081,20 +1081,22 @@ tbody tr:hover td{background:var(--pri-l)}
   .note-modal-title{font-size:20px !important;padding:10px 18px 4px !important;flex-shrink:0 !important}
   .note-modal-date{padding:0 18px 8px !important;flex-shrink:0 !important}
   .note-modal-hint{padding:4px 18px 0 !important;flex-shrink:0 !important}
-  .note-modal-body{
-    padding:10px 18px 12px !important;
-    flex:1 !important;
+  .note-modal-body,
+  .compose-modal-body {
+    padding:12px 16px calc(16px + env(safe-area-inset-bottom,0px)) !important;
+    flex:1 1 auto !important;
     overflow-y:auto !important;
     -webkit-overflow-scrolling:touch !important;
     overscroll-behavior:contain !important;
-    min-height:0 !important
+    min-height:0 !important;
   }
-  .note-modal-foot{
+  .note-modal-foot,
+  .compose-modal-foot {
     flex-shrink:0 !important;
-    padding:10px 18px calc(14px + env(safe-area-inset-bottom,0px)) !important;
+    padding:10px 16px calc(14px + env(safe-area-inset-bottom,0px)) !important;
     border-top:1px solid var(--brd) !important;
     background:var(--card) !important;
-    z-index:10 !important
+    z-index:10 !important;
   }
   .btn-modal-max{display:none !important}
   /* Install + newsletter popups also become bottom sheets */
@@ -1226,88 +1228,69 @@ tbody tr:hover td{background:var(--pri-l)}
 .editor-wrap{position:relative}
 
 /* ─── Unified Office-Style Document Editor & Direct Checklist Table ─── */
-.doc-unified-builder {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-.doc-section-text {
-  width: 100%;
-  padding: 10px 14px;
+.cl-builder-wrap {
   border: 1.5px solid var(--brd);
   border-radius: 10px;
+  background: var(--bg);
+  padding: 10px 14px;
+  box-sizing: border-box;
+  min-height: 140px;
+  transition: border-color .15s ease, box-shadow .15s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.cl-builder-wrap:focus-within {
+  border-color: var(--pri);
+  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.12);
+}
+.doc-canvas-lead,
+.doc-canvas-trail {
+  width: 100%;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  background: transparent !important;
+  color: var(--txt);
   font-size: 13.5px;
   line-height: 1.6;
   font-family: inherit;
-  outline: none;
-  background: var(--bg);
-  color: var(--txt);
   resize: none;
   overflow: hidden;
   box-sizing: border-box;
-  transition: border-color .15s, background .15s;
+  display: block;
+  margin: 0;
+  padding: 0;
 }
-.doc-section-text:focus {
-  border-color: var(--pri);
-  background: var(--card);
+.doc-canvas-lead {
+  padding: 2px 0 6px 0;
+  min-height: 28px;
 }
-.doc-lead {
-  min-height: 48px;
+.doc-canvas-trail {
+  padding: 6px 0 2px 0;
+  min-height: 44px;
 }
-.doc-trail {
-  min-height: 72px;
+.doc-canvas-lead::placeholder,
+.doc-canvas-trail::placeholder {
+  color: var(--txt2);
+  opacity: .65;
 }
-.cl-builder-wrap {
-  border: 1.5px solid var(--brd);
-  border-radius: 12px;
+
+/* Inline Embedded Table (Seamless Microsoft Office / Notion document style) */
+.doc-table-block {
+  border: 1px solid var(--brd);
+  border-radius: 10px;
   background: var(--card);
   overflow: hidden;
-  box-shadow: 0 2px 10px rgba(0,0,0,.04);
-}
-.clb-header {
+  margin: 6px 0;
+  box-shadow: 0 1px 4px rgba(0,0,0,.04);
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 8px 12px;
-  background: var(--bg);
-  border-bottom: 1.5px solid var(--brd);
-  gap: 8px;
+  flex-direction: column;
 }
-.clb-title {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 11.5px;
-  font-weight: 800;
-  color: var(--txt);
-  text-transform: uppercase;
-  letter-spacing: .5px;
-}
-.clb-title svg {
-  color: var(--pri);
-}
-.clb-del-table-btn {
-  background: transparent;
-  border: 1px solid var(--brd);
-  border-radius: 6px;
-  color: var(--txt2);
-  font-size: 10.5px;
-  font-weight: 700;
-  padding: 3px 8px;
-  cursor: pointer;
-  font-family: inherit;
-  transition: all .15s;
-}
-.clb-del-table-btn:hover {
-  background: var(--dan-l);
-  border-color: var(--dan);
-  color: var(--dan);
-}
-.clb-table-wrap {
+.doc-table-scroll {
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
-  max-height: 320px;
-  overflow-y: auto;
+  max-width: 100%;
 }
 .clb-table {
   width: 100%;
@@ -1318,12 +1301,9 @@ tbody tr:hover td{background:var(--pri-l)}
 .clb-table thead tr {
   background: var(--bg);
   border-bottom: 1.5px solid var(--brd);
-  position: sticky;
-  top: 0;
-  z-index: 2;
 }
 .clb-table th {
-  padding: 7px 8px;
+  padding: 8px 6px;
   font-size: 10px;
   font-weight: 800;
   text-transform: uppercase;
@@ -1368,42 +1348,54 @@ tbody tr:hover td{background:var(--pri-l)}
   cursor: pointer;
   vertical-align: middle;
 }
-.clb-input {
+.clb-input-desc {
   width: 100%;
   padding: 6px 8px;
-  border: 1px solid var(--brd);
-  border-radius: 7px;
+  border: 1px solid transparent;
+  border-radius: 6px;
   font-size: 12.5px;
   font-family: inherit;
+  background: transparent;
+  color: var(--txt);
+  outline: none;
+  box-sizing: border-box;
+  transition: all .15s;
+}
+.clb-input-desc:focus,
+.clb-input-desc:hover {
+  background: var(--input-bg, var(--bg));
+  border-color: var(--pri);
+}
+.clb-input-qty {
+  width: 100%;
+  padding: 5px 2px;
+  border: 1px solid var(--brd);
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  text-align: center;
+  font-family: "SF Mono", Consolas, monospace;
   background: var(--input-bg, var(--bg));
   color: var(--txt);
   outline: none;
   box-sizing: border-box;
   transition: border-color .15s;
 }
-.clb-input:focus {
+.clb-input-qty:focus {
   border-color: var(--pri);
-  background: var(--card);
-}
-.clb-input-qty {
-  font-weight: 700;
-  font-family: "SF Mono", Consolas, monospace;
-  text-align: center;
-  padding: 6px 2px;
 }
 .clb-price-input-wrap {
   display: flex;
   align-items: center;
-  padding: 0 6px;
+  padding: 0 5px;
   border: 1px solid var(--brd);
-  border-radius: 7px;
+  border-radius: 6px;
   background: var(--input-bg, var(--bg));
   box-sizing: border-box;
   transition: border-color .15s;
 }
 .clb-price-input-wrap:focus-within {
   border-color: var(--pri);
-  background: var(--card);
 }
 .clb-price-sym {
   font-size: 11px;
@@ -1418,11 +1410,11 @@ tbody tr:hover td{background:var(--pri-l)}
   font-weight: 700;
   font-family: "SF Mono", Consolas, monospace;
   text-align: right;
-  padding: 6px 2px;
-}
-.clb-input-price:focus {
-  border-color: transparent;
-  background: transparent;
+  padding: 5px 2px;
+  width: 100%;
+  outline: none;
+  color: var(--txt);
+  font-size: 12px;
 }
 .clb-row-total {
   font-size: 11.5px;
@@ -1451,22 +1443,27 @@ tbody tr:hover td{background:var(--pri-l)}
   color: var(--dan);
   opacity: 1;
 }
-.clb-foot {
+.doc-table-foot {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 8px 12px;
+  padding: 7px 10px;
   background: var(--bg);
-  border-top: 1.5px solid var(--brd);
-  gap: 10px;
+  border-top: 1px solid var(--brd);
+  gap: 8px;
   flex-wrap: wrap;
 }
-.clb-add-btn {
+.doc-table-foot-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.doc-add-row-btn {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
-  padding: 6px 13px;
-  border-radius: 8px;
+  gap: 4px;
+  padding: 5px 11px;
+  border-radius: 7px;
   border: 1.5px dashed var(--pri);
   background: var(--pri-l);
   color: var(--pri-d);
@@ -1476,18 +1473,35 @@ tbody tr:hover td{background:var(--pri-l)}
   cursor: pointer;
   transition: all .15s;
 }
-.clb-add-btn:hover {
+.doc-add-row-btn:hover {
   background: var(--pri);
   color: var(--on-pri);
   border-style: solid;
 }
-.clb-grand-total {
-  font-size: 13px;
+.doc-remove-table-btn {
+  background: transparent;
+  border: 1px solid var(--brd);
+  border-radius: 6px;
+  color: var(--txt2);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 8px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all .15s;
+}
+.doc-remove-table-btn:hover {
+  background: var(--dan-l);
+  border-color: var(--dan);
+  color: var(--dan);
+}
+.doc-table-grand-total {
+  font-size: 12.5px;
   font-weight: 700;
   color: var(--txt);
   font-family: "SF Mono", Consolas, monospace;
 }
-.clb-grand-total strong {
+.doc-table-grand-total strong {
   color: var(--txt);
   font-weight: 900;
 }
@@ -4190,7 +4204,7 @@ footer .footer-links a:hover{color:var(--pri-d)}
       <!-- Mood nudge -->
       <div class="compose-mood-nudge" id="composeMoodNudge" style="display:none"></div>
       <!-- Footer row: tag + pin + save -->
-      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding-top:4px;border-top:1px solid var(--brd)">
+      <div class="compose-modal-foot" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding-top:8px;border-top:1px solid var(--brd);flex-shrink:0;background:var(--card)">
         <select id="noteTag" onchange="markNoteTagManual()" style="padding:8px 12px;border:1.5px solid var(--brd);border-radius:10px;font-size:12px;font-family:inherit;background:var(--bg);color:var(--txt);outline:none">
           <option value="note">Note</option>
           <option value="goal">Goal</option>
@@ -12508,46 +12522,36 @@ function _renderClBuilder(taId) {
   });
 
   wrap.innerHTML =
-    '<div class="doc-unified-builder">' +
-      '<div class="doc-lead-wrap">' +
-        '<textarea id="clbLead_' + taId + '" class="doc-section-text doc-lead" placeholder="Write anything before the table (optional)..." oninput="_onClbLeadInput(\x27' + taId + '\x27, this)">' + escHtml(state.prefix || '') + '</textarea>' +
+    '<textarea id="clbLead_' + taId + '" class="doc-canvas-lead" placeholder="Write anything before the table (intro, context, notes)..." oninput="_onClbLeadInput(\x27' + taId + '\x27, this)">' + escHtml(state.prefix || '') + '</textarea>' +
+    '<div class="doc-table-block">' +
+      '<div class="doc-table-scroll">' +
+        '<table class="clb-table">' +
+          '<thead>' +
+            '<tr>' +
+              '<th style="width:26px;text-align:center">#</th>' +
+              '<th style="width:30px;text-align:center">\u2713</th>' +
+              '<th>Item Description</th>' +
+              '<th style="width:58px;text-align:center">Qty</th>' +
+              '<th style="width:96px;text-align:right">Price (' + sym + ')</th>' +
+              '<th style="width:78px;text-align:right">Total</th>' +
+              '<th style="width:30px;text-align:center"></th>' +
+            '</tr>' +
+          '</thead>' +
+          '<tbody>' + rowsHtml + '</tbody>' +
+        '</table>' +
       '</div>' +
-      '<div class="cl-builder-wrap">' +
-        '<div class="clb-header">' +
-          '<div class="clb-title">' +
-            '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3 7-7"/><path d="M20 12v7a2 2 0 01-2 2H6a2 2 0 01-2-2V5a2 2 0 012-2h8"/><line x1="3.5" y1="10" x2="8.5" y2="10"/><line x1="3.5" y1="15" x2="8.5" y2="15"/></svg>' +
-            '<span>Interactive \u20B1 List</span>' +
-          '</div>' +
-          '<button type="button" class="clb-del-table-btn" onclick="_removeClBuilder(\x27' + taId + '\x27)" title="Remove table and convert to text">Remove Table</button>' +
-        '</div>' +
-        '<div class="clb-table-wrap">' +
-          '<table class="clb-table">' +
-            '<thead>' +
-              '<tr>' +
-                '<th style="width:26px;text-align:center">#</th>' +
-                '<th style="width:30px;text-align:center">\u2713</th>' +
-                '<th>Item Description</th>' +
-                '<th style="width:58px;text-align:center">Qty</th>' +
-                '<th style="width:96px;text-align:right">Price (' + sym + ')</th>' +
-                '<th style="width:78px;text-align:right">Total</th>' +
-                '<th style="width:30px;text-align:center"></th>' +
-              '</tr>' +
-            '</thead>' +
-            '<tbody>' + rowsHtml + '</tbody>' +
-          '</table>' +
-        '</div>' +
-        '<div class="clb-foot">' +
-          '<button type="button" class="clb-add-btn" onclick="_clbAddRow(\x27' + taId + '\x27)">' +
+      '<div class="doc-table-foot">' +
+        '<div class="doc-table-foot-actions">' +
+          '<button type="button" class="doc-add-row-btn" onclick="_clbAddRow(\x27' + taId + '\x27)">' +
             '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>' +
             'Add item' +
           '</button>' +
-          '<div class="clb-grand-total">Total: <strong>' + sym + ' ' + grandTotal.toFixed(2) + '</strong></div>' +
+          '<button type="button" class="doc-remove-table-btn" onclick="_removeClBuilder(\x27' + taId + '\x27)" title="Convert table back to plain text">Remove Table</button>' +
         '</div>' +
+        '<div class="doc-table-grand-total">Total: <strong>' + sym + ' ' + grandTotal.toFixed(2) + '</strong></div>' +
       '</div>' +
-      '<div class="doc-trail-wrap">' +
-        '<textarea id="clbTrail_' + taId + '" class="doc-section-text doc-trail" placeholder="Write additional notes or next steps after the table..." oninput="_onClbTrailInput(\x27' + taId + '\x27, this)">' + escHtml(state.suffix || '') + '</textarea>' +
-      '</div>' +
-    '</div>';
+    '</div>' +
+    '<textarea id="clbTrail_' + taId + '" class="doc-canvas-trail" placeholder="Write additional notes or next steps after the table..." oninput="_onClbTrailInput(\x27' + taId + '\x27, this)">' + escHtml(state.suffix || '') + '</textarea>';
 
   setTimeout(() => {
     const lead = document.getElementById("clbLead_" + taId);
@@ -12614,7 +12618,7 @@ function _clbUpdateRowField(taId, idx, field, val) {
       const q = parseInt(it.qty) || 1;
       if (p > 0) grandTotal += p * q;
     });
-    const gtEl = wrap.querySelector(".clb-grand-total strong");
+    const gtEl = wrap.querySelector(".doc-table-grand-total strong");
     if (gtEl) gtEl.textContent = sym + " " + grandTotal.toFixed(2);
   }
 

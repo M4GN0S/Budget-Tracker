@@ -1,10 +1,10 @@
 # DEVLOG — L'Atelier de Luz | Budget Tracker PWA
 
-## Current State: v266
+## Current State: v267
 
 | Metric | Value |
 |---|---|
-| SW cache | `budget-tracker-v266` |
+| SW cache | `budget-tracker-v267` |
 | File | `index.html` + `sw.js` |
 | App version | 1.9.9 |
 | Panels | 7 (`dashboard`, `expenses`, `history`, `goals`, `notes`, `ai`, `data`) |
@@ -73,11 +73,12 @@
   4. Automated QA in `qa_test_suite.js` (Suite 20) validates summary styles, dismiss action, and opt-out localStorage persistence.
 
 ### Rule 8: Direct Interactive Checklist Builder & Composer Fullscreen
-- **Problem**: Checklists and priced lists created via `₱ List` dumped raw, incomplete markdown text without quantity fields into a textarea, and relied on a redundant floating `+ Add item` button inside the textarea. Furthermore, the New Journal Entry compose modal lacked a maximize/fullscreen button.
+- **Problem**: Checklists and priced lists created via `₱ List` previously dumped raw markdown or fragmented modular cards into separate floating boxes with awkward gaps. Furthermore, on mobile/tablet devices, keyboards were previously locked into decimal mode, and compose modals suffered clipping on smaller viewports.
 - **Enforcement**:
-  1. **Direct Interactive Table UI**: `₱ List` immediately activates a structured table builder (`#clBuilder_noteInput` / `#clBuilder_noteEditText`) containing explicit columns: `#`, `✓` (checkbox), `Item Description`, `Qty` (number input, min 1), `Price` (currency prefix input), `Total` (auto-calculated `Qty × Price`), and `Delete` (`✕`).
-  2. **Footer Actions & Live Totals**: Direct `+ Add item` button below the table and live `Grand Total` display; seamless toggle between `Table UI` and `Markdown Text` modes.
-  3. **Removed Redundant Floating Button**: Textarea wrapper no longer contains `.add-item-fab` (`#addItemFab_noteInput` / `#addItemFab_noteEditText`).
+  1. **Unified Continuous Document Canvas**: The editor uses a single, seamless document canvas (like Microsoft Word / Google Docs / Notion) without modularized disjointed card wrappers or awkward dark gaps. Introductory text (`clbLead`), direct interactive table (`clb-table`), and trailing notes (`clbTrail`) live on the same uninterrupted sheet.
+  2. **Direct Interactive Table**: Embedded inline within the continuous document with `#`, `✓` (checkbox), `Item Description`, `Qty`, `Price` (currency prefix input), `Total` (`Qty × Price`), and `Delete` (`✕`), along with integrated footer actions (`+ Add item`, `Remove Table`, `Grand Total`).
+  3. **Interchangeable Mobile Typing & Smooth Scrolling**: Text inputs and textareas use standard `inputmode="text"` without locking mobile keyboards into decimal-only mode. On mobile and tablet devices, `.compose-modal-body` and `.compose-modal-foot` enforce full `overflow-y: auto`, `-webkit-overflow-scrolling: touch`, `overscroll-behavior: contain`, and docked sticky actions.
+  4. Automated QA in `qa_test_suite.js` (Suite 21) validates lead/trail serialization, table manipulation, fullscreen states, and mobile scrolling.
   4. **Compose Modal Fullscreen**: `#composeOverlay` includes `#composeModalMaxBtn` with maximize and restore SVG icons, resetting cleanly on open/close and constraining reading max-width to `860px` when maximized.
   5. Automated QA in `qa_test_suite.js` (Suite 21) validates builder operations, serialization with quantities, modal maximize toggle, and absence of redundant FAB elements.
 
