@@ -79,6 +79,8 @@ const makeMockElement = (initialId = '') => {
     addEventListener: () => {},
     focus: () => {},
     select: () => {},
+    setSelectionRange: (s, e) => { el.selectionStart = s; el.selectionEnd = e; },
+    dispatchEvent: () => true,
     remove: () => {
       el._removed = true;
     },
@@ -1289,10 +1291,37 @@ mockTrail.value = "Bring eco bags and keep the receipt.";
 _onClbTrailInput('noteInput', mockTrail);
 assert(clbState.suffix === "Bring eco bags and keep the receipt.", "_onClbTrailInput updates trailing suffix");
 
+// Reset builder to plain textarea mode first
+_resetClBuilder('noteInput');
+
+// Test Toolbar Actions (Bold, Italic, Bullet, Checkbox, Numbered, Heading)
+const plainNoteTa = document.getElementById('noteInput');
+plainNoteTa.value = "Meeting with accountant";
+plainNoteTa.selectionStart = 0;
+plainNoteTa.selectionEnd = 7; // "Meeting"
+tbWrap('noteInput', '**', '**');
+assert(plainNoteTa.value.includes("**Meeting** with accountant"), "tbWrap wraps selected text in bold (**)");
+
+plainNoteTa.selectionStart = plainNoteTa.value.length;
+plainNoteTa.selectionEnd = plainNoteTa.value.length;
+tbInsertLine('noteInput', '- ');
+assert(plainNoteTa.value.includes("- "), "tbInsertLine inserts bullet list prefix");
+
+tbInsertLine('noteInput', '1. ');
+assert(plainNoteTa.value.includes("1. "), "tbInsertLine inserts numbered list prefix");
+
+tbInsertHeading('noteInput');
+assert(plainNoteTa.value.includes("### "), "tbInsertHeading inserts heading prefix");
+
 // Test tbInsertPriceList
 tbInsertPriceList('noteInput');
 assert(document.getElementById('noteTag').value === 'checklist', "tbInsertPriceList auto-selects 'checklist' tag");
 assert(_getClb('noteInput').active === true, "tbInsertPriceList activates direct builder");
+
+// Test Checkbox toolbar button when builder active -> adds row
+const rowCountBefore = _getClb('noteInput').items.length;
+tbInsertLine('noteInput', '[ ] ');
+assert(_getClb('noteInput').items.length === rowCountBefore + 1, "tbInsertLine with [ ] adds row to active table builder");
 
 // Test _removeClBuilder
 _removeClBuilder('noteInput');
@@ -1301,6 +1330,9 @@ assert(_getClb('noteInput').active === false, "_removeClBuilder deactivates buil
 // Reset builder
 _resetClBuilder('noteInput');
 assert(_getClb('noteInput').active === false, "_resetClBuilder deactivates builder");
+
+// Verify .compose-editor-scroll container exists in DOM
+assert(document.querySelector('.compose-editor-scroll') !== null, "compose-editor-scroll internal text scroll container exists in index.html");
 
 // ─── SUMMARY ────────────────────────────────────────────────
 console.log("\n=================================================");

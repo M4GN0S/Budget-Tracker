@@ -1081,9 +1081,23 @@ tbody tr:hover td{background:var(--pri-l)}
   .note-modal-title{font-size:20px !important;padding:10px 18px 4px !important;flex-shrink:0 !important}
   .note-modal-date{padding:0 18px 8px !important;flex-shrink:0 !important}
   .note-modal-hint{padding:4px 18px 0 !important;flex-shrink:0 !important}
-  .note-modal-body,
+  .note-modal-body {
+    padding:10px 18px 12px !important;
+    flex:1 !important;
+    overflow-y:auto !important;
+    -webkit-overflow-scrolling:touch !important;
+    overscroll-behavior:contain !important;
+    min-height:0 !important;
+  }
   .compose-modal-body {
-    padding:12px 16px calc(16px + env(safe-area-inset-bottom,0px)) !important;
+    padding:12px 16px 8px !important;
+    flex:1 1 auto !important;
+    overflow:hidden !important;
+    min-height:0 !important;
+    display:flex !important;
+    flex-direction:column !important;
+  }
+  .compose-editor-scroll {
     flex:1 1 auto !important;
     overflow-y:auto !important;
     -webkit-overflow-scrolling:touch !important;
@@ -1226,6 +1240,27 @@ tbody tr:hover td{background:var(--pri-l)}
 }
 /* Editor wrap */
 .editor-wrap{position:relative}
+.compose-editor-scroll{
+  flex:1 1 auto;
+  overflow-y:auto;
+  -webkit-overflow-scrolling:touch;
+  overscroll-behavior:contain;
+  min-height:0;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  padding-right:2px;
+}
+.compose-modal-body{
+  padding:16px 22px 10px;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  overflow:hidden;
+  flex:1 1 auto;
+  min-height:0;
+  box-sizing:border-box;
+}
 
 /* ─── Unified Office-Style Document Editor & Direct Checklist Table ─── */
 .cl-builder-wrap {
@@ -4169,41 +4204,45 @@ footer .footer-links a:hover{color:var(--pri-d)}
       </div>
     </div>
     <!-- Body -->
-    <div class="compose-modal-body" style="padding:16px 24px;display:flex;flex-direction:column;gap:12px;overflow-y:auto;flex:1">
-      <!-- Title row -->
-      <div class="title-row">
+    <div class="compose-modal-body">
+      <!-- Title row (Fixed top) -->
+      <div class="title-row" style="flex-shrink:0">
         <input type="text" id="noteTitle" required maxlength="80" oninput="onNoteTitleInput()" placeholder="Title (required) — or tap Suggest" style="padding:10px 14px;border:1.5px solid var(--brd);border-radius:10px;font-size:13px;font-weight:700;font-family:inherit;outline:none;background:var(--bg);color:var(--txt);width:100%;box-sizing:border-box;transition:border-color .2s">
         <button type="button" class="suggest-btn" id="suggestTitleBtn" onclick="suggestNoteTitle()" title="Suggest a title from your note">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 4.6L18.5 9l-4.6 1.9L12 15l-1.9-4.1L5.5 9l4.6-1.4z"/><path d="M19 14l.8 2 2 .8-2 .8-.8 2-.8-2-2-.8 2-.8z"/></svg>
           <span>Suggest</span>
         </button>
       </div>
-      <!-- Toolbar -->
-      <div class="editor-toolbar" id="composerToolbar" role="toolbar" aria-label="Formatting">
-        <button type="button" class="tb-btn tb-b" onclick="tbWrap('noteInput','**','**')" title="Bold (Ctrl/Cmd+B)"><b>B</b></button>
-        <button type="button" class="tb-btn tb-i" onclick="tbWrap('noteInput','*','*')" title="Italic"><i>I</i></button>
+      <!-- Toolbar (Fixed top) -->
+      <div class="editor-toolbar" id="composerToolbar" role="toolbar" aria-label="Formatting" style="flex-shrink:0">
+        <button type="button" class="tb-btn tb-b" onmousedown="event.preventDefault()" onclick="tbWrap('noteInput','**','**')" title="Bold (Ctrl/Cmd+B)"><b>B</b></button>
+        <button type="button" class="tb-btn tb-i" onmousedown="event.preventDefault()" onclick="tbWrap('noteInput','*','*')" title="Italic"><i>I</i></button>
         <span class="tb-sep"></span>
-        <button type="button" class="tb-btn" onclick="tbInsertLine('noteInput','- ')" title="Bullet list"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="9" y1="6" x2="21" y2="6"/><line x1="9" y1="12" x2="21" y2="12"/><line x1="9" y1="18" x2="21" y2="18"/><circle cx="4.5" cy="6" r="1.3" fill="currentColor"/><circle cx="4.5" cy="12" r="1.3" fill="currentColor"/><circle cx="4.5" cy="18" r="1.3" fill="currentColor"/></svg></button>
-        <button type="button" class="tb-btn" onclick="tbInsertLine('noteInput','[ ] ')" title="Checkbox / to-do"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="3"/></svg></button>
-        <button type="button" class="tb-btn" onclick="tbInsertLine('noteInput','1. ')" title="Numbered list"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><text x="2" y="10" font-size="7" font-weight="800" fill="currentColor" stroke="none">1</text><text x="2" y="17" font-size="7" font-weight="800" fill="currentColor" stroke="none">2</text><text x="2" y="23" font-size="7" font-weight="800" fill="currentColor" stroke="none">3</text><line x1="9" y1="7" x2="21" y2="7"/><line x1="9" y1="14" x2="21" y2="14"/><line x1="9" y1="21" x2="21" y2="21"/></svg></button>
-        <button type="button" class="tb-btn" onclick="tbInsertHeading('noteInput')" title="Heading" style="font-weight:900;font-size:14px">H</button>
+        <button type="button" class="tb-btn" onmousedown="event.preventDefault()" onclick="tbInsertLine('noteInput','- ')" title="Bullet list"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="9" y1="6" x2="21" y2="6"/><line x1="9" y1="12" x2="21" y2="12"/><line x1="9" y1="18" x2="21" y2="18"/><circle cx="4.5" cy="6" r="1.3" fill="currentColor"/><circle cx="4.5" cy="12" r="1.3" fill="currentColor"/><circle cx="4.5" cy="18" r="1.3" fill="currentColor"/></svg></button>
+        <button type="button" class="tb-btn" onmousedown="event.preventDefault()" onclick="tbInsertLine('noteInput','[ ] ')" title="Checkbox / to-do"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="4" y="4" width="16" height="16" rx="3"/></svg></button>
+        <button type="button" class="tb-btn" onmousedown="event.preventDefault()" onclick="tbInsertLine('noteInput','1. ')" title="Numbered list"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><text x="2" y="10" font-size="7" font-weight="800" fill="currentColor" stroke="none">1</text><text x="2" y="17" font-size="7" font-weight="800" fill="currentColor" stroke="none">2</text><text x="2" y="23" font-size="7" font-weight="800" fill="currentColor" stroke="none">3</text><line x1="9" y1="7" x2="21" y2="7"/><line x1="9" y1="14" x2="21" y2="14"/><line x1="9" y1="21" x2="21" y2="21"/></svg></button>
+        <button type="button" class="tb-btn" onmousedown="event.preventDefault()" onclick="tbInsertHeading('noteInput')" title="Heading" style="font-weight:900;font-size:14px">H</button>
         <span class="tb-sep"></span>
-        <button type="button" class="tb-btn tb-wide" onclick="tbInsertPriceList('noteInput')" title="Insert a priced checklist (shopping, car parts, etc.)">
+        <button type="button" class="tb-btn tb-wide" onmousedown="event.preventDefault()" onclick="tbInsertPriceList('noteInput')" title="Insert a priced checklist (shopping, car parts, etc.)">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3 7-7"/><path d="M20 12v7a2 2 0 01-2 2H6a2 2 0 01-2-2V5a2 2 0 012-2h8"/><line x1="3.5" y1="10" x2="8.5" y2="10"/><line x1="3.5" y1="15" x2="8.5" y2="15"/></svg>
           ₱ List
         </button>
       </div>
-      <!-- Direct Interactive Checklist Builder container -->
-      <div id="clBuilder_noteInput" class="cl-builder-wrap" style="display:none"></div>
-      <!-- Textarea -->
-      <div class="editor-wrap" id="editorWrap_noteInput">
-        <textarea id="noteInput" rows="6" oninput="onNoteInput(this)" onblur="onNoteBlur(this)" onclick="onTextareaClick(event)" onkeydown="onTextareaKeydown(event,'noteInput')" onkeyup="onTextareaKeyup(event,'noteInput')" placeholder="Write your note… tap a toolbar button to format, or just type naturally." inputmode="text" style="padding:10px 14px;border:1.5px solid var(--brd);border-radius:10px;font-size:13px;line-height:1.6;font-family:inherit;outline:none;background:var(--bg);color:var(--txt);resize:none;overflow:hidden;min-height:100px;max-height:420px;width:100%;box-sizing:border-box"></textarea>
+      <!-- Center Scrollable Text & Document Area -->
+      <div class="compose-editor-scroll">
+        <!-- Direct Interactive Checklist Builder container -->
+        <div id="clBuilder_noteInput" class="cl-builder-wrap" style="display:none"></div>
+        <!-- Textarea -->
+        <div class="editor-wrap" id="editorWrap_noteInput" style="flex:1;display:flex;flex-direction:column">
+          <textarea id="noteInput" onfocus="_setLastDocFocus('noteInput',this)" onclick="onTextareaClick(event);_setLastDocFocus('noteInput',this)" oninput="onNoteInput(this)" onblur="onNoteBlur(this)" onkeydown="onTextareaKeydown(event,'noteInput')" onkeyup="onTextareaKeyup(event,'noteInput')" placeholder="Write your note… tap a toolbar button to format, or just type naturally." inputmode="text" style="padding:10px 14px;border:1.5px solid var(--brd);border-radius:10px;font-size:13.5px;line-height:1.6;font-family:inherit;outline:none;background:var(--bg);color:var(--txt);resize:none;min-height:160px;width:100%;box-sizing:border-box;flex:1"></textarea>
+        </div>
+        <!-- Tip bar -->
+        <p style="font-size:11px;color:var(--txt2);margin:0;padding:5px 10px;background:var(--bg);border:1.5px solid var(--brd);border-radius:10px;line-height:1.4;flex-shrink:0">Tip: <b>₱ List</b> creates an interactive priced list with quantities — check items to auto-add to Expenses.</p>
+        <!-- Mood nudge -->
+        <div class="compose-mood-nudge" id="composeMoodNudge" style="display:none"></div>
+        <div class="note-dup-warn" id="noteDupWarn" style="display:none"></div>
       </div>
-      <!-- Tip bar -->
-      <p style="font-size:11px;color:var(--txt2);margin:0;padding:5px 10px;background:var(--bg);border:1.5px solid var(--brd);border-radius:10px;line-height:1.4">Tip: <b>₱ List</b> creates an interactive priced list with quantities — check items to auto-add to Expenses.</p>
-      <!-- Mood nudge -->
-      <div class="compose-mood-nudge" id="composeMoodNudge" style="display:none"></div>
-      <!-- Footer row: tag + pin + save -->
+      <!-- Footer row: tag + pin + save (Fixed bottom) -->
       <div class="compose-modal-foot" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding-top:8px;border-top:1px solid var(--brd);flex-shrink:0;background:var(--card)">
         <select id="noteTag" onchange="markNoteTagManual()" style="padding:8px 12px;border:1.5px solid var(--brd);border-radius:10px;font-size:12px;font-family:inherit;background:var(--bg);color:var(--txt);outline:none">
           <option value="note">Note</option>
@@ -12232,38 +12271,73 @@ function onNoteBlur(el) {
 }
 
 // ─── TOOLBAR HELPERS (insert-at-cursor, wrap, etc.) ───────
-function _tbEl(id) { return typeof id === "string" ? document.getElementById(id) : id; }
+let _lastFocusedDocEl = {};
+
+function _setLastDocFocus(taId, el) {
+  if (taId && el) _lastFocusedDocEl[taId] = el;
+}
+
+function _tbEl(id) {
+  if (typeof id !== "string") return id;
+  const state = _clbState[id];
+  if (state && state.active) {
+    const last = _lastFocusedDocEl[id];
+    if (last && typeof document !== "undefined" && document.body && document.body.contains(last)) {
+      return last;
+    }
+    const trail = document.getElementById("clbTrail_" + id);
+    if (trail) return trail;
+    const lead = document.getElementById("clbLead_" + id);
+    if (lead) return lead;
+  }
+  return document.getElementById(id);
+}
 
 // Wrap the current selection with before/after tokens (bold/italic). If nothing
 // selected, inserts sample text so the user has something to type over.
 function tbWrap(textareaId, before, after, placeholder) {
   const ta = _tbEl(textareaId); if (!ta) return;
   ta.focus();
-  const start = ta.selectionStart, end = ta.selectionEnd;
-  const val = ta.value;
-  const sel = val.substring(start, end);
+  const start = ta.selectionStart != null ? ta.selectionStart : (ta.value ? ta.value.length : 0);
+  const end   = ta.selectionEnd != null ? ta.selectionEnd : start;
+  const val   = ta.value || "";
+  const sel   = val.substring(start, end);
   const insert = before + (sel || (placeholder || "text")) + after;
   ta.value = val.substring(0, start) + insert + val.substring(end);
   const newStart = start + before.length;
   const newEnd = newStart + (sel || (placeholder || "text")).length;
-  ta.setSelectionRange(newStart, newEnd);
+  if (typeof ta.setSelectionRange === "function") {
+    ta.setSelectionRange(newStart, newEnd);
+  }
   ta.dispatchEvent(new Event("input", { bubbles: true }));
+  if (_clbState[textareaId] && _clbState[textareaId].active) {
+    if (ta.id === "clbLead_" + textareaId) {
+      _clbState[textareaId].prefix = ta.value;
+    } else if (ta.id === "clbTrail_" + textareaId) {
+      _clbState[textareaId].suffix = ta.value;
+    }
+    _syncClBuilderToTextarea(textareaId);
+  }
 }
 
 // Insert a new line with the given prefix (bullet, checkbox, numbered).
 // If cursor is in the middle of a line, moves to a new line first.
 function tbInsertLine(textareaId, prefix) {
+  const state = _clbState[textareaId];
+  if (state && state.active && prefix === "[ ] ") {
+    _clbAddRow(textareaId);
+    return;
+  }
   const ta = _tbEl(textareaId); if (!ta) return;
   ta.focus();
-  const start = ta.selectionStart;
-  const val   = ta.value;
+  const start = ta.selectionStart != null ? ta.selectionStart : (ta.value ? ta.value.length : 0);
+  const val   = ta.value || "";
   let before  = val.substring(0, start);
   const after = val.substring(start);
 
   // Smart numbered list: detect "N. " prefix and auto-increment
   let actualPrefix = prefix;
   if (/^\d+\.\s/.test(prefix)) {
-    // Look at the line just before cursor for a numbered list item
     const prevLines  = before.split("\n");
     const prevLine   = prevLines[prevLines.length - 1] || "";
     const prevNumM   = prevLine.match(/^(\d+)\./);
@@ -12278,8 +12352,18 @@ function tbInsertLine(textareaId, prefix) {
   }
   ta.value = before + after;
   const pos = before.length;
-  ta.setSelectionRange(pos, pos);
+  if (typeof ta.setSelectionRange === "function") {
+    ta.setSelectionRange(pos, pos);
+  }
   ta.dispatchEvent(new Event("input", { bubbles: true }));
+  if (state && state.active) {
+    if (ta.id === "clbLead_" + textareaId) {
+      state.prefix = ta.value;
+    } else if (ta.id === "clbTrail_" + textareaId) {
+      state.suffix = ta.value;
+    }
+    _syncClBuilderToTextarea(textareaId);
+  }
 }
 
 // Insert a heading (### ) on a new line
@@ -12499,7 +12583,7 @@ function _renderClBuilder(taId) {
           '<input type="checkbox" ' + (it.checked ? 'checked' : '') + ' onchange="_clbToggleRowCheck(\x27' + taId + '\x27, ' + idx + ', this.checked)" title="Check item">' +
         '</td>' +
         '<td class="clb-td-desc">' +
-          '<input type="text" class="clb-input clb-input-desc" placeholder="Item name (e.g. Milk)" value="' + escHtml(it.desc || '') + '" oninput="_clbUpdateRowField(\x27' + taId + '\x27, ' + idx + ', \x27desc\x27, this.value)" onkeydown="_clbOnRowKeydown(event, \x27' + taId + '\x27, ' + idx + ', \x27desc\x27)">' +
+          '<input type="text" class="clb-input clb-input-desc" placeholder="Item name (e.g. Milk)" value="' + escHtml(it.desc || '') + '" onfocus="_setLastDocFocus(\x27' + taId + '\x27, this)" onclick="_setLastDocFocus(\x27' + taId + '\x27, this)" oninput="_clbUpdateRowField(\x27' + taId + '\x27, ' + idx + ', \x27desc\x27, this.value)" onkeydown="_clbOnRowKeydown(event, \x27' + taId + '\x27, ' + idx + ', \x27desc\x27)">' +
         '</td>' +
         '<td class="clb-td-qty">' +
           '<input type="text" inputmode="numeric" class="clb-input clb-input-qty" value="' + (it.qty || 1) + '" oninput="_clbUpdateRowField(\x27' + taId + '\x27, ' + idx + ', \x27qty\x27, this.value)" onkeydown="_clbOnRowKeydown(event, \x27' + taId + '\x27, ' + idx + ', \x27qty\x27)">' +
@@ -12522,7 +12606,7 @@ function _renderClBuilder(taId) {
   });
 
   wrap.innerHTML =
-    '<textarea id="clbLead_' + taId + '" class="doc-canvas-lead" placeholder="Write anything before the table (intro, context, notes)..." oninput="_onClbLeadInput(\x27' + taId + '\x27, this)">' + escHtml(state.prefix || '') + '</textarea>' +
+    '<textarea id="clbLead_' + taId + '" class="doc-canvas-lead" placeholder="Write anything before the table (intro, context, notes)..." onfocus="_setLastDocFocus(\x27' + taId + '\x27, this)" onclick="_setLastDocFocus(\x27' + taId + '\x27, this)" oninput="_onClbLeadInput(\x27' + taId + '\x27, this)">' + escHtml(state.prefix || '') + '</textarea>' +
     '<div class="doc-table-block">' +
       '<div class="doc-table-scroll">' +
         '<table class="clb-table">' +
@@ -12551,7 +12635,7 @@ function _renderClBuilder(taId) {
         '<div class="doc-table-grand-total">Total: <strong>' + sym + ' ' + grandTotal.toFixed(2) + '</strong></div>' +
       '</div>' +
     '</div>' +
-    '<textarea id="clbTrail_' + taId + '" class="doc-canvas-trail" placeholder="Write additional notes or next steps after the table..." oninput="_onClbTrailInput(\x27' + taId + '\x27, this)">' + escHtml(state.suffix || '') + '</textarea>';
+    '<textarea id="clbTrail_' + taId + '" class="doc-canvas-trail" placeholder="Write additional notes or next steps after the table..." onfocus="_setLastDocFocus(\x27' + taId + '\x27, this)" onclick="_setLastDocFocus(\x27' + taId + '\x27, this)" oninput="_onClbTrailInput(\x27' + taId + '\x27, this)">' + escHtml(state.suffix || '') + '</textarea>';
 
   setTimeout(() => {
     const lead = document.getElementById("clbLead_" + taId);
