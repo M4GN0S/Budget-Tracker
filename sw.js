@@ -9,8 +9,8 @@
 //   The browser detects the SW file changed → downloads new version → updates cache.
 //   You don't need to manually bump version numbers anymore.
 //
-const CACHE_NAME = 'budget-tracker-v280';
-// Last updated: 2026-09-09 — Restored original desktop layout for New Journal Entry modal
+const CACHE_NAME = 'budget-tracker-v281';
+// Last updated: 2026-09-09 — Complete mobile/tablet upward collapse dock & original desktop layout restore
 
 const ASSETS = [
   './',
