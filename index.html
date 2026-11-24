@@ -1322,6 +1322,102 @@ tbody tr:hover td{background:var(--pri-l)}
 .compose-mood-nudge .cmn-btn{display:inline-flex;align-items:center;gap:7px;font-family:inherit;font-size:12px;font-weight:700;color:var(--on-pri,#fff);background:var(--pri);border:1.5px solid var(--pri);border-radius:9px;padding:8px 13px;cursor:pointer;transition:.15s}
 .compose-mood-nudge .cmn-btn:hover{filter:brightness(1.07);transform:translateY(-1px)}
 
+/* ─── Collapsible Header & Title for Upward Expansion ─── */
+.compose-top-collapsible {
+  flex-shrink: 0;
+  max-height: 220px;
+  opacity: 1;
+  transform: translateY(0);
+  overflow: hidden;
+  transition: max-height .25s cubic-bezier(.4, 0, .2, 1), opacity .2s ease, transform .25s cubic-bezier(.4, 0, .2, 1);
+}
+.compose-top-collapsible.is-collapsed {
+  max-height: 0 !important;
+  opacity: 0 !important;
+  transform: translateY(-8px) !important;
+  pointer-events: none !important;
+}
+
+.compose-subdued-top {
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  padding: 5px 14px;
+  background: var(--card);
+  border-bottom: 1px solid var(--brd);
+  cursor: pointer;
+  flex-shrink: 0;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--txt2);
+  user-select: none;
+  transition: background .15s ease;
+  animation: fadeUp .2s ease;
+}
+.compose-subdued-top:hover {
+  background: var(--bg);
+}
+.compose-subdued-top.show {
+  display: flex;
+}
+.compose-subdued-top .cst-left {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  flex: 1;
+}
+.compose-subdued-top .cst-left svg {
+  flex-shrink: 0;
+  color: var(--pri);
+  opacity: .8;
+}
+.compose-subdued-top .cst-title {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--txt);
+  font-weight: 700;
+  font-size: 12px;
+}
+.compose-subdued-top .cst-expand-hint {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--txt2);
+  opacity: .6;
+  flex-shrink: 0;
+  padding-left: 2px;
+}
+.compose-subdued-top .cst-close {
+  background: transparent;
+  border: none;
+  color: var(--txt2);
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+  flex-shrink: 0;
+  transition: all .15s ease;
+}
+.compose-subdued-top .cst-close:hover {
+  background: var(--dan-l);
+  color: var(--dan);
+}
+
+@media(max-width:900px){
+  .compose-subdued-top {
+    padding: calc(6px + env(safe-area-inset-top, 0px)) 12px 5px !important;
+  }
+  .title-row {
+    padding: 6px 14px 2px !important;
+  }
+}
+
 /* ─── Pinned Single-Row Bottom Keyboard Bar ─── */
 .compose-bottom-dock {
   position: sticky;
@@ -4547,37 +4643,55 @@ footer .footer-links a:hover{color:var(--pri-d)}
 <!-- ─── COMPOSE MODAL ─── -->
 <div class="note-overlay" id="composeOverlay" onclick="if(event.target===this)closeComposeModal()">
   <div class="note-modal" role="dialog" aria-modal="true" aria-labelledby="composeModalHeading" style="max-width:600px;display:flex;flex-direction:column">
-    <!-- Header -->
-    <div class="note-modal-head" style="padding-bottom:12px;border-bottom:1px solid var(--brd)">
-      <div style="display:flex;align-items:center;gap:8px">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4 12.5-12.5z"/></svg>
-        <span id="composeModalHeading" style="font-size:15px;font-weight:800;color:var(--txt)">New Journal Entry</span>
+    <!-- Top Collapsible Header & Title Section -->
+    <div class="compose-top-collapsible" id="composeTopCollapsible">
+      <!-- Header -->
+      <div class="note-modal-head" style="padding-bottom:12px;border-bottom:1px solid var(--brd)">
+        <div style="display:flex;align-items:center;gap:8px">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4 12.5-12.5z"/></svg>
+          <span id="composeModalHeading" style="font-size:15px;font-weight:800;color:var(--txt)">New Journal Entry</span>
+        </div>
+        <div class="note-modal-head-actions">
+          <button type="button" class="btn-modal-max" id="composeModalMaxBtn" onclick="event.stopPropagation();toggleComposeModalMaximize()" aria-label="Toggle Fullscreen" title="Full screen">
+            <svg class="icon-max" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
+            <svg class="icon-restore" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><path d="M4 14h6v6M20 10h-6V4M14 10l7-7M10 14l-7 7"/></svg>
+          </button>
+          <button class="close-modal" onclick="closeComposeModal()" aria-label="Close" title="Close"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+        </div>
       </div>
-      <div class="note-modal-head-actions">
-        <button type="button" class="btn-modal-max" id="composeModalMaxBtn" onclick="event.stopPropagation();toggleComposeModalMaximize()" aria-label="Toggle Fullscreen" title="Full screen">
-          <svg class="icon-max" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
-          <svg class="icon-restore" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><path d="M4 14h6v6M20 10h-6V4M14 10l7-7M10 14l-7 7"/></svg>
+      <!-- Dedicated Title Row (Collapses upward when typing body) -->
+      <div class="title-row" id="composeTitleRow" style="padding:10px 22px 4px;flex-shrink:0">
+        <input type="text" id="noteTitle" required maxlength="80" oninput="onNoteTitleInput()" placeholder="Title (required) — or tap Suggest" style="padding:10px 14px;border:1.5px solid var(--brd);border-radius:10px;font-size:13px;font-weight:700;font-family:inherit;outline:none;background:var(--bg);color:var(--txt);width:100%;box-sizing:border-box;transition:border-color .2s">
+        <button type="button" class="suggest-btn" id="suggestTitleBtn" onclick="suggestNoteTitle()" title="Suggest a title from your note">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 4.6L18.5 9l-4.6 1.9L12 15l-1.9-4.1L5.5 9l4.6-1.4z"/><path d="M19 14l.8 2 2 .8-2 .8-.8 2-.8-2-2-.8 2-.8z"/></svg>
+          <span>Suggest</span>
         </button>
-        <button class="close-modal" onclick="closeComposeModal()" aria-label="Close" title="Close"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
       </div>
     </div>
+
+    <!-- Subdued Top Bar: visible when header collapses upward to maximize body text view -->
+    <div class="compose-subdued-top" id="composeSubduedTop" onclick="_expandComposeTop()" title="Tap to show header & title">
+      <div class="cst-left">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4 12.5-12.5z"/></svg>
+        <span class="cst-title" id="composeSubduedTitleText">New Journal Entry</span>
+        <span class="cst-expand-hint">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </span>
+      </div>
+      <button type="button" class="cst-close" onclick="event.stopPropagation();closeComposeModal()" title="Close" aria-label="Close">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+
     <!-- Body -->
     <div class="compose-modal-body">
-      <!-- Center Scrollable Text & Document Area: title + notes scroll together so typing expands upward -->
-      <div class="compose-editor-scroll">
-        <!-- Title row (at top of scrollable canvas, scrolls away as user types body) -->
-        <div class="title-row" id="composeTitleRow" style="flex-shrink:0;margin-bottom:8px">
-          <input type="text" id="noteTitle" required maxlength="80" oninput="onNoteTitleInput()" placeholder="Title (required) — or tap Suggest" style="padding:10px 14px;border:1.5px solid var(--brd);border-radius:10px;font-size:13px;font-weight:700;font-family:inherit;outline:none;background:var(--bg);color:var(--txt);width:100%;box-sizing:border-box;transition:border-color .2s">
-          <button type="button" class="suggest-btn" id="suggestTitleBtn" onclick="suggestNoteTitle()" title="Suggest a title from your note">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 4.6L18.5 9l-4.6 1.9L12 15l-1.9-4.1L5.5 9l4.6-1.4z"/><path d="M19 14l.8 2 2 .8-2 .8-.8 2-.8-2-2-.8 2-.8z"/></svg>
-            <span>Suggest</span>
-          </button>
-        </div>
+      <!-- Center Scrollable Text & Document Area: expands upward -->
+      <div class="compose-editor-scroll" id="composeEditorScroll" onscroll="_onComposeScroll(this)">
         <!-- Direct Interactive Checklist Builder container -->
         <div id="clBuilder_noteInput" class="cl-builder-wrap" style="display:none"></div>
-        <!-- Textarea (expands upward) -->
+        <!-- Textarea -->
         <div class="editor-wrap" id="editorWrap_noteInput" style="flex:1;display:flex;flex-direction:column">
-          <textarea id="noteInput" onfocus="_setLastDocFocus('noteInput',this)" onclick="onTextareaClick(event);_setLastDocFocus('noteInput',this)" oninput="onNoteInput(this, event)" onblur="onNoteBlur(this)" onkeydown="onTextareaKeydown(event,'noteInput')" onkeyup="onTextareaKeyup(event,'noteInput')" placeholder="Write your note… tap a toolbar button to format, or just type naturally." inputmode="text" style="padding:2px 0;border:none;outline:none;background:transparent;color:var(--txt);font-size:13.5px;line-height:1.6;font-family:inherit;resize:none;min-height:160px;width:100%;box-sizing:border-box;flex:1"></textarea>
+          <textarea id="noteInput" onfocus="_setLastDocFocus('noteInput',this);_onNoteBodyFocus()" onclick="onTextareaClick(event);_setLastDocFocus('noteInput',this)" oninput="onNoteInput(this, event)" onblur="onNoteBlur(this)" onkeydown="onTextareaKeydown(event,'noteInput')" onkeyup="onTextareaKeyup(event,'noteInput')" placeholder="Write your note… tap a toolbar button to format, or just type naturally." inputmode="text" style="padding:2px 0;border:none;outline:none;background:transparent;color:var(--txt);font-size:13.5px;line-height:1.6;font-family:inherit;resize:none;min-height:160px;width:100%;box-sizing:border-box;flex:1"></textarea>
         </div>
         <!-- Mood nudge -->
         <div class="compose-mood-nudge" id="composeMoodNudge" style="display:none"></div>
@@ -12313,14 +12427,13 @@ function addNote() {
   const pinned = document.getElementById("notePin").checked;
 
   if (!title) {
-    const scrollWrap = document.querySelector("#composeOverlay .compose-editor-scroll");
-    if (scrollWrap) scrollWrap.scrollTo({ top: 0, behavior: "smooth" });
+    _expandComposeTop();
     toast("Give your entry a title first!");
     setTimeout(() => {
       titleEl.focus();
       titleEl.style.borderColor = "var(--dan)";
       setTimeout(() => { titleEl.style.borderColor = ""; }, 1600);
-    }, 100);
+    }, 150);
     return;
   }
   if (!text) { toast("Write something in the body first!"); return; }
@@ -12432,6 +12545,49 @@ function toggleComposeModalMaximize(forceState) {
 
 
 // ─── VISUAL VIEWPORT KEYBOARD DOCKING ENGINE (Phone & Tablet) ──────
+let _composeTopCollapsed = false;
+
+function _collapseComposeTop() {
+  if (_composeTopCollapsed) return;
+  _composeTopCollapsed = true;
+  const topCol = document.getElementById("composeTopCollapsible");
+  const subTop = document.getElementById("composeSubduedTop");
+  const titleVal = (document.getElementById("noteTitle")?.value || "").trim();
+  const subText = document.getElementById("composeSubduedTitleText");
+
+  if (subText) subText.textContent = titleVal || "New Journal Entry";
+  if (topCol) topCol.classList.add("is-collapsed");
+  if (subTop) subTop.classList.add("show");
+}
+
+function _expandComposeTop() {
+  if (!_composeTopCollapsed) return;
+  _composeTopCollapsed = false;
+  const topCol = document.getElementById("composeTopCollapsible");
+  const subTop = document.getElementById("composeSubduedTop");
+
+  if (topCol) topCol.classList.remove("is-collapsed");
+  if (subTop) subTop.classList.remove("show");
+}
+
+function _onNoteBodyFocus() {
+  if (window.innerWidth <= 900) {
+    _collapseComposeTop();
+  }
+}
+
+let _lastComposeScrollY = 0;
+function _onComposeScroll(el) {
+  if (!el) return;
+  const curY = el.scrollTop;
+  if (curY <= 2) {
+    _expandComposeTop();
+  } else if (curY > 16 && curY > _lastComposeScrollY + 4) {
+    _collapseComposeTop();
+  }
+  _lastComposeScrollY = curY;
+}
+
 function scrollToolbar(delta) {
   const tb = document.getElementById("composerToolbar");
   if (!tb) return;
@@ -12530,6 +12686,7 @@ function closeComposeModal() {
   }
   if (document.body && document.body.classList) document.body.classList.remove("modal-open");
   if (document.body) document.body.style.overflow = "";
+  _expandComposeTop();
   const _npEl = document.getElementById("notePin");
   if (_npEl) _npEl.checked = false;
   const _npBtn = document.getElementById("notePinBtn");
