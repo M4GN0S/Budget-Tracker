@@ -1167,21 +1167,27 @@ tbody tr:hover td{background:var(--pri-l)}
     background: var(--card) !important;
     border-top: 1.5px solid var(--brd) !important;
     box-shadow: 0 -4px 14px rgba(0,0,0,.08) !important;
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    padding: 6px 10px calc(6px + env(safe-area-inset-bottom, 0px)) !important;
+    gap: 6px !important;
+    box-sizing: border-box !important;
   }
   .compose-bottom-dock .editor-toolbar {
-    padding: 5px 8px !important;
-    background: var(--card) !important;
-    border-bottom: 1px solid var(--brd) !important;
-    width: 100% !important;
-    box-sizing: border-box !important;
-  }
-  .compose-modal-foot {
-    flex-shrink: 0 !important;
-    padding: 7px 10px calc(7px + env(safe-area-inset-bottom, 0px)) !important;
-    border-top: none !important;
-    background: var(--card) !important;
-    width: 100% !important;
-    box-sizing: border-box !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 4px !important;
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+    padding: 0 !important;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    scrollbar-width: none !important;
   }
   .note-modal-foot {
     flex-shrink: 0 !important;
@@ -1316,7 +1322,7 @@ tbody tr:hover td{background:var(--pri-l)}
 .compose-mood-nudge .cmn-btn{display:inline-flex;align-items:center;gap:7px;font-family:inherit;font-size:12px;font-weight:700;color:var(--on-pri,#fff);background:var(--pri);border:1.5px solid var(--pri);border-radius:9px;padding:8px 13px;cursor:pointer;transition:.15s}
 .compose-mood-nudge .cmn-btn:hover{filter:brightness(1.07);transform:translateY(-1px)}
 
-/* ─── Pinned Bottom Keyboard Bar (Sticky directly above virtual keyboard) ─── */
+/* ─── Pinned Single-Row Bottom Keyboard Bar ─── */
 .compose-bottom-dock {
   position: sticky;
   bottom: 0;
@@ -1326,71 +1332,126 @@ tbody tr:hover td{background:var(--pri-l)}
   background: var(--card);
   border-top: 1.5px solid var(--brd);
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
   flex-shrink: 0;
   margin-top: auto;
   margin-left: -22px;
   margin-right: -22px;
   box-shadow: 0 -4px 18px rgba(0,0,0,.06);
   width: calc(100% + 44px);
+  padding: 6px 14px calc(6px + env(safe-area-inset-bottom, 0px));
   box-sizing: border-box;
 }
 @media(max-width:900px){
   .compose-bottom-dock {
-    margin-left: -16px !important;
-    margin-right: -16px !important;
-    width: calc(100% + 32px) !important;
+    margin-left: -14px !important;
+    margin-right: -14px !important;
+    width: calc(100% + 28px) !important;
+    padding: 6px 10px calc(6px + env(safe-area-inset-bottom, 0px)) !important;
+    gap: 6px !important;
   }
 }
 .compose-bottom-dock .editor-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex: 1 1 auto;
+  min-width: 0;
   border: none;
   border-radius: 0;
   background: transparent;
   box-shadow: none;
-  padding: 6px 12px;
-  border-bottom: 1px solid var(--brd);
-  width: 100%;
-  box-sizing: border-box;
+  padding: 0;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
 }
-.compose-modal-foot {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  flex-wrap: wrap;
-  padding: 8px 12px calc(8px + env(safe-area-inset-bottom, 0px));
-  background: var(--card);
-  flex-shrink: 0;
-  width: 100%;
-  box-sizing: border-box;
+.compose-bottom-dock .editor-toolbar::-webkit-scrollbar {
+  display: none;
 }
-.compose-modal-foot select {
-  padding: 7px 11px;
+.dock-tag-select {
+  padding: 4px 8px;
   border: 1.5px solid var(--brd);
-  border-radius: 9px;
+  border-radius: 8px;
   font-size: 12px;
+  font-weight: 700;
   font-family: inherit;
   background: var(--bg);
   color: var(--txt);
   outline: none;
+  height: 32px;
+  box-sizing: border-box;
+  flex-shrink: 0;
+  cursor: pointer;
+  transition: border-color .15s ease;
 }
-.compose-pin-label {
-  display: flex;
+.dock-tag-select:focus, .dock-tag-select:hover {
+  border-color: var(--pri);
+}
+.tb-btn.tb-pin {
+  display: inline-flex;
   align-items: center;
-  gap: 5px;
-  font-size: 12px;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: 1px solid var(--brd);
+  background: var(--bg);
   color: var(--txt2);
   cursor: pointer;
-  white-space: nowrap;
+  flex-shrink: 0;
+  transition: all .15s ease;
 }
-.compose-modal-foot .btn {
-  padding: 8px 14px;
+.tb-btn.tb-pin:hover {
+  background: var(--pri-l);
+  color: var(--pri-d);
+}
+.tb-btn.tb-pin.active {
+  background: var(--acc-l);
+  color: var(--acc);
+  border-color: var(--acc);
+}
+.dock-save-btn {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 0 16px;
   border-radius: 9px;
-  font-size: 12.5px;
+  font-weight: 800;
+  font-size: 13px;
+  font-family: inherit;
+  background: var(--pri);
+  color: var(--on-pri, #fff);
+  border: 1.5px solid var(--pri);
   cursor: pointer;
+  white-space: nowrap;
+  height: 34px;
+  box-sizing: border-box;
+  transition: all .15s ease;
 }
-.compose-modal-foot .btn-pri {
-  font-weight: 700;
-  padding: 8px 18px;
+.dock-save-btn:hover {
+  filter: brightness(1.08);
+  transform: translateY(-1px);
+}
+.dock-save-btn:active {
+  transform: scale(.97);
+}
+@media(max-width:520px){
+  .dock-save-btn {
+    padding: 0 12px;
+    font-size: 12.5px;
+    height: 32px;
+  }
+  .dock-tag-select {
+    padding: 3px 6px;
+    font-size: 12px;
+    height: 30px;
+  }
 }
 
 /* ─── Journal Formatting Toolbar ─── */
@@ -4461,9 +4522,24 @@ footer .footer-links a:hover{color:var(--pri-d)}
         <div class="compose-mood-nudge" id="composeMoodNudge" style="display:none"></div>
         <div class="note-dup-warn" id="noteDupWarn" style="display:none"></div>
       </div>
-      <!-- Pinned Bottom Keyboard Bar: permanently pinned directly above keyboard like native mobile note apps -->
+      <!-- Pinned Bottom Keyboard Bar: single compact row directly above virtual keyboard -->
       <div class="compose-bottom-dock">
         <div class="editor-toolbar" id="composerToolbar" role="toolbar" aria-label="Formatting">
+          <select id="noteTag" class="dock-tag-select" onchange="markNoteTagManual()" title="Category">
+            <option value="note">Note</option>
+            <option value="goal">Goal</option>
+            <option value="reminder">Reminder</option>
+            <option value="reflection">Reflection</option>
+            <option value="idea">Idea</option>
+            <option value="receipt">Receipt</option>
+            <option value="checklist">Checklist</option>
+          </select>
+          <span class="note-tag-hint" id="noteTagHint" style="display:none"></span>
+          <label class="tb-btn tb-pin" id="notePinBtn" title="Pin note to top">
+            <input type="checkbox" id="notePin" style="display:none" onchange="const b = document.getElementById('notePinBtn'); if(b) b.classList.toggle('active', this.checked)">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 3l1 7 4 2v2l-7-2-4 7-1.5-1.5L10 12 3 5l2-4 7 2 4-1z"/></svg>
+          </label>
+          <span class="tb-sep"></span>
           <button type="button" class="tb-btn tb-b" onmousedown="event.preventDefault()" onclick="tbWrap('noteInput','**','**')" title="Bold (Ctrl/Cmd+B)"><b>B</b></button>
           <button type="button" class="tb-btn tb-i" onmousedown="event.preventDefault()" onclick="tbWrap('noteInput','*','*')" title="Italic"><i>I</i></button>
           <span class="tb-sep"></span>
@@ -4477,24 +4553,10 @@ footer .footer-links a:hover{color:var(--pri-d)}
             ₱ List
           </button>
         </div>
-        <div class="compose-modal-foot">
-          <select id="noteTag" onchange="markNoteTagManual()">
-            <option value="note">Note</option>
-            <option value="goal">Goal</option>
-            <option value="reminder">Reminder</option>
-            <option value="reflection">Reflection</option>
-            <option value="idea">Idea</option>
-            <option value="receipt">Receipt</option>
-            <option value="checklist">Checklist</option>
-          </select>
-          <span class="note-tag-hint" id="noteTagHint" style="display:none"></span>
-          <label class="compose-pin-label">
-            <input type="checkbox" id="notePin"> Pin to top
-          </label>
-          <div style="flex:1"></div>
-          <button type="button" class="btn" onclick="closeComposeModal()">Cancel</button>
-          <button type="button" class="btn btn-pri" onclick="addNote()">Save Entry</button>
-        </div>
+        <button type="button" class="dock-save-btn" onclick="addNote()" title="Save Entry">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          <span>Save</span>
+        </button>
       </div>
     </div>
   </div>
@@ -12203,6 +12265,8 @@ function addNote() {
   const _ni = document.getElementById("noteInput");
   _ni.value = ""; autoGrowTextarea(_ni);   // reset auto-grown height
   document.getElementById("notePin").checked = false;
+  const _npb = document.getElementById("notePinBtn");
+  if (_npb) _npb.classList.remove("active");
   // Reset smart auto-tag state for the next entry
   _noteTagUserOverride = false;
   document.getElementById("noteTag").value = "note";
@@ -12360,6 +12424,10 @@ function closeComposeModal() {
   }
   if (document.body && document.body.classList) document.body.classList.remove("modal-open");
   if (document.body) document.body.style.overflow = "";
+  const _npEl = document.getElementById("notePin");
+  if (_npEl) _npEl.checked = false;
+  const _npBtn = document.getElementById("notePinBtn");
+  if (_npBtn) _npBtn.classList.remove("active");
   toggleComposeModalMaximize(false);
   _resetClBuilder('noteInput');
 }

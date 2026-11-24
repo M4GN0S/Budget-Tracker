@@ -9,8 +9,8 @@
 //   The browser detects the SW file changed → downloads new version → updates cache.
 //   You don't need to manually bump version numbers anymore.
 //
-const CACHE_NAME = 'budget-tracker-v275';
-// Last updated: 2026-09-09 — Fix mobile keyboard toolbar docking, viewport resizing & prevent zoom
+const CACHE_NAME = 'budget-tracker-v276';
+// Last updated: 2026-09-09 — Single-row compact keyboard accessory toolbar & remove redundant cancel button
 
 const ASSETS = [
   './',
