@@ -1348,6 +1348,7 @@ tbody tr:hover td{background:var(--pri-l)}
     padding: 1px 3px !important;
     height: 34px !important;
     box-sizing: border-box !important;
+    position: relative !important;
   }
   .tb-nav-arrow {
     display: inline-flex !important;
@@ -1356,17 +1357,52 @@ tbody tr:hover td{background:var(--pri-l)}
     width: 20px !important;
     height: 28px !important;
     border-radius: 6px !important;
-    border: none !important;
-    background: transparent !important;
-    color: var(--txt2) !important;
+    border: 1px solid var(--brd) !important;
+    background: var(--card) !important;
+    color: var(--txt) !important;
     cursor: pointer !important;
     flex-shrink: 0 !important;
     padding: 0 !important;
+    box-shadow: 0 1px 2px rgba(0,0,0,.04) !important;
     transition: all .15s ease !important;
+    z-index: 3 !important;
   }
   .tb-nav-arrow:hover {
-    background: var(--card) !important;
-    color: var(--txt) !important;
+    background: var(--pri-l) !important;
+    color: var(--pri-d) !important;
+  }
+  .tb-nav-arrow.is-disabled {
+    opacity: 0.25 !important;
+    pointer-events: none !important;
+    border-color: transparent !important;
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+  .compose-bottom-dock .dock-scroll-wrapper .tb-carousel-viewport {
+    position: relative !important;
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    overflow: hidden !important;
+  }
+  .tb-fade {
+    position: absolute !important;
+    top: 0 !important;
+    bottom: 0 !important;
+    width: 14px !important;
+    pointer-events: none !important;
+    z-index: 2 !important;
+    transition: opacity .15s ease !important;
+    opacity: 0 !important;
+  }
+  .tb-fade-left {
+    left: 0 !important;
+    background: linear-gradient(to right, var(--bg, #f4f5f8), transparent) !important;
+  }
+  .tb-fade-right {
+    right: 0 !important;
+    background: linear-gradient(to left, var(--bg, #f4f5f8), transparent) !important;
   }
   .compose-bottom-dock .dock-scroll-wrapper .editor-toolbar {
     flex: 1 1 auto !important;
@@ -1380,19 +1416,17 @@ tbody tr:hover td{background:var(--pri-l)}
     box-shadow: none !important;
     padding: 0 2px !important;
     overflow-x: auto !important;
+    scroll-behavior: smooth !important;
     -webkit-overflow-scrolling: touch !important;
     scrollbar-width: none !important;
   }
 
-  /* Hide Desktop Spacer and Desktop Cancel on Mobile */
+  /* Hide Desktop Spacer on Mobile */
   .desktop-foot-spacer {
     display: none !important;
   }
-  .compose-desktop-cancel {
-    display: none !important;
-  }
 
-  /* Mobile Compact Save Button */
+  /* Mobile Compact Save Button with Floppy Disk Icon */
   .compose-save-btn {
     order: 4 !important;
     display: inline-flex !important;
@@ -1639,7 +1673,7 @@ tbody tr:hover td{background:var(--pri-l)}
   box-sizing: border-box;
 }
 
-/* Desktop: Toolbar under Title row */
+/* Desktop: Toolbar under Title row with Carousel Navigation */
 .compose-bottom-dock {
   display: contents;
 }
@@ -1647,30 +1681,89 @@ tbody tr:hover td{background:var(--pri-l)}
   order: 1;
   display: flex;
   align-items: center;
+  gap: 4px;
   width: 100%;
-  background: transparent;
-  border: none;
-  padding: 0;
-  height: auto;
+  background: var(--card);
+  border: 1.5px solid var(--brd);
+  border-radius: 10px;
+  padding: 4px 6px;
+  box-sizing: border-box;
   flex-shrink: 0;
+  position: relative;
+}
+.compose-bottom-dock .dock-scroll-wrapper .tb-carousel-viewport {
+  position: relative;
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+}
+.compose-bottom-dock .dock-scroll-wrapper .tb-fade {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 14px;
+  pointer-events: none;
+  z-index: 2;
+  transition: opacity .15s ease;
+  opacity: 0;
+}
+.compose-bottom-dock .dock-scroll-wrapper .tb-fade-left {
+  left: 0;
+  background: linear-gradient(to right, var(--card), transparent);
+}
+.compose-bottom-dock .dock-scroll-wrapper .tb-fade-right {
+  right: 0;
+  background: linear-gradient(to left, var(--card), transparent);
 }
 .compose-bottom-dock .dock-scroll-wrapper .tb-nav-arrow {
-  display: none !important;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 28px;
+  border-radius: 6px;
+  border: 1px solid var(--brd);
+  background: var(--bg);
+  color: var(--txt);
+  cursor: pointer;
+  flex-shrink: 0;
+  padding: 0;
+  box-shadow: 0 1px 2px rgba(0,0,0,.04);
+  transition: all .15s ease;
+  z-index: 3;
+}
+.compose-bottom-dock .dock-scroll-wrapper .tb-nav-arrow:hover {
+  background: var(--pri-l);
+  color: var(--pri-d);
+  border-color: var(--pri);
+}
+.compose-bottom-dock .dock-scroll-wrapper .tb-nav-arrow.is-disabled {
+  opacity: 0.25;
+  pointer-events: none;
+  border-color: transparent;
+  background: transparent;
+  box-shadow: none;
 }
 .compose-bottom-dock .dock-scroll-wrapper .editor-toolbar {
   display: flex;
   align-items: center;
   gap: 3px;
-  padding: 5px 8px;
-  background: var(--card);
-  border: 1.5px solid var(--brd);
-  border-radius: 10px;
+  padding: 0 2px;
+  background: transparent;
+  border: none;
+  border-radius: 0;
   margin: 0;
   flex-shrink: 0;
   width: 100%;
   box-sizing: border-box;
   overflow-x: auto;
+  scroll-behavior: smooth;
   scrollbar-width: none;
+}
+.compose-bottom-dock .dock-scroll-wrapper .editor-toolbar::-webkit-scrollbar {
+  display: none;
 }
 
 /* Desktop: Canvas in center */
@@ -1709,8 +1802,8 @@ tbody tr:hover td{background:var(--pri-l)}
   display: flex;
   flex-direction: row;
   align-items: center;
-  gap: 8px;
-  padding: 10px 0 0;
+  gap: 10px;
+  padding: 12px 0 0;
   border-top: 1px solid var(--brd);
   background: var(--card);
   flex-shrink: 0;
@@ -1720,6 +1813,7 @@ tbody tr:hover td{background:var(--pri-l)}
 .compose-desktop-foot .dock-tag-wrap {
   display: inline-flex;
   align-items: center;
+  gap: 6px;
   position: relative;
   background: var(--bg);
   border: 1.5px solid var(--brd);
@@ -1729,71 +1823,86 @@ tbody tr:hover td{background:var(--pri-l)}
   box-sizing: border-box;
   flex-shrink: 0;
   cursor: pointer;
+  transition: border-color .15s ease;
 }
-.compose-desktop-foot .dock-tag-icon,
-.compose-desktop-foot .dock-tag-arrow {
-  display: none !important;
+.compose-desktop-foot .dock-tag-wrap:hover {
+  border-color: var(--pri);
+}
+.compose-desktop-foot .dock-tag-icon {
+  display: inline-block !important;
+  color: var(--pri) !important;
+  flex-shrink: 0 !important;
+  pointer-events: none !important;
 }
 .compose-desktop-foot .dock-tag-select {
-  border: none;
-  background: transparent;
-  font-size: 12px;
-  font-family: inherit;
-  color: var(--txt);
-  outline: none;
-  cursor: pointer;
-  padding: 0;
-  margin: 0;
-  appearance: auto;
-  -webkit-appearance: menulist;
+  border: none !important;
+  background: transparent !important;
+  font-size: 12.5px !important;
+  font-weight: 600 !important;
+  font-family: inherit !important;
+  color: var(--txt) !important;
+  outline: none !important;
+  cursor: pointer !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  appearance: none !important;
+  -webkit-appearance: none !important;
+}
+.compose-desktop-foot .dock-tag-arrow {
+  display: inline-block !important;
+  color: var(--txt2) !important;
+  opacity: .7 !important;
+  flex-shrink: 0 !important;
+  pointer-events: none !important;
+  margin-left: 2px !important;
 }
 .compose-desktop-foot .tb-btn.tb-pin {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
-  width: auto;
-  height: auto;
-  padding: 0;
-  border: none;
-  background: transparent;
+  gap: 6px;
+  height: 36px;
+  padding: 0 12px;
+  border-radius: 10px;
+  border: 1.5px solid var(--brd);
+  background: var(--bg);
   color: var(--txt2);
-  font-size: 12px;
+  font-size: 12.5px;
+  font-weight: 600;
   cursor: pointer;
+  transition: all .15s ease;
+  width: auto;
+}
+.compose-desktop-foot .tb-btn.tb-pin:hover {
+  border-color: var(--acc);
+  color: var(--txt);
+}
+.compose-desktop-foot .tb-btn.tb-pin.active {
+  background: var(--acc-l);
+  color: var(--acc);
+  border-color: var(--acc);
+  font-weight: 700;
 }
 .compose-desktop-foot .tb-btn.tb-pin svg {
-  display: none !important;
+  display: inline-block !important;
 }
 .compose-desktop-foot .tb-btn.tb-pin input[type="checkbox"] {
-  display: inline-block !important;
-  cursor: pointer;
-  margin: 0;
+  display: none !important;
 }
 .compose-desktop-foot .desktop-pin-text {
   display: inline !important;
-  color: var(--txt2);
-  font-size: 12px;
+  color: inherit;
+  font-size: 12.5px;
   white-space: nowrap;
 }
 .compose-desktop-foot .desktop-foot-spacer {
   display: block !important;
   flex: 1;
 }
-.compose-desktop-foot .compose-desktop-cancel {
-  display: inline-flex !important;
-  align-items: center;
-  justify-content: center;
-  padding: 9px 16px !important;
-  border-radius: 10px !important;
-  border: 1.5px solid var(--brd) !important;
-  background: var(--bg) !important;
-  color: var(--txt2) !important;
-  font-size: 13px !important;
-  cursor: pointer !important;
-}
 .compose-desktop-foot .compose-save-btn {
   display: inline-flex !important;
   align-items: center;
   justify-content: center;
+  gap: 7px !important;
   padding: 9px 20px !important;
   border-radius: 10px !important;
   background: var(--pri) !important;
@@ -1801,12 +1910,17 @@ tbody tr:hover td{background:var(--pri-l)}
   font-size: 13px !important;
   font-weight: 700 !important;
   width: auto !important;
-  height: auto !important;
+  height: 36px !important;
   cursor: pointer !important;
   border: 1.5px solid var(--pri) !important;
+  box-shadow: 0 2px 6px rgba(0,0,0,.12) !important;
+  transition: all .15s ease !important;
+}
+.compose-desktop-foot .compose-save-btn:hover {
+  filter: brightness(1.08);
 }
 .compose-desktop-foot .dock-save-icon {
-  display: none !important;
+  display: inline-block !important;
 }
 .compose-desktop-foot .desktop-save-text {
   display: inline !important;
@@ -4902,35 +5016,39 @@ footer .footer-links a:hover{color:var(--pri-d)}
       <!-- Pinned Bottom Keyboard Bar (Mobile) / Desktop Modal Toolbar & Footer Container -->
       <div class="compose-bottom-dock">
         <!-- Formatting Strip: Order 1 on Desktop (under title), Order 3 in single-row dock on Mobile -->
-        <div class="dock-scroll-wrapper" id="composerToolbarWrapper">
-          <button type="button" class="tb-nav-arrow tb-nav-prev" id="tbScrollLeftBtn" onmousedown="event.preventDefault()" onclick="scrollToolbar(-90)" title="Scroll formatting tools left" aria-label="Scroll tools left">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+        <div class="dock-scroll-wrapper" id="composerToolbarWrapper" title="Swipe or click arrows to scroll tools">
+          <button type="button" class="tb-nav-arrow tb-nav-prev" id="tbScrollLeftBtn" onmousedown="event.preventDefault()" onclick="scrollToolbar(-100)" title="Scroll tools left" aria-label="Scroll tools left">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
           </button>
-          <div class="editor-toolbar" id="composerToolbar" role="toolbar" aria-label="Formatting" onscroll="_updateToolbarArrows()">
-            <button type="button" class="tb-btn tb-b" onmousedown="event.preventDefault()" onclick="tbWrap('noteInput','**','**')" title="Bold (Ctrl/Cmd+B)"><b>B</b></button>
-            <button type="button" class="tb-btn tb-i" onmousedown="event.preventDefault()" onclick="tbWrap('noteInput','*','*')" title="Italic"><i>I</i></button>
-            <span class="tb-sep"></span>
-            <button type="button" class="tb-btn" onmousedown="event.preventDefault()" onclick="tbInsertLine('noteInput','- ')" title="Bullet list"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="9" y1="6" x2="21" y2="6"/><line x1="9" y1="12" x2="21" y2="12"/><line x1="9" y1="18" x2="21" y2="18"/><circle cx="4.5" cy="6" r="1.3" fill="currentColor"/><circle cx="4.5" cy="12" r="1.3" fill="currentColor"/><circle cx="4.5" cy="18" r="1.3" fill="currentColor"/></svg></button>
-            <button type="button" class="tb-btn" onmousedown="event.preventDefault()" onclick="tbInsertLine('noteInput','[ ] ')" title="Checkbox / to-do"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="4" y="4" width="16" height="16" rx="3"/></svg></button>
-            <button type="button" class="tb-btn" onmousedown="event.preventDefault()" onclick="tbInsertLine('noteInput','1. ')" title="Numbered list"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><text x="2" y="10" font-size="7" font-weight="800" fill="currentColor" stroke="none">1</text><text x="2" y="17" font-size="7" font-weight="800" fill="currentColor" stroke="none">2</text><text x="2" y="23" font-size="7" font-weight="800" fill="currentColor" stroke="none">3</text><line x1="9" y1="7" x2="21" y2="7"/><line x1="9" y1="14" x2="21" y2="14"/><line x1="9" y1="21" x2="21" y2="21"/></svg></button>
-            <button type="button" class="tb-btn" onmousedown="event.preventDefault()" onclick="tbInsertHeading('noteInput')" title="Heading" style="font-weight:900;font-size:14px">H</button>
-            <span class="tb-sep"></span>
-            <button type="button" class="tb-btn tb-wide" onmousedown="event.preventDefault()" onclick="tbInsertPriceList('noteInput')" title="Insert a priced checklist (shopping, car parts, etc.)">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3 7-7"/><path d="M20 12v7a2 2 0 01-2 2H6a2 2 0 01-2-2V5a2 2 0 012-2h8"/><line x1="3.5" y1="10" x2="8.5" y2="10"/><line x1="3.5" y1="15" x2="8.5" y2="15"/></svg>
-              ₱ List
-            </button>
+          <div class="tb-carousel-viewport">
+            <div class="tb-fade tb-fade-left" id="tbFadeLeft"></div>
+            <div class="editor-toolbar" id="composerToolbar" role="toolbar" aria-label="Formatting" onscroll="_updateToolbarArrows()">
+              <button type="button" class="tb-btn tb-b" onmousedown="event.preventDefault()" onclick="tbWrap('noteInput','**','**')" title="Bold (Ctrl/Cmd+B)"><b>B</b></button>
+              <button type="button" class="tb-btn tb-i" onmousedown="event.preventDefault()" onclick="tbWrap('noteInput','*','*')" title="Italic"><i>I</i></button>
+              <span class="tb-sep"></span>
+              <button type="button" class="tb-btn" onmousedown="event.preventDefault()" onclick="tbInsertLine('noteInput','- ')" title="Bullet list"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="9" y1="6" x2="21" y2="6"/><line x1="9" y1="12" x2="21" y2="12"/><line x1="9" y1="18" x2="21" y2="18"/><circle cx="4.5" cy="6" r="1.3" fill="currentColor"/><circle cx="4.5" cy="12" r="1.3" fill="currentColor"/><circle cx="4.5" cy="18" r="1.3" fill="currentColor"/></svg></button>
+              <button type="button" class="tb-btn" onmousedown="event.preventDefault()" onclick="tbInsertLine('noteInput','[ ] ')" title="Checkbox / to-do"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="4" y="4" width="16" height="16" rx="3"/></svg></button>
+              <button type="button" class="tb-btn" onmousedown="event.preventDefault()" onclick="tbInsertLine('noteInput','1. ')" title="Numbered list"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><text x="2" y="10" font-size="7" font-weight="800" fill="currentColor" stroke="none">1</text><text x="2" y="17" font-size="7" font-weight="800" fill="currentColor" stroke="none">2</text><text x="2" y="23" font-size="7" font-weight="800" fill="currentColor" stroke="none">3</text><line x1="9" y1="7" x2="21" y2="7"/><line x1="9" y1="14" x2="21" y2="14"/><line x1="9" y1="21" x2="21" y2="21"/></svg></button>
+              <button type="button" class="tb-btn" onmousedown="event.preventDefault()" onclick="tbInsertHeading('noteInput')" title="Heading" style="font-weight:900;font-size:14px">H</button>
+              <span class="tb-sep"></span>
+              <button type="button" class="tb-btn tb-wide" onmousedown="event.preventDefault()" onclick="tbInsertPriceList('noteInput')" title="Insert a priced checklist (shopping, car parts, etc.)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3 7-7"/><path d="M20 12v7a2 2 0 01-2 2H6a2 2 0 01-2-2V5a2 2 0 012-2h8"/><line x1="3.5" y1="10" x2="8.5" y2="10"/><line x1="3.5" y1="15" x2="8.5" y2="15"/></svg>
+                ₱ List
+              </button>
+            </div>
+            <div class="tb-fade tb-fade-right" id="tbFadeRight"></div>
           </div>
-          <button type="button" class="tb-nav-arrow tb-nav-next" id="tbScrollRightBtn" onmousedown="event.preventDefault()" onclick="scrollToolbar(90)" title="Scroll formatting tools right" aria-label="Scroll tools right">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+          <button type="button" class="tb-nav-arrow tb-nav-next" id="tbScrollRightBtn" onmousedown="event.preventDefault()" onclick="scrollToolbar(100)" title="Scroll tools right" aria-label="Scroll tools right">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
           </button>
         </div>
 
         <!-- Footer Elements: Order 3 on Desktop (footer row), or inline in single row on Mobile -->
         <div class="compose-desktop-foot" id="composeDesktopFoot">
           <!-- Compact Category Pill (Mobile) / Standard Select (Desktop) -->
-          <div class="dock-tag-wrap" title="Category">
+          <div class="dock-tag-wrap" title="Select category">
             <svg class="dock-tag-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
-            <select id="noteTag" class="dock-tag-select" onchange="markNoteTagManual()">
+            <select id="noteTag" class="dock-tag-select" onchange="markNoteTagManual()" aria-label="Note Category">
               <option value="note">Note</option>
               <option value="goal">Goal</option>
               <option value="reminder">Reminder</option>
@@ -4946,19 +5064,16 @@ footer .footer-links a:hover{color:var(--pri-d)}
           <!-- Sleek Pushpin Button / Desktop Label -->
           <label class="tb-btn tb-pin" id="notePinBtn" title="Pin note to top" aria-label="Pin note to top">
             <input type="checkbox" id="notePin" onchange="const b = document.getElementById('notePinBtn'); if(b) b.classList.toggle('active', this.checked)">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="17" x2="12" y2="22"/><path d="M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V6h1a1 1 0 0 0 0-2H8a1 1 0 0 0 0 2h1v4.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24Z"/></svg>
+            <svg class="dock-pin-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="17" x2="12" y2="22"/><path d="M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V6h1a1 1 0 0 0 0-2H8a1 1 0 0 0 0 2h1v4.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24Z"/></svg>
             <span class="desktop-pin-text">Pin to top</span>
           </label>
 
           <!-- Desktop Spacer -->
           <div class="desktop-foot-spacer" style="display:none;flex:1"></div>
 
-          <!-- Desktop Cancel Button -->
-          <button type="button" class="btn compose-desktop-cancel" onclick="closeComposeModal()" style="display:none;padding:9px 16px;border-radius:10px;border:1.5px solid var(--brd);background:var(--bg);color:var(--txt2);font-size:13px;cursor:pointer">Cancel</button>
-
-          <!-- Save Button: Compact icon on Mobile, Full button on Desktop -->
+          <!-- Save Button: Floppy disk icon on mobile, Floppy disk icon + text on desktop -->
           <button type="button" class="btn btn-pri dock-save-btn compose-save-btn" onclick="addNote()" title="Save Entry" aria-label="Save Entry">
-            <svg class="dock-save-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            <svg class="dock-save-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
             <span class="desktop-save-text" style="display:none">Save Entry</span>
           </button>
         </div>
@@ -12816,15 +12931,42 @@ function _updateToolbarArrows() {
   const tb = document.getElementById("composerToolbar");
   const leftBtn = document.getElementById("tbScrollLeftBtn");
   const rightBtn = document.getElementById("tbScrollRightBtn");
-  if (!tb || !leftBtn || !rightBtn) return;
+  const fadeLeft = document.getElementById("tbFadeLeft");
+  const fadeRight = document.getElementById("tbFadeRight");
+  if (!tb) return;
 
-  const maxScroll = tb.scrollWidth - tb.clientWidth;
-  if (maxScroll <= 2) {
-    leftBtn.style.opacity = "0.35";
-    rightBtn.style.opacity = "0.35";
-  } else {
-    leftBtn.style.opacity = tb.scrollLeft <= 4 ? "0.35" : "1";
-    rightBtn.style.opacity = tb.scrollLeft >= maxScroll - 4 ? "0.35" : "1";
+  const maxScroll = Math.max(0, tb.scrollWidth - tb.clientWidth);
+  const curScroll = tb.scrollLeft;
+
+  if (leftBtn) {
+    if (maxScroll <= 2 || curScroll <= 2) {
+      leftBtn.classList.add("is-disabled");
+      leftBtn.style.opacity = "0.25";
+      leftBtn.style.pointerEvents = "none";
+    } else {
+      leftBtn.classList.remove("is-disabled");
+      leftBtn.style.opacity = "1";
+      leftBtn.style.pointerEvents = "auto";
+    }
+  }
+
+  if (rightBtn) {
+    if (maxScroll <= 2 || curScroll >= maxScroll - 2) {
+      rightBtn.classList.add("is-disabled");
+      rightBtn.style.opacity = "0.25";
+      rightBtn.style.pointerEvents = "none";
+    } else {
+      rightBtn.classList.remove("is-disabled");
+      rightBtn.style.opacity = "1";
+      rightBtn.style.pointerEvents = "auto";
+    }
+  }
+
+  if (fadeLeft) {
+    fadeLeft.style.opacity = (curScroll > 4) ? "1" : "0";
+  }
+  if (fadeRight) {
+    fadeRight.style.opacity = (curScroll < maxScroll - 4 && maxScroll > 2) ? "1" : "0";
   }
 }
 
@@ -12878,7 +13020,15 @@ function openComposeModal() {
   if (document.body) document.body.style.overflow = "hidden";
   ov.classList.add("show");
   _syncVisualViewportKeyboard();
-  setTimeout(_updateToolbarArrows, 60);
+  setTimeout(() => {
+    _updateToolbarArrows();
+    // Brief subtle peek on toolbar to show it is a scrollable carousel if overflowing
+    const tb = document.getElementById("composerToolbar");
+    if (tb && tb.scrollWidth > tb.clientWidth) {
+      tb.scrollLeft = 0;
+      _updateToolbarArrows();
+    }
+  }, 60);
   // Focus the title field after the animation settles
   setTimeout(() => {
     const t = document.getElementById("noteTitle");
