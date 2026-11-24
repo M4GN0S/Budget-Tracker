@@ -1233,7 +1233,18 @@ tbody tr:hover td{background:var(--pri-l)}
   flex-direction: column;
   flex-shrink: 0;
   margin-top: auto;
+  margin-left: -22px;
+  margin-right: -22px;
   box-shadow: 0 -4px 18px rgba(0,0,0,.06);
+  width: calc(100% + 44px);
+  box-sizing: border-box;
+}
+@media(max-width:900px){
+  .compose-bottom-dock {
+    margin-left: -16px !important;
+    margin-right: -16px !important;
+    width: calc(100% + 32px) !important;
+  }
 }
 .compose-bottom-dock .editor-toolbar {
   border: none;
@@ -1242,6 +1253,8 @@ tbody tr:hover td{background:var(--pri-l)}
   box-shadow: none;
   padding: 6px 12px;
   border-bottom: 1px solid var(--brd);
+  width: 100%;
+  box-sizing: border-box;
 }
 .compose-modal-foot {
   display: flex;
@@ -1251,6 +1264,8 @@ tbody tr:hover td{background:var(--pri-l)}
   padding: 8px 12px calc(8px + env(safe-area-inset-bottom, 0px));
   background: var(--card);
   flex-shrink: 0;
+  width: 100%;
+  box-sizing: border-box;
 }
 .compose-modal-foot select {
   padding: 7px 11px;
@@ -12174,21 +12189,57 @@ function toggleComposeModalMaximize(forceState) {
   }
 }
 
+
+// ─── VISUAL VIEWPORT KEYBOARD DOCKING ENGINE (Phone & Tablet) ──────
+function _syncVisualViewportKeyboard() {
+  if (typeof window === "undefined" || !window.visualViewport) return;
+  const composeOv = document.getElementById("composeOverlay");
+  const noteOv = document.getElementById("noteOverlay");
+
+  const activeOverlay = (composeOv && composeOv.classList.contains("show")) ? composeOv :
+                        (noteOv && noteOv.classList.contains("show")) ? noteOv : null;
+  if (!activeOverlay) return;
+
+  const modal = activeOverlay.querySelector(".note-modal");
+  if (!modal) return;
+
+  if (window.innerWidth <= 900) {
+    const vh = window.visualViewport.height;
+    const offsetTop = window.visualViewport.offsetTop || 0;
+    modal.style.height = vh + "px";
+    modal.style.maxHeight = vh + "px";
+  } else {
+    modal.style.height = "";
+    modal.style.maxHeight = "";
+  }
+}
+
+if (typeof window !== "undefined" && window.visualViewport) {
+  window.visualViewport.addEventListener("resize", _syncVisualViewportKeyboard);
+  window.visualViewport.addEventListener("scroll", _syncVisualViewportKeyboard);
+}
+
 function openComposeModal() {
   const ov = document.getElementById("composeOverlay");
   if (!ov) return;
   toggleComposeModalMaximize(false);
   ov.classList.add("show");
+  _syncVisualViewportKeyboard();
   // Focus the title field after the animation settles
   setTimeout(() => {
     const t = document.getElementById("noteTitle");
     if (t) t.focus();
+    _syncVisualViewportKeyboard();
   }, 80);
 }
 
 function closeComposeModal() {
   const ov = document.getElementById("composeOverlay");
-  if (ov) ov.classList.remove("show");
+  if (ov) {
+    ov.classList.remove("show");
+    const m = ov.querySelector(".note-modal");
+    if (m) { m.style.height = ""; m.style.maxHeight = ""; }
+  }
   toggleComposeModalMaximize(false);
   _resetClBuilder('noteInput');
 }

@@ -1437,6 +1437,7 @@ assert(indexHtml.includes('.clb-input-desc') && indexHtml.includes('font-size: 1
 assert(indexHtml.includes('@media(max-width:640px)'), "index.html contains responsive mobile adjustments for table layout");
 assert(indexHtml.includes('_ensureCursorVisible'), "index.html includes _ensureCursorVisible to keep text cursor focused and in view");
 assert(indexHtml.includes('.compose-bottom-dock'), "index.html uses .compose-bottom-dock for permanently pinned keyboard accessory bar");
+assert(indexHtml.includes('_syncVisualViewportKeyboard'), "index.html includes _syncVisualViewportKeyboard to track virtual keyboard height dynamically on mobile");
 assert(indexHtml.indexOf('id="composerToolbar"') > indexHtml.indexOf('class="compose-editor-scroll"'), "composerToolbar is positioned below the scrollable writing canvas, floating right above the mobile keyboard and footer");
 
 // ─── SUMMARY ────────────────────────────────────────────────
