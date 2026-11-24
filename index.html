@@ -1247,6 +1247,10 @@ tbody tr:hover td{background:var(--pri-l)}
     box-sizing: border-box !important;
   }
 
+  .compose-desktop-foot {
+    display: contents !important;
+  }
+
   /* Compact Category Pill with Tag Icon */
   .dock-tag-wrap {
     order: 1 !important;
@@ -1299,7 +1303,7 @@ tbody tr:hover td{background:var(--pri-l)}
   }
 
   /* Mobile Pushpin Button */
-  .compose-bottom-dock .tb-btn.tb-pin {
+  .tb-btn.tb-pin {
     order: 2 !important;
     display: inline-flex !important;
     align-items: center !important;
@@ -1315,16 +1319,16 @@ tbody tr:hover td{background:var(--pri-l)}
     transition: all .15s ease !important;
     padding: 0 !important;
   }
-  .compose-bottom-dock .tb-btn.tb-pin svg {
+  .tb-btn.tb-pin svg {
     display: block !important;
   }
-  .compose-bottom-dock .tb-btn.tb-pin input[type="checkbox"] {
+  .tb-btn.tb-pin input[type="checkbox"] {
     display: none !important;
   }
-  .compose-bottom-dock .desktop-pin-text {
+  .desktop-pin-text {
     display: none !important;
   }
-  .compose-bottom-dock .tb-btn.tb-pin.active {
+  .tb-btn.tb-pin.active {
     background: var(--acc-l) !important;
     color: var(--acc) !important;
     border-color: var(--acc) !important;
@@ -1381,15 +1385,15 @@ tbody tr:hover td{background:var(--pri-l)}
   }
 
   /* Hide Desktop Spacer and Desktop Cancel on Mobile */
-  .compose-bottom-dock .desktop-foot-spacer {
+  .desktop-foot-spacer {
     display: none !important;
   }
-  .compose-bottom-dock .compose-desktop-cancel {
+  .compose-desktop-cancel {
     display: none !important;
   }
 
   /* Mobile Compact Save Button */
-  .compose-bottom-dock .compose-save-btn {
+  .compose-save-btn {
     order: 4 !important;
     display: inline-flex !important;
     align-items: center !important;
@@ -1406,10 +1410,10 @@ tbody tr:hover td{background:var(--pri-l)}
     box-shadow: 0 2px 8px rgba(0,0,0,.15) !important;
     transition: all .15s ease !important;
   }
-  .compose-bottom-dock .dock-save-icon {
+  .dock-save-icon {
     display: block !important;
   }
-  .compose-bottom-dock .desktop-save-text {
+  .desktop-save-text {
     display: none !important;
   }
   .note-modal-foot {
@@ -1681,8 +1685,6 @@ tbody tr:hover td{background:var(--pri-l)}
   padding: 0;
   border: none;
   background: transparent;
-  border-bottom: 1px solid var(--brd) !important;
-  padding-bottom: 12px !important;
 }
 .compose-modal-body .compose-editor-scroll textarea#noteInput {
   padding: 10px 14px !important;
@@ -1701,9 +1703,21 @@ tbody tr:hover td{background:var(--pri-l)}
   outline: none !important;
 }
 
-/* Desktop: Footer items (order: 3) */
-.compose-bottom-dock .dock-tag-wrap {
+/* Desktop: Footer row at bottom */
+.compose-desktop-foot {
   order: 3;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 0 0;
+  border-top: 1px solid var(--brd);
+  background: var(--card);
+  flex-shrink: 0;
+  width: 100%;
+  box-sizing: border-box;
+}
+.compose-desktop-foot .dock-tag-wrap {
   display: inline-flex;
   align-items: center;
   position: relative;
@@ -1716,11 +1730,11 @@ tbody tr:hover td{background:var(--pri-l)}
   flex-shrink: 0;
   cursor: pointer;
 }
-.compose-bottom-dock .dock-tag-icon,
-.compose-bottom-dock .dock-tag-arrow {
+.compose-desktop-foot .dock-tag-icon,
+.compose-desktop-foot .dock-tag-arrow {
   display: none !important;
 }
-.compose-bottom-dock .dock-tag-select {
+.compose-desktop-foot .dock-tag-select {
   border: none;
   background: transparent;
   font-size: 12px;
@@ -1733,8 +1747,7 @@ tbody tr:hover td{background:var(--pri-l)}
   appearance: auto;
   -webkit-appearance: menulist;
 }
-.compose-bottom-dock .tb-btn.tb-pin {
-  order: 3;
+.compose-desktop-foot .tb-btn.tb-pin {
   display: inline-flex;
   align-items: center;
   gap: 5px;
@@ -1747,27 +1760,25 @@ tbody tr:hover td{background:var(--pri-l)}
   font-size: 12px;
   cursor: pointer;
 }
-.compose-bottom-dock .tb-btn.tb-pin svg {
+.compose-desktop-foot .tb-btn.tb-pin svg {
   display: none !important;
 }
-.compose-bottom-dock .tb-btn.tb-pin input[type="checkbox"] {
+.compose-desktop-foot .tb-btn.tb-pin input[type="checkbox"] {
   display: inline-block !important;
   cursor: pointer;
   margin: 0;
 }
-.compose-bottom-dock .desktop-pin-text {
+.compose-desktop-foot .desktop-pin-text {
   display: inline !important;
   color: var(--txt2);
   font-size: 12px;
   white-space: nowrap;
 }
-.compose-bottom-dock .desktop-foot-spacer {
-  order: 3;
+.compose-desktop-foot .desktop-foot-spacer {
   display: block !important;
   flex: 1;
 }
-.compose-bottom-dock .compose-desktop-cancel {
-  order: 3;
+.compose-desktop-foot .compose-desktop-cancel {
   display: inline-flex !important;
   align-items: center;
   justify-content: center;
@@ -1779,8 +1790,7 @@ tbody tr:hover td{background:var(--pri-l)}
   font-size: 13px !important;
   cursor: pointer !important;
 }
-.compose-bottom-dock .compose-save-btn {
-  order: 3;
+.compose-desktop-foot .compose-save-btn {
   display: inline-flex !important;
   align-items: center;
   justify-content: center;
@@ -1795,40 +1805,11 @@ tbody tr:hover td{background:var(--pri-l)}
   cursor: pointer !important;
   border: 1.5px solid var(--pri) !important;
 }
-.compose-bottom-dock .dock-save-icon {
+.compose-desktop-foot .dock-save-icon {
   display: none !important;
 }
-.compose-bottom-dock .desktop-save-text {
+.compose-desktop-foot .desktop-save-text {
   display: inline !important;
-}
-.compose-modal-foot select {
-  padding: 7px 11px;
-  border: 1.5px solid var(--brd);
-  border-radius: 9px;
-  font-size: 12px;
-  font-family: inherit;
-  background: var(--bg);
-  color: var(--txt);
-  outline: none;
-}
-.compose-pin-label {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  font-size: 12px;
-  color: var(--txt2);
-  cursor: pointer;
-  white-space: nowrap;
-}
-.compose-modal-foot .btn {
-  padding: 8px 14px;
-  border-radius: 9px;
-  font-size: 12.5px;
-  cursor: pointer;
-}
-.compose-modal-foot .btn-pri {
-  font-weight: 700;
-  padding: 8px 18px;
 }
 
 /* ─── Journal Formatting Toolbar ─── */
@@ -4918,32 +4899,9 @@ footer .footer-links a:hover{color:var(--pri-d)}
         <div class="note-dup-warn" id="noteDupWarn" style="display:none"></div>
       </div>
 
-      <!-- Pinned Bottom Keyboard Bar / Desktop Modal Footer -->
+      <!-- Pinned Bottom Keyboard Bar (Mobile) / Desktop Modal Toolbar & Footer Container -->
       <div class="compose-bottom-dock">
-        <!-- Compact Category Pill (Mobile) / Standard Dropdown (Desktop) -->
-        <div class="dock-tag-wrap" title="Category">
-          <svg class="dock-tag-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
-          <select id="noteTag" class="dock-tag-select" onchange="markNoteTagManual()">
-            <option value="note">Note</option>
-            <option value="goal">Goal</option>
-            <option value="reminder">Reminder</option>
-            <option value="reflection">Reflection</option>
-            <option value="idea">Idea</option>
-            <option value="receipt">Receipt</option>
-            <option value="checklist">Checklist</option>
-          </select>
-          <svg class="dock-tag-arrow" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-        </div>
-        <span class="note-tag-hint" id="noteTagHint" style="display:none"></span>
-
-        <!-- Sleek Pushpin Button / Desktop Label -->
-        <label class="tb-btn tb-pin" id="notePinBtn" title="Pin note to top" aria-label="Pin note to top">
-          <input type="checkbox" id="notePin" onchange="const b = document.getElementById('notePinBtn'); if(b) b.classList.toggle('active', this.checked)">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="17" x2="12" y2="22"/><path d="M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V6h1a1 1 0 0 0 0-2H8a1 1 0 0 0 0 2h1v4.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24Z"/></svg>
-          <span class="desktop-pin-text">Pin to top</span>
-        </label>
-
-        <!-- Formatting Strip (Mobile carousel / Desktop toolbar under title) -->
+        <!-- Formatting Strip: Order 1 on Desktop (under title), Order 3 in single-row dock on Mobile -->
         <div class="dock-scroll-wrapper" id="composerToolbarWrapper">
           <button type="button" class="tb-nav-arrow tb-nav-prev" id="tbScrollLeftBtn" onmousedown="event.preventDefault()" onclick="scrollToolbar(-90)" title="Scroll formatting tools left" aria-label="Scroll tools left">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
@@ -4967,15 +4925,43 @@ footer .footer-links a:hover{color:var(--pri-d)}
           </button>
         </div>
 
-        <!-- Desktop Action Buttons (Hidden on mobile) -->
-        <div class="desktop-foot-spacer" style="display:none;flex:1"></div>
-        <button type="button" class="btn compose-desktop-cancel" onclick="closeComposeModal()" style="display:none;padding:9px 16px;border-radius:10px;border:1.5px solid var(--brd);background:var(--bg);color:var(--txt2);font-size:13px;cursor:pointer">Cancel</button>
+        <!-- Footer Elements: Order 3 on Desktop (footer row), or inline in single row on Mobile -->
+        <div class="compose-desktop-foot" id="composeDesktopFoot">
+          <!-- Compact Category Pill (Mobile) / Standard Select (Desktop) -->
+          <div class="dock-tag-wrap" title="Category">
+            <svg class="dock-tag-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+            <select id="noteTag" class="dock-tag-select" onchange="markNoteTagManual()">
+              <option value="note">Note</option>
+              <option value="goal">Goal</option>
+              <option value="reminder">Reminder</option>
+              <option value="reflection">Reflection</option>
+              <option value="idea">Idea</option>
+              <option value="receipt">Receipt</option>
+              <option value="checklist">Checklist</option>
+            </select>
+            <svg class="dock-tag-arrow" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </div>
+          <span class="note-tag-hint" id="noteTagHint" style="display:none"></span>
 
-        <!-- Save Button (Mobile: compact icon; Desktop: full Save Entry text button) -->
-        <button type="button" class="btn btn-pri dock-save-btn compose-save-btn" onclick="addNote()" title="Save Entry" aria-label="Save Entry">
-          <svg class="dock-save-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-          <span class="desktop-save-text" style="display:none">Save Entry</span>
-        </button>
+          <!-- Sleek Pushpin Button / Desktop Label -->
+          <label class="tb-btn tb-pin" id="notePinBtn" title="Pin note to top" aria-label="Pin note to top">
+            <input type="checkbox" id="notePin" onchange="const b = document.getElementById('notePinBtn'); if(b) b.classList.toggle('active', this.checked)">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="17" x2="12" y2="22"/><path d="M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V6h1a1 1 0 0 0 0-2H8a1 1 0 0 0 0 2h1v4.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24Z"/></svg>
+            <span class="desktop-pin-text">Pin to top</span>
+          </label>
+
+          <!-- Desktop Spacer -->
+          <div class="desktop-foot-spacer" style="display:none;flex:1"></div>
+
+          <!-- Desktop Cancel Button -->
+          <button type="button" class="btn compose-desktop-cancel" onclick="closeComposeModal()" style="display:none;padding:9px 16px;border-radius:10px;border:1.5px solid var(--brd);background:var(--bg);color:var(--txt2);font-size:13px;cursor:pointer">Cancel</button>
+
+          <!-- Save Button: Compact icon on Mobile, Full button on Desktop -->
+          <button type="button" class="btn btn-pri dock-save-btn compose-save-btn" onclick="addNote()" title="Save Entry" aria-label="Save Entry">
+            <svg class="dock-save-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            <span class="desktop-save-text" style="display:none">Save Entry</span>
+          </button>
+        </div>
       </div>
     </div>
   </div>
