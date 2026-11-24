@@ -9,8 +9,8 @@
 //   The browser detects the SW file changed → downloads new version → updates cache.
 //   You don't need to manually bump version numbers anymore.
 //
-const CACHE_NAME = 'budget-tracker-v270';
-// Last updated: 2026-09-09 — Numbered list auto-increment & mobile table description sizing improvements
+const CACHE_NAME = 'budget-tracker-v271';
+// Last updated: 2026-09-09 — Fixed backspace list erase and jitter-free cursor focus on mobile/tablet
 
 const ASSETS = [
   './',

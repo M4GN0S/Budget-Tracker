@@ -4299,7 +4299,7 @@ footer .footer-links a:hover{color:var(--pri-d)}
         <div id="clBuilder_noteInput" class="cl-builder-wrap" style="display:none"></div>
         <!-- Textarea -->
         <div class="editor-wrap" id="editorWrap_noteInput" style="flex:1;display:flex;flex-direction:column">
-          <textarea id="noteInput" onfocus="_setLastDocFocus('noteInput',this)" onclick="onTextareaClick(event);_setLastDocFocus('noteInput',this)" oninput="onNoteInput(this)" onblur="onNoteBlur(this)" onkeydown="onTextareaKeydown(event,'noteInput')" onkeyup="onTextareaKeyup(event,'noteInput')" placeholder="Write your note… tap a toolbar button to format, or just type naturally." inputmode="text" style="padding:10px 14px;border:1.5px solid var(--brd);border-radius:10px;font-size:13.5px;line-height:1.6;font-family:inherit;outline:none;background:var(--bg);color:var(--txt);resize:none;min-height:160px;width:100%;box-sizing:border-box;flex:1"></textarea>
+          <textarea id="noteInput" onfocus="_setLastDocFocus('noteInput',this)" onclick="onTextareaClick(event);_setLastDocFocus('noteInput',this)" oninput="onNoteInput(this, event)" onblur="onNoteBlur(this)" onkeydown="onTextareaKeydown(event,'noteInput')" onkeyup="onTextareaKeyup(event,'noteInput')" placeholder="Write your note… tap a toolbar button to format, or just type naturally." inputmode="text" style="padding:2px 0;border:none;outline:none;background:transparent;color:var(--txt);font-size:13.5px;line-height:1.6;font-family:inherit;resize:none;min-height:160px;width:100%;box-sizing:border-box;flex:1"></textarea>
         </div>
         <!-- Mood nudge -->
         <div class="compose-mood-nudge" id="composeMoodNudge" style="display:none"></div>
@@ -12295,27 +12295,66 @@ function suggestEditTitle() {
 
 // Auto-suggest as a placeholder while typing the body, only if title is still empty
 let _suggestDebounce = null;
-// Grow a textarea to fit its content (capped by CSS max-height, then scrolls).
-function autoGrowTextarea(el) {
-  if (!el) return;
-  el.style.height = "auto";
-  const scrollH = el.scrollHeight;
-  if (el.classList && (el.classList.contains("doc-canvas-lead") || el.classList.contains("doc-canvas-trail"))) {
-    el.style.height = Math.max(scrollH || 0, el.classList.contains("doc-canvas-trail") ? 48 : 28) + "px";
-    el.style.overflowY = "hidden";
-  } else if (el.id === "noteInput" || el.id === "noteEditText") {
-    el.style.height = Math.max(scrollH || 0, 160) + "px";
-    el.style.overflowY = "hidden";
-  } else {
-    const max = (typeof getComputedStyle !== 'undefined' ? parseInt(getComputedStyle(el).maxHeight, 10) : 420) || 99999;
-    el.style.height = Math.min(scrollH || 100, max) + "px";
-    el.style.overflowY = (scrollH || 0) > max ? "auto" : "hidden";
+
+// Smooth cursor-focused scroll helper to ensure active cursor is always comfortably in view
+function _ensureCursorVisible(ta) {
+  if (!ta || typeof ta.selectionStart !== "number") return;
+  const scrollWrap = ta.closest ? (ta.closest(".compose-editor-scroll") || ta.closest(".compose-modal-body") || ta.closest(".note-modal-body")) : null;
+  if (!scrollWrap) return;
+
+  const pos = ta.selectionStart;
+  const textBefore = (ta.value || "").substring(0, pos);
+  const lineNum = textBefore.split("\n").length;
+  const lineHeight = 22; // approx line height in px
+  const relativeCursorY = (lineNum - 1) * lineHeight;
+
+  const taTop = ta.offsetTop || 0;
+  const cursorYInScroll = taTop + relativeCursorY;
+
+  const viewTop = scrollWrap.scrollTop;
+  const viewBottom = viewTop + scrollWrap.clientHeight;
+
+  if (cursorYInScroll < viewTop + 15) {
+    scrollWrap.scrollTop = Math.max(0, cursorYInScroll - 25);
+  } else if (cursorYInScroll > viewBottom - 45) {
+    scrollWrap.scrollTop = cursorYInScroll - scrollWrap.clientHeight + 55;
   }
 }
 
-function onNoteInput(el) {
+// Jitter-free autoGrowTextarea: preserves parent scroll container scrollTop so viewport never jumps/bobs
+function autoGrowTextarea(el) {
+  if (!el) return;
+
+  const scrollWrap = el.closest ? (el.closest(".compose-editor-scroll") || el.closest(".compose-modal-body") || el.closest(".note-modal-body")) : null;
+  const savedScroll = scrollWrap ? scrollWrap.scrollTop : 0;
+
+  let minH = 28;
+  if (el.classList && el.classList.contains("doc-canvas-trail")) minH = 48;
+  else if (el.id === "noteInput" || el.id === "noteEditText") minH = 140;
+
+  const curH = el.offsetHeight || parseInt(el.style.height, 10) || minH;
+  if (el.scrollHeight > curH + 2) {
+    el.style.height = el.scrollHeight + "px";
+    el.style.overflowY = "hidden";
+    if (scrollWrap && scrollWrap.scrollTop !== savedScroll) scrollWrap.scrollTop = savedScroll;
+    return;
+  }
+
+  // Measure shrink without layout jumping
+  el.style.height = minH + "px";
+  const newH = Math.max(el.scrollHeight, minH);
+  el.style.height = newH + "px";
+  el.style.overflowY = "hidden";
+
+  if (scrollWrap && scrollWrap.scrollTop !== savedScroll) {
+    scrollWrap.scrollTop = savedScroll;
+  }
+}
+
+function onNoteInput(el, event) {
   autoGrowTextarea(el);
-  handleMobileNewlineAutoContinue(el, el.id);
+  handleMobileNewlineAutoContinue(el, el.id, event);
+  _ensureCursorVisible(el);
   // Format price-in-line as the user types (comma-thousands, live)
   _formatPriceInLine(el);
   if (el.id === "noteInput") {
@@ -12417,16 +12456,18 @@ function tbInsertLine(textareaId, prefix) {
     before = before + "\n" + actualPrefix;
   }
   ta.value = before + after;
+  ta._prevVal = ta.value;
   const pos = before.length;
   if (typeof ta.setSelectionRange === "function") {
     ta.setSelectionRange(pos, pos);
   }
   autoGrowTextarea(ta);
+  _ensureCursorVisible(ta);
   if (typeof ta.dispatchEvent === "function") {
     ta.dispatchEvent(new Event("input", { bubbles: true }));
   }
 
-  const bEl = ta.closest("[data-bidx]");
+  const bEl = ta.closest ? ta.closest("[data-bidx]") : null;
   if (bEl) {
     const bIdx = parseInt(bEl.getAttribute("data-bidx"), 10);
     _onClbBlockTextInput(textareaId, bIdx, ta);
@@ -12504,9 +12545,62 @@ function onTextareaKeydown(e, textareaId) {
   const ta = e.target;
   if (!ta) return;
 
+  // On Enter or Tab while on a price line: finalise the price format first
+  if (e.key === "Enter" || e.key === "Tab") {
+    if (typeof _currentLine === "function" && typeof _symRe === "function" && typeof _checklistRanges === "function") {
+      const { line, lineStart } = _currentLine(ta, ta.selectionStart);
+      const m = line.match(_symRe());
+      if (m) {
+        const { priceStart, priceEnd } = _checklistRanges(m, lineStart);
+        const pos = ta.selectionStart;
+        if (pos >= priceStart && pos <= priceEnd) {
+          _finalisePricesInTextarea(ta);
+        }
+      }
+    }
+  }
+
   if (e.key === "Tab") {
-    if (_tabToNextPlaceholder(ta, e.shiftKey ? -1 : 1)) e.preventDefault();
+    if (typeof _tabToNextPlaceholder === "function" && _tabToNextPlaceholder(ta, e.shiftKey ? -1 : 1)) {
+      e.preventDefault();
+    }
     return;
+  }
+
+  // Handle Backspace on list prefixes: if line is ONLY a list prefix, backspace clears it immediately
+  if (e.key === "Backspace" || e.keyCode === 8 || e.which === 8) {
+    const curPos = ta.selectionStart;
+    if (curPos === ta.selectionEnd && curPos > 0) {
+      const val = ta.value;
+      const lineStart = val.lastIndexOf("\n", curPos - 1) + 1;
+      const curLn = val.substring(lineStart, curPos);
+
+      // Matches alone "1. ", "24. ", "- ", "* ", "• ", "[ ] "
+      if (/^(\d+\.\s|[-•*]\s|\[[ xX]\]\s)$/.test(curLn)) {
+        e.preventDefault();
+        ta.value = val.substring(0, lineStart) + val.substring(curPos);
+        ta.setSelectionRange(lineStart, lineStart);
+        ta._prevVal = ta.value;
+        autoGrowTextarea(ta);
+        _ensureCursorVisible(ta);
+        if (typeof ta.dispatchEvent === "function") {
+          ta.dispatchEvent(new Event("input", { bubbles: true }));
+        }
+        const bEl = ta.closest ? ta.closest("[data-bidx]") : null;
+        if (bEl) {
+          const bIdx = parseInt(bEl.getAttribute("data-bidx"), 10);
+          _onClbBlockTextInput(textareaId, bIdx, ta);
+        } else if (_clbState[textareaId] && _clbState[textareaId].active) {
+          if (ta.id === "clbLead_" + textareaId) {
+            _clbState[textareaId].prefix = ta.value;
+          } else if (ta.id === "clbTrail_" + textareaId) {
+            _clbState[textareaId].suffix = ta.value;
+          }
+          _syncClBuilderToTextarea(textareaId);
+        }
+        return;
+      }
+    }
   }
 
   // Enter key press (Desktop & Mobile physical/virtual Enter)
@@ -12531,14 +12625,23 @@ function onTextareaKeydown(e, textareaId) {
         ta.value  = ta.value.substring(0, curPos) + ins + ta.value.substring(curPos);
         ta.setSelectionRange(curPos + ins.length, curPos + ins.length);
       }
+      ta._prevVal = ta.value;
       autoGrowTextarea(ta);
+      _ensureCursorVisible(ta);
       if (typeof ta.dispatchEvent === "function") {
         ta.dispatchEvent(new Event("input", { bubbles: true }));
       }
-      const bEl = ta.closest("[data-bidx]");
+      const bEl = ta.closest ? ta.closest("[data-bidx]") : null;
       if (bEl) {
         const bIdx = parseInt(bEl.getAttribute("data-bidx"), 10);
         _onClbBlockTextInput(textareaId, bIdx, ta);
+      } else if (_clbState[textareaId] && _clbState[textareaId].active) {
+        if (ta.id === "clbLead_" + textareaId) {
+          _clbState[textareaId].prefix = ta.value;
+        } else if (ta.id === "clbTrail_" + textareaId) {
+          _clbState[textareaId].suffix = ta.value;
+        }
+        _syncClBuilderToTextarea(textareaId);
       }
       return;
     }
@@ -12556,14 +12659,23 @@ function onTextareaKeydown(e, textareaId) {
         ta.value  = ta.value.substring(0, curPos) + ins + ta.value.substring(curPos);
         ta.setSelectionRange(curPos + ins.length, curPos + ins.length);
       }
+      ta._prevVal = ta.value;
       autoGrowTextarea(ta);
+      _ensureCursorVisible(ta);
       if (typeof ta.dispatchEvent === "function") {
         ta.dispatchEvent(new Event("input", { bubbles: true }));
       }
-      const bEl = ta.closest("[data-bidx]");
+      const bEl = ta.closest ? ta.closest("[data-bidx]") : null;
       if (bEl) {
         const bIdx = parseInt(bEl.getAttribute("data-bidx"), 10);
         _onClbBlockTextInput(textareaId, bIdx, ta);
+      } else if (_clbState[textareaId] && _clbState[textareaId].active) {
+        if (ta.id === "clbLead_" + textareaId) {
+          _clbState[textareaId].prefix = ta.value;
+        } else if (ta.id === "clbTrail_" + textareaId) {
+          _clbState[textareaId].suffix = ta.value;
+        }
+        _syncClBuilderToTextarea(textareaId);
       }
       return;
     }
@@ -12581,25 +12693,44 @@ function onTextareaKeydown(e, textareaId) {
         ta.value  = ta.value.substring(0, curPos) + ins + ta.value.substring(curPos);
         ta.setSelectionRange(curPos + ins.length, curPos + ins.length);
       }
+      ta._prevVal = ta.value;
       autoGrowTextarea(ta);
+      _ensureCursorVisible(ta);
       if (typeof ta.dispatchEvent === "function") {
         ta.dispatchEvent(new Event("input", { bubbles: true }));
       }
-      const bEl = ta.closest("[data-bidx]");
+      const bEl = ta.closest ? ta.closest("[data-bidx]") : null;
       if (bEl) {
         const bIdx = parseInt(bEl.getAttribute("data-bidx"), 10);
         _onClbBlockTextInput(textareaId, bIdx, ta);
+      } else if (_clbState[textareaId] && _clbState[textareaId].active) {
+        if (ta.id === "clbLead_" + textareaId) {
+          _clbState[textareaId].prefix = ta.value;
+        } else if (ta.id === "clbTrail_" + textareaId) {
+          _clbState[textareaId].suffix = ta.value;
+        }
+        _syncClBuilderToTextarea(textareaId);
       }
       return;
     }
   }
 }
 
-function handleMobileNewlineAutoContinue(ta, textareaId) {
+function handleMobileNewlineAutoContinue(ta, textareaId, event) {
   if (!ta) return;
-  const curVal = ta.value;
-  const curPos = ta.selectionStart;
+  const curVal = ta.value || "";
+  const prevVal = ta._prevVal !== undefined ? ta._prevVal : "";
+  ta._prevVal = curVal;
 
+  // Never auto-insert when the user is backspacing or deleting text
+  if (event && event.inputType && event.inputType.startsWith("delete")) {
+    return;
+  }
+  if (curVal.length <= prevVal.length) {
+    return;
+  }
+
+  const curPos = ta.selectionStart;
   // Detect if a newline was just inserted before cursor
   if (curPos > 0 && curVal[curPos - 1] === "\n") {
     const beforeNewline = curVal.substring(0, curPos - 1);
@@ -12612,14 +12743,17 @@ function handleMobileNewlineAutoContinue(ta, textareaId) {
         const lineStart = curPos - 1 - lastLine.length;
         ta.value = curVal.substring(0, lineStart) + curVal.substring(curPos);
         ta.setSelectionRange(lineStart, lineStart);
+        ta._prevVal = ta.value;
       } else {
         const nextNum = parseInt(numM[1], 10) + 1;
         const ins = nextNum + ". ";
         ta.value = curVal.substring(0, curPos) + ins + curVal.substring(curPos);
         ta.setSelectionRange(curPos + ins.length, curPos + ins.length);
+        ta._prevVal = ta.value;
       }
       autoGrowTextarea(ta);
-      const bEl = ta.closest("[data-bidx]");
+      _ensureCursorVisible(ta);
+      const bEl = ta.closest ? ta.closest("[data-bidx]") : null;
       if (bEl) {
         const bIdx = parseInt(bEl.getAttribute("data-bidx"), 10);
         _onClbBlockTextInput(textareaId, bIdx, ta);
@@ -12633,13 +12767,16 @@ function handleMobileNewlineAutoContinue(ta, textareaId) {
         const lineStart = curPos - 1 - lastLine.length;
         ta.value = curVal.substring(0, lineStart) + curVal.substring(curPos);
         ta.setSelectionRange(lineStart, lineStart);
+        ta._prevVal = ta.value;
       } else {
         const ins = bulletM[1] + " ";
         ta.value = curVal.substring(0, curPos) + ins + curVal.substring(curPos);
         ta.setSelectionRange(curPos + ins.length, curPos + ins.length);
+        ta._prevVal = ta.value;
       }
       autoGrowTextarea(ta);
-      const bEl = ta.closest("[data-bidx]");
+      _ensureCursorVisible(ta);
+      const bEl = ta.closest ? ta.closest("[data-bidx]") : null;
       if (bEl) {
         const bIdx = parseInt(bEl.getAttribute("data-bidx"), 10);
         _onClbBlockTextInput(textareaId, bIdx, ta);
@@ -12653,13 +12790,16 @@ function handleMobileNewlineAutoContinue(ta, textareaId) {
         const lineStart = curPos - 1 - lastLine.length;
         ta.value = curVal.substring(0, lineStart) + curVal.substring(curPos);
         ta.setSelectionRange(lineStart, lineStart);
+        ta._prevVal = ta.value;
       } else {
         const ins = "[ ] ";
         ta.value = curVal.substring(0, curPos) + ins + curVal.substring(curPos);
         ta.setSelectionRange(curPos + ins.length, curPos + ins.length);
+        ta._prevVal = ta.value;
       }
       autoGrowTextarea(ta);
-      const bEl = ta.closest("[data-bidx]");
+      _ensureCursorVisible(ta);
+      const bEl = ta.closest ? ta.closest("[data-bidx]") : null;
       if (bEl) {
         const bIdx = parseInt(bEl.getAttribute("data-bidx"), 10);
         _onClbBlockTextInput(textareaId, bIdx, ta);
@@ -13429,115 +13569,6 @@ function _currentLine(ta, pos) {
   return { line: val.substring(start, end), lineStart: start, lineEnd: end, index: lineStartIdx };
 }
 
-// Keydown handler
-function onTextareaKeydown(e, textareaId) {
-  const ta = e.target;
-  if (!ta) return;
-  // On Enter or Tab while on a price line: finalise the price format first
-  if (e.key === "Enter" || e.key === "Tab") {
-    const { line, lineStart } = _currentLine(ta, ta.selectionStart);
-    const m = line.match(_symRe());
-    if (m) {
-      const { priceStart, priceEnd } = _checklistRanges(m, lineStart);
-      const pos = ta.selectionStart;
-      if (pos >= priceStart && pos <= priceEnd) {
-        // Cursor is in the price zone — finalise this line's price
-        _finalisePricesInTextarea(ta);
-      }
-    }
-  }
-  if (e.key === "Tab") {
-    if (_tabToNextPlaceholder(ta, e.shiftKey ? -1 : 1)) e.preventDefault();
-    return;
-  }
-  if (e.key === "Enter" && !e.shiftKey) {
-    const curPos  = ta.selectionStart;
-    const before2 = ta.value.substring(0, curPos);
-    const lines2  = before2.split("\n");
-    const curLn   = lines2[lines2.length - 1] || "";
-
-    // Auto-continue numbered list (1. item)
-    const numM2 = curLn.match(/^(\d+)\.\s(.*)$/);
-    if (numM2) {
-      e.preventDefault();
-      if (numM2[2].trim() === "") {
-        // Empty item line → exit list cleanly
-        const ls = curPos - curLn.length;
-        ta.value = ta.value.substring(0, ls) + ta.value.substring(curPos);
-        ta.setSelectionRange(ls, ls);
-      } else {
-        const nextNum = parseInt(numM2[1], 10) + 1;
-        const ins = "\n" + nextNum + ". ";
-        ta.value  = ta.value.substring(0, curPos) + ins + ta.value.substring(curPos);
-        ta.setSelectionRange(curPos + ins.length, curPos + ins.length);
-      }
-      autoGrowTextarea(ta);
-      ta.dispatchEvent(new Event("input", { bubbles: true }));
-      if (_clbState[textareaId] && _clbState[textareaId].active) {
-        if (ta.id === "clbLead_" + textareaId) {
-          _clbState[textareaId].prefix = ta.value;
-        } else if (ta.id === "clbTrail_" + textareaId) {
-          _clbState[textareaId].suffix = ta.value;
-        }
-        _syncClBuilderToTextarea(textareaId);
-      }
-      return;
-    }
-
-    // Auto-continue bullet list (- item, * item, • item)
-    const bulletM2 = curLn.match(/^([-•*])\s(.*)$/);
-    if (bulletM2) {
-      e.preventDefault();
-      if (bulletM2[2].trim() === "") {
-        const ls = curPos - curLn.length;
-        ta.value = ta.value.substring(0, ls) + ta.value.substring(curPos);
-        ta.setSelectionRange(ls, ls);
-      } else {
-        const ins = "\n" + bulletM2[1] + " ";
-        ta.value  = ta.value.substring(0, curPos) + ins + ta.value.substring(curPos);
-        ta.setSelectionRange(curPos + ins.length, curPos + ins.length);
-      }
-      autoGrowTextarea(ta);
-      ta.dispatchEvent(new Event("input", { bubbles: true }));
-      if (_clbState[textareaId] && _clbState[textareaId].active) {
-        if (ta.id === "clbLead_" + textareaId) {
-          _clbState[textareaId].prefix = ta.value;
-        } else if (ta.id === "clbTrail_" + textareaId) {
-          _clbState[textareaId].suffix = ta.value;
-        }
-        _syncClBuilderToTextarea(textareaId);
-      }
-      return;
-    }
-
-    // Auto-continue markdown checklist item ([ ] item)
-    const checkM2 = curLn.match(/^(\[[ xX]\])\s(.*)$/);
-    if (checkM2) {
-      e.preventDefault();
-      if (checkM2[2].trim() === "") {
-        const ls = curPos - curLn.length;
-        ta.value = ta.value.substring(0, ls) + ta.value.substring(curPos);
-        ta.setSelectionRange(ls, ls);
-      } else {
-        const ins = "\n[ ] ";
-        ta.value  = ta.value.substring(0, curPos) + ins + ta.value.substring(curPos);
-        ta.setSelectionRange(curPos + ins.length, curPos + ins.length);
-      }
-      autoGrowTextarea(ta);
-      ta.dispatchEvent(new Event("input", { bubbles: true }));
-      if (_clbState[textareaId] && _clbState[textareaId].active) {
-        if (ta.id === "clbLead_" + textareaId) {
-          _clbState[textareaId].prefix = ta.value;
-        } else if (ta.id === "clbTrail_" + textareaId) {
-          _clbState[textareaId].suffix = ta.value;
-        }
-        _syncClBuilderToTextarea(textareaId);
-      }
-      return;
-    }
-  }
-}
-
 function onTextareaKeyup(e, textareaId) {
   // Intentionally empty — no auto-reselection on keyup.
   // Auto-select only fires on click (onTextareaClick) and Tab (_tabToNextPlaceholder).
@@ -14295,7 +14326,7 @@ function renderNoteModal() {
         '</div>' +
         '<div id="clBuilder_noteEditText" class="cl-builder-wrap" style="display:none"></div>' +
         '<div class="editor-wrap" id="editorWrap_noteEditText">' +
-          '<textarea id="noteEditText" oninput="onNoteInput(this)" onblur="onNoteBlur(this)" onclick="onTextareaClick(event)" onkeydown="onTextareaKeydown(event,\'noteEditText\')" onkeyup="onTextareaKeyup(event,\'noteEditText\')" inputmode="text" style="border-top:none;border-radius:0 0 12px 12px;padding:12px 14px">' + escHtml(note.text || "") + '</textarea>' +
+          '<textarea id="noteEditText" oninput="onNoteInput(this, event)" onblur="onNoteBlur(this)" onclick="onTextareaClick(event)" onkeydown="onTextareaKeydown(event,\'noteEditText\')" onkeyup="onTextareaKeyup(event,\'noteEditText\')" inputmode="text" style="border-top:none;border-radius:0 0 12px 12px;padding:12px 14px">' + escHtml(note.text || "") + '</textarea>' +
         '</div>' +
       '</div>';
     footEl.innerHTML =

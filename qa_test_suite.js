@@ -1412,14 +1412,30 @@ assert(enterTestTa.value.includes("\n2. "), "onTextareaKeydown on Enter auto-con
 
 // Test mobile newline continuation
 const mobileTestTa = makeMockElement("mobileTestTa");
+mobileTestTa._prevVal = "4. Fourth item";
 mobileTestTa.value = "4. Fourth item\n";
 mobileTestTa.selectionStart = mobileTestTa.value.length;
 handleMobileNewlineAutoContinue(mobileTestTa, 'noteInput');
 assert(mobileTestTa.value.includes("5. "), "handleMobileNewlineAutoContinue auto-increments to '5. ' on mobile virtual keyboard");
 
-// 6. Verify Mobile Table CSS and Item Description font sizing
+// Test Backspace on phone / tablet: erasing auto-increment number with backspace must NOT re-insert number
+mobileTestTa.value = "4. Fourth item\n"; // user backspaced '5. '
+mobileTestTa.selectionStart = mobileTestTa.value.length;
+handleMobileNewlineAutoContinue(mobileTestTa, 'noteInput', { inputType: 'deleteContentBackward' });
+assert(!mobileTestTa.value.includes("5. "), "handleMobileNewlineAutoContinue allows erasing auto-increment number on backspace without fighting back");
+
+// Test Backspace keydown on empty prefix ("2. ")
+const backspaceTa = makeMockElement("backspaceTa");
+backspaceTa.value = "1. Item 1\n2. ";
+backspaceTa.selectionStart = backspaceTa.value.length;
+backspaceTa.selectionEnd = backspaceTa.value.length;
+onTextareaKeydown({ target: backspaceTa, key: "Backspace", keyCode: 8, shiftKey: false, preventDefault: () => {} }, 'noteInput');
+assert(backspaceTa.value === "1. Item 1\n", "onTextareaKeydown on Backspace immediately erases empty '2. ' prefix cleanly");
+
+// 6. Verify Mobile Table CSS, Cursor Stability & Description font sizing
 assert(indexHtml.includes('.clb-input-desc') && indexHtml.includes('font-size: 15px'), "index.html uses legible 15px font size for .clb-input-desc on mobile");
 assert(indexHtml.includes('@media(max-width:640px)'), "index.html contains responsive mobile adjustments for table layout");
+assert(indexHtml.includes('_ensureCursorVisible'), "index.html includes _ensureCursorVisible to keep text cursor focused and in view");
 
 // ─── SUMMARY ────────────────────────────────────────────────
 console.log("\n=================================================");
