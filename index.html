@@ -1325,26 +1325,29 @@ tbody tr:hover td{background:var(--pri-l)}
   opacity: .65;
 }
 
-/* Inline Embedded Table (Seamless Microsoft Office / Notion document style) */
+/* Inline Embedded Table (Seamless Document Style with Mobile Optimization) */
 .doc-table-block {
-  border: 1px solid var(--brd);
-  border-radius: 10px;
+  border: 1.5px solid var(--brd);
+  border-radius: 12px;
   background: var(--card);
   overflow: hidden;
   margin: 6px 0;
-  box-shadow: 0 1px 4px rgba(0,0,0,.04);
+  box-shadow: 0 2px 8px rgba(0,0,0,.04);
   display: flex;
   flex-direction: column;
+  width: 100%;
+  box-sizing: border-box;
 }
 .doc-table-scroll {
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
   max-width: 100%;
+  width: 100%;
 }
 .clb-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 13px;
+  font-size: 13.5px;
   table-layout: fixed;
 }
 .clb-table thead tr {
@@ -1352,14 +1355,22 @@ tbody tr:hover td{background:var(--pri-l)}
   border-bottom: 1.5px solid var(--brd);
 }
 .clb-table th {
-  padding: 8px 6px;
-  font-size: 10px;
+  padding: 9px 6px;
+  font-size: 11px;
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: .5px;
   color: var(--txt2);
   white-space: nowrap;
 }
+.clb-th-num, .clb-td-num { width: 28px; text-align: center; }
+.clb-th-check, .clb-td-check { width: 34px; text-align: center; }
+.clb-th-desc, .clb-td-desc { width: auto; text-align: left; }
+.clb-th-qty, .clb-td-qty { width: 54px; text-align: center; }
+.clb-th-price, .clb-td-price { width: 92px; text-align: right; }
+.clb-th-total, .clb-td-total { width: 76px; text-align: right; }
+.clb-th-del, .clb-td-del { width: 32px; text-align: center; }
+
 .clb-row {
   border-bottom: 1px solid var(--brd);
   transition: background .12s;
@@ -1371,18 +1382,18 @@ tbody tr:hover td{background:var(--pri-l)}
   background: var(--bg);
 }
 .clb-row.is-checked {
-  background: rgba(34, 197, 94, 0.05);
+  background: rgba(34, 197, 94, 0.07);
 }
 .clb-row.is-checked .clb-input-desc {
   text-decoration: line-through;
-  opacity: .65;
+  opacity: .6;
 }
 .clb-row td {
-  padding: 5px 6px;
+  padding: 6px 6px;
   vertical-align: middle;
 }
 .clb-td-num {
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
   color: var(--txt2);
   text-align: center;
@@ -1391,23 +1402,26 @@ tbody tr:hover td{background:var(--pri-l)}
   text-align: center;
 }
 .clb-td-check input[type="checkbox"] {
-  width: 16px;
-  height: 16px;
+  width: 18px;
+  height: 18px;
   accent-color: var(--suc);
   cursor: pointer;
   vertical-align: middle;
 }
 .clb-input-desc {
   width: 100%;
-  padding: 6px 8px;
-  border: 1px solid transparent;
-  border-radius: 6px;
-  font-size: 12.5px;
+  padding: 8px 10px;
+  border: 1.5px solid transparent;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.45;
   font-family: inherit;
   background: transparent;
   color: var(--txt);
   outline: none;
   box-sizing: border-box;
+  min-height: 38px;
   transition: all .15s;
 }
 .clb-input-desc:focus,
@@ -1417,10 +1431,10 @@ tbody tr:hover td{background:var(--pri-l)}
 }
 .clb-input-qty {
   width: 100%;
-  padding: 5px 2px;
-  border: 1px solid var(--brd);
-  border-radius: 6px;
-  font-size: 12px;
+  padding: 6px 4px;
+  border: 1.5px solid var(--brd);
+  border-radius: 8px;
+  font-size: 13.5px;
   font-weight: 700;
   text-align: center;
   font-family: "SF Mono", Consolas, monospace;
@@ -1428,6 +1442,7 @@ tbody tr:hover td{background:var(--pri-l)}
   color: var(--txt);
   outline: none;
   box-sizing: border-box;
+  min-height: 36px;
   transition: border-color .15s;
 }
 .clb-input-qty:focus {
@@ -1436,43 +1451,42 @@ tbody tr:hover td{background:var(--pri-l)}
 .clb-price-input-wrap {
   display: flex;
   align-items: center;
-  padding: 0 5px;
-  border: 1px solid var(--brd);
-  border-radius: 6px;
+  padding: 0 6px;
+  border: 1.5px solid var(--brd);
+  border-radius: 8px;
   background: var(--input-bg, var(--bg));
   box-sizing: border-box;
+  min-height: 36px;
   transition: border-color .15s;
 }
 .clb-price-input-wrap:focus-within {
   border-color: var(--pri);
 }
 .clb-price-sym {
-  font-size: 11px;
-  font-weight: 700;
+  font-size: 12px;
+  font-weight: 800;
   color: var(--txt2);
-  margin-right: 2px;
+  margin-right: 3px;
   flex-shrink: 0;
 }
 .clb-input-price {
   border: none;
   background: transparent;
   font-weight: 700;
+  font-size: 13.5px;
   font-family: "SF Mono", Consolas, monospace;
-  text-align: right;
-  padding: 5px 2px;
-  width: 100%;
-  outline: none;
   color: var(--txt);
-  font-size: 12px;
+  outline: none;
+  width: 100%;
+  text-align: right;
+  padding: 5px 0;
 }
 .clb-row-total {
-  font-size: 11.5px;
+  font-size: 12.5px;
   font-weight: 700;
   font-family: "SF Mono", Consolas, monospace;
   color: var(--txt2);
-  display: block;
-  text-align: right;
-  padding-right: 4px;
+  white-space: nowrap;
 }
 .clb-del-btn {
   background: transparent;
@@ -1480,27 +1494,27 @@ tbody tr:hover td{background:var(--pri-l)}
   color: var(--txt2);
   opacity: .5;
   cursor: pointer;
-  padding: 4px;
+  padding: 5px;
   border-radius: 6px;
-  display: inline-flex;
+  display: flex;
   align-items: center;
   justify-content: center;
   transition: all .15s;
 }
 .clb-del-btn:hover {
-  background: var(--dan-l);
-  color: var(--dan);
   opacity: 1;
+  color: var(--dan);
+  background: var(--dan-l, rgba(239,68,68,.1));
 }
 .doc-table-foot {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 7px 10px;
+  padding: 8px 12px;
   background: var(--bg);
-  border-top: 1px solid var(--brd);
-  gap: 8px;
+  border-top: 1.5px solid var(--brd);
   flex-wrap: wrap;
+  gap: 8px;
 }
 .doc-table-foot-actions {
   display: flex;
@@ -1510,56 +1524,91 @@ tbody tr:hover td{background:var(--pri-l)}
 .doc-add-row-btn {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  padding: 5px 11px;
-  border-radius: 7px;
-  border: 1.5px dashed var(--pri);
-  background: var(--pri-l);
-  color: var(--pri-d);
-  font-size: 11.5px;
+  gap: 5px;
+  background: var(--card);
+  color: var(--pri-d, var(--txt));
+  border: 1.5px solid var(--brd);
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-size: 12.5px;
   font-weight: 700;
   font-family: inherit;
   cursor: pointer;
   transition: all .15s;
 }
 .doc-add-row-btn:hover {
-  background: var(--pri);
-  color: var(--on-pri);
-  border-style: solid;
+  border-color: var(--pri);
+  background: var(--pri-l, var(--bg));
 }
 .doc-remove-table-btn {
   background: transparent;
-  border: 1px solid var(--brd);
-  border-radius: 6px;
   color: var(--txt2);
+  border: 1px solid transparent;
+  border-radius: 6px;
+  padding: 5px 8px;
   font-size: 11px;
   font-weight: 600;
-  padding: 4px 8px;
-  cursor: pointer;
   font-family: inherit;
+  cursor: pointer;
   transition: all .15s;
 }
 .doc-remove-table-btn:hover {
-  background: var(--dan-l);
-  border-color: var(--dan);
   color: var(--dan);
+  border-color: var(--brd);
+  background: var(--card);
 }
 .doc-table-grand-total {
-  font-size: 12.5px;
+  font-size: 13.5px;
   font-weight: 700;
   color: var(--txt);
-  font-family: "SF Mono", Consolas, monospace;
 }
 .doc-table-grand-total strong {
-  color: var(--txt);
   font-weight: 900;
+  color: var(--pri-d, var(--txt));
+  font-family: "SF Mono", Consolas, monospace;
+  margin-left: 4px;
 }
-@media(max-width:520px){
-  .clb-table th:first-child,
-  .clb-table td:first-child {
-    display: none;
+
+/* Mobile responsive column adjustments */
+@media(max-width:640px) {
+  .clb-th-num, .clb-td-num {
+    display: none !important;
+  }
+  .clb-th-total, .clb-td-total {
+    display: none !important;
+  }
+  .clb-th-check, .clb-td-check {
+    width: 30px !important;
+    padding: 6px 2px !important;
+  }
+  .clb-th-qty, .clb-td-qty {
+    width: 44px !important;
+    padding: 6px 2px !important;
+  }
+  .clb-th-price, .clb-td-price {
+    width: 80px !important;
+    padding: 6px 2px !important;
+  }
+  .clb-th-del, .clb-td-del {
+    width: 28px !important;
+    padding: 6px 2px !important;
+  }
+  .clb-input-desc {
+    font-size: 15px !important;
+    padding: 8px 8px !important;
+  }
+  .clb-input-qty {
+    font-size: 13px !important;
+    padding: 6px 2px !important;
+  }
+  .clb-price-input-wrap {
+    padding: 0 4px !important;
+  }
+  .clb-input-price {
+    font-size: 13px !important;
   }
 }
+
 /* Related notes (inside journal modal) */
 /* Related notes (inside journal modal) - Ultra-Subdued, Compact & Sleek */
 .note-related{padding:4px 28px 2px;border-top:1px solid var(--brd);margin-top:2px;position:relative;flex-shrink:0;background:var(--card)}
@@ -12266,6 +12315,7 @@ function autoGrowTextarea(el) {
 
 function onNoteInput(el) {
   autoGrowTextarea(el);
+  handleMobileNewlineAutoContinue(el, el.id);
   // Format price-in-line as the user types (comma-thousands, live)
   _formatPriceInLine(el);
   if (el.id === "noteInput") {
@@ -12295,6 +12345,7 @@ function onNoteBlur(el) {
 
 // ─── MULTI-TABLE INTERACTIVE DOCUMENT ENGINE & TOOLBAR HELPERS ───────
 let _lastFocusedDocEl = {};
+let _lastTextareaVal = new WeakMap();
 
 function _setLastDocFocus(taId, el) {
   if (taId && el) _lastFocusedDocEl[taId] = el;
@@ -12302,7 +12353,7 @@ function _setLastDocFocus(taId, el) {
 
 function _tbEl(id) {
   if (typeof id !== "string") return id;
-  if (_lastFocusedDocEl[id] && document.body.contains(_lastFocusedDocEl[id])) {
+  if (_lastFocusedDocEl[id] && (typeof document === "undefined" || !document.body || typeof document.body.contains !== "function" || document.body.contains(_lastFocusedDocEl[id]))) {
     return _lastFocusedDocEl[id];
   }
   const builderWrap = document.getElementById("clBuilder_" + id);
@@ -12336,26 +12387,6 @@ function tbInsertHeading(textareaId) {
 }
 
 function tbInsertLine(textareaId, prefix) {
-  const clb = _getClb(textareaId);
-  if (clb && clb.active) {
-    if (clb.suffix) {
-      clb.suffix += "\n" + prefix;
-    } else {
-      clb.suffix = prefix;
-    }
-    if (clb.blocks && clb.blocks.length > 0) {
-      const lastBlock = clb.blocks[clb.blocks.length - 1];
-      if (lastBlock.type === "text") {
-        lastBlock.text = clb.suffix;
-      } else {
-        clb.blocks.push({ type: "text", text: prefix });
-      }
-    }
-    _renderClBuilder(textareaId);
-    _syncClBuilderToTextarea(textareaId);
-    return;
-  }
-
   const ta = _tbEl(textareaId);
   if (!ta) return;
   ta.focus();
@@ -12366,17 +12397,18 @@ function tbInsertLine(textareaId, prefix) {
 
   let actualPrefix = prefix;
   if (/^\d+\.\s/.test(prefix)) {
-    const prevLines = before.split("\n");
-    let maxNum = 0;
-    for (let li = prevLines.length - 1; li >= 0; li--) {
-      const pl = prevLines[li].trim();
-      if (!pl) break;
-      const pnM = pl.match(/^(\d+)\./);
-      if (pnM) {
-        maxNum = Math.max(maxNum, parseInt(pnM[1], 10));
+    const linesBefore = before.split("\n");
+    let lastNum = 0;
+    for (let li = linesBefore.length - 1; li >= 0; li--) {
+      const l = linesBefore[li].trim();
+      if (!l) continue; // skip trailing empty lines
+      const m = l.match(/^(\d+)\./);
+      if (m) {
+        lastNum = parseInt(m[1], 10);
       }
+      break;
     }
-    actualPrefix = (maxNum > 0 ? (maxNum + 1) : 1) + ". ";
+    actualPrefix = (lastNum > 0 ? (lastNum + 1) : 1) + ". ";
   }
 
   if (before.length === 0 || before.endsWith("\n")) {
@@ -12392,6 +12424,15 @@ function tbInsertLine(textareaId, prefix) {
   autoGrowTextarea(ta);
   if (typeof ta.dispatchEvent === "function") {
     ta.dispatchEvent(new Event("input", { bubbles: true }));
+  }
+
+  const bEl = ta.closest("[data-bidx]");
+  if (bEl) {
+    const bIdx = parseInt(bEl.getAttribute("data-bidx"), 10);
+    _onClbBlockTextInput(textareaId, bIdx, ta);
+  } else if (_clbState[textareaId] && _clbState[textareaId].active) {
+    _clbState[textareaId].suffix = (ta.value || "");
+    _syncClBuilderToTextarea(textareaId);
   }
 }
 
@@ -12456,6 +12497,176 @@ function tbInsertPriceList(textareaId) {
     const allDescInps = document.querySelectorAll("#clBuilder_" + textareaId + " .clb-input-desc");
     if (allDescInps.length > 0) allDescInps[allDescInps.length - 3].focus();
   }, 50);
+}
+
+// ─── KEYDOWN & MOBILE INPUT AUTO-INCREMENT HANDLERS ─────────
+function onTextareaKeydown(e, textareaId) {
+  const ta = e.target;
+  if (!ta) return;
+
+  if (e.key === "Tab") {
+    if (_tabToNextPlaceholder(ta, e.shiftKey ? -1 : 1)) e.preventDefault();
+    return;
+  }
+
+  // Enter key press (Desktop & Mobile physical/virtual Enter)
+  if ((e.key === "Enter" || e.keyCode === 13 || e.which === 13) && !e.shiftKey) {
+    const curPos  = ta.selectionStart != null ? ta.selectionStart : ta.value.length;
+    const before  = ta.value.substring(0, curPos);
+    const lines   = before.split("\n");
+    const curLn   = lines[lines.length - 1] || "";
+
+    // 1. Auto-continue numbered list (1. item)
+    const numM = curLn.match(/^(\d+)\.\s(.*)$/);
+    if (numM) {
+      e.preventDefault();
+      if (numM[2].trim() === "") {
+        // Empty item line ("1. ") -> exit list cleanly
+        const lineStart = curPos - curLn.length;
+        ta.value = ta.value.substring(0, lineStart) + ta.value.substring(curPos);
+        ta.setSelectionRange(lineStart, lineStart);
+      } else {
+        const nextNum = parseInt(numM[1], 10) + 1;
+        const ins = "\n" + nextNum + ". ";
+        ta.value  = ta.value.substring(0, curPos) + ins + ta.value.substring(curPos);
+        ta.setSelectionRange(curPos + ins.length, curPos + ins.length);
+      }
+      autoGrowTextarea(ta);
+      if (typeof ta.dispatchEvent === "function") {
+        ta.dispatchEvent(new Event("input", { bubbles: true }));
+      }
+      const bEl = ta.closest("[data-bidx]");
+      if (bEl) {
+        const bIdx = parseInt(bEl.getAttribute("data-bidx"), 10);
+        _onClbBlockTextInput(textareaId, bIdx, ta);
+      }
+      return;
+    }
+
+    // 2. Auto-continue bullet list (- item, * item, • item)
+    const bulletM = curLn.match(/^([-•*])\s(.*)$/);
+    if (bulletM) {
+      e.preventDefault();
+      if (bulletM[2].trim() === "") {
+        const lineStart = curPos - curLn.length;
+        ta.value = ta.value.substring(0, lineStart) + ta.value.substring(curPos);
+        ta.setSelectionRange(lineStart, lineStart);
+      } else {
+        const ins = "\n" + bulletM[1] + " ";
+        ta.value  = ta.value.substring(0, curPos) + ins + ta.value.substring(curPos);
+        ta.setSelectionRange(curPos + ins.length, curPos + ins.length);
+      }
+      autoGrowTextarea(ta);
+      if (typeof ta.dispatchEvent === "function") {
+        ta.dispatchEvent(new Event("input", { bubbles: true }));
+      }
+      const bEl = ta.closest("[data-bidx]");
+      if (bEl) {
+        const bIdx = parseInt(bEl.getAttribute("data-bidx"), 10);
+        _onClbBlockTextInput(textareaId, bIdx, ta);
+      }
+      return;
+    }
+
+    // 3. Auto-continue checkbox list ([ ] item)
+    const checkM = curLn.match(/^\[([ xX])\]\s(.*)$/);
+    if (checkM) {
+      e.preventDefault();
+      if (checkM[2].trim() === "") {
+        const lineStart = curPos - curLn.length;
+        ta.value = ta.value.substring(0, lineStart) + ta.value.substring(curPos);
+        ta.setSelectionRange(lineStart, lineStart);
+      } else {
+        const ins = "\n[ ] ";
+        ta.value  = ta.value.substring(0, curPos) + ins + ta.value.substring(curPos);
+        ta.setSelectionRange(curPos + ins.length, curPos + ins.length);
+      }
+      autoGrowTextarea(ta);
+      if (typeof ta.dispatchEvent === "function") {
+        ta.dispatchEvent(new Event("input", { bubbles: true }));
+      }
+      const bEl = ta.closest("[data-bidx]");
+      if (bEl) {
+        const bIdx = parseInt(bEl.getAttribute("data-bidx"), 10);
+        _onClbBlockTextInput(textareaId, bIdx, ta);
+      }
+      return;
+    }
+  }
+}
+
+function handleMobileNewlineAutoContinue(ta, textareaId) {
+  if (!ta) return;
+  const curVal = ta.value;
+  const curPos = ta.selectionStart;
+
+  // Detect if a newline was just inserted before cursor
+  if (curPos > 0 && curVal[curPos - 1] === "\n") {
+    const beforeNewline = curVal.substring(0, curPos - 1);
+    const prevLines = beforeNewline.split("\n");
+    const lastLine = prevLines[prevLines.length - 1] || "";
+
+    const numM = lastLine.match(/^(\d+)\.\s(.*)$/);
+    if (numM) {
+      if (numM[2].trim() === "") {
+        const lineStart = curPos - 1 - lastLine.length;
+        ta.value = curVal.substring(0, lineStart) + curVal.substring(curPos);
+        ta.setSelectionRange(lineStart, lineStart);
+      } else {
+        const nextNum = parseInt(numM[1], 10) + 1;
+        const ins = nextNum + ". ";
+        ta.value = curVal.substring(0, curPos) + ins + curVal.substring(curPos);
+        ta.setSelectionRange(curPos + ins.length, curPos + ins.length);
+      }
+      autoGrowTextarea(ta);
+      const bEl = ta.closest("[data-bidx]");
+      if (bEl) {
+        const bIdx = parseInt(bEl.getAttribute("data-bidx"), 10);
+        _onClbBlockTextInput(textareaId, bIdx, ta);
+      }
+      return;
+    }
+
+    const bulletM = lastLine.match(/^([-•*])\s(.*)$/);
+    if (bulletM) {
+      if (bulletM[2].trim() === "") {
+        const lineStart = curPos - 1 - lastLine.length;
+        ta.value = curVal.substring(0, lineStart) + curVal.substring(curPos);
+        ta.setSelectionRange(lineStart, lineStart);
+      } else {
+        const ins = bulletM[1] + " ";
+        ta.value = curVal.substring(0, curPos) + ins + curVal.substring(curPos);
+        ta.setSelectionRange(curPos + ins.length, curPos + ins.length);
+      }
+      autoGrowTextarea(ta);
+      const bEl = ta.closest("[data-bidx]");
+      if (bEl) {
+        const bIdx = parseInt(bEl.getAttribute("data-bidx"), 10);
+        _onClbBlockTextInput(textareaId, bIdx, ta);
+      }
+      return;
+    }
+
+    const checkM = lastLine.match(/^\[([ xX])\]\s(.*)$/);
+    if (checkM) {
+      if (checkM[2].trim() === "") {
+        const lineStart = curPos - 1 - lastLine.length;
+        ta.value = curVal.substring(0, lineStart) + curVal.substring(curPos);
+        ta.setSelectionRange(lineStart, lineStart);
+      } else {
+        const ins = "[ ] ";
+        ta.value = curVal.substring(0, curPos) + ins + curVal.substring(curPos);
+        ta.setSelectionRange(curPos + ins.length, curPos + ins.length);
+      }
+      autoGrowTextarea(ta);
+      const bEl = ta.closest("[data-bidx]");
+      if (bEl) {
+        const bIdx = parseInt(bEl.getAttribute("data-bidx"), 10);
+        _onClbBlockTextInput(textareaId, bIdx, ta);
+      }
+      return;
+    }
+  }
 }
 
 // ─── MULTI-BLOCK DOCUMENT STATE & PARSING ────────────────────
@@ -12557,7 +12768,6 @@ function _parseNoteIntoClb(text) {
     blocks.push({ type: "text", text: "" });
   }
 
-  // Ensure there is at least 1 table block when activating builder
   const hasTable = blocks.some(b => b.type === "table");
   if (!hasTable) {
     blocks.push({ type: "table", items: [
@@ -12743,13 +12953,13 @@ function _renderClBuilder(taId) {
             '<table class="clb-table">' +
               '<thead>' +
                 '<tr>' +
-                  '<th style="width:26px;text-align:center">#</th>' +
-                  '<th style="width:30px;text-align:center">\u2713</th>' +
-                  '<th>Item Description</th>' +
-                  '<th style="width:58px;text-align:center">Qty</th>' +
-                  '<th style="width:96px;text-align:right">Price (' + sym + ')</th>' +
-                  '<th style="width:78px;text-align:right">Total</th>' +
-                  '<th style="width:30px;text-align:center"></th>' +
+                  '<th class="clb-th-num">#</th>' +
+                  '<th class="clb-th-check">✓</th>' +
+                  '<th class="clb-th-desc">Item Description</th>' +
+                  '<th class="clb-th-qty">Qty</th>' +
+                  '<th class="clb-th-price">Price (' + sym + ')</th>' +
+                  '<th class="clb-th-total">Total</th>' +
+                  '<th class="clb-th-del"></th>' +
                 '</tr>' +
               '</thead>' +
               '<tbody>' + rowsHtml + '</tbody>' +
@@ -12785,6 +12995,7 @@ function _onClbBlockTextInput(taId, bIdx, el) {
   if (bIdx === 0) state.prefix = el.value;
   else state.suffix = el.value;
 
+  handleMobileNewlineAutoContinue(el, taId);
   autoGrowTextarea(el);
   _syncClBuilderToTextarea(taId);
 }
@@ -12795,6 +13006,7 @@ function _onClbLeadInput(taId, el) {
   if (state.blocks && state.blocks[0] && state.blocks[0].type === "text") {
     state.blocks[0].text = el.value;
   }
+  handleMobileNewlineAutoContinue(el, taId);
   autoGrowTextarea(el);
   _syncClBuilderToTextarea(taId);
 }
@@ -12808,6 +13020,7 @@ function _onClbTrailInput(taId, el) {
       lastBlock.text = el.value;
     }
   }
+  handleMobileNewlineAutoContinue(el, taId);
   autoGrowTextarea(el);
   _syncClBuilderToTextarea(taId);
 }
@@ -13042,13 +13255,13 @@ function _createTableBlockHtml(tableId, items = null) {
         '<table class="clb-table">' +
           '<thead>' +
             '<tr>' +
-              '<th style="width:26px;text-align:center">#</th>' +
-              '<th style="width:30px;text-align:center">\u2713</th>' +
-              '<th>Item Description</th>' +
-              '<th style="width:58px;text-align:center">Qty</th>' +
-              '<th style="width:96px;text-align:right">Price (' + sym + ')</th>' +
-              '<th style="width:78px;text-align:right">Total</th>' +
-              '<th style="width:30px;text-align:center"></th>' +
+              '<th class="clb-th-num">#</th>' +
+              '<th class="clb-th-check">✓</th>' +
+              '<th class="clb-th-desc">Item Description</th>' +
+              '<th class="clb-th-qty">Qty</th>' +
+              '<th class="clb-th-price">Price (' + sym + ')</th>' +
+              '<th class="clb-th-total">Total</th>' +
+              '<th class="clb-th-del"></th>' +
             '</tr>' +
           '</thead>' +
           '<tbody>' + rowsHtml + '</tbody>' +
@@ -13098,6 +13311,19 @@ function _inlineMarkdownToHtml(text) {
 }
 
 function _setInputMode(ta, mode) {}
+
+let _symReCache = { sym: null, src: null };
+function _symRe() {
+  const sym = (typeof getCurrency === "function") ? getCurrency() : "$";
+  if (_symReCache.sym === sym && _symReCache.src) return _symReCache.src;
+  const esc = (sym || "$").replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  _symReCache = {
+    sym,
+    src: new RegExp("^(\\s*\\[[ xX]\\]\\s*)(.+?)(\\s*[-–—:]+\\s*)?(?:" + esc + "\\s*|PHP\\s*)?(\\d{1,3}(?:,\\d{3})*(?:\\.\\d{1,2})?|\\d+(?:\\.\\d{1,2})?)?\\s*$", "i")
+  };
+  return _symReCache.src;
+}
+const _CHECKLIST_RE = /^\s*\[[ xX]\]\s+/;
 
 // ── Price auto-formatter ──────────────────────────────────────────────────────
 // Called from onNoteInput whenever the textarea value changes.

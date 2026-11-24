@@ -1385,6 +1385,42 @@ const formattedHtml = _inlineMarkdownToHtml("This is **bold text** and *italic n
 assert(formattedHtml.includes('<strong>bold text</strong>'), "_inlineMarkdownToHtml converts **bold** to <strong>");
 assert(formattedHtml.includes('<em>italic note</em>'), "_inlineMarkdownToHtml converts *italic* to <em>");
 
+// 5. Test Numbered List Auto-Increment and Mobile Continuation
+const numTestTa = makeMockElement("numTestTa");
+numTestTa.value = "1. First item\n";
+numTestTa.selectionStart = numTestTa.value.length;
+numTestTa.selectionEnd = numTestTa.value.length;
+_lastFocusedDocEl['noteInput'] = numTestTa;
+
+// Calling tbInsertLine with '1. ' after '1. First item\n' should increment to '2. '
+tbInsertLine('noteInput', '1. ');
+assert(numTestTa.value.includes("2. "), "tbInsertLine auto-increments numbered list to '2. ' when previous item exists");
+
+numTestTa.value += "Second item\n";
+numTestTa.selectionStart = numTestTa.value.length;
+numTestTa.selectionEnd = numTestTa.value.length;
+tbInsertLine('noteInput', '1. ');
+assert(numTestTa.value.includes("3. "), "tbInsertLine auto-increments numbered list to '3. ' consecutively");
+
+// Test Enter key onTextareaKeydown
+const enterTestTa = makeMockElement("enterTestTa");
+enterTestTa.value = "1. Item A";
+enterTestTa.selectionStart = enterTestTa.value.length;
+enterTestTa.selectionEnd = enterTestTa.value.length;
+onTextareaKeydown({ target: enterTestTa, key: "Enter", keyCode: 13, shiftKey: false, preventDefault: () => {} }, 'noteInput');
+assert(enterTestTa.value.includes("\n2. "), "onTextareaKeydown on Enter auto-continues numbered list with '2. '");
+
+// Test mobile newline continuation
+const mobileTestTa = makeMockElement("mobileTestTa");
+mobileTestTa.value = "4. Fourth item\n";
+mobileTestTa.selectionStart = mobileTestTa.value.length;
+handleMobileNewlineAutoContinue(mobileTestTa, 'noteInput');
+assert(mobileTestTa.value.includes("5. "), "handleMobileNewlineAutoContinue auto-increments to '5. ' on mobile virtual keyboard");
+
+// 6. Verify Mobile Table CSS and Item Description font sizing
+assert(indexHtml.includes('.clb-input-desc') && indexHtml.includes('font-size: 15px'), "index.html uses legible 15px font size for .clb-input-desc on mobile");
+assert(indexHtml.includes('@media(max-width:640px)'), "index.html contains responsive mobile adjustments for table layout");
+
 // ─── SUMMARY ────────────────────────────────────────────────
 console.log("\n=================================================");
 console.log(`  QA TEST RUN COMPLETE: ${passed} PASSED, ${failed} FAILED`);
