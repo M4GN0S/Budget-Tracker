@@ -1335,14 +1335,14 @@ tbody tr:hover td{background:var(--pri-l)}
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
-  gap: 8px;
+  gap: 6px;
   flex-shrink: 0;
   margin-top: auto;
   margin-left: -22px;
   margin-right: -22px;
   box-shadow: 0 -4px 18px rgba(0,0,0,.06);
   width: calc(100% + 44px);
-  padding: 6px 14px calc(6px + env(safe-area-inset-bottom, 0px));
+  padding: 6px 12px calc(6px + env(safe-area-inset-bottom, 0px));
   box-sizing: border-box;
 }
 @media(max-width:900px){
@@ -1350,16 +1350,132 @@ tbody tr:hover td{background:var(--pri-l)}
     margin-left: -14px !important;
     margin-right: -14px !important;
     width: calc(100% + 28px) !important;
-    padding: 6px 10px calc(6px + env(safe-area-inset-bottom, 0px)) !important;
-    gap: 6px !important;
+    padding: 5px 8px calc(5px + env(safe-area-inset-bottom, 0px)) !important;
+    gap: 4px !important;
   }
 }
-.compose-bottom-dock .editor-toolbar {
+
+/* Compact Category Pill with Tag Icon */
+.dock-tag-wrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  background: var(--bg);
+  border: 1.5px solid var(--brd);
+  border-radius: 8px;
+  padding: 0 5px 0 7px;
+  height: 32px;
+  box-sizing: border-box;
+  flex-shrink: 0;
+  cursor: pointer;
+  transition: all .15s ease;
+  max-width: 95px;
+}
+.dock-tag-wrap:hover, .dock-tag-wrap:focus-within {
+  border-color: var(--pri);
+}
+.dock-tag-icon {
+  color: var(--pri);
+  flex-shrink: 0;
+  pointer-events: none;
+}
+.dock-tag-select {
+  border: none;
+  background: transparent;
+  font-size: 11.5px;
+  font-weight: 700;
+  font-family: inherit;
+  color: var(--txt);
+  outline: none;
+  cursor: pointer;
+  padding: 0 1px;
+  margin: 0;
+  height: 100%;
+  appearance: none;
+  -webkit-appearance: none;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  max-width: 62px;
+}
+.dock-tag-arrow {
+  color: var(--txt2);
+  opacity: .7;
+  flex-shrink: 0;
+  pointer-events: none;
+  margin-left: -1px;
+}
+
+/* Pushpin Button */
+.tb-btn.tb-pin {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: 1.5px solid var(--brd);
+  background: var(--bg);
+  color: var(--txt2);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all .15s ease;
+  padding: 0;
+}
+.tb-btn.tb-pin:hover {
+  background: var(--pri-l);
+  color: var(--pri-d);
+  border-color: var(--pri);
+}
+.tb-btn.tb-pin.active {
+  background: var(--acc-l) !important;
+  color: var(--acc) !important;
+  border-color: var(--acc) !important;
+}
+
+/* Carousel Scroll Wrapper with Left/Right Arrows */
+.dock-scroll-wrapper {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 2px;
   flex: 1 1 auto;
   min-width: 0;
+  background: var(--bg);
+  border: 1px solid var(--brd);
+  border-radius: 8px;
+  padding: 1px 3px;
+  height: 34px;
+  box-sizing: border-box;
+}
+.tb-nav-arrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 28px;
+  border-radius: 6px;
+  border: none;
+  background: transparent;
+  color: var(--txt2);
+  cursor: pointer;
+  flex-shrink: 0;
+  padding: 0;
+  transition: all .15s ease;
+}
+.tb-nav-arrow:hover {
+  background: var(--card);
+  color: var(--txt);
+}
+.tb-nav-arrow:active {
+  transform: scale(.9);
+}
+.dock-scroll-wrapper .editor-toolbar {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 3px;
   border: none;
   border-radius: 0;
   background: transparent;
@@ -1368,69 +1484,26 @@ tbody tr:hover td{background:var(--pri-l)}
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
+  scroll-behavior: smooth;
 }
-.compose-bottom-dock .editor-toolbar::-webkit-scrollbar {
+.dock-scroll-wrapper .editor-toolbar::-webkit-scrollbar {
   display: none;
 }
-.dock-tag-select {
-  padding: 4px 8px;
-  border: 1.5px solid var(--brd);
-  border-radius: 8px;
-  font-size: 12px;
-  font-weight: 700;
-  font-family: inherit;
-  background: var(--bg);
-  color: var(--txt);
-  outline: none;
-  height: 32px;
-  box-sizing: border-box;
-  flex-shrink: 0;
-  cursor: pointer;
-  transition: border-color .15s ease;
-}
-.dock-tag-select:focus, .dock-tag-select:hover {
-  border-color: var(--pri);
-}
-.tb-btn.tb-pin {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 32px;
-  height: 32px;
-  border-radius: 8px;
-  border: 1px solid var(--brd);
-  background: var(--bg);
-  color: var(--txt2);
-  cursor: pointer;
-  flex-shrink: 0;
-  transition: all .15s ease;
-}
-.tb-btn.tb-pin:hover {
-  background: var(--pri-l);
-  color: var(--pri-d);
-}
-.tb-btn.tb-pin.active {
-  background: var(--acc-l);
-  color: var(--acc);
-  border-color: var(--acc);
-}
+
+/* Compact Save Icon Button */
 .dock-save-btn {
   flex-shrink: 0;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
-  padding: 0 16px;
+  width: 34px;
+  height: 34px;
+  padding: 0;
   border-radius: 9px;
-  font-weight: 800;
-  font-size: 13px;
-  font-family: inherit;
   background: var(--pri);
   color: var(--on-pri, #fff);
   border: 1.5px solid var(--pri);
   cursor: pointer;
-  white-space: nowrap;
-  height: 34px;
   box-sizing: border-box;
   transition: all .15s ease;
 }
@@ -1439,19 +1512,7 @@ tbody tr:hover td{background:var(--pri-l)}
   transform: translateY(-1px);
 }
 .dock-save-btn:active {
-  transform: scale(.97);
-}
-@media(max-width:520px){
-  .dock-save-btn {
-    padding: 0 12px;
-    font-size: 12.5px;
-    height: 32px;
-  }
-  .dock-tag-select {
-    padding: 3px 6px;
-    font-size: 12px;
-    height: 30px;
-  }
+  transform: scale(.95);
 }
 
 /* ─── Journal Formatting Toolbar ─── */
@@ -4524,8 +4585,10 @@ footer .footer-links a:hover{color:var(--pri-d)}
       </div>
       <!-- Pinned Bottom Keyboard Bar: single compact row directly above virtual keyboard -->
       <div class="compose-bottom-dock">
-        <div class="editor-toolbar" id="composerToolbar" role="toolbar" aria-label="Formatting">
-          <select id="noteTag" class="dock-tag-select" onchange="markNoteTagManual()" title="Category">
+        <!-- Compact Category Pill -->
+        <div class="dock-tag-wrap" title="Category">
+          <svg class="dock-tag-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+          <select id="noteTag" class="dock-tag-select" onchange="markNoteTagManual()">
             <option value="note">Note</option>
             <option value="goal">Goal</option>
             <option value="reminder">Reminder</option>
@@ -4534,28 +4597,43 @@ footer .footer-links a:hover{color:var(--pri-d)}
             <option value="receipt">Receipt</option>
             <option value="checklist">Checklist</option>
           </select>
-          <span class="note-tag-hint" id="noteTagHint" style="display:none"></span>
-          <label class="tb-btn tb-pin" id="notePinBtn" title="Pin note to top">
-            <input type="checkbox" id="notePin" style="display:none" onchange="const b = document.getElementById('notePinBtn'); if(b) b.classList.toggle('active', this.checked)">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 3l1 7 4 2v2l-7-2-4 7-1.5-1.5L10 12 3 5l2-4 7 2 4-1z"/></svg>
-          </label>
-          <span class="tb-sep"></span>
-          <button type="button" class="tb-btn tb-b" onmousedown="event.preventDefault()" onclick="tbWrap('noteInput','**','**')" title="Bold (Ctrl/Cmd+B)"><b>B</b></button>
-          <button type="button" class="tb-btn tb-i" onmousedown="event.preventDefault()" onclick="tbWrap('noteInput','*','*')" title="Italic"><i>I</i></button>
-          <span class="tb-sep"></span>
-          <button type="button" class="tb-btn" onmousedown="event.preventDefault()" onclick="tbInsertLine('noteInput','- ')" title="Bullet list"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="9" y1="6" x2="21" y2="6"/><line x1="9" y1="12" x2="21" y2="12"/><line x1="9" y1="18" x2="21" y2="18"/><circle cx="4.5" cy="6" r="1.3" fill="currentColor"/><circle cx="4.5" cy="12" r="1.3" fill="currentColor"/><circle cx="4.5" cy="18" r="1.3" fill="currentColor"/></svg></button>
-          <button type="button" class="tb-btn" onmousedown="event.preventDefault()" onclick="tbInsertLine('noteInput','[ ] ')" title="Checkbox / to-do"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="4" y="4" width="16" height="16" rx="3"/></svg></button>
-          <button type="button" class="tb-btn" onmousedown="event.preventDefault()" onclick="tbInsertLine('noteInput','1. ')" title="Numbered list"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><text x="2" y="10" font-size="7" font-weight="800" fill="currentColor" stroke="none">1</text><text x="2" y="17" font-size="7" font-weight="800" fill="currentColor" stroke="none">2</text><text x="2" y="23" font-size="7" font-weight="800" fill="currentColor" stroke="none">3</text><line x1="9" y1="7" x2="21" y2="7"/><line x1="9" y1="14" x2="21" y2="14"/><line x1="9" y1="21" x2="21" y2="21"/></svg></button>
-          <button type="button" class="tb-btn" onmousedown="event.preventDefault()" onclick="tbInsertHeading('noteInput')" title="Heading" style="font-weight:900;font-size:14px">H</button>
-          <span class="tb-sep"></span>
-          <button type="button" class="tb-btn tb-wide" onmousedown="event.preventDefault()" onclick="tbInsertPriceList('noteInput')" title="Insert a priced checklist (shopping, car parts, etc.)">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3 7-7"/><path d="M20 12v7a2 2 0 01-2 2H6a2 2 0 01-2-2V5a2 2 0 012-2h8"/><line x1="3.5" y1="10" x2="8.5" y2="10"/><line x1="3.5" y1="15" x2="8.5" y2="15"/></svg>
-            ₱ List
+          <svg class="dock-tag-arrow" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+        <span class="note-tag-hint" id="noteTagHint" style="display:none"></span>
+
+        <!-- Sleek Pushpin Button -->
+        <label class="tb-btn tb-pin" id="notePinBtn" title="Pin note to top" aria-label="Pin note to top">
+          <input type="checkbox" id="notePin" style="display:none" onchange="const b = document.getElementById('notePinBtn'); if(b) b.classList.toggle('active', this.checked)">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="17" x2="12" y2="22"/><path d="M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V6h1a1 1 0 0 0 0-2H8a1 1 0 0 0 0 2h1v4.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24Z"/></svg>
+        </label>
+
+        <!-- Horizontally Scrollable Carousel Formatting Strip with Left/Right Navigation Arrows -->
+        <div class="dock-scroll-wrapper">
+          <button type="button" class="tb-nav-arrow tb-nav-prev" id="tbScrollLeftBtn" onmousedown="event.preventDefault()" onclick="scrollToolbar(-90)" title="Scroll formatting tools left" aria-label="Scroll tools left">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+          </button>
+          <div class="editor-toolbar" id="composerToolbar" role="toolbar" aria-label="Formatting" onscroll="_updateToolbarArrows()">
+            <button type="button" class="tb-btn tb-b" onmousedown="event.preventDefault()" onclick="tbWrap('noteInput','**','**')" title="Bold (Ctrl/Cmd+B)"><b>B</b></button>
+            <button type="button" class="tb-btn tb-i" onmousedown="event.preventDefault()" onclick="tbWrap('noteInput','*','*')" title="Italic"><i>I</i></button>
+            <span class="tb-sep"></span>
+            <button type="button" class="tb-btn" onmousedown="event.preventDefault()" onclick="tbInsertLine('noteInput','- ')" title="Bullet list"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="9" y1="6" x2="21" y2="6"/><line x1="9" y1="12" x2="21" y2="12"/><line x1="9" y1="18" x2="21" y2="18"/><circle cx="4.5" cy="6" r="1.3" fill="currentColor"/><circle cx="4.5" cy="12" r="1.3" fill="currentColor"/><circle cx="4.5" cy="18" r="1.3" fill="currentColor"/></svg></button>
+            <button type="button" class="tb-btn" onmousedown="event.preventDefault()" onclick="tbInsertLine('noteInput','[ ] ')" title="Checkbox / to-do"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="4" y="4" width="16" height="16" rx="3"/></svg></button>
+            <button type="button" class="tb-btn" onmousedown="event.preventDefault()" onclick="tbInsertLine('noteInput','1. ')" title="Numbered list"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><text x="2" y="10" font-size="7" font-weight="800" fill="currentColor" stroke="none">1</text><text x="2" y="17" font-size="7" font-weight="800" fill="currentColor" stroke="none">2</text><text x="2" y="23" font-size="7" font-weight="800" fill="currentColor" stroke="none">3</text><line x1="9" y1="7" x2="21" y2="7"/><line x1="9" y1="14" x2="21" y2="14"/><line x1="9" y1="21" x2="21" y2="21"/></svg></button>
+            <button type="button" class="tb-btn" onmousedown="event.preventDefault()" onclick="tbInsertHeading('noteInput')" title="Heading" style="font-weight:900;font-size:14px">H</button>
+            <span class="tb-sep"></span>
+            <button type="button" class="tb-btn tb-wide" onmousedown="event.preventDefault()" onclick="tbInsertPriceList('noteInput')" title="Insert a priced checklist (shopping, car parts, etc.)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3 7-7"/><path d="M20 12v7a2 2 0 01-2 2H6a2 2 0 01-2-2V5a2 2 0 012-2h8"/><line x1="3.5" y1="10" x2="8.5" y2="10"/><line x1="3.5" y1="15" x2="8.5" y2="15"/></svg>
+              ₱ List
+            </button>
+          </div>
+          <button type="button" class="tb-nav-arrow tb-nav-next" id="tbScrollRightBtn" onmousedown="event.preventDefault()" onclick="scrollToolbar(90)" title="Scroll formatting tools right" aria-label="Scroll tools right">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
           </button>
         </div>
-        <button type="button" class="dock-save-btn" onclick="addNote()" title="Save Entry">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-          <span>Save</span>
+
+        <!-- Compact Save Icon Button -->
+        <button type="button" class="dock-save-btn" onclick="addNote()" title="Save Entry" aria-label="Save Entry">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
         </button>
       </div>
     </div>
@@ -12350,6 +12428,29 @@ function toggleComposeModalMaximize(forceState) {
 
 
 // ─── VISUAL VIEWPORT KEYBOARD DOCKING ENGINE (Phone & Tablet) ──────
+function scrollToolbar(delta) {
+  const tb = document.getElementById("composerToolbar");
+  if (!tb) return;
+  tb.scrollBy({ left: delta, behavior: "smooth" });
+  setTimeout(_updateToolbarArrows, 160);
+}
+
+function _updateToolbarArrows() {
+  const tb = document.getElementById("composerToolbar");
+  const leftBtn = document.getElementById("tbScrollLeftBtn");
+  const rightBtn = document.getElementById("tbScrollRightBtn");
+  if (!tb || !leftBtn || !rightBtn) return;
+
+  const maxScroll = tb.scrollWidth - tb.clientWidth;
+  if (maxScroll <= 2) {
+    leftBtn.style.opacity = "0.35";
+    rightBtn.style.opacity = "0.35";
+  } else {
+    leftBtn.style.opacity = tb.scrollLeft <= 4 ? "0.35" : "1";
+    rightBtn.style.opacity = tb.scrollLeft >= maxScroll - 4 ? "0.35" : "1";
+  }
+}
+
 function _syncVisualViewportKeyboard() {
   if (typeof window === "undefined") return;
   const composeOv = document.getElementById("composeOverlay");
@@ -12399,6 +12500,7 @@ function openComposeModal() {
   if (document.body) document.body.style.overflow = "hidden";
   ov.classList.add("show");
   _syncVisualViewportKeyboard();
+  setTimeout(_updateToolbarArrows, 60);
   // Focus the title field after the animation settles
   setTimeout(() => {
     const t = document.getElementById("noteTitle");
