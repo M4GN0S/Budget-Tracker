@@ -1220,6 +1220,68 @@ tbody tr:hover td{background:var(--pri-l)}
 .compose-mood-nudge .cmn-btn{display:inline-flex;align-items:center;gap:7px;font-family:inherit;font-size:12px;font-weight:700;color:var(--on-pri,#fff);background:var(--pri);border:1.5px solid var(--pri);border-radius:9px;padding:8px 13px;cursor:pointer;transition:.15s}
 .compose-mood-nudge .cmn-btn:hover{filter:brightness(1.07);transform:translateY(-1px)}
 
+/* ─── Pinned Bottom Keyboard Bar (Sticky directly above virtual keyboard) ─── */
+.compose-bottom-dock {
+  position: sticky;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  background: var(--card);
+  border-top: 1.5px solid var(--brd);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  margin-top: auto;
+  box-shadow: 0 -4px 18px rgba(0,0,0,.06);
+}
+.compose-bottom-dock .editor-toolbar {
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  padding: 6px 12px;
+  border-bottom: 1px solid var(--brd);
+}
+.compose-modal-foot {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+  padding: 8px 12px calc(8px + env(safe-area-inset-bottom, 0px));
+  background: var(--card);
+  flex-shrink: 0;
+}
+.compose-modal-foot select {
+  padding: 7px 11px;
+  border: 1.5px solid var(--brd);
+  border-radius: 9px;
+  font-size: 12px;
+  font-family: inherit;
+  background: var(--bg);
+  color: var(--txt);
+  outline: none;
+}
+.compose-pin-label {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  color: var(--txt2);
+  cursor: pointer;
+  white-space: nowrap;
+}
+.compose-modal-foot .btn {
+  padding: 8px 14px;
+  border-radius: 9px;
+  font-size: 12.5px;
+  cursor: pointer;
+}
+.compose-modal-foot .btn-pri {
+  font-weight: 700;
+  padding: 8px 18px;
+}
+
 /* ─── Journal Formatting Toolbar ─── */
 .editor-toolbar{display:flex;align-items:center;gap:3px;padding:5px 8px;background:var(--card);border:1.5px solid var(--brd);border-radius:10px;margin:0;flex-shrink:0;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
 .editor-toolbar::-webkit-scrollbar{display:none}
@@ -4277,7 +4339,7 @@ footer .footer-links a:hover{color:var(--pri-d)}
           <span>Suggest</span>
         </button>
       </div>
-      <!-- Center Scrollable Text & Document Area -->
+      <!-- Center Scrollable Text & Document Area: notes scroll freely behind the pinned bottom toolbar -->
       <div class="compose-editor-scroll">
         <!-- Direct Interactive Checklist Builder container -->
         <div id="clBuilder_noteInput" class="cl-builder-wrap" style="display:none"></div>
@@ -4289,41 +4351,41 @@ footer .footer-links a:hover{color:var(--pri-d)}
         <div class="compose-mood-nudge" id="composeMoodNudge" style="display:none"></div>
         <div class="note-dup-warn" id="noteDupWarn" style="display:none"></div>
       </div>
-      <!-- Formatting Toolbar (Docked right above keyboard & footer for effortless typing) -->
-      <div class="editor-toolbar" id="composerToolbar" role="toolbar" aria-label="Formatting" style="flex-shrink:0">
-        <button type="button" class="tb-btn tb-b" onmousedown="event.preventDefault()" onclick="tbWrap('noteInput','**','**')" title="Bold (Ctrl/Cmd+B)"><b>B</b></button>
-        <button type="button" class="tb-btn tb-i" onmousedown="event.preventDefault()" onclick="tbWrap('noteInput','*','*')" title="Italic"><i>I</i></button>
-        <span class="tb-sep"></span>
-        <button type="button" class="tb-btn" onmousedown="event.preventDefault()" onclick="tbInsertLine('noteInput','- ')" title="Bullet list"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="9" y1="6" x2="21" y2="6"/><line x1="9" y1="12" x2="21" y2="12"/><line x1="9" y1="18" x2="21" y2="18"/><circle cx="4.5" cy="6" r="1.3" fill="currentColor"/><circle cx="4.5" cy="12" r="1.3" fill="currentColor"/><circle cx="4.5" cy="18" r="1.3" fill="currentColor"/></svg></button>
-        <button type="button" class="tb-btn" onmousedown="event.preventDefault()" onclick="tbInsertLine('noteInput','[ ] ')" title="Checkbox / to-do"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="4" y="4" width="16" height="16" rx="3"/></svg></button>
-        <button type="button" class="tb-btn" onmousedown="event.preventDefault()" onclick="tbInsertLine('noteInput','1. ')" title="Numbered list"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><text x="2" y="10" font-size="7" font-weight="800" fill="currentColor" stroke="none">1</text><text x="2" y="17" font-size="7" font-weight="800" fill="currentColor" stroke="none">2</text><text x="2" y="23" font-size="7" font-weight="800" fill="currentColor" stroke="none">3</text><line x1="9" y1="7" x2="21" y2="7"/><line x1="9" y1="14" x2="21" y2="14"/><line x1="9" y1="21" x2="21" y2="21"/></svg></button>
-        <button type="button" class="tb-btn" onmousedown="event.preventDefault()" onclick="tbInsertHeading('noteInput')" title="Heading" style="font-weight:900;font-size:14px">H</button>
-        <span class="tb-sep"></span>
-        <button type="button" class="tb-btn tb-wide" onmousedown="event.preventDefault()" onclick="tbInsertPriceList('noteInput')" title="Insert a priced checklist (shopping, car parts, etc.)">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3 7-7"/><path d="M20 12v7a2 2 0 01-2 2H6a2 2 0 01-2-2V5a2 2 0 012-2h8"/><line x1="3.5" y1="10" x2="8.5" y2="10"/><line x1="3.5" y1="15" x2="8.5" y2="15"/></svg>
-          ₱ List
-        </button>
+      <!-- Pinned Bottom Keyboard Bar: permanently pinned directly above keyboard like native mobile note apps -->
+      <div class="compose-bottom-dock">
+        <div class="editor-toolbar" id="composerToolbar" role="toolbar" aria-label="Formatting">
+          <button type="button" class="tb-btn tb-b" onmousedown="event.preventDefault()" onclick="tbWrap('noteInput','**','**')" title="Bold (Ctrl/Cmd+B)"><b>B</b></button>
+          <button type="button" class="tb-btn tb-i" onmousedown="event.preventDefault()" onclick="tbWrap('noteInput','*','*')" title="Italic"><i>I</i></button>
+          <span class="tb-sep"></span>
+          <button type="button" class="tb-btn" onmousedown="event.preventDefault()" onclick="tbInsertLine('noteInput','- ')" title="Bullet list"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="9" y1="6" x2="21" y2="6"/><line x1="9" y1="12" x2="21" y2="12"/><line x1="9" y1="18" x2="21" y2="18"/><circle cx="4.5" cy="6" r="1.3" fill="currentColor"/><circle cx="4.5" cy="12" r="1.3" fill="currentColor"/><circle cx="4.5" cy="18" r="1.3" fill="currentColor"/></svg></button>
+          <button type="button" class="tb-btn" onmousedown="event.preventDefault()" onclick="tbInsertLine('noteInput','[ ] ')" title="Checkbox / to-do"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="4" y="4" width="16" height="16" rx="3"/></svg></button>
+          <button type="button" class="tb-btn" onmousedown="event.preventDefault()" onclick="tbInsertLine('noteInput','1. ')" title="Numbered list"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><text x="2" y="10" font-size="7" font-weight="800" fill="currentColor" stroke="none">1</text><text x="2" y="17" font-size="7" font-weight="800" fill="currentColor" stroke="none">2</text><text x="2" y="23" font-size="7" font-weight="800" fill="currentColor" stroke="none">3</text><line x1="9" y1="7" x2="21" y2="7"/><line x1="9" y1="14" x2="21" y2="14"/><line x1="9" y1="21" x2="21" y2="21"/></svg></button>
+          <button type="button" class="tb-btn" onmousedown="event.preventDefault()" onclick="tbInsertHeading('noteInput')" title="Heading" style="font-weight:900;font-size:14px">H</button>
+          <span class="tb-sep"></span>
+          <button type="button" class="tb-btn tb-wide" onmousedown="event.preventDefault()" onclick="tbInsertPriceList('noteInput')" title="Insert a priced checklist (shopping, car parts, etc.)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3 7-7"/><path d="M20 12v7a2 2 0 01-2 2H6a2 2 0 01-2-2V5a2 2 0 012-2h8"/><line x1="3.5" y1="10" x2="8.5" y2="10"/><line x1="3.5" y1="15" x2="8.5" y2="15"/></svg>
+            ₱ List
+          </button>
+        </div>
+        <div class="compose-modal-foot">
+          <select id="noteTag" onchange="markNoteTagManual()">
+            <option value="note">Note</option>
+            <option value="goal">Goal</option>
+            <option value="reminder">Reminder</option>
+            <option value="reflection">Reflection</option>
+            <option value="idea">Idea</option>
+            <option value="receipt">Receipt</option>
+            <option value="checklist">Checklist</option>
+          </select>
+          <span class="note-tag-hint" id="noteTagHint" style="display:none"></span>
+          <label class="compose-pin-label">
+            <input type="checkbox" id="notePin"> Pin to top
+          </label>
+          <div style="flex:1"></div>
+          <button type="button" class="btn" onclick="closeComposeModal()">Cancel</button>
+          <button type="button" class="btn btn-pri" onclick="addNote()">Save Entry</button>
+        </div>
       </div>
-      <!-- Footer row: tag + pin + save (Fixed bottom) -->
-      <div class="compose-modal-foot" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding-top:8px;border-top:1px solid var(--brd);flex-shrink:0;background:var(--card)">
-        <select id="noteTag" onchange="markNoteTagManual()" style="padding:8px 12px;border:1.5px solid var(--brd);border-radius:10px;font-size:12px;font-family:inherit;background:var(--bg);color:var(--txt);outline:none">
-          <option value="note">Note</option>
-          <option value="goal">Goal</option>
-          <option value="reminder">Reminder</option>
-          <option value="reflection">Reflection</option>
-          <option value="idea">Idea</option>
-          <option value="receipt">Receipt</option>
-          <option value="checklist">Checklist</option>
-        </select>
-        <span class="note-tag-hint" id="noteTagHint" style="display:none"></span>
-        <label style="display:flex;align-items:center;gap:5px;font-size:12px;color:var(--txt2);cursor:pointer;white-space:nowrap">
-          <input type="checkbox" id="notePin"> Pin to top
-        </label>
-        <div style="flex:1"></div>
-        <button class="btn" onclick="closeComposeModal()" style="padding:9px 16px;border-radius:10px;border:1.5px solid var(--brd);background:var(--bg);color:var(--txt2);font-size:13px;cursor:pointer">Cancel</button>
-        <button class="btn btn-pri" onclick="addNote()" style="padding:9px 20px;border-radius:10px;font-size:13px;font-weight:700">Save Entry</button>
-      </div>
-      <div class="note-dup-warn" id="noteDupWarn" style="display:none"></div>
     </div>
   </div>
 </div>
