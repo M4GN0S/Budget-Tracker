@@ -9,8 +9,8 @@
 //   The browser detects the SW file changed → downloads new version → updates cache.
 //   You don't need to manually bump version numbers anymore.
 //
-const CACHE_NAME = 'budget-tracker-v277';
-// Last updated: 2026-09-09 — Carousel left/right navigation arrows, clean pushpin icon, compact category tag pill, save icon button
+const CACHE_NAME = 'budget-tracker-v278';
+// Last updated: 2026-09-09 — Upward textarea expansion & auto scroll-to-top title focus on save
 
 const ASSETS = [
   './',

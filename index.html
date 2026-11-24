@@ -4563,19 +4563,19 @@ footer .footer-links a:hover{color:var(--pri-d)}
     </div>
     <!-- Body -->
     <div class="compose-modal-body">
-      <!-- Title row (Fixed top) -->
-      <div class="title-row" style="flex-shrink:0">
-        <input type="text" id="noteTitle" required maxlength="80" oninput="onNoteTitleInput()" placeholder="Title (required) — or tap Suggest" style="padding:10px 14px;border:1.5px solid var(--brd);border-radius:10px;font-size:13px;font-weight:700;font-family:inherit;outline:none;background:var(--bg);color:var(--txt);width:100%;box-sizing:border-box;transition:border-color .2s">
-        <button type="button" class="suggest-btn" id="suggestTitleBtn" onclick="suggestNoteTitle()" title="Suggest a title from your note">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 4.6L18.5 9l-4.6 1.9L12 15l-1.9-4.1L5.5 9l4.6-1.4z"/><path d="M19 14l.8 2 2 .8-2 .8-.8 2-.8-2-2-.8 2-.8z"/></svg>
-          <span>Suggest</span>
-        </button>
-      </div>
-      <!-- Center Scrollable Text & Document Area: notes scroll freely behind the pinned bottom toolbar -->
+      <!-- Center Scrollable Text & Document Area: title + notes scroll together so typing expands upward -->
       <div class="compose-editor-scroll">
+        <!-- Title row (at top of scrollable canvas, scrolls away as user types body) -->
+        <div class="title-row" id="composeTitleRow" style="flex-shrink:0;margin-bottom:8px">
+          <input type="text" id="noteTitle" required maxlength="80" oninput="onNoteTitleInput()" placeholder="Title (required) — or tap Suggest" style="padding:10px 14px;border:1.5px solid var(--brd);border-radius:10px;font-size:13px;font-weight:700;font-family:inherit;outline:none;background:var(--bg);color:var(--txt);width:100%;box-sizing:border-box;transition:border-color .2s">
+          <button type="button" class="suggest-btn" id="suggestTitleBtn" onclick="suggestNoteTitle()" title="Suggest a title from your note">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 4.6L18.5 9l-4.6 1.9L12 15l-1.9-4.1L5.5 9l4.6-1.4z"/><path d="M19 14l.8 2 2 .8-2 .8-.8 2-.8-2-2-.8 2-.8z"/></svg>
+            <span>Suggest</span>
+          </button>
+        </div>
         <!-- Direct Interactive Checklist Builder container -->
         <div id="clBuilder_noteInput" class="cl-builder-wrap" style="display:none"></div>
-        <!-- Textarea -->
+        <!-- Textarea (expands upward) -->
         <div class="editor-wrap" id="editorWrap_noteInput" style="flex:1;display:flex;flex-direction:column">
           <textarea id="noteInput" onfocus="_setLastDocFocus('noteInput',this)" onclick="onTextareaClick(event);_setLastDocFocus('noteInput',this)" oninput="onNoteInput(this, event)" onblur="onNoteBlur(this)" onkeydown="onTextareaKeydown(event,'noteInput')" onkeyup="onTextareaKeyup(event,'noteInput')" placeholder="Write your note… tap a toolbar button to format, or just type naturally." inputmode="text" style="padding:2px 0;border:none;outline:none;background:transparent;color:var(--txt);font-size:13.5px;line-height:1.6;font-family:inherit;resize:none;min-height:160px;width:100%;box-sizing:border-box;flex:1"></textarea>
         </div>
@@ -12313,10 +12313,14 @@ function addNote() {
   const pinned = document.getElementById("notePin").checked;
 
   if (!title) {
+    const scrollWrap = document.querySelector("#composeOverlay .compose-editor-scroll");
+    if (scrollWrap) scrollWrap.scrollTo({ top: 0, behavior: "smooth" });
     toast("Give your entry a title first!");
-    titleEl.focus();
-    titleEl.style.borderColor = "var(--dan)";
-    setTimeout(() => { titleEl.style.borderColor = ""; }, 1600);
+    setTimeout(() => {
+      titleEl.focus();
+      titleEl.style.borderColor = "var(--dan)";
+      setTimeout(() => { titleEl.style.borderColor = ""; }, 1600);
+    }, 100);
     return;
   }
   if (!text) { toast("Write something in the body first!"); return; }
@@ -12501,10 +12505,10 @@ function openComposeModal() {
   ov.classList.add("show");
   _syncVisualViewportKeyboard();
   setTimeout(_updateToolbarArrows, 60);
-  // Focus the title field after the animation settles
+  // Focus the note body textarea so user can start typing immediately with full upward space
   setTimeout(() => {
-    const t = document.getElementById("noteTitle");
-    if (t) t.focus();
+    const ni = document.getElementById("noteInput");
+    if (ni) ni.focus();
     _syncVisualViewportKeyboard();
   }, 80);
 }
