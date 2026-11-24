@@ -1251,39 +1251,46 @@ tbody tr:hover td{background:var(--pri-l)}
     display: contents !important;
   }
 
-  /* Compact Category Pill with Tag Icon */
+  /* Subdued Compact Category Pill */
   .dock-tag-wrap {
     order: 1 !important;
     position: relative !important;
     display: inline-flex !important;
     align-items: center !important;
-    gap: 3px !important;
+    gap: 2px !important;
     background: var(--bg) !important;
-    border: 1.5px solid var(--brd) !important;
-    border-radius: 8px !important;
-    padding: 0 5px 0 7px !important;
-    height: 32px !important;
+    border: 1px solid var(--brd) !important;
+    border-radius: 6px !important;
+    padding: 0 4px 0 5px !important;
+    height: 28px !important;
     box-sizing: border-box !important;
     flex-shrink: 0 !important;
     cursor: pointer !important;
-    max-width: 95px !important;
+    max-width: 72px !important;
+    opacity: 0.88 !important;
+    transition: opacity .15s ease, border-color .15s ease !important;
+  }
+  .dock-tag-wrap:hover {
+    opacity: 1 !important;
+    border-color: var(--brd-h, var(--pri)) !important;
   }
   .dock-tag-icon {
     display: block !important;
-    color: var(--pri) !important;
+    color: var(--txt2) !important;
+    opacity: 0.75 !important;
     flex-shrink: 0 !important;
     pointer-events: none !important;
   }
   .dock-tag-select {
     border: none !important;
     background: transparent !important;
-    font-size: 11.5px !important;
-    font-weight: 700 !important;
+    font-size: 11px !important;
+    font-weight: 600 !important;
     font-family: inherit !important;
-    color: var(--txt) !important;
+    color: var(--txt2) !important;
     outline: none !important;
     cursor: pointer !important;
-    padding: 0 1px !important;
+    padding: 0 !important;
     margin: 0 !important;
     height: 100% !important;
     appearance: none !important;
@@ -1291,27 +1298,27 @@ tbody tr:hover td{background:var(--pri-l)}
     text-overflow: ellipsis !important;
     overflow: hidden !important;
     white-space: nowrap !important;
-    max-width: 62px !important;
+    max-width: 48px !important;
   }
   .dock-tag-arrow {
     display: block !important;
     color: var(--txt2) !important;
-    opacity: .7 !important;
+    opacity: .5 !important;
     flex-shrink: 0 !important;
     pointer-events: none !important;
     margin-left: -1px !important;
   }
 
-  /* Mobile Pushpin Button */
+  /* Compact Pushpin Button */
   .tb-btn.tb-pin {
     order: 2 !important;
     display: inline-flex !important;
     align-items: center !important;
     justify-content: center !important;
-    width: 32px !important;
-    height: 32px !important;
-    border-radius: 8px !important;
-    border: 1.5px solid var(--brd) !important;
+    width: 28px !important;
+    height: 28px !important;
+    border-radius: 6px !important;
+    border: 1px solid var(--brd) !important;
     background: var(--bg) !important;
     color: var(--txt2) !important;
     cursor: pointer !important;
@@ -1325,28 +1332,25 @@ tbody tr:hover td{background:var(--pri-l)}
   .tb-btn.tb-pin input[type="checkbox"] {
     display: none !important;
   }
-  .desktop-pin-text {
-    display: none !important;
-  }
   .tb-btn.tb-pin.active {
     background: var(--acc-l) !important;
     color: var(--acc) !important;
     border-color: var(--acc) !important;
   }
 
-  /* Carousel Scroll Wrapper with Left/Right Arrows inside mobile dock */
+  /* Carousel Scroll Wrapper with Maximum Available Space */
   .compose-bottom-dock .dock-scroll-wrapper {
     order: 3 !important;
     display: flex !important;
     align-items: center !important;
-    gap: 2px !important;
+    gap: 1px !important;
     flex: 1 1 auto !important;
     min-width: 0 !important;
     background: var(--bg) !important;
     border: 1px solid var(--brd) !important;
-    border-radius: 8px !important;
-    padding: 1px 3px !important;
-    height: 34px !important;
+    border-radius: 7px !important;
+    padding: 0 2px !important;
+    height: 30px !important;
     box-sizing: border-box !important;
     position: relative !important;
   }
@@ -1354,16 +1358,15 @@ tbody tr:hover td{background:var(--pri-l)}
     display: inline-flex !important;
     align-items: center !important;
     justify-content: center !important;
-    width: 20px !important;
-    height: 28px !important;
-    border-radius: 6px !important;
-    border: 1px solid var(--brd) !important;
-    background: var(--card) !important;
-    color: var(--txt) !important;
+    width: 16px !important;
+    height: 24px !important;
+    border-radius: 5px !important;
+    border: none !important;
+    background: transparent !important;
+    color: var(--txt2) !important;
     cursor: pointer !important;
     flex-shrink: 0 !important;
     padding: 0 !important;
-    box-shadow: 0 1px 2px rgba(0,0,0,.04) !important;
     transition: all .15s ease !important;
     z-index: 3 !important;
   }
@@ -1372,11 +1375,9 @@ tbody tr:hover td{background:var(--pri-l)}
     color: var(--pri-d) !important;
   }
   .tb-nav-arrow.is-disabled {
-    opacity: 0.25 !important;
+    opacity: 0.2 !important;
     pointer-events: none !important;
-    border-color: transparent !important;
     background: transparent !important;
-    box-shadow: none !important;
   }
   .compose-bottom-dock .dock-scroll-wrapper .tb-carousel-viewport {
     position: relative !important;
@@ -1390,7 +1391,7 @@ tbody tr:hover td{background:var(--pri-l)}
     position: absolute !important;
     top: 0 !important;
     bottom: 0 !important;
-    width: 14px !important;
+    width: 12px !important;
     pointer-events: none !important;
     z-index: 2 !important;
     transition: opacity .15s ease !important;
@@ -1409,16 +1410,25 @@ tbody tr:hover td{background:var(--pri-l)}
     min-width: 0 !important;
     display: flex !important;
     align-items: center !important;
-    gap: 3px !important;
+    gap: 2px !important;
     border: none !important;
     border-radius: 0 !important;
     background: transparent !important;
     box-shadow: none !important;
-    padding: 0 2px !important;
+    padding: 0 1px !important;
     overflow-x: auto !important;
     scroll-behavior: smooth !important;
     -webkit-overflow-scrolling: touch !important;
     scrollbar-width: none !important;
+  }
+  .compose-bottom-dock .dock-scroll-wrapper .editor-toolbar .tb-btn {
+    width: 26px !important;
+    height: 26px !important;
+    border-radius: 5px !important;
+  }
+  .compose-bottom-dock .dock-scroll-wrapper .editor-toolbar .tb-btn.tb-wide {
+    padding: 0 6px !important;
+    font-size: 11px !important;
   }
 
   /* Hide Desktop Spacer on Mobile */
@@ -1426,29 +1436,26 @@ tbody tr:hover td{background:var(--pri-l)}
     display: none !important;
   }
 
-  /* Mobile Compact Save Button with Floppy Disk Icon */
+  /* Compact Save Button with Icon */
   .compose-save-btn {
     order: 4 !important;
     display: inline-flex !important;
     align-items: center !important;
     justify-content: center !important;
-    width: 34px !important;
-    height: 34px !important;
-    border-radius: 9px !important;
+    width: 28px !important;
+    height: 28px !important;
+    border-radius: 7px !important;
     background: var(--pri) !important;
     color: var(--on-pri, #fff) !important;
     border: none !important;
     cursor: pointer !important;
     flex-shrink: 0 !important;
     padding: 0 !important;
-    box-shadow: 0 2px 8px rgba(0,0,0,.15) !important;
+    box-shadow: 0 1px 4px rgba(0,0,0,.15) !important;
     transition: all .15s ease !important;
   }
   .dock-save-icon {
     display: block !important;
-  }
-  .desktop-save-text {
-    display: none !important;
   }
   .note-modal-foot {
     flex-shrink: 0 !important;
@@ -1796,14 +1803,14 @@ tbody tr:hover td{background:var(--pri-l)}
   outline: none !important;
 }
 
-/* Desktop: Footer row at bottom */
+/* Desktop: Footer row at bottom - Compact, Subdued & Space-Saving */
 .compose-desktop-foot {
   order: 3;
   display: flex;
   flex-direction: row;
   align-items: center;
-  gap: 10px;
-  padding: 12px 0 0;
+  gap: 8px;
+  padding: 10px 0 0;
   border-top: 1px solid var(--brd);
   background: var(--card);
   flex-shrink: 0;
@@ -1813,34 +1820,37 @@ tbody tr:hover td{background:var(--pri-l)}
 .compose-desktop-foot .dock-tag-wrap {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 5px;
   position: relative;
   background: var(--bg);
-  border: 1.5px solid var(--brd);
-  border-radius: 10px;
-  padding: 0 10px;
-  height: 36px;
+  border: 1px solid var(--brd);
+  border-radius: 8px;
+  padding: 0 8px;
+  height: 30px;
   box-sizing: border-box;
   flex-shrink: 0;
   cursor: pointer;
-  transition: border-color .15s ease;
+  opacity: 0.9;
+  transition: opacity .15s ease, border-color .15s ease;
 }
 .compose-desktop-foot .dock-tag-wrap:hover {
+  opacity: 1;
   border-color: var(--pri);
 }
 .compose-desktop-foot .dock-tag-icon {
   display: inline-block !important;
-  color: var(--pri) !important;
+  color: var(--txt2) !important;
+  opacity: 0.75;
   flex-shrink: 0 !important;
   pointer-events: none !important;
 }
 .compose-desktop-foot .dock-tag-select {
   border: none !important;
   background: transparent !important;
-  font-size: 12.5px !important;
+  font-size: 12px !important;
   font-weight: 600 !important;
   font-family: inherit !important;
-  color: var(--txt) !important;
+  color: var(--txt2) !important;
   outline: none !important;
   cursor: pointer !important;
   padding: 0 !important;
@@ -1851,7 +1861,7 @@ tbody tr:hover td{background:var(--pri-l)}
 .compose-desktop-foot .dock-tag-arrow {
   display: inline-block !important;
   color: var(--txt2) !important;
-  opacity: .7 !important;
+  opacity: .5 !important;
   flex-shrink: 0 !important;
   pointer-events: none !important;
   margin-left: 2px !important;
@@ -1859,18 +1869,17 @@ tbody tr:hover td{background:var(--pri-l)}
 .compose-desktop-foot .tb-btn.tb-pin {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  height: 36px;
-  padding: 0 12px;
-  border-radius: 10px;
-  border: 1.5px solid var(--brd);
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border-radius: 8px;
+  border: 1px solid var(--brd);
   background: var(--bg);
   color: var(--txt2);
-  font-size: 12.5px;
-  font-weight: 600;
   cursor: pointer;
   transition: all .15s ease;
-  width: auto;
+  flex-shrink: 0;
 }
 .compose-desktop-foot .tb-btn.tb-pin:hover {
   border-color: var(--acc);
@@ -1880,19 +1889,12 @@ tbody tr:hover td{background:var(--pri-l)}
   background: var(--acc-l);
   color: var(--acc);
   border-color: var(--acc);
-  font-weight: 700;
 }
 .compose-desktop-foot .tb-btn.tb-pin svg {
   display: inline-block !important;
 }
 .compose-desktop-foot .tb-btn.tb-pin input[type="checkbox"] {
   display: none !important;
-}
-.compose-desktop-foot .desktop-pin-text {
-  display: inline !important;
-  color: inherit;
-  font-size: 12.5px;
-  white-space: nowrap;
 }
 .compose-desktop-foot .desktop-foot-spacer {
   display: block !important;
@@ -1902,28 +1904,23 @@ tbody tr:hover td{background:var(--pri-l)}
   display: inline-flex !important;
   align-items: center;
   justify-content: center;
-  gap: 7px !important;
-  padding: 9px 20px !important;
-  border-radius: 10px !important;
+  width: 32px !important;
+  height: 32px !important;
+  padding: 0 !important;
+  border-radius: 8px !important;
   background: var(--pri) !important;
   color: var(--on-pri, #fff) !important;
-  font-size: 13px !important;
-  font-weight: 700 !important;
-  width: auto !important;
-  height: 36px !important;
   cursor: pointer !important;
-  border: 1.5px solid var(--pri) !important;
-  box-shadow: 0 2px 6px rgba(0,0,0,.12) !important;
+  border: 1px solid var(--pri) !important;
+  box-shadow: 0 1px 4px rgba(0,0,0,.12) !important;
   transition: all .15s ease !important;
+  flex-shrink: 0;
 }
 .compose-desktop-foot .compose-save-btn:hover {
   filter: brightness(1.08);
 }
 .compose-desktop-foot .dock-save-icon {
   display: inline-block !important;
-}
-.compose-desktop-foot .desktop-save-text {
-  display: inline !important;
 }
 
 /* ─── Journal Formatting Toolbar ─── */
@@ -5045,9 +5042,9 @@ footer .footer-links a:hover{color:var(--pri-d)}
 
         <!-- Footer Elements: Order 3 on Desktop (footer row), or inline in single row on Mobile -->
         <div class="compose-desktop-foot" id="composeDesktopFoot">
-          <!-- Compact Category Pill (Mobile) / Standard Select (Desktop) -->
-          <div class="dock-tag-wrap" title="Select category">
-            <svg class="dock-tag-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+          <!-- Subdued Compact Category Pill -->
+          <div class="dock-tag-wrap" title="Category">
+            <svg class="dock-tag-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
             <select id="noteTag" class="dock-tag-select" onchange="markNoteTagManual()" aria-label="Note Category">
               <option value="note">Note</option>
               <option value="goal">Goal</option>
@@ -5057,24 +5054,22 @@ footer .footer-links a:hover{color:var(--pri-d)}
               <option value="receipt">Receipt</option>
               <option value="checklist">Checklist</option>
             </select>
-            <svg class="dock-tag-arrow" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+            <svg class="dock-tag-arrow" width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
           </div>
           <span class="note-tag-hint" id="noteTagHint" style="display:none"></span>
 
-          <!-- Sleek Pushpin Button / Desktop Label -->
+          <!-- Compact Pushpin Button -->
           <label class="tb-btn tb-pin" id="notePinBtn" title="Pin note to top" aria-label="Pin note to top">
             <input type="checkbox" id="notePin" onchange="const b = document.getElementById('notePinBtn'); if(b) b.classList.toggle('active', this.checked)">
-            <svg class="dock-pin-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="17" x2="12" y2="22"/><path d="M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V6h1a1 1 0 0 0 0-2H8a1 1 0 0 0 0 2h1v4.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24Z"/></svg>
-            <span class="desktop-pin-text">Pin to top</span>
+            <svg class="dock-pin-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="17" x2="12" y2="22"/><path d="M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V6h1a1 1 0 0 0 0-2H8a1 1 0 0 0 0 2h1v4.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24Z"/></svg>
           </label>
 
           <!-- Desktop Spacer -->
           <div class="desktop-foot-spacer" style="display:none;flex:1"></div>
 
-          <!-- Save Button: Floppy disk icon on mobile, Floppy disk icon + text on desktop -->
+          <!-- Compact Save Button with Save Icon -->
           <button type="button" class="btn btn-pri dock-save-btn compose-save-btn" onclick="addNote()" title="Save Entry" aria-label="Save Entry">
-            <svg class="dock-save-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
-            <span class="desktop-save-text" style="display:none">Save Entry</span>
+            <svg class="dock-save-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
           </button>
         </div>
       </div>
