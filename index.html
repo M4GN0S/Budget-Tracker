@@ -12293,8 +12293,7 @@ function onNoteBlur(el) {
   autoGrowTextarea(el);
 }
 
-// ─── WYSIWYG RICH DOCUMENT & INTERACTIVE TABLES ENGINE ───────
-let _docTableCounter = 0;
+// ─── MULTI-TABLE INTERACTIVE DOCUMENT ENGINE & TOOLBAR HELPERS ───────
 let _lastFocusedDocEl = {};
 
 function _setLastDocFocus(taId, el) {
@@ -12303,25 +12302,19 @@ function _setLastDocFocus(taId, el) {
 
 function _tbEl(id) {
   if (typeof id !== "string") return id;
-  const docEl = document.getElementById(id === "noteEditText" ? "noteEditTextDoc" : "noteInputDoc");
-  if (docEl && docEl.offsetParent !== null) return docEl;
+  if (_lastFocusedDocEl[id] && document.body.contains(_lastFocusedDocEl[id])) {
+    return _lastFocusedDocEl[id];
+  }
+  const builderWrap = document.getElementById("clBuilder_" + id);
+  if (builderWrap && builderWrap.style.display !== "none") {
+    const firstTa = builderWrap.querySelector("textarea.doc-canvas-lead");
+    if (firstTa) return firstTa;
+  }
   return document.getElementById(id);
 }
 
-// ─── WYSIWYG FORMATTING COMMANDS (Real visual styling) ───────
 function tbWrap(textareaId, before, after, placeholder) {
-  const docEl = document.getElementById(textareaId === "noteEditText" ? "noteEditTextDoc" : "noteInputDoc");
-  if (docEl && docEl.offsetParent !== null && typeof document !== "undefined" && typeof document.execCommand === "function") {
-    docEl.focus();
-    if (before === "**") {
-      document.execCommand("bold", false, null);
-    } else if (before === "*") {
-      document.execCommand("italic", false, null);
-    }
-    _syncDocToTextarea(docEl);
-    return;
-  }
-  const ta = document.getElementById(textareaId);
+  const ta = _tbEl(textareaId);
   if (!ta) return;
   ta.focus();
   const start = ta.selectionStart || 0, end = ta.selectionEnd || start;
@@ -12339,43 +12332,10 @@ function tbWrap(textareaId, before, after, placeholder) {
 }
 
 function tbInsertHeading(textareaId) {
-  const docEl = document.getElementById(textareaId === "noteEditText" ? "noteEditTextDoc" : "noteInputDoc");
-  if (docEl && docEl.offsetParent !== null && typeof document !== "undefined" && typeof document.execCommand === "function") {
-    docEl.focus();
-    const sel = typeof window !== "undefined" && window.getSelection ? window.getSelection() : null;
-    const node = sel ? sel.anchorNode : null;
-    const parentHeading = node ? ((node.nodeType === 1 ? node : node.parentElement)?.closest("h3, .doc-h3")) : null;
-    if (parentHeading) {
-      document.execCommand("formatBlock", false, "<p>");
-    } else {
-      document.execCommand("formatBlock", false, "<h3>");
-    }
-    _syncDocToTextarea(docEl);
-    return;
-  }
   tbInsertLine(textareaId, "### ");
 }
 
 function tbInsertLine(textareaId, prefix) {
-  const docEl = document.getElementById(textareaId === "noteEditText" ? "noteEditTextDoc" : "noteInputDoc");
-  if (docEl && docEl.offsetParent !== null && typeof document !== "undefined" && typeof document.execCommand === "function") {
-    docEl.focus();
-    if (prefix === "- " || prefix === "* ") {
-      document.execCommand("insertUnorderedList", false, null);
-      _syncDocToTextarea(docEl);
-      return;
-    } else if (/^\d+\.\s/.test(prefix)) {
-      document.execCommand("insertOrderedList", false, null);
-      _syncDocToTextarea(docEl);
-      return;
-    } else if (prefix === "[ ] ") {
-      const chkHtml = '<p><label class="doc-inline-check"><input type="checkbox"> <span>To-do item</span></label></p>';
-      _insertHtmlAtCursor(docEl, chkHtml);
-      _syncDocToTextarea(docEl);
-      return;
-    }
-  }
-
   const clb = _getClb(textareaId);
   if (clb && clb.active) {
     if (clb.suffix) {
@@ -12383,10 +12343,20 @@ function tbInsertLine(textareaId, prefix) {
     } else {
       clb.suffix = prefix;
     }
+    if (clb.blocks && clb.blocks.length > 0) {
+      const lastBlock = clb.blocks[clb.blocks.length - 1];
+      if (lastBlock.type === "text") {
+        lastBlock.text = clb.suffix;
+      } else {
+        clb.blocks.push({ type: "text", text: prefix });
+      }
+    }
+    _renderClBuilder(textareaId);
+    _syncClBuilderToTextarea(textareaId);
     return;
   }
 
-  const ta = document.getElementById(textareaId);
+  const ta = _tbEl(textareaId);
   if (!ta) return;
   ta.focus();
   const start = ta.selectionStart != null ? ta.selectionStart : (ta.value ? ta.value.length : 0);
@@ -12429,51 +12399,599 @@ function tbInsertPriceList(textareaId) {
   const tagSel = document.getElementById("noteTag");
   if (tagSel) { tagSel.value = "checklist"; markNoteTagManual(); }
 
-  const docEl = document.getElementById(textareaId === "noteEditText" ? "noteEditTextDoc" : "noteInputDoc");
-  if (docEl && docEl.offsetParent !== null && typeof window !== "undefined" && window.getSelection) {
-    _docTableCounter++;
-    const tableHtml = _createTableBlockHtml("tbl_" + Date.now() + "_" + _docTableCounter);
-    _insertHtmlAtCursor(docEl, tableHtml);
-    _syncDocToTextarea(docEl);
-    toast("\u20B1 List table inserted \u2014 edit items in-place or write notes around it");
+  const state = _getClb(textareaId);
+  if (!state.active) {
+    _activateClBuilder(textareaId);
+    toast("\u20B1 List table added \u2014 edit in-line or write notes below");
     return;
   }
 
-  _activateClBuilder(textareaId);
-  toast("\u20B1 List table added \u2014 edit in-line or write notes below");
-}
+  // Builder is ALREADY active: Insert another interactive table into multi-table document flow
+  let lastEl = _lastFocusedDocEl[textareaId];
+  let curBIdx = -1;
 
-function _insertHtmlAtCursor(docEl, htmlString) {
-  if (!docEl) return;
-  docEl.focus();
-  const sel = typeof window !== "undefined" && window.getSelection ? window.getSelection() : null;
-  if (sel && sel.rangeCount > 0) {
-    const range = sel.getRangeAt(0);
-    if (docEl.contains(range.commonAncestorContainer)) {
-      range.deleteContents();
-      const temp = document.createElement("div");
-      temp.innerHTML = htmlString + "<p><br></p>";
-      const frag = document.createDocumentFragment();
-      let node;
-      while ((node = temp.firstChild)) {
-        frag.appendChild(node);
+  if (lastEl && lastEl.closest("#clBuilder_" + textareaId)) {
+    const bEl = lastEl.closest("[data-bidx]");
+    if (bEl) {
+      curBIdx = parseInt(bEl.getAttribute("data-bidx"), 10);
+      if (lastEl.tagName === "TEXTAREA") {
+        const val = lastEl.value || "";
+        const selStart = lastEl.selectionStart || val.length;
+        const beforeText = val.substring(0, selStart).trim();
+        const afterText = val.substring(selStart).trim();
+        state.blocks[curBIdx].text = beforeText;
+        state.blocks.splice(curBIdx + 1, 0,
+          { type: "table", items: [
+            { desc: "", qty: 1, price: "", checked: false },
+            { desc: "", qty: 1, price: "", checked: false },
+            { desc: "", qty: 1, price: "", checked: false }
+          ]},
+          { type: "text", text: afterText }
+        );
+        _renderClBuilder(textareaId);
+        _syncClBuilderToTextarea(textareaId);
+        toast("\u20B1 List table inserted at cursor");
+        setTimeout(() => {
+          const newDesc = document.querySelector("#clBuilder_" + textareaId + " .doc-table-block[data-bidx='" + (curBIdx + 1) + "'] .clb-input-desc");
+          if (newDesc) newDesc.focus();
+        }, 50);
+        return;
       }
-      range.insertNode(frag);
-      const firstInp = docEl.querySelector(".doc-table-block:last-of-type .clb-input-desc");
-      if (firstInp) setTimeout(() => firstInp.focus(), 25);
-      return;
     }
   }
-  const temp = document.createElement("div");
-  temp.innerHTML = htmlString + "<p><br></p>";
-  while (temp.firstChild) {
-    docEl.appendChild(temp.firstChild);
-  }
-  const firstInp = docEl.querySelector(".doc-table-block:last-of-type .clb-input-desc");
-  if (firstInp) setTimeout(() => firstInp.focus(), 25);
+
+  // Append new table block to end of document
+  state.blocks.push(
+    { type: "table", items: [
+      { desc: "", qty: 1, price: "", checked: false },
+      { desc: "", qty: 1, price: "", checked: false },
+      { desc: "", qty: 1, price: "", checked: false }
+    ]},
+    { type: "text", text: "" }
+  );
+  _renderClBuilder(textareaId);
+  _syncClBuilderToTextarea(textareaId);
+  toast("\u20B1 List table inserted");
+  setTimeout(() => {
+    const allDescInps = document.querySelectorAll("#clBuilder_" + textareaId + " .clb-input-desc");
+    if (allDescInps.length > 0) allDescInps[allDescInps.length - 3].focus();
+  }, 50);
 }
 
-// ─── INTERACTIVE TABLE COMPONENT GENERATOR & ACTIONS ─────────
+// ─── MULTI-BLOCK DOCUMENT STATE & PARSING ────────────────────
+const _clbState = {};
+
+function _getClb(taId) {
+  if (!_clbState[taId]) {
+    _clbState[taId] = { active: false, blocks: [], items: [], prefix: "", suffix: "" };
+  }
+  return _clbState[taId];
+}
+
+function _resetClBuilder(taId) {
+  _clbState[taId] = { active: false, blocks: [], items: [], prefix: "", suffix: "" };
+  const wrap = document.getElementById("clBuilder_" + taId);
+  const edWrap = document.getElementById("editorWrap_" + taId);
+  if (wrap) { wrap.style.display = "none"; wrap.innerHTML = ""; }
+  if (edWrap) { edWrap.style.display = ""; }
+}
+
+function _removeClBuilder(taId) {
+  const ta = document.getElementById(taId);
+  if (ta) {
+    _syncClBuilderToTextarea(taId);
+  }
+  _resetClBuilder(taId);
+}
+
+function _activateClBuilder(taId) {
+  const ta = document.getElementById(taId);
+  if (!ta) return;
+  const state = _getClb(taId);
+  state.active = true;
+
+  const parsed = _parseNoteIntoClb(ta.value);
+  state.blocks = parsed.blocks;
+  state.items = parsed.items;
+  state.prefix = parsed.prefix;
+  state.suffix = parsed.suffix;
+
+  _renderClBuilder(taId);
+  _syncClBuilderToTextarea(taId);
+
+  setTimeout(() => {
+    const firstInput = document.querySelector("#clBuilder_" + taId + " .clb-input-desc");
+    if (firstInput) firstInput.focus();
+  }, 50);
+}
+
+function _parseNoteIntoClb(text) {
+  const rawLines = (text || "").split(/\r?\n/);
+  const blocks = [];
+  let curTextLines = [];
+  let curTableItems = [];
+
+  function flushText() {
+    if (curTextLines.length > 0) {
+      blocks.push({ type: "text", text: curTextLines.join("\n").trim() });
+      curTextLines = [];
+    }
+  }
+  function flushTable() {
+    if (curTableItems.length > 0) {
+      blocks.push({ type: "table", items: curTableItems });
+      curTableItems = [];
+    }
+  }
+
+  for (let i = 0; i < rawLines.length; i++) {
+    const line = rawLines[i];
+    const checkM = line.match(/^\s*\[([ xX])\]\s*(.*)$/);
+    if (checkM) {
+      flushText();
+      const checked = checkM[1].toLowerCase() === 'x';
+      let desc = (checkM[2] || "").trim();
+      let price = "";
+      const priceM = desc.match(/^(.*?)\s*[-–—:]+\s*(?:[^\d\s]+\s*)?(\d[\d,]*(?:\.\d{1,2})?)\s*$/);
+      if (priceM) {
+        desc = priceM[1].trim();
+        const pVal = priceM[2].replace(/,/g, "");
+        if (pVal !== "0" && pVal !== "0.00" && pVal !== "0.0") price = pVal;
+      }
+      let qty = 1;
+      const qtyM = desc.match(/^(.*?)\s*[x×*](\d+)\s*$/i) || desc.match(/^(.*?)\s*\((\d+)\)\s*$/);
+      if (qtyM) {
+        desc = qtyM[1].trim();
+        qty = parseInt(qtyM[2], 10) || 1;
+      }
+      curTableItems.push({ desc, qty, price, checked });
+    } else {
+      flushTable();
+      curTextLines.push(line);
+    }
+  }
+  flushText();
+  flushTable();
+
+  if (blocks.length === 0) {
+    blocks.push({ type: "text", text: "" });
+  }
+
+  // Ensure there is at least 1 table block when activating builder
+  const hasTable = blocks.some(b => b.type === "table");
+  if (!hasTable) {
+    blocks.push({ type: "table", items: [
+      { desc: "", qty: 1, price: "", checked: false },
+      { desc: "", qty: 1, price: "", checked: false },
+      { desc: "", qty: 1, price: "", checked: false }
+    ]});
+    blocks.push({ type: "text", text: "" });
+  }
+
+  let firstTable = blocks.find(b => b.type === "table");
+  let prefix = "";
+  let suffix = "";
+  if (firstTable) {
+    const tIdx = blocks.indexOf(firstTable);
+    prefix = blocks.slice(0, tIdx).filter(b => b.type === "text").map(b => b.text).join("\n\n");
+    suffix = blocks.slice(tIdx + 1).filter(b => b.type === "text").map(b => b.text).join("\n\n");
+  }
+
+  return {
+    blocks,
+    items: firstTable ? firstTable.items : [],
+    prefix,
+    suffix
+  };
+}
+
+function _serializeClbToNote(taId) {
+  const state = _getClb(taId);
+  const sym = getCurrency();
+  const blockStrings = [];
+
+  if (state.blocks && state.blocks.length > 0) {
+    state.blocks.forEach(block => {
+      if (block.type === "text") {
+        if (block.text && block.text.trim()) {
+          blockStrings.push(block.text.trim());
+        }
+      } else if (block.type === "table" && block.items) {
+        const lines = [];
+        block.items.forEach(it => {
+          const chk = it.checked ? "[x] " : "[ ] ";
+          const d = (it.desc || "").trim();
+          const q = parseInt(it.qty, 10) || 1;
+          const pVal = parseFloat((it.price || "").toString().replace(/,/g, ""));
+          if (!d && isNaN(pVal)) return;
+          const descStr = d || "Item";
+          const qStr = q > 1 ? (" x" + q) : "";
+          const pStr = (!isNaN(pVal) && pVal > 0) ? (" \u2014 " + sym + " " + pVal.toFixed(2)) : "";
+          lines.push(chk + descStr + qStr + pStr);
+        });
+        if (lines.length > 0) {
+          blockStrings.push(lines.join("\n"));
+        }
+      }
+    });
+  } else {
+    if (state.prefix && state.prefix.trim()) blockStrings.push(state.prefix.trim());
+    if (state.items && state.items.length > 0) {
+      const lines = [];
+      state.items.forEach(it => {
+        const chk = it.checked ? "[x] " : "[ ] ";
+        const d = (it.desc || "").trim();
+        const q = parseInt(it.qty, 10) || 1;
+        const pVal = parseFloat((it.price || "").toString().replace(/,/g, ""));
+        if (!d && isNaN(pVal)) return;
+        const descStr = d || "Item";
+        const qStr = q > 1 ? (" x" + q) : "";
+        const pStr = (!isNaN(pVal) && pVal > 0) ? (" \u2014 " + sym + " " + pVal.toFixed(2)) : "";
+        lines.push(chk + descStr + qStr + pStr);
+      });
+      if (lines.length > 0) blockStrings.push(lines.join("\n"));
+    }
+    if (state.suffix && state.suffix.trim()) blockStrings.push(state.suffix.trim());
+  }
+
+  return blockStrings.join("\n\n");
+}
+
+function _syncClBuilderToTextarea(taId) {
+  const ta = document.getElementById(taId);
+  if (!ta) return;
+  const noteText = _serializeClbToNote(taId);
+  ta.value = noteText;
+  autoGrowTextarea(ta);
+
+  if (taId === "noteInput") {
+    const titleEl = document.getElementById("noteTitle");
+    if (titleEl && !titleEl.value.trim() && noteText.trim()) {
+      const s = suggestTitleFromText(noteText.trim());
+      if (s) titleEl.placeholder = "Suggested: " + s + "  (tap Suggest)";
+    }
+    autoApplyNoteTag();
+  }
+}
+
+function _renderClBuilder(taId) {
+  const wrap = document.getElementById("clBuilder_" + taId);
+  const edWrap = document.getElementById("editorWrap_" + taId);
+  if (!wrap) return;
+
+  const state = _getClb(taId);
+  if (!state.active) {
+    wrap.style.display = "none";
+    wrap.innerHTML = "";
+    if (edWrap) edWrap.style.display = "";
+    return;
+  }
+
+  wrap.style.display = "flex";
+  wrap.style.flexDirection = "column";
+  wrap.style.gap = "8px";
+  if (edWrap) edWrap.style.display = "none";
+
+  const sym = getCurrency();
+  let html = "";
+
+  if (!state.blocks || state.blocks.length === 0) {
+    state.blocks = [
+      { type: "text", text: state.prefix || "" },
+      { type: "table", items: state.items && state.items.length > 0 ? state.items : [
+        { desc: "", qty: 1, price: "", checked: false },
+        { desc: "", qty: 1, price: "", checked: false },
+        { desc: "", qty: 1, price: "", checked: false }
+      ]},
+      { type: "text", text: state.suffix || "" }
+    ];
+  }
+
+  state.blocks.forEach((block, bIdx) => {
+    if (block.type === "text") {
+      const ph = bIdx === 0 ? "Write anything before the table (intro, context, notes)..." : "Write additional notes or next steps...";
+      const leadId = bIdx === 0 ? ("clbLead_" + taId) : ("clbTrail_" + taId);
+      html +=
+        '<textarea id="' + leadId + '" class="doc-canvas-lead" data-bidx="' + bIdx + '" ' +
+        'placeholder="' + ph + '" ' +
+        'onfocus="_setLastDocFocus(\'' + taId + '\', this)" ' +
+        'onclick="_setLastDocFocus(\'' + taId + '\', this)" ' +
+        'oninput="_onClbBlockTextInput(\'' + taId + '\', ' + bIdx + ', this)" ' +
+        'onkeydown="onTextareaKeydown(event, \'' + taId + '\')">' +
+        escHtml(block.text || '') +
+        '</textarea>';
+    } else if (block.type === "table") {
+      let rowsHtml = "";
+      let grandTotal = 0;
+      (block.items || []).forEach((it, rIdx) => {
+        const p = parseFloat((it.price || "").toString().replace(/,/g, "")) || 0;
+        const q = parseInt(it.qty, 10) || 1;
+        if (p > 0) grandTotal += p * q;
+        const lineTotal = p > 0 ? (sym + " " + (p * q).toFixed(2)) : "\u2014";
+        rowsHtml +=
+          '<tr class="clb-row ' + (it.checked ? 'is-checked' : '') + '" data-bidx="' + bIdx + '" data-ridx="' + rIdx + '">' +
+            '<td class="clb-td-num">' + (rIdx + 1) + '</td>' +
+            '<td class="clb-td-check">' +
+              '<input type="checkbox" ' + (it.checked ? 'checked' : '') + ' onchange="_clbToggleRowCheck(\'' + taId + '\', ' + bIdx + ', ' + rIdx + ', this.checked)" title="Check item">' +
+            '</td>' +
+            '<td class="clb-td-desc">' +
+              '<input type="text" class="clb-input clb-input-desc" placeholder="Item name (e.g. Milk)" value="' + escHtml(it.desc || '') + '" onfocus="_setLastDocFocus(\'' + taId + '\', this)" onclick="_setLastDocFocus(\'' + taId + '\', this)" oninput="_clbUpdateRowField(\'' + taId + '\', ' + bIdx + ', ' + rIdx + ', \'desc\', this.value)" onkeydown="_clbOnRowKeydown(event, \'' + taId + '\', ' + bIdx + ', ' + rIdx + ', \'desc\')">' +
+            '</td>' +
+            '<td class="clb-td-qty">' +
+              '<input type="text" inputmode="numeric" class="clb-input clb-input-qty" value="' + (it.qty || 1) + '" oninput="_clbUpdateRowField(\'' + taId + '\', ' + bIdx + ', ' + rIdx + ', \'qty\', this.value)" onkeydown="_clbOnRowKeydown(event, \'' + taId + '\', ' + bIdx + ', ' + rIdx + ', \'qty\')">' +
+            '</td>' +
+            '<td class="clb-td-price">' +
+              '<div class="clb-price-input-wrap">' +
+                '<span class="clb-price-sym">' + sym + '</span>' +
+                '<input type="text" inputmode="decimal" class="clb-input clb-input-price" placeholder="0.00" value="' + (it.price || '') + '" oninput="_clbUpdateRowField(\'' + taId + '\', ' + bIdx + ', ' + rIdx + ', \'price\', this.value)" onkeydown="_clbOnRowKeydown(event, \'' + taId + '\', ' + bIdx + ', ' + rIdx + ', \'price\')">' +
+              '</div>' +
+            '</td>' +
+            '<td class="clb-td-total">' +
+              '<span class="clb-row-total">' + lineTotal + '</span>' +
+            '</td>' +
+            '<td class="clb-td-del">' +
+              '<button type="button" class="clb-del-btn" onclick="_clbRemoveRow(\'' + taId + '\', ' + bIdx + ', ' + rIdx + ')" title="Remove item">' +
+                '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>' +
+              '</button>' +
+            '</td>' +
+          '</tr>';
+      });
+
+      html +=
+        '<div class="doc-table-block" data-bidx="' + bIdx + '">' +
+          '<div class="doc-table-scroll">' +
+            '<table class="clb-table">' +
+              '<thead>' +
+                '<tr>' +
+                  '<th style="width:26px;text-align:center">#</th>' +
+                  '<th style="width:30px;text-align:center">\u2713</th>' +
+                  '<th>Item Description</th>' +
+                  '<th style="width:58px;text-align:center">Qty</th>' +
+                  '<th style="width:96px;text-align:right">Price (' + sym + ')</th>' +
+                  '<th style="width:78px;text-align:right">Total</th>' +
+                  '<th style="width:30px;text-align:center"></th>' +
+                '</tr>' +
+              '</thead>' +
+              '<tbody>' + rowsHtml + '</tbody>' +
+            '</table>' +
+          '</div>' +
+          '<div class="doc-table-foot">' +
+            '<div class="doc-table-foot-actions">' +
+              '<button type="button" class="doc-add-row-btn" onclick="_clbAddRowToBlock(\'' + taId + '\', ' + bIdx + ')">' +
+                '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>' +
+                'Add item' +
+              '</button>' +
+              '<button type="button" class="doc-remove-table-btn" onclick="_clbRemoveTableBlock(\'' + taId + '\', ' + bIdx + ')" title="Remove table">Remove Table</button>' +
+            '</div>' +
+            '<div class="doc-table-grand-total">Total: <strong>' + sym + ' ' + grandTotal.toFixed(2) + '</strong></div>' +
+          '</div>' +
+        '</div>';
+    }
+  });
+
+  wrap.innerHTML = html;
+
+  setTimeout(() => {
+    const textareas = wrap.querySelectorAll("textarea.doc-canvas-lead");
+    textareas.forEach(t => autoGrowTextarea(t));
+  }, 20);
+}
+
+function _onClbBlockTextInput(taId, bIdx, el) {
+  const state = _getClb(taId);
+  if (state.blocks && state.blocks[bIdx]) {
+    state.blocks[bIdx].text = el.value;
+  }
+  if (bIdx === 0) state.prefix = el.value;
+  else state.suffix = el.value;
+
+  autoGrowTextarea(el);
+  _syncClBuilderToTextarea(taId);
+}
+
+function _onClbLeadInput(taId, el) {
+  const state = _getClb(taId);
+  state.prefix = el.value;
+  if (state.blocks && state.blocks[0] && state.blocks[0].type === "text") {
+    state.blocks[0].text = el.value;
+  }
+  autoGrowTextarea(el);
+  _syncClBuilderToTextarea(taId);
+}
+
+function _onClbTrailInput(taId, el) {
+  const state = _getClb(taId);
+  state.suffix = el.value;
+  if (state.blocks && state.blocks.length > 0) {
+    const lastBlock = state.blocks[state.blocks.length - 1];
+    if (lastBlock.type === "text") {
+      lastBlock.text = el.value;
+    }
+  }
+  autoGrowTextarea(el);
+  _syncClBuilderToTextarea(taId);
+}
+
+function _clbAddRowToBlock(taId, bIdx, desc = "", qty = 1, price = "", checked = false) {
+  const state = _getClb(taId);
+  if (!state.blocks || !state.blocks[bIdx] || state.blocks[bIdx].type !== "table") return;
+  state.blocks[bIdx].items.push({ desc, qty, price, checked });
+  state.items = state.blocks[bIdx].items;
+  _renderClBuilder(taId);
+  _syncClBuilderToTextarea(taId);
+
+  setTimeout(() => {
+    const blockEl = document.querySelector("#clBuilder_" + taId + " .doc-table-block[data-bidx='" + bIdx + "']");
+    if (blockEl) {
+      const rows = blockEl.querySelectorAll(".clb-row");
+      const lastRow = rows[rows.length - 1];
+      if (lastRow) {
+        const descInp = lastRow.querySelector(".clb-input-desc");
+        if (descInp) descInp.focus();
+      }
+    }
+  }, 30);
+}
+
+function _clbAddRow(taId, desc = "", qty = 1, price = "", checked = false) {
+  const state = _getClb(taId);
+  let tableIdx = -1;
+  if (state.blocks && state.blocks.length > 0) {
+    tableIdx = state.blocks.findIndex(b => b.type === "table");
+  }
+  if (tableIdx === -1) {
+    state.items.push({ desc, qty, price, checked });
+    return;
+  }
+  _clbAddRowToBlock(taId, tableIdx, desc, qty, price, checked);
+}
+
+function _clbRemoveTableBlock(taId, bIdx) {
+  const state = _getClb(taId);
+  if (!state.blocks || !state.blocks[bIdx]) return;
+  state.blocks.splice(bIdx, 1);
+
+  const hasRemainingTable = state.blocks.some(b => b.type === "table");
+  if (!hasRemainingTable) {
+    _removeClBuilder(taId);
+    toast("Table removed \u2014 document converted to notes");
+    return;
+  }
+
+  _renderClBuilder(taId);
+  _syncClBuilderToTextarea(taId);
+  toast("Table removed");
+}
+
+function _clbRemoveRow(taId, bIdx, rIdx) {
+  const state = _getClb(taId);
+  if (rIdx === undefined) {
+    const idx = bIdx;
+    let tIdx = state.blocks ? state.blocks.findIndex(b => b.type === "table") : -1;
+    if (tIdx === -1) {
+      if (state.items.length <= 1) state.items[0] = { desc: "", qty: 1, price: "", checked: false };
+      else state.items.splice(idx, 1);
+      return;
+    }
+    bIdx = tIdx;
+    rIdx = idx;
+  }
+
+  if (!state.blocks || !state.blocks[bIdx] || state.blocks[bIdx].type !== "table") return;
+  const items = state.blocks[bIdx].items;
+  if (items.length <= 1) {
+    items[0] = { desc: "", qty: 1, price: "", checked: false };
+  } else {
+    items.splice(rIdx, 1);
+  }
+  _renderClBuilder(taId);
+  _syncClBuilderToTextarea(taId);
+}
+
+function _clbUpdateRowField(taId, bIdx, rIdx, field, val) {
+  const state = _getClb(taId);
+  if (val === undefined) {
+    val = field;
+    field = rIdx;
+    const idx = bIdx;
+    let tIdx = state.blocks ? state.blocks.findIndex(b => b.type === "table") : -1;
+    if (tIdx === -1) {
+      if (state.items[idx]) {
+        if (field === "qty") state.items[idx].qty = Math.max(1, parseInt(val, 10) || 1);
+        else if (field === "price") state.items[idx].price = val;
+        else state.items[idx][field] = val;
+      }
+      return;
+    }
+    bIdx = tIdx;
+    rIdx = idx;
+  }
+
+  if (!state.blocks || !state.blocks[bIdx] || !state.blocks[bIdx].items[rIdx]) return;
+  const item = state.blocks[bIdx].items[rIdx];
+
+  if (field === "qty") {
+    item.qty = Math.max(1, parseInt(val, 10) || 1);
+  } else if (field === "price") {
+    item.price = val;
+  } else {
+    item[field] = val;
+  }
+
+  const wrap = document.getElementById("clBuilder_" + taId);
+  if (wrap) {
+    const sym = getCurrency();
+    const rowEl = wrap.querySelector(`.clb-row[data-bidx="${bIdx}"][data-ridx="${rIdx}"]`);
+    if (rowEl) {
+      const p = parseFloat((item.price || "").toString().replace(/,/g, "")) || 0;
+      const q = parseInt(item.qty, 10) || 1;
+      const totalCell = rowEl.querySelector(".clb-row-total");
+      if (totalCell) {
+        totalCell.textContent = p > 0 ? (sym + " " + (p * q).toFixed(2)) : "\u2014";
+      }
+    }
+    let grandTotal = 0;
+    state.blocks[bIdx].items.forEach(it => {
+      const p = parseFloat((it.price || "").toString().replace(/,/g, "")) || 0;
+      const q = parseInt(it.qty, 10) || 1;
+      if (p > 0) grandTotal += p * q;
+    });
+    const blockEl = wrap.querySelector(`.doc-table-block[data-bidx="${bIdx}"]`);
+    if (blockEl) {
+      const gtEl = blockEl.querySelector(".doc-table-grand-total strong");
+      if (gtEl) gtEl.textContent = sym + " " + grandTotal.toFixed(2);
+    }
+  }
+
+  _syncClBuilderToTextarea(taId);
+}
+
+function _clbToggleRowCheck(taId, bIdx, rIdx, checked) {
+  const state = _getClb(taId);
+  if (checked === undefined) {
+    checked = rIdx;
+    const idx = bIdx;
+    let tIdx = state.blocks ? state.blocks.findIndex(b => b.type === "table") : -1;
+    if (tIdx === -1) {
+      if (state.items[idx]) state.items[idx].checked = !!checked;
+      return;
+    }
+    bIdx = tIdx;
+    rIdx = idx;
+  }
+
+  if (!state.blocks || !state.blocks[bIdx] || !state.blocks[bIdx].items[rIdx]) return;
+  state.blocks[bIdx].items[rIdx].checked = !!checked;
+  const wrap = document.getElementById("clBuilder_" + taId);
+  if (wrap) {
+    const rowEl = wrap.querySelector(`.clb-row[data-bidx="${bIdx}"][data-ridx="${rIdx}"]`);
+    if (rowEl) rowEl.classList.toggle("is-checked", !!checked);
+  }
+  _syncClBuilderToTextarea(taId);
+}
+
+function _clbOnRowKeydown(e, taId, bIdx, rIdx, field) {
+  if (e.key === "Enter") {
+    e.preventDefault();
+    const state = _getClb(taId);
+    if (!state.blocks || !state.blocks[bIdx]) return;
+    const items = state.blocks[bIdx].items;
+    if (rIdx === items.length - 1) {
+      _clbAddRowToBlock(taId, bIdx);
+    } else {
+      const blockEl = document.querySelector("#clBuilder_" + taId + " .doc-table-block[data-bidx='" + bIdx + "']");
+      if (blockEl) {
+        const rows = blockEl.querySelectorAll(".clb-row");
+        if (rows[rIdx + 1]) {
+          const nextDesc = rows[rIdx + 1].querySelector(".clb-input-desc");
+          if (nextDesc) nextDesc.focus();
+        }
+      }
+    }
+  }
+}
+
+// ─── HELPERS FOR MULTI-TABLE & MARKDOWN ──────────────────────
 function _createTableBlockHtml(tableId, items = null) {
   const sym = getCurrency();
   const defaultItems = items || [
@@ -12486,32 +13004,32 @@ function _createTableBlockHtml(tableId, items = null) {
   let grandTotal = 0;
   defaultItems.forEach((it, idx) => {
     const p = parseFloat((it.price || "").toString().replace(/,/g, "")) || 0;
-    const q = parseInt(it.qty) || 1;
+    const q = parseInt(it.qty, 10) || 1;
     if (p > 0) grandTotal += p * q;
     const lineTotal = p > 0 ? (sym + " " + (p * q).toFixed(2)) : "\u2014";
     rowsHtml +=
       '<tr class="clb-row ' + (it.checked ? 'is-checked' : '') + '" data-idx="' + idx + '">' +
         '<td class="clb-td-num">' + (idx + 1) + '</td>' +
         '<td class="clb-td-check">' +
-          '<input type="checkbox" ' + (it.checked ? 'checked' : '') + ' onchange="_docTableToggleCheck(this)" title="Check item">' +
+          '<input type="checkbox" ' + (it.checked ? 'checked' : '') + ' title="Check item">' +
         '</td>' +
         '<td class="clb-td-desc">' +
-          '<input type="text" class="clb-input clb-input-desc" placeholder="Item name (e.g. Milk)" value="' + escHtml(it.desc || '') + '" oninput="_docTableOnInput(this)" onkeydown="_docTableRowKeydown(event, this)">' +
+          '<input type="text" class="clb-input clb-input-desc" placeholder="Item name" value="' + escHtml(it.desc || '') + '">' +
         '</td>' +
         '<td class="clb-td-qty">' +
-          '<input type="text" inputmode="numeric" class="clb-input clb-input-qty" value="' + (it.qty || 1) + '" oninput="_docTableOnInput(this)" onkeydown="_docTableRowKeydown(event, this)">' +
+          '<input type="text" inputmode="numeric" class="clb-input clb-input-qty" value="' + (it.qty || 1) + '">' +
         '</td>' +
         '<td class="clb-td-price">' +
           '<div class="clb-price-input-wrap">' +
             '<span class="clb-price-sym">' + sym + '</span>' +
-            '<input type="text" inputmode="decimal" class="clb-input clb-input-price" placeholder="0.00" value="' + (it.price || '') + '" oninput="_docTableOnInput(this)" onkeydown="_docTableRowKeydown(event, this)">' +
+            '<input type="text" inputmode="decimal" class="clb-input clb-input-price" placeholder="0.00" value="' + (it.price || '') + '">' +
           '</div>' +
         '</td>' +
         '<td class="clb-td-total">' +
           '<span class="clb-row-total">' + lineTotal + '</span>' +
         '</td>' +
         '<td class="clb-td-del">' +
-          '<button type="button" class="clb-del-btn" onclick="_docTableRemoveRow(this)" title="Remove item">' +
+          '<button type="button" class="clb-del-btn" title="Remove item">' +
             '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>' +
           '</button>' +
         '</td>' +
@@ -12519,7 +13037,7 @@ function _createTableBlockHtml(tableId, items = null) {
   });
 
   return (
-    '<div class="doc-table-block" contenteditable="false" data-table-id="' + tableId + '">' +
+    '<div class="doc-table-block" data-table-id="' + tableId + '">' +
       '<div class="doc-table-scroll">' +
         '<table class="clb-table">' +
           '<thead>' +
@@ -12538,11 +13056,11 @@ function _createTableBlockHtml(tableId, items = null) {
       '</div>' +
       '<div class="doc-table-foot">' +
         '<div class="doc-table-foot-actions">' +
-          '<button type="button" class="doc-add-row-btn" onclick="_docTableAddRow(this)">' +
+          '<button type="button" class="doc-add-row-btn">' +
             '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>' +
             'Add item' +
           '</button>' +
-          '<button type="button" class="doc-remove-table-btn" onclick="_docTableRemoveTable(this)" title="Remove table">Remove Table</button>' +
+          '<button type="button" class="doc-remove-table-btn" title="Remove table">Remove Table</button>' +
         '</div>' +
         '<div class="doc-table-grand-total">Total: <strong>' + sym + ' ' + grandTotal.toFixed(2) + '</strong></div>' +
       '</div>' +
@@ -12550,335 +13068,25 @@ function _createTableBlockHtml(tableId, items = null) {
   );
 }
 
-function _docTableUpdateTotals(tableBlock) {
-  if (!tableBlock) return;
-  const sym = getCurrency();
-  const rows = tableBlock.querySelectorAll(".clb-row");
-  let grandTotal = 0;
-  rows.forEach((row, idx) => {
-    const numCell = row.querySelector(".clb-td-num");
-    if (numCell) numCell.textContent = idx + 1;
-    row.setAttribute("data-idx", idx);
-    const qtyInp = row.querySelector(".clb-input-qty");
-    const priceInp = row.querySelector(".clb-input-price");
-    const totalCell = row.querySelector(".clb-row-total");
-
-    const q = Math.max(1, parseInt(qtyInp ? qtyInp.value : 1) || 1);
-    const p = parseFloat((priceInp ? priceInp.value : "").toString().replace(/,/g, "")) || 0;
-    if (p > 0) grandTotal += p * q;
-    if (totalCell) {
-      totalCell.textContent = p > 0 ? (sym + " " + (p * q).toFixed(2)) : "\u2014";
-    }
-  });
-  const gtEl = tableBlock.querySelector(".doc-table-grand-total strong");
-  if (gtEl) gtEl.textContent = sym + " " + grandTotal.toFixed(2);
-
-  const docEl = tableBlock.closest(".doc-wysiwyg-editor");
-  if (docEl) _syncDocToTextarea(docEl);
-}
-
-function _docTableOnInput(inputEl) {
-  const tableBlock = inputEl.closest(".doc-table-block");
-  _docTableUpdateTotals(tableBlock);
-}
-
-function _docTableToggleCheck(chkEl) {
-  const row = chkEl.closest(".clb-row");
-  if (row) row.classList.toggle("is-checked", !!chkEl.checked);
-  const docEl = chkEl.closest(".doc-wysiwyg-editor");
-  if (docEl) _syncDocToTextarea(docEl);
-}
-
-function _docTableAddRow(btnEl, desc = "", qty = 1, price = "", checked = false) {
-  const tableBlock = btnEl.closest(".doc-table-block");
-  if (!tableBlock) return;
-  const tbody = tableBlock.querySelector("tbody");
-  if (!tbody) return;
-  const sym = getCurrency();
-  const idx = tbody.children.length;
-  const p = parseFloat((price || "").toString().replace(/,/g, "")) || 0;
-  const lineTotal = p > 0 ? (sym + " " + (p * qty).toFixed(2)) : "\u2014";
-
-  const tr = document.createElement("tr");
-  tr.className = "clb-row" + (checked ? " is-checked" : "");
-  tr.setAttribute("data-idx", idx);
-  tr.innerHTML =
-    '<td class="clb-td-num">' + (idx + 1) + '</td>' +
-    '<td class="clb-td-check">' +
-      '<input type="checkbox" ' + (checked ? 'checked' : '') + ' onchange="_docTableToggleCheck(this)" title="Check item">' +
-    '</td>' +
-    '<td class="clb-td-desc">' +
-      '<input type="text" class="clb-input clb-input-desc" placeholder="Item name (e.g. Milk)" value="' + escHtml(desc) + '" oninput="_docTableOnInput(this)" onkeydown="_docTableRowKeydown(event, this)">' +
-    '</td>' +
-    '<td class="clb-td-qty">' +
-      '<input type="text" inputmode="numeric" class="clb-input clb-input-qty" value="' + qty + '" oninput="_docTableOnInput(this)" onkeydown="_docTableRowKeydown(event, this)">' +
-    '</td>' +
-    '<td class="clb-td-price">' +
-      '<div class="clb-price-input-wrap">' +
-        '<span class="clb-price-sym">' + sym + '</span>' +
-        '<input type="text" inputmode="decimal" class="clb-input clb-input-price" placeholder="0.00" value="' + price + '" oninput="_docTableOnInput(this)" onkeydown="_docTableRowKeydown(event, this)">' +
-      '</div>' +
-    '</td>' +
-    '<td class="clb-td-total">' +
-      '<span class="clb-row-total">' + lineTotal + '</span>' +
-    '</td>' +
-    '<td class="clb-td-del">' +
-      '<button type="button" class="clb-del-btn" onclick="_docTableRemoveRow(this)" title="Remove item">' +
-        '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>' +
-      '</button>' +
-    '</td>';
-
-  tbody.appendChild(tr);
-  _docTableUpdateTotals(tableBlock);
-  const descInp = tr.querySelector(".clb-input-desc");
-  if (descInp) descInp.focus();
-}
-
-function _docTableRemoveRow(btnEl) {
-  const row = btnEl.closest(".clb-row");
-  const tableBlock = btnEl.closest(".doc-table-block");
-  if (!row || !tableBlock) return;
-  const tbody = tableBlock.querySelector("tbody");
-  if (tbody.children.length <= 1) {
-    const descInp = row.querySelector(".clb-input-desc");
-    const priceInp = row.querySelector(".clb-input-price");
-    if (descInp) descInp.value = "";
-    if (priceInp) priceInp.value = "";
-  } else {
-    row.remove();
-  }
-  _docTableUpdateTotals(tableBlock);
-}
-
-function _docTableRemoveTable(btnEl) {
-  const tableBlock = btnEl.closest(".doc-table-block");
-  const docEl = tableBlock ? tableBlock.closest(".doc-wysiwyg-editor") : null;
-  if (tableBlock) {
-    tableBlock.remove();
-    if (docEl) _syncDocToTextarea(docEl);
-    toast("Table removed");
-  }
-}
-
-function _docTableRowKeydown(e, inputEl) {
-  if (e.key === "Enter") {
-    e.preventDefault();
-    const row = inputEl.closest(".clb-row");
-    const tableBlock = inputEl.closest(".doc-table-block");
-    if (!row || !tableBlock) return;
-    const tbody = tableBlock.querySelector("tbody");
-    const allRows = Array.from(tbody.children);
-    const idx = allRows.indexOf(row);
-    if (idx === allRows.length - 1) {
-      _docTableAddRow(inputEl);
-    } else {
-      const nextDesc = allRows[idx + 1].querySelector(".clb-input-desc");
-      if (nextDesc) nextDesc.focus();
-    }
-  }
-}
-
-// ─── SERIALIZE & LOAD WYSIWYG DOCUMENT <-> MARKDOWN ──────────
-function _syncDocToTextarea(docEl) {
-  if (!docEl) return;
-  const targetTaId = docEl.id === "noteEditTextDoc" ? "noteEditText" : "noteInput";
-  const ta = document.getElementById(targetTaId);
-  if (!ta) return;
-
-  const lines = [];
-  const sym = getCurrency();
-
-  function walk(node) {
-    if (!node) return "";
-    if (node.nodeType === 3) {
-      return node.nodeValue;
-    }
-    if (node.nodeType !== 1) return "";
-
-    const tag = (node.tagName || "").toLowerCase();
-
-    // Table Block
-    if (node.classList && node.classList.contains("doc-table-block")) {
-      const rows = node.querySelectorAll(".clb-row");
-      const tableLines = [];
-      rows.forEach(row => {
-        const desc = (row.querySelector(".clb-input-desc")?.value || "").trim();
-        const qty = parseInt(row.querySelector(".clb-input-qty")?.value || "1") || 1;
-        const price = (row.querySelector(".clb-input-price")?.value || "").trim();
-        const chk = row.querySelector(".clb-td-check input[type='checkbox']")?.checked ? "[x] " : "[ ] ";
-        if (!desc && !price) return;
-        const d = desc || "Item";
-        const qStr = qty > 1 ? (" x" + qty) : "";
-        const pVal = parseFloat(price.replace(/,/g, ""));
-        const pStr = (!isNaN(pVal) && pVal > 0) ? (" \u2014 " + sym + " " + pVal.toFixed(2)) : "";
-        tableLines.push(chk + d + qStr + pStr);
-      });
-      return tableLines.join("\n");
-    }
-
-    // Heading
-    if (tag === "h1" || tag === "h2" || tag === "h3" || (node.classList && node.classList.contains("doc-h3"))) {
-      return "### " + (node.textContent || "").trim();
-    }
-
-    // Bold
-    if (tag === "strong" || tag === "b") {
-      const inner = Array.from(node.childNodes).map(walk).join("").trim();
-      return inner ? ("**" + inner + "**") : "";
-    }
-
-    // Italic
-    if (tag === "em" || tag === "i") {
-      const inner = Array.from(node.childNodes).map(walk).join("").trim();
-      return inner ? ("*" + inner + "*") : "";
-    }
-
-    // Lists
-    if (tag === "ul") {
-      const items = Array.from(node.children).filter(c => (c.tagName || "").toLowerCase() === "li");
-      return items.map(li => "- " + Array.from(li.childNodes).map(walk).join("").trim()).join("\n");
-    }
-    if (tag === "ol") {
-      const items = Array.from(node.children).filter(c => (c.tagName || "").toLowerCase() === "li");
-      return items.map((li, idx) => (idx + 1) + ". " + Array.from(li.childNodes).map(walk).join("").trim()).join("\n");
-    }
-
-    // Checkbox line
-    if (node.classList && node.classList.contains("doc-inline-check")) {
-      const chk = node.querySelector("input[type='checkbox']")?.checked ? "[x] " : "[ ] ";
-      const txt = (node.querySelector("span")?.textContent || node.textContent || "").replace(/^\[[ xX]\]\s*/, '').trim();
-      return chk + txt;
-    }
-
-    // Paragraph / Div
-    if (tag === "p" || tag === "div") {
-      const inner = Array.from(node.childNodes).map(walk).join("").trim();
-      return inner;
-    }
-
-    return Array.from(node.childNodes).map(walk).join("");
-  }
-
-  const childNodes = Array.from(docEl.childNodes);
-  if (childNodes.length === 0) {
-    ta.value = (docEl.textContent || "").trim();
-  } else {
-    childNodes.forEach(child => {
-      const res = walk(child);
-      if (res != null && res !== "") {
-        lines.push(res);
-      }
-    });
-    ta.value = lines.join("\n\n");
-  }
-
-  if (targetTaId === "noteInput") {
-    const titleEl = document.getElementById("noteTitle");
-    if (titleEl && !titleEl.value.trim() && ta.value.trim()) {
-      const s = suggestTitleFromText(ta.value.trim());
-      if (s) titleEl.placeholder = "Suggested: " + s + "  (tap Suggest)";
-    }
-    autoApplyNoteTag();
-  }
-}
-
 function _loadTextToDoc(docEl, text) {
   if (!docEl) return;
-  const rawText = text || "";
-  if (!rawText.trim()) {
-    docEl.innerHTML = "<p><br></p>";
-    return;
-  }
-
-  const lines = rawText.split(/\r?\n/);
+  const parsed = _parseNoteIntoClb(text);
   let html = "";
-  let i = 0;
-
-  while (i < lines.length) {
-    const raw = lines[i];
-    const line = raw.trim();
-
-    if (!line) {
-      i++;
-      continue;
-    }
-
-    // Heading: ###
-    const hM = line.match(/^(#{1,3})\s+(.+)$/);
-    if (hM) {
-      html += '<h3 class="doc-h3">' + escHtml(hM[2]) + '</h3>';
-      i++;
-      continue;
-    }
-
-    // Checklist Block / Table
-    const clM = line.match(/^\s*\[([ xX])\]\s*(.*)$/);
-    if (clM) {
-      const tableItems = [];
-      while (i < lines.length) {
-        const curM = lines[i].match(/^\s*\[([ xX])\]\s*(.*)$/);
-        if (!curM) break;
-        const checked = curM[1].toLowerCase() === 'x';
-        const content = curM[2] || "";
-        
-        let desc = content.trim();
-        let price = "";
-        const priceM = desc.match(/^(.*?)\s*[-–—:]+\s*(?:[^\d\s]+\s*)?(\d[\d,]*(?:\.\d{1,2})?)\s*$/);
-        if (priceM) {
-          desc = priceM[1].trim();
-          const pVal = priceM[2].replace(/,/g, "");
-          if (pVal !== "0" && pVal !== "0.00" && pVal !== "0.0") price = pVal;
+  parsed.blocks.forEach(block => {
+    if (block.type === "text") {
+      const lines = (block.text || "").split("\n");
+      lines.forEach(l => {
+        const hm = l.match(/^(#{1,3})\s+(.+)$/);
+        if (hm) {
+          html += '<h3 class="doc-h3">' + escHtml(hm[2]) + '</h3>';
+        } else if (l.trim()) {
+          html += '<p>' + _inlineMarkdownToHtml(l) + '</p>';
         }
-        
-        let qty = 1;
-        const qtyM = desc.match(/^(.*?)\s*[x×*](\d+)\s*$/i) || desc.match(/^(.*?)\s*\((\d+)\)\s*$/);
-        if (qtyM) {
-          desc = qtyM[1].trim();
-          qty = parseInt(qtyM[2]) || 1;
-        }
-
-        tableItems.push({ desc, qty, price, checked });
-        i++;
-      }
-
-      _docTableCounter++;
-      html += _createTableBlockHtml("tbl_" + Date.now() + "_" + _docTableCounter, tableItems);
-      continue;
+      });
+    } else if (block.type === "table") {
+      html += _createTableBlockHtml("tbl_" + Date.now(), block.items);
     }
-
-    // Bullet List
-    const bM = line.match(/^[-•*]\s+(.*)$/);
-    if (bM) {
-      html += '<ul class="doc-ul">';
-      while (i < lines.length) {
-        const curBM = lines[i].match(/^[-•*]\s+(.*)$/);
-        if (!curBM) break;
-        html += '<li>' + _inlineMarkdownToHtml(curBM[1]) + '</li>';
-        i++;
-      }
-      html += '</ul>';
-      continue;
-    }
-
-    // Numbered List
-    const nM = line.match(/^(\d+)\.\s+(.*)$/);
-    if (nM) {
-      html += '<ol class="doc-ol">';
-      while (i < lines.length) {
-        const curNM = lines[i].match(/^(\d+)\.\s+(.*)$/);
-        if (!curNM) break;
-        html += '<li>' + _inlineMarkdownToHtml(curNM[2]) + '</li>';
-        i++;
-      }
-      html += '</ol>';
-      continue;
-    }
-
-    // Regular paragraph
-    html += '<p>' + _inlineMarkdownToHtml(line) + '</p>';
-    i++;
-  }
-
+  });
   docEl.innerHTML = html || "<p><br></p>";
 }
 
@@ -12889,84 +13097,6 @@ function _inlineMarkdownToHtml(text) {
   return s;
 }
 
-// ─── LEGACY BUILDER COMPATIBILITY STUBS ──────────────────────
-const _clbState = {};
-function _getClb(taId) {
-  if (!_clbState[taId]) _clbState[taId] = { active: false, items: [], prefix: "", suffix: "" };
-  return _clbState[taId];
-}
-function _resetClBuilder(taId) {
-  _clbState[taId] = { active: false, items: [], prefix: "", suffix: "" };
-}
-function _removeClBuilder(taId) {
-  _resetClBuilder(taId);
-}
-function _activateClBuilder(taId) {
-  _clbState[taId] = { active: true, items: [{ desc: "", qty: 1, price: "", checked: false }, { desc: "", qty: 1, price: "", checked: false }, { desc: "", qty: 1, price: "", checked: false }], prefix: "", suffix: "" };
-}
-function _syncClBuilderToTextarea(taId) {}
-function _onClbLeadInput(taId, el) { _getClb(taId).prefix = el.value; }
-function _onClbTrailInput(taId, el) { _getClb(taId).suffix = el.value; }
-function _clbAddRow(taId, desc = "", qty = 1, price = "", checked = false) {
-  const state = _getClb(taId);
-  state.items.push({ desc, qty, price, checked });
-}
-function _clbRemoveRow(taId, idx) {
-  const state = _getClb(taId);
-  if (state.items.length > 0) state.items.splice(idx, 1);
-}
-function _clbUpdateRowField(taId, idx, field, val) {
-  const state = _getClb(taId);
-  if (state.items[idx]) {
-    if (field === "qty") state.items[idx].qty = parseInt(val) || 1;
-    else state.items[idx][field] = val;
-  }
-}
-function _clbToggleRowCheck(taId, idx, checked) {
-  const state = _getClb(taId);
-  if (state.items[idx]) state.items[idx].checked = !!checked;
-}
-function _parseNoteIntoClb(text) {
-  const lines = (text || "").split(/\r?\n/);
-  const items = [];
-  const prefixLines = [];
-  const suffixLines = [];
-  let found = false;
-  for (const raw of lines) {
-    const m = raw.match(/^\s*\[([ xX])\]\s*(.*)$/);
-    if (m) {
-      found = true;
-      let desc = (m[2] || "").trim();
-      let price = "";
-      const priceM = desc.match(/^(.*?)\s*[-–—:]+\s*(?:[^\d\s]+\s*)?(\d[\d,]*(?:\.\d{1,2})?)\s*$/);
-      if (priceM) { desc = priceM[1].trim(); price = priceM[2].replace(/,/g, ""); }
-      let qty = 1;
-      const qtyM = desc.match(/^(.*?)\s*[x×*](\d+)\s*$/i);
-      if (qtyM) { desc = qtyM[1].trim(); qty = parseInt(qtyM[2]) || 1; }
-      items.push({ desc, qty, price, checked: m[1].toLowerCase() === 'x' });
-    } else {
-      if (!found) prefixLines.push(raw);
-      else suffixLines.push(raw);
-    }
-  }
-  return { items, prefix: prefixLines.join("\n").trim(), suffix: suffixLines.join("\n").trim() };
-}
-function _serializeClbToNote(taId) {
-  const state = _getClb(taId);
-  const sym = getCurrency();
-  const lines = [];
-  if (state.prefix) lines.push(state.prefix);
-  state.items.forEach(it => {
-    const chk = it.checked ? "[x] " : "[ ] ";
-    const d = it.desc || "Item";
-    const qStr = it.qty > 1 ? (" x" + it.qty) : "";
-    const pVal = parseFloat((it.price || "").toString().replace(/,/g, ""));
-    const pStr = (!isNaN(pVal) && pVal > 0) ? (" \u2014 " + sym + " " + pVal.toFixed(2)) : "";
-    lines.push(chk + d + qStr + pStr);
-  });
-  if (state.suffix) lines.push(state.suffix);
-  return lines.join("\n");
-}
 function _setInputMode(ta, mode) {}
 
 // ── Price auto-formatter ──────────────────────────────────────────────────────
@@ -16485,6 +16615,7 @@ document.addEventListener("click", e => {
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('./sw.js').then(reg => {
     console.log('SW registered:', reg.scope);
+    try { reg.update(); } catch(e) {}
     // Auto-activate any waiting SW immediately (forces cache-busting on update)
     if (reg.waiting) {
       reg.waiting.postMessage({ type: 'SKIP_WAITING' });

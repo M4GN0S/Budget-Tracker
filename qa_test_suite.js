@@ -1342,8 +1342,8 @@ assert(document.querySelector('.compose-editor-scroll') !== null, "compose-edito
 // ─── TEST SUITE 22: WYSIWYG Rich Document & Multi-Table Insertion Engine ───
 console.log("\n─── TEST SUITE 22: WYSIWYG Rich Document & Multi-Table Insertion Engine ───");
 
-// 1. Verify CSS styles for WYSIWYG editor and multi-table blocks in index.html
-assert(indexHtml.includes('.doc-wysiwyg-editor'), "index.html styles .doc-wysiwyg-editor rich contenteditable canvas");
+// 1. Verify CSS styles for multi-table blocks in index.html
+assert(indexHtml.includes('.cl-builder-wrap'), "index.html styles .cl-builder-wrap document canvas");
 assert(indexHtml.includes('.doc-table-block'), "index.html styles .doc-table-block interactive table container");
 assert(indexHtml.includes('.doc-table-foot'), "index.html styles .doc-table-foot with action buttons and grand total");
 assert(indexHtml.includes('.doc-add-row-btn'), "index.html styles .doc-add-row-btn for adding rows inline");
