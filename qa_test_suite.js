@@ -1436,6 +1436,7 @@ assert(backspaceTa.value === "1. Item 1\n", "onTextareaKeydown on Backspace imme
 assert(indexHtml.includes('.clb-input-desc') && indexHtml.includes('font-size: 15px'), "index.html uses legible 15px font size for .clb-input-desc on mobile");
 assert(indexHtml.includes('@media(max-width:640px)'), "index.html contains responsive mobile adjustments for table layout");
 assert(indexHtml.includes('_ensureCursorVisible'), "index.html includes _ensureCursorVisible to keep text cursor focused and in view");
+assert(indexHtml.indexOf('id="composerToolbar"') > indexHtml.indexOf('class="compose-editor-scroll"'), "composerToolbar is positioned below the scrollable writing canvas, floating right above the mobile keyboard and footer");
 
 // ─── SUMMARY ────────────────────────────────────────────────
 console.log("\n=================================================");
