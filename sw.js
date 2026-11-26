@@ -9,7 +9,7 @@
 //   The browser detects the SW file changed → downloads new version → updates cache.
 //   You don't need to manually bump version numbers anymore.
 //
-const CACHE_NAME = 'budget-tracker-v291';
+const CACHE_NAME = 'budget-tracker-v292';
 // Last updated: 2026-09-09 — Complete mobile/tablet upward collapse dock & original desktop layout restore
 
 const ASSETS = [

@@ -12972,6 +12972,16 @@ function addNote() {
   renderNotes();
   closeComposeModal();
   toast("Entry saved!");
+
+  // Offer to log priced purchases to expenses
+  const allPriced = _parseChecklistItems(text).filter(it => it.amt !== null && it.amt > 0);
+  if (allPriced.length > 0) {
+    const savedNotes = JSON.parse(localStorage.getItem("bt_notes") || "[]");
+    const createdNote = savedNotes[savedNotes.length - 1];
+    setTimeout(() => {
+      _promptAddChecklistToExpenses(allPriced, createdNote, text);
+    }, 350);
+  }
 }
 
 // ── Compose modal open / close ──────────────────────────────
@@ -14707,30 +14717,38 @@ function _tabToNextPlaceholder(ta, dir) {
   return false;
 }
 
+const _PLACEHOLDER_NAME_RE = /^item\s*\d*$/i;
+
 // Parse completed checklist items for the "add to expenses" prompt
 function _parseChecklistItems(text) {
-  const lines = text.split(/\r?\n/);
+  const lines = (text || "").split(/\r?\n/);
   const items = [];
-  const re = _symRe();
   for (let i = 0; i < lines.length; i++) {
-    const m = lines[i].match(re);
+    const m = lines[i].match(/^\s*\[([ xX])\]\s+(.*)$/i);
     if (!m) continue;
-    const checked = /x/i.test(m[1]);
-    let desc = (m[2] || "").trim();
-    const amtRaw = m[4];
+    const checked = m[1].toLowerCase() === "x";
+    const rawContent = m[2];
+
+    let desc = rawContent.trim();
     let amt = null;
-    if (amtRaw) {
-      const n = parseFloat(amtRaw.replace(/,/g, ""));
-      if (!isNaN(n) && n > 0) amt = n;
-    }
-    // Extract quantity from desc: "Eggs x12" or "Eggs ×12" or "Eggs (12)"
     let qty = 1;
+
+    const amtM = rawContent.match(/^(.*?)\s*[-\u2013\u2014:]+\s*(?:[^\d\s]+\s*)?(\d[\d,]*(?:\.\d{1,2})?)\s*$/);
+    if (amtM) {
+      const parsedAmt = parseFloat(amtM[2].replace(/,/g, ""));
+      if (!isNaN(parsedAmt) && parsedAmt > 0) {
+        amt = parsedAmt;
+        desc = amtM[1].trim();
+      }
+    }
+
     const qtyM = desc.match(/^(.*?)\s*[x×*](\d+)\s*$/i) ||
                  desc.match(/^(.*?)\s*\((\d+)\)\s*$/);
     if (qtyM) {
       qty = parseInt(qtyM[2]) || 1;
       desc = qtyM[1].trim();
     }
+
     if (_PLACEHOLDER_NAME_RE.test(desc) && amt === null) continue;
     if (_PLACEHOLDER_NAME_RE.test(desc)) desc = "Item";
     items.push({ line: i, checked, desc, amt, qty });
@@ -14749,7 +14767,7 @@ function hashString(s) {
 function _checkPriceListComplete(textareaId) {
   const ta = _tbEl(textareaId); if (!ta) return null;
   const items = _parseChecklistItems(ta.value);
-  const priced = items.filter(it => it.amt !== null);
+  const priced = items.filter(it => it.amt !== null && it.amt > 0);
   if (priced.length === 0) return null;
   const allChecked = priced.every(it => it.checked);
   if (!allChecked) return null;
@@ -14765,16 +14783,40 @@ function _promptAddChecklistToExpenses(items, noteOrKey, noteText) {
   if (existing) return; // already showing
   // Support legacy call signature (items, dismissKey string)
   const noteObj    = (noteOrKey && typeof noteOrKey === 'object') ? noteOrKey : null;
-  const dismissKey = (noteOrKey && typeof noteOrKey === 'string') ? noteOrKey : null;
+  const dismissKey = (noteOrKey && typeof noteOrKey === 'string') ? noteOrKey : ('bt_plist_nagged_note_' + (noteObj ? noteObj.id : Date.now()) + '_' + hashString(noteText || ""));
+
+  if (sessionStorage.getItem(dismissKey)) return;
 
   const sym = getCurrency();
   const total = items.reduce((s, it) => s + ((it.qty||1) * (it.amt || 0)), 0);
   const fmtAmt = n => sym + ' ' + n.toLocaleString('en-US', {minimumFractionDigits:2,maximumFractionDigits:2});
 
+  const subMap = {
+    Needs: ['Groceries', 'Rent/Mortgage', 'Utilities', 'Transportation', 'Healthcare', 'Insurance', 'Other'],
+    Wants: ['Dining Out', 'Entertainment', 'Shopping', 'Subscriptions', 'Hobbies', 'Travel', 'Other'],
+    Savings: ['Emergency Fund', 'Savings Goal', 'Investments', 'Debt Payment', 'Other']
+  };
+
+  // Smart preselection based on note tag and description
+  let defaultCat = 'Needs';
+  let defaultSub = 'Groceries';
+  const combinedDesc = items.map(it => it.desc.toLowerCase()).join(' ') + ' ' + (noteObj?.title || '').toLowerCase() + ' ' + (noteObj?.tag || '').toLowerCase();
+  if (/dining|restaurant|coffee|cafe|lunch|dinner|takeout|fastfood|burger|pizza|bar/i.test(combinedDesc)) {
+    defaultCat = 'Wants'; defaultSub = 'Dining Out';
+  } else if (/shopping|cloth|shoes|amazon|gadget|game|electronics|gift/i.test(combinedDesc)) {
+    defaultCat = 'Wants'; defaultSub = 'Shopping';
+  } else if (/rent|mortgage/i.test(combinedDesc)) {
+    defaultCat = 'Needs'; defaultSub = 'Rent/Mortgage';
+  } else if (/electric|water|internet|wifi|bill|utility/i.test(combinedDesc)) {
+    defaultCat = 'Needs'; defaultSub = 'Utilities';
+  } else if (/saving|invest|fund/i.test(combinedDesc)) {
+    defaultCat = 'Savings'; defaultSub = 'Savings Goal';
+  }
+
   const rows = items.map(it => {
     const lineTotal = (it.qty || 1) * (it.amt || 0);
     return '<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--brd);font-size:13px;">' +
-      '<span style="color:var(--txt);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + escHtml(it.desc) + '</span>' +
+      '<span style="color:var(--txt);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600">' + escHtml(it.desc) + '</span>' +
       ((it.qty && it.qty > 1)
         ? '<span style="font-size:11px;color:var(--txt2);white-space:nowrap;flex-shrink:0">×' + it.qty + '</span>'
         : '') +
@@ -14787,31 +14829,65 @@ function _promptAddChecklistToExpenses(items, noteOrKey, noteText) {
 
   const overlay = document.createElement('div');
   overlay.id = '_plistExpOverlay';
-  overlay.style.cssText = 'position:fixed;inset:0;z-index:9998;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.45);';
+  overlay.style.cssText = 'position:fixed;inset:0;z-index:9998;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.5);backdrop-filter:blur(2px);padding:16px;box-sizing:border-box;';
 
-  // Build category options
-  const catOpts = ['Needs','Wants','Savings'].map(c => '<option value="' + c + '"' + (c==='Needs'?' selected':'') + '>' + c + '</option>').join('');
-  const subOpts = ['Groceries','Rent/Mortgage','Utilities','Transport','Healthcare','Education','Entertainment','Dining','Shopping','Subscriptions','Other']
-    .map(s => '<option value="' + s + '"' + (s==='Groceries'?' selected':'') + '>' + s + '</option>').join('');
+  const catOpts = ['Needs','Wants','Savings'].map(c => '<option value="' + c + '"' + (c===defaultCat?' selected':'') + '>' + c + '</option>').join('');
+  const currentSubs = subMap[defaultCat] || subMap['Needs'];
+  const subOpts = currentSubs.map(s => '<option value="' + s + '"' + (s===defaultSub?' selected':'') + '>' + s + '</option>').join('');
 
   overlay.innerHTML =
-    '<div style="background:var(--card);border:1.5px solid var(--brd);border-radius:18px;padding:22px 24px 18px;min-width:280px;max-width:min(420px,92vw);max-height:85vh;overflow-y:auto;box-shadow:0 8px 40px rgba(0,0,0,0.28);">' +
-      '<div style="font-size:15px;font-weight:800;color:var(--txt);margin-bottom:4px;">Add to Expenses?</div>' +
-      '<div style="font-size:11px;color:var(--txt2);margin-bottom:12px;">All ' + items.length + ' checked item' + (items.length!==1?'s':'') + ' — total ' + fmtAmt(total) + '</div>' +
-      '<div style="margin-bottom:14px;">' + rows + '</div>' +
-      '<div style="display:flex;gap:10px;margin-bottom:14px;">' +
-        '<select id="_plistCat" style="flex:1;padding:8px 10px;border-radius:10px;border:1.5px solid var(--brd);background:var(--input-bg);color:var(--txt);font-size:13px;">' + catOpts + '</select>' +
-        '<select id="_plistSub" style="flex:1;padding:8px 10px;border-radius:10px;border:1.5px solid var(--brd);background:var(--input-bg);color:var(--txt);font-size:13px;">' + subOpts + '</select>' +
+    '<div style="background:var(--card);border:1.5px solid var(--brd);border-radius:18px;padding:20px 22px 18px;min-width:280px;max-width:min(420px,94vw);max-height:85vh;overflow-y:auto;box-shadow:0 12px 48px rgba(0,0,0,0.28);box-sizing:border-box;">' +
+      '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">' +
+        '<div style="font-size:16px;font-weight:800;color:var(--txt);">Add to Expenses?</div>' +
+        '<button type="button" id="_plistCloseBtn" style="background:none;border:none;color:var(--txt2);cursor:pointer;font-size:20px;line-height:1;padding:2px 4px;">&times;</button>' +
+      '</div>' +
+      '<div style="font-size:11.5px;color:var(--txt2);margin-bottom:12px;">Recorded purchases (' + items.length + ' item' + (items.length!==1?'s':'') + ' — total ' + fmtAmt(total) + ')</div>' +
+      '<div style="margin-bottom:14px;max-height:160px;overflow-y:auto;border:1px solid var(--brd);border-radius:10px;padding:4px 12px;background:var(--bg);">' + rows + '</div>' +
+      '<div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--txt2);margin-bottom:5px;">Select Category</div>' +
+      '<div style="display:flex;gap:10px;margin-bottom:16px;">' +
+        '<select id="_plistCat" style="flex:1;padding:8px 10px;border-radius:10px;border:1.5px solid var(--brd);background:var(--input-bg);color:var(--txt);font-size:13px;font-family:inherit;outline:none;">' + catOpts + '</select>' +
+        '<select id="_plistSub" style="flex:1;padding:8px 10px;border-radius:10px;border:1.5px solid var(--brd);background:var(--input-bg);color:var(--txt);font-size:13px;font-family:inherit;outline:none;">' + subOpts + '</select>' +
       '</div>' +
       '<div style="display:flex;gap:10px;">' +
-        '<button type="button" onclick="document.getElementById(\'_plistExpOverlay\').remove();" style="flex:1;padding:10px;border-radius:10px;border:1.5px solid var(--brd);background:var(--bg);color:var(--txt2);font-size:13px;cursor:pointer;font-family:inherit">Not now</button>' +
-        '<button type="button" id="_plistAddBtn" style="flex:2;padding:10px;border-radius:10px;border:none;background:var(--pri);color:var(--on-pri);font-size:13px;font-weight:700;cursor:pointer;font-family:inherit">Add ' + items.length + ' item' + (items.length!==1?'s':'') + ' (' + fmtAmt(total) + ')</button>' +
+        '<button type="button" id="_plistSkipBtn" style="flex:1;padding:10px;border-radius:10px;border:1.5px solid var(--brd);background:var(--bg);color:var(--txt2);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;">Not now</button>' +
+        '<button type="button" id="_plistAddBtn" style="flex:2;padding:10px;border-radius:10px;border:none;background:var(--pri);color:var(--on-pri);font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;">Add ' + items.length + ' item' + (items.length!==1?'s':'') + ' (' + fmtAmt(total) + ')</button>' +
       '</div>' +
     '</div>';
 
-  overlay.addEventListener('click', e => { if (e.target === overlay) { overlay.remove(); sessionStorage.setItem(dismissKey,'1'); } });
+  overlay.addEventListener('click', e => {
+    if (e.target === overlay) {
+      overlay.remove();
+      sessionStorage.setItem(dismissKey, '1');
+    }
+  });
 
   document.body.appendChild(overlay);
+
+  const catSelect = document.getElementById('_plistCat');
+  const subSelect = document.getElementById('_plistSub');
+  if (catSelect && subSelect) {
+    catSelect.addEventListener('change', () => {
+      const selectedCat = catSelect.value;
+      const subs = subMap[selectedCat] || subMap['Needs'];
+      subSelect.innerHTML = subs.map(s => '<option value="' + s + '">' + s + '</option>').join('');
+    });
+  }
+
+  const closeBtn = document.getElementById('_plistCloseBtn');
+  if (closeBtn) {
+    closeBtn.addEventListener('click', () => {
+      overlay.remove();
+      sessionStorage.setItem(dismissKey, '1');
+    });
+  }
+
+  const skipBtn = document.getElementById('_plistSkipBtn');
+  if (skipBtn) {
+    skipBtn.addEventListener('click', () => {
+      overlay.remove();
+      sessionStorage.setItem(dismissKey, '1');
+    });
+  }
 
   document.getElementById('_plistAddBtn').addEventListener('click', () => {
     const cat  = document.getElementById('_plistCat').value;
@@ -14843,6 +14919,7 @@ function _promptAddChecklistToExpenses(items, noteOrKey, noteText) {
       }
     }
     overlay.remove();
+    sessionStorage.setItem(dismissKey, '1');
     updateDashboard();
     renderHistory();
     if (typeof renderRecent === 'function') renderRecent();
@@ -14856,6 +14933,27 @@ function checkPriceListAfterToggle(textareaId) {
     const info = _checkPriceListComplete(textareaId);
     if (info) _promptAddChecklistToExpenses(info.items, info.dismissKey);
   }, 350);
+}
+
+function checkNoteAfterToggle(noteId) {
+  const notes = JSON.parse(localStorage.getItem("bt_notes") || "[]");
+  const note = notes.find(n => n.id === noteId);
+  if (!note) return;
+  const items = _parseChecklistItems(note.text);
+  const priced = items.filter(it => it.amt !== null && it.amt > 0);
+  if (priced.length === 0) return;
+
+  const savedSet = new Set((note.savedItems || []).map(s => s.desc + "|" + s.amt));
+  const unsavedChecked = priced.filter(it => it.checked && !savedSet.has(it.desc + "|" + it.amt));
+
+  if (unsavedChecked.length > 0) {
+    const dismissKey = 'bt_plist_nagged_check_' + noteId + '_' + hashString(note.text);
+    if (!sessionStorage.getItem(dismissKey)) {
+      setTimeout(() => {
+        _promptAddChecklistToExpenses(unsavedChecked, note, note.text);
+      }, 400);
+    }
+  }
 }
 
 // Fired when the title field changes — refine the auto-tag
@@ -16271,6 +16369,9 @@ function toggleNoteCheck(noteId, checkbox, directIdx) {
   if (row) row.classList.toggle('checked', checkbox.checked);
 
   renderNotes();
+  if (checkbox.checked) {
+    checkNoteAfterToggle(noteId);
+  }
 }
 function renderNotes() {
   const notes = JSON.parse(localStorage.getItem("bt_notes") || "[]");
