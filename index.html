@@ -3392,17 +3392,50 @@ footer .footer-links a:hover{color:var(--pri-d)}
 }
 .nb-price-input:focus { border-color: var(--pri); }
 
-/* Subdued Subtotal / Multi-Qty Total below price input */
+/* Subdued Subtotal / Multi-Qty Total Pill Badge below price input */
 .nb-line-subdue-total {
-  font-size: 11px;
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 4px;
+}
+.nb-cl-calc-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  background: var(--bg);
+  border: 1px solid var(--brd);
+  border-radius: 999px;
+  padding: 1.5px 7px;
+  font-size: 10.5px;
+  font-weight: 700;
   color: var(--txt2);
-  opacity: 0.8;
-  font-weight: 600;
   font-family: "SF Mono", Consolas, monospace;
-  text-align: right;
-  margin-top: 3px;
   white-space: nowrap;
   letter-spacing: -0.2px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+  transition: all .15s ease;
+}
+.nb-cl-calc-pill .nb-calc-eq {
+  font-weight: 800;
+  color: var(--pri);
+  opacity: 0.95;
+  font-size: 11px;
+}
+.nb-cl-calc-pill .nb-calc-val {
+  color: var(--txt);
+  font-weight: 700;
+}
+.nb-cl-calc-pill:hover {
+  border-color: var(--pri);
+}
+.nb-cl-row.checked .nb-cl-calc-pill {
+  opacity: .5;
+  background: transparent;
+  border-color: var(--brd);
+}
+.nb-cl-row.checked .nb-cl-calc-pill .nb-calc-eq,
+.nb-cl-row.checked .nb-cl-calc-pill .nb-calc-val {
+  color: var(--txt2);
 }
 .nb-line-total { font-size: 11.5px; font-weight: 700; color: var(--txt2); font-family: "SF Mono", Consolas, monospace; }
 
@@ -3424,8 +3457,8 @@ footer .footer-links a:hover{color:var(--pri-d)}
   }
   .nb-cl-table col.c-check { width: 32px !important; }
   .nb-cl-table col.c-desc { width: 100% !important; min-width: 100px !important; }
-  .nb-cl-table col.c-qty { width: 40px !important; }
-  .nb-cl-table col.c-price { width: 72px !important; }
+  .nb-cl-table col.c-qty { width: 42px !important; }
+  .nb-cl-table col.c-price { width: 84px !important; }
 
   .nb-cl-th-check, .nb-cl-td-check {
     width: 32px !important;
@@ -3441,7 +3474,7 @@ footer .footer-links a:hover{color:var(--pri-d)}
     min-width: 95px !important;
   }
   .nb-cl-th-qty, .nb-cl-td-qty {
-    width: 40px !important;
+    width: 42px !important;
     padding: 6px 3px !important;
   }
   .nb-qty-input {
@@ -3450,26 +3483,33 @@ footer .footer-links a:hover{color:var(--pri-d)}
     font-size: 11.5px !important;
   }
   .nb-cl-th-price {
-    padding: 8px 10px 8px 4px !important;
+    padding: 8px 12px 8px 4px !important;
   }
   .nb-cl-td-price {
-    width: 72px !important;
-    padding: 6px 10px 6px 2px !important;
+    width: 84px !important;
+    padding: 6px 12px 6px 2px !important;
   }
   .nb-price-wrap {
-    gap: 1px !important;
+    gap: 1.5px !important;
   }
   .nb-price-sym {
     font-size: 10.5px !important;
   }
   .nb-price-input {
-    width: 48px !important;
-    padding: 3px 3px !important;
+    width: 52px !important;
+    padding: 3px 4px !important;
     font-size: 11.5px !important;
   }
   .nb-line-subdue-total {
-    font-size: 10.5px !important;
-    margin-top: 2px !important;
+    margin-top: 3px !important;
+  }
+  .nb-cl-calc-pill {
+    font-size: 10px !important;
+    padding: 1px 5px !important;
+    gap: 2px !important;
+  }
+  .nb-cl-calc-pill .nb-calc-eq {
+    font-size: 10px !important;
   }
 }
 /* Total row */
@@ -15981,8 +16021,8 @@ function _refreshClTotal(tableId, noteId) {
           priceCell.appendChild(subTotalEl);
         }
         if (subTotalEl) {
-          subTotalEl.textContent = getCurrency() + " " + (qty * price).toFixed(2);
-          subTotalEl.style.display = "block";
+          subTotalEl.innerHTML = '<span class="nb-cl-calc-pill" title="' + qty + ' \u00d7 ' + getCurrency() + price.toFixed(2) + ' = ' + getCurrency() + (qty * price).toFixed(2) + '"><span class="nb-calc-eq">=</span> <span class="nb-calc-val">' + getCurrency() + ' ' + (qty * price).toFixed(2) + '</span></span>';
+          subTotalEl.style.display = "flex";
         }
       } else if (subTotalEl) {
         subTotalEl.style.display = "none";
@@ -16070,7 +16110,7 @@ function formatNoteBody(text, noteId) {
           ' onchange="_nbQtyChange(this)"' +
           ' title="Tap to edit quantity">';
         const subTotalHtml = it.amt !== null && it.qty && it.qty > 1
-          ? '<div class="nb-line-subdue-total" title="Subtotal for ' + (it.qty) + ' items">' + sym + ' ' + (lineAmt).toFixed(2) + '</div>'
+          ? '<div class="nb-line-subdue-total"><span class="nb-cl-calc-pill" title="' + (it.qty) + ' \u00d7 ' + sym + (parseFloat(it.amt)||0).toFixed(2) + ' = ' + sym + (lineAmt).toFixed(2) + '"><span class="nb-calc-eq">=</span> <span class="nb-calc-val">' + sym + ' ' + (lineAmt).toFixed(2) + '</span></span></div>'
           : '';
         const priceHtml = '<div class="nb-price-wrap">' +
           '<span class="nb-price-sym">' + sym + '</span>' +
