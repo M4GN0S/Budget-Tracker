@@ -3637,17 +3637,20 @@ footer .footer-links a:hover{color:var(--pri-d)}
       <!-- Row: income (left) | icons (right) -->
       <div style="display:flex;align-items:center;gap:12px">
 
-        <!-- Income block — fixed width -->
-        <div style="flex-shrink:0">
+        <!-- Income block -->
+        <div style="flex-shrink:0" id="dashIncomeBlock">
           <div style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:var(--txt2);margin-bottom:3px">Monthly Income</div>
-          <div id="incomeDisplay" style="display:none;align-items:baseline;gap:5px">
-            <span style="font-size:20px;font-weight:900;color:var(--pri-d);letter-spacing:-.5px;line-height:1" id="incomeDisplayVal"></span>
-            <button onclick="showTab('goals',document.querySelector('[data-tab=goals]'));setTimeout(()=>{const a=document.getElementById('incomeSrcAnchor');if(a)a.scrollIntoView({behavior:'smooth',block:'start'})},250)" style="font-size:10px;font-weight:600;color:var(--pri-d);background:none;border:none;cursor:pointer;font-family:inherit;text-decoration:underline;padding:0">View sources →</button>
+          <div id="incomeDisplay" style="display:none;align-items:baseline;gap:6px">
+            <span style="font-size:20px;font-weight:900;color:var(--pri-d);letter-spacing:-.5px;line-height:1;cursor:pointer" id="incomeDisplayVal" onclick="navToIncomeSources()" title="Manage income in Finance"></span>
+            <button type="button" onclick="navToIncomeSources()" style="font-size:10px;font-weight:600;color:var(--pri-d);background:none;border:none;cursor:pointer;font-family:inherit;text-decoration:underline;padding:0" title="Manage income sources">View sources →</button>
           </div>
-          <div id="incomeInputWrap" class="income-input-wrap">
-            <span class="currency" id="incomeSymbol">$</span>
-            <input type="text" inputmode="decimal" id="incomeInput" placeholder="0" oninput="formatIncomeInput(this);updateDashboard()" onblur="onIncomeBlur()" autocomplete="off">
+          <div id="incomeEmptyPrompt" style="display:none;align-items:center;gap:6px">
+            <button type="button" onclick="navToIncomeSources()" style="display:inline-flex;align-items:center;gap:5px;padding:4px 10px;background:var(--pri-l);border:1px solid var(--brd);border-radius:20px;color:var(--pri-d);font-size:11.5px;font-weight:700;font-family:inherit;cursor:pointer;transition:all .15s" onmouseover="this.style.background='var(--pri)';this.style.color='var(--on-pri)'" onmouseout="this.style.background='var(--pri-l)';this.style.color='var(--pri-d)'" title="Add income source in Finance">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Set Income →
+            </button>
           </div>
+          <input type="hidden" id="incomeInput" value="">
         </div>
 
         <!-- Right side: streak (desktop only — hidden mobile) + icons -->
@@ -9540,23 +9543,35 @@ function getMonthlyIncome() {
   return parseIncome();
 }
 
+function navToIncomeSources() {
+  const tabBtn = document.querySelector('[data-tab=goals]') || document.getElementById('nav-goals');
+  showTab('goals', tabBtn);
+  setTimeout(() => {
+    const anchor = document.getElementById('incomeSrcAnchor');
+    if (anchor) {
+      if (!anchor.classList.contains('open')) {
+        anchor.classList.add('open');
+      }
+      anchor.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, 120);
+}
+
 function setIncomeDisplay(val) {
-  const input   = document.getElementById("incomeInput");
-  const display = document.getElementById("incomeDisplay");
-  const dispVal = document.getElementById("incomeDisplayVal");
-  const inputWrap = document.getElementById("incomeInputWrap");
+  const input       = document.getElementById("incomeInput");
+  const display     = document.getElementById("incomeDisplay");
+  const dispVal     = document.getElementById("incomeDisplayVal");
+  const emptyPrompt = document.getElementById("incomeEmptyPrompt");
 
   if (val && val > 0) {
-    // Show formatted display, hide input
     if (input) input.value = Number(val).toLocaleString("en-US");
     if (dispVal) dispVal.textContent = getCurrency() + "\u00A0" + Number(val).toLocaleString("en-US", {minimumFractionDigits:0, maximumFractionDigits:0});
     if (display) display.style.display = "flex";
-    if (inputWrap) inputWrap.style.display = "none";
+    if (emptyPrompt) emptyPrompt.style.display = "none";
   } else {
-    // No income yet — show input
     if (input) input.value = "";
     if (display) display.style.display = "none";
-    if (inputWrap) inputWrap.style.display = "flex";
+    if (emptyPrompt) emptyPrompt.style.display = "flex";
   }
 
   // Sync Settings income field
@@ -9566,14 +9581,9 @@ function setIncomeDisplay(val) {
   if (settingsSym) settingsSym.textContent = getCurrency();
 }
 
-// Called when user clicks "Edit income" link — switches back to input mode
+// Called when user clicks "Edit income" link — navigates to Finance > Income Sources
 function switchToIncomeEdit() {
-  const display   = document.getElementById("incomeDisplay");
-  const inputWrap = document.getElementById("incomeInputWrap");
-  const input     = document.getElementById("incomeInput");
-  if (display) display.style.display = "none";
-  if (inputWrap) inputWrap.style.display = "flex";
-  if (input) { input.focus(); input.select(); }
+  navToIncomeSources();
 }
 
 // Called when income input loses focus — lock it into display mode
