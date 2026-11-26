@@ -3345,26 +3345,26 @@ footer .footer-links a:hover{color:var(--pri-d)}
   opacity: .4;
 }
 
-/* Cells with comfortable edge padding */
+/* Cells with comfortable edge padding & horizontal top-alignment */
 .nb-cl-td-num {
   text-align: center; padding: 10px 4px 10px 12px;
   font-size: 12px; font-weight: 700; color: var(--txt2);
-  vertical-align: middle;
+  vertical-align: top;
 }
-.nb-cl-td-check { text-align: center; padding: 10px 4px; vertical-align: middle; }
-.nb-check-box { width: 17px; height: 17px; accent-color: var(--suc); cursor: pointer; vertical-align: middle; }
+.nb-cl-td-check { text-align: center; padding: 10px 4px 8px; vertical-align: top; }
+.nb-check-box { width: 17px; height: 17px; accent-color: var(--suc); cursor: pointer; margin-top: 2px; vertical-align: top; }
 .nb-cl-td-desc {
   padding: 10px 10px 10px 10px;
   font-size: 14px; font-weight: 600; color: var(--txt);
   line-height: 1.45; word-break: normal; overflow-wrap: break-word; white-space: normal;
-  min-width: 120px; vertical-align: middle;
+  min-width: 120px; vertical-align: top;
 }
-.nb-cl-td-qty   { padding: 8px 4px; text-align: center; vertical-align: middle; }
-.nb-cl-td-price { padding: 8px 14px 8px 6px; text-align: right; vertical-align: middle; }
+.nb-cl-td-qty   { padding: 9px 4px 8px; text-align: center; vertical-align: top; }
+.nb-cl-td-price { padding: 9px 14px 8px 6px; text-align: right; vertical-align: top; }
 
-/* Inputs */
+/* Inputs with matched heights and precise baseline alignment */
 .nb-qty-input {
-  width: 40px; padding: 4px 4px;
+  width: 40px; height: 26px; padding: 2px 4px;
   border: 1px solid var(--brd); border-radius: 6px;
   background: var(--input-bg); color: var(--txt);
   font-size: 12px; font-weight: 700; text-align: center;
@@ -3377,10 +3377,11 @@ footer .footer-links a:hover{color:var(--pri-d)}
 .nb-qty-input:focus { border-color: var(--pri); }
 .nb-price-wrap {
   display: inline-flex; align-items: center; gap: 2px; justify-content: flex-end;
+  height: 26px;
 }
-.nb-price-sym { font-size: 11px; color: var(--txt2); font-weight: 700; flex-shrink: 0; }
+.nb-price-sym { font-size: 11px; color: var(--txt2); font-weight: 700; flex-shrink: 0; line-height: 1; }
 .nb-price-input {
-  width: 60px; padding: 4px 5px;
+  width: 60px; height: 26px; padding: 2px 5px;
   border: 1px solid var(--brd); border-radius: 6px;
   background: var(--input-bg); color: var(--txt);
   font-size: 12px; font-weight: 700; text-align: right;
@@ -3463,6 +3464,10 @@ footer .footer-links a:hover{color:var(--pri-d)}
   .nb-cl-th-check, .nb-cl-td-check {
     width: 32px !important;
     padding: 8px 4px 8px 8px !important;
+    vertical-align: top !important;
+  }
+  .nb-check-box {
+    margin-top: 2px !important;
   }
   .nb-cl-th-desc {
     padding-left: 8px !important;
@@ -3472,14 +3477,17 @@ footer .footer-links a:hover{color:var(--pri-d)}
     font-size: 13.5px !important;
     line-height: 1.4 !important;
     min-width: 95px !important;
+    vertical-align: top !important;
   }
   .nb-cl-th-qty, .nb-cl-td-qty {
     width: 42px !important;
-    padding: 6px 3px !important;
+    padding: 7px 3px 8px !important;
+    vertical-align: top !important;
   }
   .nb-qty-input {
     width: 36px !important;
-    padding: 3px 2px !important;
+    height: 25px !important;
+    padding: 2px 2px !important;
     font-size: 11.5px !important;
   }
   .nb-cl-th-price {
@@ -3487,17 +3495,20 @@ footer .footer-links a:hover{color:var(--pri-d)}
   }
   .nb-cl-td-price {
     width: 84px !important;
-    padding: 6px 12px 6px 2px !important;
+    padding: 7px 12px 8px 2px !important;
+    vertical-align: top !important;
   }
   .nb-price-wrap {
     gap: 1.5px !important;
+    height: 25px !important;
   }
   .nb-price-sym {
     font-size: 10.5px !important;
   }
   .nb-price-input {
     width: 52px !important;
-    padding: 3px 4px !important;
+    height: 25px !important;
+    padding: 2px 4px !important;
     font-size: 11.5px !important;
   }
   .nb-line-subdue-total {
