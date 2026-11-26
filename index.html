@@ -1055,7 +1055,7 @@ tbody tr:hover td{background:var(--pri-l)}
 .note-modal-body .note-check:hover{background:var(--bg)}
 .note-modal-body .note-check input[type="checkbox"]{width:18px;height:18px;accent-color:var(--suc);cursor:pointer;margin:2px 0 0;flex-shrink:0}
 .note-modal-body .note-check span{flex:1}
-.note-modal-body .note-check.checked{background:var(--suc-l);border-left:3.5px solid var(--suc)}
+.note-modal-body .note-check.checked{background:rgba(140, 160, 150, 0.035);border-left:3.5px solid var(--suc)}
 .note-modal-body .note-check.checked span{text-decoration:line-through;opacity:.5;color:var(--txt2)}
 .note-modal-body strong{font-weight:700;color:var(--txt)}
 .note-modal-body em{font-style:italic}
@@ -3315,12 +3315,12 @@ footer .footer-links a:hover{color:var(--pri-d)}
 .nb-cl-row td { background: var(--card); transition: background .12s; }
 .nb-cl-row:hover td { background: var(--bg); }
 
-/* Completed / Checked rows: distinct tinted background in light & dark mode */
+/* Completed / Checked rows: subtle neutral tint in light & dark mode */
 .nb-cl-row.checked td {
-  background: var(--suc-l) !important;
+  background: rgba(140, 160, 150, 0.035) !important;
 }
 .nb-cl-row.checked:hover td {
-  filter: brightness(0.97);
+  background: rgba(140, 160, 150, 0.07) !important;
 }
 .nb-cl-row.checked .nb-cl-desc, .nb-cl-row.checked .nb-cl-td-desc {
   text-decoration: line-through;
