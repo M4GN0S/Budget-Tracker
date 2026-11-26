@@ -3280,33 +3280,35 @@ footer .footer-links a:hover{color:var(--pri-d)}
   margin: 12px 0 16px;
   border: 1.5px solid var(--brd);
   border-radius: 12px;
-  overflow: hidden;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
   background: var(--card);
   box-shadow: var(--sh);
   max-width: 100%;
+  box-sizing: border-box;
 }
-.nb-cl-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
-.nb-cl-table col.c-num   { width: 34px; }
-.nb-cl-table col.c-check { width: 38px; }
-.nb-cl-table col.c-desc  { width: auto; }
-.nb-cl-table col.c-qty   { width: 60px; }
-.nb-cl-table col.c-price { width: 96px; }
-.nb-cl-table col.c-total { width: 78px; }
+.nb-cl-table { width: 100%; border-collapse: collapse; table-layout: auto; min-width: 100%; }
+.nb-cl-table col.c-num   { width: 28px; }
+.nb-cl-table col.c-check { width: 34px; }
+.nb-cl-table col.c-desc  { width: 100%; min-width: 120px; }
+.nb-cl-table col.c-qty   { width: 48px; }
+.nb-cl-table col.c-price { width: 80px; }
+.nb-cl-table col.c-total { width: 72px; }
 /* Header */
 .nb-cl-table thead tr { background: var(--bg); }
 .nb-cl-table th {
   padding: 8px 6px;
-  font-size: 10px; font-weight: 800;
-  text-transform: uppercase; letter-spacing: .7px;
+  font-size: 10.5px; font-weight: 800;
+  text-transform: uppercase; letter-spacing: .5px;
   color: var(--txt2); border-bottom: 1.5px solid var(--brd);
-  white-space: nowrap; overflow: hidden;
+  white-space: nowrap;
 }
 .nb-cl-th-num   { text-align: center; }
 .nb-cl-th-check { text-align: center; }
-.nb-cl-th-desc  { text-align: left; padding-left: 10px; }
+.nb-cl-th-desc  { text-align: left; padding-left: 8px; }
 .nb-cl-th-qty   { text-align: center; }
 .nb-cl-th-price { text-align: right; padding-right: 6px; }
-.nb-cl-th-total { text-align: right; padding-right: 12px; }
+.nb-cl-th-total { text-align: right; padding-right: 10px; }
 /* Body rows */
 .nb-cl-row { border-bottom: 1px solid var(--brd); transition: background .12s; background: var(--card); }
 .nb-cl-row:last-child { border-bottom: none; }
@@ -3343,21 +3345,21 @@ footer .footer-links a:hover{color:var(--pri-d)}
 }
 /* Cells */
 .nb-cl-td-num {
-  text-align: center; padding: 10px 4px;
-  font-size: 12px; font-weight: 700; color: var(--txt2);
+  text-align: center; padding: 9px 3px;
+  font-size: 11.5px; font-weight: 700; color: var(--txt2);
 }
-.nb-cl-td-check { text-align: center; padding: 10px 4px; }
-.nb-check-box { width: 18px; height: 18px; accent-color: var(--suc); cursor: pointer; vertical-align: middle; }
-.nb-cl-td-desc  { padding: 10px 8px 10px 10px; font-size: 14.5px; font-weight: 600; color: var(--txt); line-height: 1.5; word-break: break-word; }
-.nb-cl-td-qty   { padding: 8px 4px; text-align: center; }
-.nb-cl-td-price { padding: 8px 6px 8px 4px; text-align: right; }
-.nb-cl-td-total { padding: 8px 12px 8px 2px; text-align: right; white-space: nowrap; }
+.nb-cl-td-check { text-align: center; padding: 9px 4px; }
+.nb-check-box { width: 17px; height: 17px; accent-color: var(--suc); cursor: pointer; vertical-align: middle; }
+.nb-cl-td-desc  { padding: 9px 8px; font-size: 14px; font-weight: 600; color: var(--txt); line-height: 1.45; word-break: normal; overflow-wrap: break-word; white-space: normal; min-width: 110px; }
+.nb-cl-td-qty   { padding: 7px 3px; text-align: center; }
+.nb-cl-td-price { padding: 7px 4px; text-align: right; }
+.nb-cl-td-total { padding: 7px 10px 7px 2px; text-align: right; white-space: nowrap; }
 /* Inputs */
 .nb-qty-input {
-  width: 44px; padding: 4px 6px;
+  width: 40px; padding: 4px 4px;
   border: 1px solid var(--brd); border-radius: 6px;
   background: var(--input-bg); color: var(--txt);
-  font-size: 12.5px; font-weight: 700; text-align: center;
+  font-size: 12px; font-weight: 700; text-align: center;
   outline: none; font-family: "SF Mono", Consolas, monospace;
   transition: border-color .15s;
   -webkit-user-select: text;
@@ -3370,10 +3372,10 @@ footer .footer-links a:hover{color:var(--pri-d)}
 }
 .nb-price-sym { font-size: 11px; color: var(--txt2); font-weight: 700; flex-shrink: 0; }
 .nb-price-input {
-  width: 66px; padding: 4px 6px;
+  width: 58px; padding: 4px 5px;
   border: 1px solid var(--brd); border-radius: 6px;
   background: var(--input-bg); color: var(--txt);
-  font-size: 12.5px; font-weight: 700; text-align: right;
+  font-size: 12px; font-weight: 700; text-align: right;
   outline: none; font-family: "SF Mono", Consolas, monospace;
   transition: border-color .15s;
   -webkit-user-select: text;
@@ -3381,7 +3383,67 @@ footer .footer-links a:hover{color:var(--pri-d)}
   box-sizing: border-box;
 }
 .nb-price-input:focus { border-color: var(--pri); }
-.nb-line-total { font-size: 12px; font-weight: 700; color: var(--txt2); font-family: "SF Mono", Consolas, monospace; }
+.nb-line-total { font-size: 11.5px; font-weight: 700; color: var(--txt2); font-family: "SF Mono", Consolas, monospace; }
+
+/* Mobile optimization for checklist table */
+@media (max-width: 640px) {
+  .nb-cl-table {
+    table-layout: auto !important;
+  }
+  .nb-cl-th-num, .nb-cl-td-num {
+    display: none !important;
+  }
+  .nb-cl-th-total, .nb-cl-td-total {
+    display: none !important;
+  }
+  .nb-cl-table col.c-num,
+  .nb-cl-table col.c-total {
+    display: none !important;
+    width: 0 !important;
+  }
+  .nb-cl-table col.c-check { width: 30px !important; }
+  .nb-cl-table col.c-desc { width: 100% !important; min-width: 90px !important; }
+  .nb-cl-table col.c-qty { width: 38px !important; }
+  .nb-cl-table col.c-price { width: 66px !important; }
+
+  .nb-cl-th-check, .nb-cl-td-check {
+    width: 30px !important;
+    padding: 7px 2px !important;
+  }
+  .nb-cl-th-desc {
+    padding-left: 6px !important;
+  }
+  .nb-cl-td-desc {
+    padding: 7px 6px !important;
+    font-size: 13.5px !important;
+    line-height: 1.4 !important;
+    min-width: 85px !important;
+  }
+  .nb-cl-th-qty, .nb-cl-td-qty {
+    width: 38px !important;
+    padding: 5px 2px !important;
+  }
+  .nb-qty-input {
+    width: 34px !important;
+    padding: 3px 2px !important;
+    font-size: 11.5px !important;
+  }
+  .nb-cl-th-price, .nb-cl-td-price {
+    width: 66px !important;
+    padding: 5px 4px 5px 2px !important;
+  }
+  .nb-price-wrap {
+    gap: 1px !important;
+  }
+  .nb-price-sym {
+    font-size: 10.5px !important;
+  }
+  .nb-price-input {
+    width: 46px !important;
+    padding: 3px 3px !important;
+    font-size: 11.5px !important;
+  }
+}
 /* Total row */
 .nb-cl-total-row {
   display: flex; justify-content: space-between; align-items: center;
