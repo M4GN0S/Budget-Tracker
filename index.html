@@ -3275,40 +3275,40 @@ footer .footer-links a:hover{color:var(--pri-d)}
 .nb-h2 { font-size: 17px; font-weight: 800; color: var(--txt); margin: 10px 0 6px; letter-spacing: -.2px; line-height: 1.3; }
 .nb-h3 { font-size: 14px; font-weight: 800; color: var(--txt); margin: 8px 0 4px; line-height: 1.3; text-transform: uppercase; letter-spacing: .4px; }
 
-/* Checklist wrap & table */
+/* Checklist wrap & table - Generous edge padding & space */
 .nb-checklist-wrap {
-  margin: 12px 0 16px;
+  margin: 14px 0 18px;
   border: 1.5px solid var(--brd);
-  border-radius: 12px;
+  border-radius: 14px;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
   background: var(--card);
-  box-shadow: var(--sh);
+  box-shadow: 0 2px 8px rgba(0,0,0,.04);
   max-width: 100%;
   box-sizing: border-box;
 }
 .nb-cl-table { width: 100%; border-collapse: collapse; table-layout: auto; min-width: 100%; }
-.nb-cl-table col.c-num   { width: 28px; }
-.nb-cl-table col.c-check { width: 34px; }
-.nb-cl-table col.c-desc  { width: 100%; min-width: 120px; }
+.nb-cl-table col.c-num   { width: 30px; }
+.nb-cl-table col.c-check { width: 36px; }
+.nb-cl-table col.c-desc  { width: 100%; min-width: 130px; }
 .nb-cl-table col.c-qty   { width: 48px; }
-.nb-cl-table col.c-price { width: 80px; }
-.nb-cl-table col.c-total { width: 72px; }
-/* Header */
+.nb-cl-table col.c-price { width: 88px; }
+
+/* Header with edge padding */
 .nb-cl-table thead tr { background: var(--bg); }
 .nb-cl-table th {
-  padding: 8px 6px;
-  font-size: 10.5px; font-weight: 800;
+  padding: 10px 8px;
+  font-size: 11px; font-weight: 800;
   text-transform: uppercase; letter-spacing: .5px;
   color: var(--txt2); border-bottom: 1.5px solid var(--brd);
   white-space: nowrap;
 }
-.nb-cl-th-num   { text-align: center; }
+.nb-cl-th-num   { text-align: center; padding-left: 12px; }
 .nb-cl-th-check { text-align: center; }
-.nb-cl-th-desc  { text-align: left; padding-left: 8px; }
+.nb-cl-th-desc  { text-align: left; padding-left: 10px; }
 .nb-cl-th-qty   { text-align: center; }
-.nb-cl-th-price { text-align: right; padding-right: 6px; }
-.nb-cl-th-total { text-align: right; padding-right: 10px; }
+.nb-cl-th-price { text-align: right; padding-right: 14px; }
+
 /* Body rows */
 .nb-cl-row { border-bottom: 1px solid var(--brd); transition: background .12s; background: var(--card); }
 .nb-cl-row:last-child { border-bottom: none; }
@@ -3340,20 +3340,28 @@ footer .footer-links a:hover{color:var(--pri-d)}
   opacity: .5;
   background: transparent;
 }
+.nb-cl-row.checked .nb-line-subdue-total,
 .nb-cl-row.checked .nb-line-total {
-  opacity: .5;
+  opacity: .4;
 }
-/* Cells */
+
+/* Cells with comfortable edge padding */
 .nb-cl-td-num {
-  text-align: center; padding: 9px 3px;
-  font-size: 11.5px; font-weight: 700; color: var(--txt2);
+  text-align: center; padding: 10px 4px 10px 12px;
+  font-size: 12px; font-weight: 700; color: var(--txt2);
+  vertical-align: middle;
 }
-.nb-cl-td-check { text-align: center; padding: 9px 4px; }
+.nb-cl-td-check { text-align: center; padding: 10px 4px; vertical-align: middle; }
 .nb-check-box { width: 17px; height: 17px; accent-color: var(--suc); cursor: pointer; vertical-align: middle; }
-.nb-cl-td-desc  { padding: 9px 8px; font-size: 14px; font-weight: 600; color: var(--txt); line-height: 1.45; word-break: normal; overflow-wrap: break-word; white-space: normal; min-width: 110px; }
-.nb-cl-td-qty   { padding: 7px 3px; text-align: center; }
-.nb-cl-td-price { padding: 7px 4px; text-align: right; }
-.nb-cl-td-total { padding: 7px 10px 7px 2px; text-align: right; white-space: nowrap; }
+.nb-cl-td-desc {
+  padding: 10px 10px 10px 10px;
+  font-size: 14px; font-weight: 600; color: var(--txt);
+  line-height: 1.45; word-break: normal; overflow-wrap: break-word; white-space: normal;
+  min-width: 120px; vertical-align: middle;
+}
+.nb-cl-td-qty   { padding: 8px 4px; text-align: center; vertical-align: middle; }
+.nb-cl-td-price { padding: 8px 14px 8px 6px; text-align: right; vertical-align: middle; }
+
 /* Inputs */
 .nb-qty-input {
   width: 40px; padding: 4px 4px;
@@ -3372,7 +3380,7 @@ footer .footer-links a:hover{color:var(--pri-d)}
 }
 .nb-price-sym { font-size: 11px; color: var(--txt2); font-weight: 700; flex-shrink: 0; }
 .nb-price-input {
-  width: 58px; padding: 4px 5px;
+  width: 60px; padding: 4px 5px;
   border: 1px solid var(--brd); border-radius: 6px;
   background: var(--input-bg); color: var(--txt);
   font-size: 12px; font-weight: 700; text-align: right;
@@ -3383,54 +3391,70 @@ footer .footer-links a:hover{color:var(--pri-d)}
   box-sizing: border-box;
 }
 .nb-price-input:focus { border-color: var(--pri); }
+
+/* Subdued Subtotal / Multi-Qty Total below price input */
+.nb-line-subdue-total {
+  font-size: 11px;
+  color: var(--txt2);
+  opacity: 0.8;
+  font-weight: 600;
+  font-family: "SF Mono", Consolas, monospace;
+  text-align: right;
+  margin-top: 3px;
+  white-space: nowrap;
+  letter-spacing: -0.2px;
+}
 .nb-line-total { font-size: 11.5px; font-weight: 700; color: var(--txt2); font-family: "SF Mono", Consolas, monospace; }
 
-/* Mobile optimization for checklist table */
+/* Mobile optimization with clean edge margins and padding */
 @media (max-width: 640px) {
+  .nb-checklist-wrap {
+    margin: 12px 0 16px;
+    border-radius: 12px;
+  }
   .nb-cl-table {
     table-layout: auto !important;
   }
   .nb-cl-th-num, .nb-cl-td-num {
     display: none !important;
   }
-  .nb-cl-th-total, .nb-cl-td-total {
-    display: none !important;
-  }
-  .nb-cl-table col.c-num,
-  .nb-cl-table col.c-total {
+  .nb-cl-table col.c-num {
     display: none !important;
     width: 0 !important;
   }
-  .nb-cl-table col.c-check { width: 30px !important; }
-  .nb-cl-table col.c-desc { width: 100% !important; min-width: 90px !important; }
-  .nb-cl-table col.c-qty { width: 38px !important; }
-  .nb-cl-table col.c-price { width: 66px !important; }
+  .nb-cl-table col.c-check { width: 32px !important; }
+  .nb-cl-table col.c-desc { width: 100% !important; min-width: 100px !important; }
+  .nb-cl-table col.c-qty { width: 40px !important; }
+  .nb-cl-table col.c-price { width: 72px !important; }
 
   .nb-cl-th-check, .nb-cl-td-check {
-    width: 30px !important;
-    padding: 7px 2px !important;
+    width: 32px !important;
+    padding: 8px 4px 8px 8px !important;
   }
   .nb-cl-th-desc {
-    padding-left: 6px !important;
+    padding-left: 8px !important;
   }
   .nb-cl-td-desc {
-    padding: 7px 6px !important;
+    padding: 8px 8px !important;
     font-size: 13.5px !important;
     line-height: 1.4 !important;
-    min-width: 85px !important;
+    min-width: 95px !important;
   }
   .nb-cl-th-qty, .nb-cl-td-qty {
-    width: 38px !important;
-    padding: 5px 2px !important;
+    width: 40px !important;
+    padding: 6px 3px !important;
   }
   .nb-qty-input {
-    width: 34px !important;
+    width: 36px !important;
     padding: 3px 2px !important;
     font-size: 11.5px !important;
   }
-  .nb-cl-th-price, .nb-cl-td-price {
-    width: 66px !important;
-    padding: 5px 4px 5px 2px !important;
+  .nb-cl-th-price {
+    padding: 8px 10px 8px 4px !important;
+  }
+  .nb-cl-td-price {
+    width: 72px !important;
+    padding: 6px 10px 6px 2px !important;
   }
   .nb-price-wrap {
     gap: 1px !important;
@@ -3439,9 +3463,13 @@ footer .footer-links a:hover{color:var(--pri-d)}
     font-size: 10.5px !important;
   }
   .nb-price-input {
-    width: 46px !important;
+    width: 48px !important;
     padding: 3px 3px !important;
     font-size: 11.5px !important;
+  }
+  .nb-line-subdue-total {
+    font-size: 10.5px !important;
+    margin-top: 2px !important;
   }
 }
 /* Total row */
@@ -15925,7 +15953,7 @@ function updateNoteItemQty(noteId, itemIndex, newQty, tableId) {
   _refreshClTotal(tableId, noteId);
 }
 
-// Recalculate and update the total row without full re-render
+// Recalculate and update the total row and subdued line totals without full re-render
 function _refreshClTotal(tableId, noteId) {
   if (!tableId) return;
   const table    = document.getElementById(tableId);
@@ -15938,18 +15966,30 @@ function _refreshClTotal(tableId, noteId) {
   rows.forEach(row => {
     const qtyEl   = row.querySelector(".nb-qty-input");
     const priceEl = row.querySelector(".nb-price-input");
+    const priceCell = row.querySelector(".nb-cl-td-price");
     if (priceEl && priceEl.value && priceEl.value !== "0" && priceEl.value !== "0.00") {
       const qty    = parseInt(qtyEl?.value || "1") || 1;
       const price  = parseFloat(priceEl.value.replace(/,/g,"")) || 0;
       grandTotal  += qty * price;
       hasAmt = true;
-      // Update line total cell
-      const totalCell = row.querySelector(".nb-cl-td-total");
-      if (totalCell && qty > 1) {
-        totalCell.innerHTML = '<span class="nb-line-total">' + getCurrency() + (qty * price).toFixed(2) + '</span>';
-      } else if (totalCell) {
-        totalCell.innerHTML = "";
+      // Update subdued line total below price
+      let subTotalEl = row.querySelector(".nb-line-subdue-total");
+      if (qty > 1) {
+        if (!subTotalEl && priceCell) {
+          subTotalEl = document.createElement("div");
+          subTotalEl.className = "nb-line-subdue-total";
+          priceCell.appendChild(subTotalEl);
+        }
+        if (subTotalEl) {
+          subTotalEl.textContent = getCurrency() + " " + (qty * price).toFixed(2);
+          subTotalEl.style.display = "block";
+        }
+      } else if (subTotalEl) {
+        subTotalEl.style.display = "none";
       }
+    } else {
+      const subTotalEl = row.querySelector(".nb-line-subdue-total");
+      if (subTotalEl) subTotalEl.style.display = "none";
     }
   });
 
@@ -16029,6 +16069,9 @@ function formatNoteBody(text, noteId) {
           ' onclick="event.stopPropagation()"' +
           ' onchange="_nbQtyChange(this)"' +
           ' title="Tap to edit quantity">';
+        const subTotalHtml = it.amt !== null && it.qty && it.qty > 1
+          ? '<div class="nb-line-subdue-total" title="Subtotal for ' + (it.qty) + ' items">' + sym + ' ' + (lineAmt).toFixed(2) + '</div>'
+          : '';
         const priceHtml = '<div class="nb-price-wrap">' +
           '<span class="nb-price-sym">' + sym + '</span>' +
           '<input type="text" inputmode="decimal" value="' + (it.amt !== null ? it.amt : "") + '"' +
@@ -16038,10 +16081,7 @@ function formatNoteBody(text, noteId) {
           ' onclick="event.stopPropagation()"' +
           ' onchange="_nbPriceChange(this)"' +
           ' title="Tap to edit price">' +
-          '</div>';
-        const lineTotalHtml = it.amt !== null && it.qty && it.qty > 1
-          ? '<span class="nb-line-total">' + sym + (lineAmt).toFixed(2) + '</span>'
-          : '';
+          '</div>' + subTotalHtml;
         rows += '<tr class="nb-cl-row' + (it.checked ? ' checked' : '') + '">' +
           '<td class="nb-cl-td-num">'  + rowNum + '</td>' +
           '<td class="nb-cl-td-check"><input type="checkbox"' + (it.checked ? " checked" : "") +
@@ -16049,22 +16089,20 @@ function formatNoteBody(text, noteId) {
           '<td class="nb-cl-td-desc">' + formatInline(it.desc) + '</td>' +
           '<td class="nb-cl-td-qty">'  + qtyHtml + '</td>' +
           '<td class="nb-cl-td-price">' + priceHtml + '</td>' +
-          '<td class="nb-cl-td-total">' + lineTotalHtml + '</td>' +
           '</tr>';
       }
       html += '<div class="nb-checklist-wrap">' +
         '<table class="nb-cl-table" id="' + listId + '">' +
         '<colgroup>' +
           '<col class="c-num"><col class="c-check"><col class="c-desc">' +
-          '<col class="c-qty"><col class="c-price"><col class="c-total">' +
+          '<col class="c-qty"><col class="c-price">' +
         '</colgroup>' +
         '<thead><tr>' +
           '<th class="nb-cl-th-num">#</th>' +
           '<th class="nb-cl-th-check"></th>' +
-          '<th class="nb-cl-th-desc">Item</th>' +
+          '<th class="nb-cl-th-desc">Item Description</th>' +
           '<th class="nb-cl-th-qty">Qty</th>' +
           '<th class="nb-cl-th-price">Price</th>' +
-          '<th class="nb-cl-th-total">Total</th>' +
         '</tr></thead>' +
         '<tbody>' + rows + '</tbody>' +
         '</table>' +
